@@ -1,0 +1,349 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>CineStream - Neon Chronicles</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700;800&amp;family=Be+Vietnam+Pro:wght@400;500&amp;family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@100..900&amp;family=Plus+Jakarta+Sans:wght@100..900&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            "colors": {
+                    "surface-dim": "#13131b",
+                    "background": "#13131b",
+                    "tertiary-container": "#7658ff",
+                    "surface-container-low": "#1b1b23",
+                    "on-primary": "#520071",
+                    "inverse-on-surface": "#303038",
+                    "error": "#ffb4ab",
+                    "surface-container-lowest": "#0d0d15",
+                    "on-tertiary": "#2f009c",
+                    "primary-fixed-dim": "#ecb2ff",
+                    "secondary-container": "#00eefc",
+                    "tertiary-fixed-dim": "#c9bfff",
+                    "tertiary": "#c9bfff",
+                    "surface-bright": "#393841",
+                    "on-secondary": "#00363a",
+                    "surface-variant": "#34343d",
+                    "secondary-fixed-dim": "#00dbe9",
+                    "outline-variant": "#514255",
+                    "secondary": "#d3fbff",
+                    "inverse-surface": "#e4e1ed",
+                    "secondary-fixed": "#7df4ff",
+                    "on-tertiary-fixed-variant": "#4500d8",
+                    "on-primary-fixed": "#320047",
+                    "surface-container": "#1f1f27",
+                    "on-secondary-fixed-variant": "#004f54",
+                    "on-primary-container": "#ffffff",
+                    "on-surface-variant": "#d4c0d7",
+                    "inverse-primary": "#9900cf",
+                    "on-background": "#e4e1ed",
+                    "on-secondary-fixed": "#002022",
+                    "primary": "#ecb2ff",
+                    "on-primary-fixed-variant": "#74009f",
+                    "primary-container": "#bd00ff",
+                    "surface-container-highest": "#34343d",
+                    "on-secondary-container": "#00686f",
+                    "surface-container-high": "#292932",
+                    "tertiary-fixed": "#e5deff",
+                    "on-surface": "#e4e1ed",
+                    "primary-fixed": "#f8d8ff",
+                    "outline": "#9d8ba0",
+                    "surface-tint": "#ecb2ff",
+                    "on-error-container": "#ffdad6",
+                    "error-container": "#93000a",
+                    "on-tertiary-container": "#ffffff",
+                    "surface": "#13131b",
+                    "on-tertiary-fixed": "#1b0063",
+                    "on-error": "#690005"
+            },
+            "borderRadius": {
+                    "DEFAULT": "0.25rem",
+                    "lg": "0.5rem",
+                    "xl": "0.75rem",
+                    "full": "9999px"
+            },
+            "spacing": {
+                    "section-gap": "32px",
+                    "container-padding": "24px",
+                    "stack-sm": "8px",
+                    "stack-md": "16px",
+                    "sidebar-width": "80px",
+                    "gutter": "16px"
+            },
+            "fontFamily": {
+                    "display-lg": ["Plus Jakarta Sans"],
+                    "body-lg": ["Be Vietnam Pro"],
+                    "headline-md": ["Plus Jakarta Sans"],
+                    "headline-lg": ["Plus Jakarta Sans"],
+                    "label-md": ["Plus Jakarta Sans"],
+                    "headline-lg-mobile": ["Plus Jakarta Sans"],
+                    "body-md": ["Be Vietnam Pro"]
+            },
+            "fontSize": {
+                    "display-lg": ["48px", {"lineHeight": "56px", "letterSpacing": "-0.02em", "fontWeight": "700"}],
+                    "body-lg": ["18px", {"lineHeight": "28px", "fontWeight": "400"}],
+                    "headline-md": ["24px", {"lineHeight": "32px", "fontWeight": "600"}],
+                    "headline-lg": ["32px", {"lineHeight": "40px", "fontWeight": "700"}],
+                    "label-md": ["14px", {"lineHeight": "20px", "letterSpacing": "0.05em", "fontWeight": "600"}],
+                    "headline-lg-mobile": ["28px", {"lineHeight": "36px", "fontWeight": "700"}],
+                    "body-md": ["16px", {"lineHeight": "24px", "fontWeight": "400"}]
+            }
+          },
+        },
+      }
+    </script>
+<style>
+        .glass-panel {
+            background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(40px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        .neon-glow-primary {
+            box-shadow: 0 0 20px rgba(236, 178, 255, 0.4);
+        }
+        .neon-glow-secondary {
+            box-shadow: 0 0 20px rgba(0, 238, 252, 0.3);
+        }
+        .custom-scrollbar::-webkit-scrollbar {
+            width: 4px;
+        }
+        .custom-scrollbar::-webkit-scrollbar-track {
+            background: transparent;
+        }
+        .custom-scrollbar::-webkit-scrollbar-thumb {
+            background: rgba(236, 178, 255, 0.2);
+            border-radius: 10px;
+        }
+        body {
+            background: radial-gradient(circle at top right, #1a1a2e, #13131b);
+        }
+    </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="text-on-surface font-body-md text-body-md overflow-x-hidden pb-32">
+<!-- Hero Header -->
+<header class="relative h-[574px] w-full overflow-hidden">
+<div class="absolute inset-0">
+<img class="w-full h-full object-cover" data-alt="A cinematic sci-fi scene featuring a sprawling futuristic metropolis at night. The city is illuminated by dense networks of neon cyan and magenta lights reflecting off rain-slicked surfaces. Flying vehicles leave light trails across a hazy, deep purple atmosphere. The mood is mysterious and immersive, perfectly capturing a high-fidelity cyberpunk aesthetic with rich contrast and deep shadows." src="https://lh3.googleusercontent.com/aida-public/AB6AXuBfSOHROIzDNIzdHjtj4pnPI3GlGAQM5zt5uu9-gzrnd96b_7feDm85QhtnW1-RG3V80hJKPDs40IcjRYqcQzOzUVEJeVaNgTz-Y8L02fqhJb8UnDmP4plsSK3UsnpyWQoy0NHR8I3qNbpl1mB64o1ALvJbL1kvx6pHIvYEzS7IbVMQy73pFS1gN8WU4j7fla86nUUA96P0b5pmuLYzRQIJK-3LfpvzOCw3GOdCQQLMmSQbv_IU42mU1xyYZlogHI_TdZu_keqWkqzg"/>
+<!-- Overlay Gradient -->
+<div class="absolute inset-0 bg-gradient-to-t from-background via-transparent to-black/40"></div>
+</div>
+<!-- Top App Bar (Back/Search) -->
+<div class="fixed top-0 left-0 w-full z-50 flex justify-between items-center px-container-padding py-4 transition-all duration-300" id="top-bar">
+<button class="w-10 h-10 flex items-center justify-center rounded-full bg-surface-container/30 backdrop-blur-md border border-white/10 text-on-surface hover:bg-white/10">
+<span class="material-symbols-outlined">arrow_back</span>
+</button>
+<div class="flex gap-4">
+<button class="w-10 h-10 flex items-center justify-center rounded-full bg-surface-container/30 backdrop-blur-md border border-white/10 text-on-surface hover:bg-white/10">
+<span class="material-symbols-outlined">share</span>
+</button>
+<button class="w-10 h-10 flex items-center justify-center rounded-full bg-surface-container/30 backdrop-blur-md border border-white/10 text-on-surface hover:bg-white/10">
+<span class="material-symbols-outlined">search</span>
+</button>
+</div>
+</div>
+<!-- Hero Content Overlay -->
+<div class="absolute bottom-0 left-0 w-full px-container-padding pb-8">
+<div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-primary/20 border border-primary/30 mb-4 backdrop-blur-md">
+<span class="w-2 h-2 rounded-full bg-primary animate-pulse"></span>
+<span class="text-label-md font-label-md text-primary tracking-widest uppercase">New Release</span>
+</div>
+<h1 class="font-display-lg text-display-lg tracking-tighter mb-2 text-transparent bg-clip-text bg-gradient-to-r from-primary to-secondary">
+                NEON CHRONICLES
+            </h1>
+<div class="flex items-center gap-4 text-on-surface-variant mb-6 text-label-md font-label-md">
+<span>2024</span>
+<span class="w-1 h-1 rounded-full bg-outline-variant"></span>
+<span>Season 1</span>
+<span class="w-1 h-1 rounded-full bg-outline-variant"></span>
+<span class="px-2 py-0.5 border border-outline-variant rounded text-[10px]">18+</span>
+<span class="w-1 h-1 rounded-full bg-outline-variant"></span>
+<span class="flex items-center text-secondary"><span class="material-symbols-outlined text-sm mr-1" style="font-variation-settings: 'FILL' 1;">star</span> 9.2</span>
+</div>
+<!-- Action Buttons -->
+<div class="flex items-center gap-4">
+<button class="flex-1 flex items-center justify-center gap-2 bg-gradient-to-br from-primary to-tertiary-container text-on-primary py-4 rounded-xl font-headline-md text-headline-md neon-glow-primary active:scale-95 transition-transform">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">play_arrow</span>
+                    Play S1 E1
+                </button>
+<button class="w-14 h-14 flex items-center justify-center rounded-xl bg-white/10 backdrop-blur-xl border border-white/20 text-on-surface hover:bg-white/20 active:scale-95 transition-all">
+<span class="material-symbols-outlined">add</span>
+</button>
+</div>
+</div>
+</header>
+<!-- Content Area -->
+<main class="px-container-padding -mt-4 relative z-10 space-y-section-gap">
+<!-- Summary Section -->
+<section>
+<p class="text-on-surface-variant leading-relaxed mb-6 font-body-md text-body-md">
+                In a dystopian future where dreams are a luxury, a renegade data-thief uncovers a cosmic secret buried within the neural networks of the world's most powerful megacity.
+            </p>
+<!-- Tags -->
+<div class="flex flex-wrap gap-3">
+<span class="glass-panel px-4 py-1.5 rounded-full text-label-md font-label-md text-secondary border-secondary/20">CYBERPUNK</span>
+<span class="glass-panel px-4 py-1.5 rounded-full text-label-md font-label-md text-secondary border-secondary/20">THRILLER</span>
+<span class="glass-panel px-4 py-1.5 rounded-full text-label-md font-label-md text-secondary border-secondary/20">SPACE OPERA</span>
+</div>
+</section>
+<!-- Episode List -->
+<section>
+<div class="flex items-center justify-between mb-4">
+<h2 class="font-headline-lg-mobile text-headline-lg-mobile">Episodes</h2>
+<button class="flex items-center gap-1 text-primary text-label-md font-label-md">
+                    Season 1 <span class="material-symbols-outlined">expand_more</span>
+</button>
+</div>
+<div class="space-y-4">
+<!-- Episode Item 1 -->
+<div class="glass-panel rounded-2xl p-3 flex gap-4 hover:bg-white/10 transition-colors group">
+<div class="relative w-32 h-20 flex-shrink-0 overflow-hidden rounded-lg">
+<img class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500" data-alt="A dark alleyway in a futuristic city glowing with pink and blue neon signs. Cinematic perspective with rain droplets catching light. The atmosphere is moody and mysterious." src="https://lh3.googleusercontent.com/aida-public/AB6AXuAJx9XhayMJke504woVmr9Re2hANda88uGDiH7X0F1JAUIXxCe6pbha5x2vQe7ZfPccojhiqByOiKVZnnyvZBgJ7TFVX43nVu9repW6ik0adulyNaPC26YozLoKpvJFn91WKGJ24txAvGAiqkhDn19Y3l4ZxQQbWG_H3zETkOrx4iTnRPIkJNaMSx71akigkcKXG_3z3IfhccRXU0nrUPux1LXzydKIaf8XQiPQpRTYJ4JIcBQtYGvuFRJjY7T5Cnl0vyu4kk94Sbph"/>
+<div class="absolute inset-0 flex items-center justify-center bg-black/40">
+<span class="material-symbols-outlined text-white text-3xl">play_circle</span>
+</div>
+</div>
+<div class="flex-1 min-w-0">
+<div class="flex justify-between items-start">
+<h3 class="font-headline-md text-body-md mb-1 truncate">1. Neural Ghost</h3>
+<span class="text-[10px] text-on-surface-variant">48m</span>
+</div>
+<p class="text-on-surface-variant text-label-md line-clamp-2">Kael infiltrates the Azure Tower but finds more than just encrypted data.</p>
+</div>
+</div>
+<!-- Episode Item 2 -->
+<div class="glass-panel rounded-2xl p-3 flex gap-4 hover:bg-white/10 transition-colors group">
+<div class="relative w-32 h-20 flex-shrink-0 overflow-hidden rounded-lg">
+<img class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500" data-alt="Close up of futuristic glowing hardware and computer circuits with intense cyan backlighting. Tech-noir style with shallow depth of field, highlighting microscopic details." src="https://lh3.googleusercontent.com/aida-public/AB6AXuD3XmxLhDYAxwfaQrthanLYHfsM0j9gW1KU6o-ci0gV4yw7aavIYvjCTFPce7JeGu6MzsP0DmOop3vQL60MTotOLJWd6dAO09vWhJKaY-ffekHzH7xYVukE-9fWZ3p7xDmu4yb-q7Q3F8E2Ok84yUTTO2tKnOnpPaUorX2gHuBxBJaRWYczruC0cDbSFRQZCvvu4ilwHp-goo7ypnpSydDy99IJBnedLSJlooeVbyjcTlQpcp2uL3c7OD257ePMPJtZL6MnQ1-l4Ntu"/>
+<div class="absolute inset-0 flex items-center justify-center bg-black/40">
+<span class="material-symbols-outlined text-white text-3xl">play_circle</span>
+</div>
+</div>
+<div class="flex-1 min-w-0">
+<div class="flex justify-between items-start">
+<h3 class="font-headline-md text-body-md mb-1 truncate">2. Fragmented Sky</h3>
+<span class="text-[10px] text-on-surface-variant">52m</span>
+</div>
+<p class="text-on-surface-variant text-label-md line-clamp-2">The chase leads to the orbital slums where the sky is always broken.</p>
+</div>
+</div>
+<!-- Episode Item 3 -->
+<div class="glass-panel rounded-2xl p-3 flex gap-4 hover:bg-white/10 transition-colors group opacity-70">
+<div class="relative w-32 h-20 flex-shrink-0 overflow-hidden rounded-lg">
+<img class="w-full h-full object-cover" data-alt="View of planet earth from space at night with glowing network connections and satellite pathways. Dark blue cosmic palette with sparkling stars and technological aura." src="https://lh3.googleusercontent.com/aida-public/AB6AXuAvEKRG25Kvrkg-PNzm4tzgri-iH-ats1EWc0XvvYRk9b_SDrzmnHfHRszToPv39aELasnDOUCcDvpNAYnRVDKyO-mJFY4Y7gULRcGiGpRemXwEc8O6fmvOhImTwAzAUi2CCFZeLYD-uzzKeioPuCgtluABJY801BjtOUxNlBY6he1QCUCjSjlUcyI3IduZfpokZWh3hb5IgopAQ7JTVrt4zQbsWRoXTTZo8yG4HzGWnxGlWD4zqFpxHkW6VcCsZcalFXLlaHU0zx5Z"/>
+<div class="absolute inset-0 flex items-center justify-center bg-black/60">
+<span class="material-symbols-outlined text-white/50 text-2xl">lock</span>
+</div>
+</div>
+<div class="flex-1 min-w-0">
+<div class="flex justify-between items-start">
+<h3 class="font-headline-md text-body-md mb-1 truncate">3. Protocol Zero</h3>
+<span class="text-[10px] text-on-surface-variant">Coming Oct 12</span>
+</div>
+<p class="text-on-surface-variant text-label-md line-clamp-2">The ultimate showdown begins as Kael activates the forgotten override.</p>
+</div>
+</div>
+</div>
+</section>
+<!-- Cast Section -->
+<section>
+<h2 class="font-headline-lg-mobile text-headline-lg-mobile mb-4">Top Cast</h2>
+<div class="flex gap-6 overflow-x-auto pb-4 custom-scrollbar">
+<div class="flex-shrink-0 flex flex-col items-center gap-2">
+<div class="w-16 h-16 rounded-full overflow-hidden border-2 border-primary/40 p-0.5">
+<img class="w-full h-full rounded-full object-cover" data-alt="Portrait of a young man with sharp features and futuristic style clothing. High contrast lighting with soft violet rim light. Studio photography against a dark background." src="https://lh3.googleusercontent.com/aida-public/AB6AXuDPJlySMXgiPnuYns8-huEvC0OccvEaqcqgd1oH8mWJTrSVaUy3T2hR_ve9cx4mR-M-CGmWOGhkSImb3_a1rtoVh_zNS6dtjpXdj0qnpU5vPpm4wV_284TQGkwAjLp_sbBoReKVj354IpKNacj_ogV_k9u2OgsDXqKF2KBL10A9CTufxvIn0snTxUi8fhlNBqXURwmp-KOzZgWkumMahWrXWjKIEkL3FaHo0_yiYrOiOVhcS-jzABPpLB_o9YU8iX_AxVZHIuh_d8c7"/>
+</div>
+<span class="text-label-md font-label-md text-center">James Chen</span>
+<span class="text-[10px] text-on-surface-variant text-center">Kael</span>
+</div>
+<div class="flex-shrink-0 flex flex-col items-center gap-2">
+<div class="w-16 h-16 rounded-full overflow-hidden border-2 border-secondary/40 p-0.5">
+<img class="w-full h-full rounded-full object-cover" data-alt="Portrait of a woman with vibrant blue hair and subtle cybernetic tattoos on her face. Soft neon lighting from one side, creating deep shadows. High-fashion cinematic aesthetic." src="https://lh3.googleusercontent.com/aida-public/AB6AXuAxk0Mr7sSj5d48oDLhgbdZWogs4b_QOIc891jFL7lRtOEjmdbW3vUXS7NC08AaPy4tREJaEx2vhEwxltG4sflsk6JKvinTef-ibtkuywKMMGe1sFd9uosM0TdBnyDcxg70yC2evrbKvcjJInpuca45JsHCWb4La7hDWa4htoNQQc2loSIZYkYcOEZjMkQWjdACQB_dLHmmI0w-o2OBFNkooQCiyTwl-w9iE8aU3T2Mq1FNldamq6hpbsHDAU-CyDN2YLf3T-zSxGe4"/>
+</div>
+<span class="text-label-md font-label-md text-center">Sarah Vane</span>
+<span class="text-[10px] text-on-surface-variant text-center">Luna</span>
+</div>
+<div class="flex-shrink-0 flex flex-col items-center gap-2">
+<div class="w-16 h-16 rounded-full overflow-hidden border-2 border-white/20 p-0.5">
+<img class="w-full h-full rounded-full object-cover" data-alt="Close up portrait of an older man with grey hair and wise expression. Dramatic noir lighting with strong shadows and sharp highlights on facial features." src="https://lh3.googleusercontent.com/aida-public/AB6AXuC0NfcnciVfhizeKLmJNe_AtTfVXttgjtSxlvjteUts7rSGZnvXVjIC_srij9tKsjO-6PYJJQ3P8Ns0padUB64_TP70TT4qNypsET4r-XkaKqYaH5mb7zYW59u1ys8QkBNczZCjBzjAENqWxjNSglQ_SQpns0rB2KDVr_XHBFSbgW9BlCbBRho5HTFJWcqerlh2heZ34M2Oj2OsV-ynRTkFMupBpnZ0WHcxeQl62L9XY7dd53LlHQAmZaZ5CLSPtr1cioEsR_zPeNGx"/>
+</div>
+<span class="text-label-md font-label-md text-center">Arthur Holm</span>
+<span class="text-[10px] text-on-surface-variant text-center">The Elder</span>
+</div>
+<div class="flex-shrink-0 flex flex-col items-center gap-2">
+<div class="w-16 h-16 rounded-full overflow-hidden border-2 border-white/20 p-0.5">
+<img class="w-full h-full rounded-full object-cover" data-alt="Portrait of a rugged man with a beard and Intense gaze. Cool blue ambient lighting suggesting a nighttime outdoor urban setting." src="https://lh3.googleusercontent.com/aida-public/AB6AXuCdu-s3Xnl0lz6hFbBiYjaxHWpKQi2FEUayB27wULaQ-KQkb8Xq5zOkcg-3mDVsNpztCltSy-640MI6dimFqY5-0rxmf3R53tut87E7jN3071C24YVDyq4nl96ZH-2chm45CWTO6wgHNHyLirH6E6npR5QdaxofOAMGFuxsvMJBla627jKxddNlcqEizp4gjYuNRsCuXrrZDIVj2KINzu6uLsgwK-6SGlphO-UhDe6JezLGndxP6aJvoYz96e_ka-dMA-cCBFgBnEpT"/>
+</div>
+<span class="text-label-md font-label-md text-center">Marcus Ray</span>
+<span class="text-[10px] text-on-surface-variant text-center">Jax</span>
+</div>
+</div>
+</section>
+<!-- Related Content -->
+<section>
+<h2 class="font-headline-lg-mobile text-headline-lg-mobile mb-4">Related Content</h2>
+<div class="grid grid-cols-2 gap-4">
+<div class="space-y-2 group">
+<div class="aspect-[2/3] rounded-2xl overflow-hidden glass-panel relative border border-white/5">
+<img class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110" data-alt="A cinematic poster for a sci-fi movie featuring a lone figure standing before a massive glowing portal in a desert landscape. Saturated orange and blue color palette, epic scale, high detail." src="https://lh3.googleusercontent.com/aida-public/AB6AXuDjdZSJO3WnOLAHo9nx7YtEgaSPuA_f_kRp66EuPqs7koCQlNPdlwFuHvUW5qedPmYksNlWjCke9sPMk4G3TxpmXIN-TGlidd2K8USrL0BB909fUqbeEGU7RRxnWPyphFNT4XrIR8sHGNWR2jFZda8zY-Dm91DZUGEixFFZZJS_rf9YgQDmNlFm8hUH-Q66FHVzIn58NRJsEtH6T3WRqKkA_c6hgy91tyIuOyStxGmaOK9mXFH5V5sxxHMQw4C-7vnUfUm77GAPhJPV"/>
+<div class="absolute top-2 right-2 px-2 py-0.5 rounded-lg bg-black/60 backdrop-blur-md text-[10px] font-bold">4K</div>
+</div>
+<h4 class="font-headline-md text-body-md truncate">Void Walker</h4>
+<p class="text-on-surface-variant text-[10px]">Movie • 2h 15m</p>
+</div>
+<div class="space-y-2 group">
+<div class="aspect-[2/3] rounded-2xl overflow-hidden glass-panel relative border border-white/5">
+<img class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110" data-alt="Cinematic image of a high-tech lab with glowing liquid tanks and digital interfaces. Ethereal teal lighting and complex machinery. Professional studio quality." src="https://lh3.googleusercontent.com/aida-public/AB6AXuBzKuuWcz_sFO-Vt3-cS7A17GdaPHakcQ1kNEKhs7XE4edhoBacOlae4naciXKX37Jz6sHZPfs1pI2_r1MgWP7kzgkjMWJb-186OtvI8POY3c7c9Nw18oxgeD19Gyy0hvYnJE_iBSu4-IJmrlYMkfXDiy5I150wzpkIOb2QHIDOQ_0wcdtMUY1DqgJjL1jEXn-9joXw-L-mMmFkPh1mj3owwvNqQEJJWNwki85IPb1lBCoIOM_kiZai8Zd5rJr-pNLsdsc-90-1zYXf"/>
+<div class="absolute top-2 right-2 px-2 py-0.5 rounded-lg bg-black/60 backdrop-blur-md text-[10px] font-bold">TRENDING</div>
+</div>
+<h4 class="font-headline-md text-body-md truncate">Aether Labs</h4>
+<p class="text-on-surface-variant text-[10px]">Series • 2 Seasons</p>
+</div>
+</div>
+</section>
+</main>
+<!-- Bottom Navigation Shell (Consistent with shared components) -->
+<nav class="fixed bottom-6 left-1/2 -translate-x-1/2 w-full max-w-md z-50 flex justify-around items-center px-4 py-2 bg-surface-container-low/40 dark:bg-surface-container-low/40 backdrop-blur-[40px] rounded-full border border-white/10 shadow-[0_-8px_32px_0_rgba(0,0,0,0.5)]">
+<a class="flex items-center justify-center text-on-surface-variant/70 p-3 hover:text-secondary transition-all" href="#">
+<span class="material-symbols-outlined" data-icon="home">home</span>
+</a>
+<a class="flex items-center justify-center text-on-surface-variant/70 p-3 hover:text-secondary transition-all" href="#">
+<span class="material-symbols-outlined" data-icon="explore">explore</span>
+</a>
+<a class="flex items-center justify-center bg-gradient-to-br from-primary to-tertiary-container text-on-primary rounded-full p-3 shadow-[0_0_20px_rgba(236,178,255,0.4)]" href="#">
+<span class="material-symbols-outlined" data-icon="movie_filter">movie_filter</span>
+</a>
+<a class="flex items-center justify-center text-on-surface-variant/70 p-3 hover:text-secondary transition-all" href="#">
+<span class="material-symbols-outlined" data-icon="person">person</span>
+</a>
+</nav>
+<script>
+        // Scroll interaction for Top Bar
+        const topBar = document.getElementById('top-bar');
+        window.addEventListener('scroll', () => {
+            if (window.scrollY > 50) {
+                topBar.classList.add('bg-surface-container/60', 'backdrop-blur-xl', 'py-2');
+                topBar.classList.remove('bg-transparent', 'py-4');
+            } else {
+                topBar.classList.remove('bg-surface-container/60', 'backdrop-blur-xl', 'py-2');
+                topBar.classList.add('py-4');
+            }
+        });
+
+        // Simple button active state micro-interactions
+        document.querySelectorAll('button').forEach(btn => {
+            btn.addEventListener('touchstart', () => btn.style.transform = 'scale(0.95)');
+            btn.addEventListener('touchend', () => btn.style.transform = 'scale(1)');
+        });
+    </script>
+</body></html>

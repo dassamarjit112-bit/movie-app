@@ -1,0 +1,379 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>CineStream Account - Alex Thompson</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700;800&amp;family=Be+Vietnam+Pro:wght@400;500;600&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            "colors": {
+                    "surface-variant": "#34343d",
+                    "inverse-surface": "#e4e1ed",
+                    "on-error-container": "#ffdad6",
+                    "error": "#ffb4ab",
+                    "on-tertiary-container": "#ffffff",
+                    "primary": "#ecb2ff",
+                    "on-tertiary-fixed": "#1b0063",
+                    "on-secondary-fixed": "#002022",
+                    "surface-container-highest": "#34343d",
+                    "surface-bright": "#393841",
+                    "secondary": "#d3fbff",
+                    "surface-container-high": "#292932",
+                    "on-surface-variant": "#d4c0d7",
+                    "on-secondary-fixed-variant": "#004f54",
+                    "tertiary-container": "#7658ff",
+                    "secondary-container": "#00eefc",
+                    "on-surface": "#e4e1ed",
+                    "tertiary-fixed": "#e5deff",
+                    "surface": "#13131b",
+                    "outline-variant": "#514255",
+                    "primary-fixed": "#f8d8ff",
+                    "primary-container": "#bd00ff",
+                    "error-container": "#93000a",
+                    "surface-container": "#1f1f27",
+                    "tertiary-fixed-dim": "#c9bfff",
+                    "surface-container-low": "#1b1b23",
+                    "on-primary-fixed": "#320047",
+                    "on-tertiary": "#2f009c",
+                    "inverse-on-surface": "#303038",
+                    "secondary-fixed": "#7df4ff",
+                    "on-secondary": "#00363a",
+                    "secondary-fixed-dim": "#00dbe9",
+                    "on-primary": "#520071",
+                    "on-background": "#e4e1ed",
+                    "on-tertiary-fixed-variant": "#4500d8",
+                    "tertiary": "#c9bfff",
+                    "on-secondary-container": "#00686f",
+                    "surface-tint": "#ecb2ff",
+                    "on-primary-container": "#ffffff",
+                    "surface-container-lowest": "#0d0d15",
+                    "on-primary-fixed-variant": "#74009f",
+                    "on-error": "#690005",
+                    "primary-fixed-dim": "#ecb2ff",
+                    "outline": "#9d8ba0",
+                    "background": "#13131b",
+                    "inverse-primary": "#9900cf",
+                    "surface-dim": "#13131b"
+            },
+            "borderRadius": {
+                    "DEFAULT": "0.25rem",
+                    "lg": "0.5rem",
+                    "xl": "0.75rem",
+                    "full": "9999px"
+            },
+            "spacing": {
+                    "container-padding": "24px",
+                    "section-gap": "32px",
+                    "sidebar-width": "80px",
+                    "gutter": "16px",
+                    "stack-sm": "8px",
+                    "stack-md": "16px"
+            },
+            "fontFamily": {
+                    "body-md": ["Be Vietnam Pro"],
+                    "headline-lg-mobile": ["Plus Jakarta Sans"],
+                    "body-lg": ["Be Vietnam Pro"],
+                    "display-lg": ["Plus Jakarta Sans"],
+                    "headline-md": ["Plus Jakarta Sans"],
+                    "headline-lg": ["Plus Jakarta Sans"],
+                    "label-md": ["Plus Jakarta Sans"]
+            },
+            "fontSize": {
+                    "body-md": ["16px", {"lineHeight": "24px", "fontWeight": "400"}],
+                    "headline-lg-mobile": ["28px", {"lineHeight": "36px", "fontWeight": "700"}],
+                    "body-lg": ["18px", {"lineHeight": "28px", "fontWeight": "400"}],
+                    "display-lg": ["48px", {"lineHeight": "56px", "letterSpacing": "-0.02em", "fontWeight": "700"}],
+                    "headline-md": ["24px", {"lineHeight": "32px", "fontWeight": "600"}],
+                    "headline-lg": ["32px", {"lineHeight": "40px", "fontWeight": "700"}],
+                    "label-md": ["14px", {"lineHeight": "20px", "letterSpacing": "0.05em", "fontWeight": "600"}]
+            }
+          },
+        },
+      }
+    </script>
+<style>
+        body {
+            background: radial-gradient(circle at top right, #320047, #13131b), url('https://images.unsplash.com/photo-1464802686167-b939a67e06d1?q=80&w=2070&auto=format&fit=crop');
+            background-blend-mode: overlay;
+            background-size: cover;
+            background-attachment: fixed;
+            min-height: 100vh;
+        }
+        .glass-panel {
+            background: rgba(31, 31, 39, 0.4);
+            backdrop-filter: blur(40px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
+        }
+        .glass-card {
+            background: linear-gradient(180deg, rgba(255, 255, 255, 0.1) 0%, rgba(255, 255, 255, 0) 100%);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        .primary-glow {
+            box-shadow: 0 0 15px rgba(189, 0, 255, 0.4);
+        }
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+    </style>
+</head>
+<body class="font-body-md text-on-surface p-6 flex gap-6 overflow-x-hidden">
+<!-- SideNavBar (Predicted Component) -->
+<aside class="fixed left-6 top-1/2 -translate-y-1/2 h-[500px] w-20 rounded-full border border-white/10 bg-surface/40 backdrop-blur-[40px] shadow-2xl flex flex-col items-center justify-center gap-6 z-50">
+<div class="mb-4">
+<span class="material-symbols-outlined font-display-lg text-display-lg text-primary" data-icon="movie">movie</span>
+</div>
+<nav class="flex flex-col gap-6">
+<a class="text-on-surface-variant p-3 hover:bg-white/10 transition-all duration-300 rounded-full" href="#">
+<span class="material-symbols-outlined" data-icon="grid_view">grid_view</span>
+</a>
+<a class="text-on-surface-variant p-3 hover:bg-white/10 transition-all duration-300 rounded-full" href="#">
+<span class="material-symbols-outlined" data-icon="notifications">notifications</span>
+</a>
+<a class="text-on-surface-variant p-3 hover:bg-white/10 transition-all duration-300 rounded-full" href="#">
+<span class="material-symbols-outlined" data-icon="calendar_today">calendar_today</span>
+</a>
+<!-- Active State: Profile -->
+<a class="bg-primary-container text-on-primary-container rounded-full p-3 shadow-[0_0_15px_rgba(189,0,255,0.4)] scale-110 active:scale-95 transition-transform" href="#">
+<span class="material-symbols-outlined" data-icon="person">person</span>
+</a>
+<a class="text-on-surface-variant p-3 hover:bg-white/10 transition-all duration-300 rounded-full" href="#">
+<span class="material-symbols-outlined" data-icon="settings">settings</span>
+</a>
+</nav>
+</aside>
+<!-- Main Content Area -->
+<main class="flex-1 ml-28 flex flex-col gap-6">
+<!-- TopNavBar (Predicted Component) -->
+<header class="glass-panel rounded-full px-8 py-3 flex justify-between items-center w-full max-w-7xl mx-auto">
+<div class="flex items-center gap-8">
+<h1 class="font-headline-md text-headline-md font-bold text-on-surface">CineStream</h1>
+<nav class="hidden md:flex gap-1">
+<a class="text-on-surface-variant px-6 py-2 hover:text-primary transition-colors font-label-md" href="#">Movies</a>
+<a class="text-on-surface-variant px-6 py-2 hover:text-primary transition-colors font-label-md" href="#">TV Series</a>
+<a class="text-on-surface-variant px-6 py-2 hover:text-primary transition-colors font-label-md" href="#">Animation</a>
+<a class="text-on-surface-variant px-6 py-2 hover:text-primary transition-colors font-label-md" href="#">Mystery</a>
+</nav>
+</div>
+<div class="flex items-center gap-4">
+<div class="relative group">
+<input class="bg-surface-container-lowest/40 border-none rounded-full px-6 py-2 w-64 focus:ring-2 focus:ring-secondary/50 transition-all font-body-md" placeholder="Search movies..." type="text"/>
+<span class="material-symbols-outlined absolute right-4 top-1/2 -translate-y-1/2 text-on-surface-variant" data-icon="search">search</span>
+</div>
+<div class="flex gap-2">
+<button class="p-2 rounded-full hover:bg-white/10 text-on-surface-variant"><span class="material-symbols-outlined" data-icon="notifications">notifications</span></button>
+<button class="p-2 rounded-full hover:bg-white/10 text-on-surface-variant"><span class="material-symbols-outlined" data-icon="settings">settings</span></button>
+</div>
+<div class="w-10 h-10 rounded-full overflow-hidden border-2 border-primary/30">
+<img alt="Alex Thompson Profile" class="w-full h-full object-cover" data-alt="A professional headshot of a handsome man in his early 30s with short dark hair and a friendly smile. He is set against a blurred, cinematic background with cool-toned blue and purple ambient lighting. The style is high-fidelity digital photography with soft, flattering highlights and a premium, tech-forward aesthetic." src="https://lh3.googleusercontent.com/aida-public/AB6AXuBlG9GSOeJFL3_5rg4whlJ_dPfPhTXPHmfOEuRIE5qa2wth-z44Svx0nJliqrfABmV8mKufhgr142-SUX-mglqxmGlAnoI1WvcwE5IJ6nDu6vtMP0gghflHhobBbXVSDkVwa73j37YaP2MG3I0XR8u2FC0Cy0J-T3Lyr6y02FJvPOH0B9Ky9KRasFEynph3aaqAkqAp1JpoU3XYM6npr23f6GznwqT7EUOLb81fIW23nLoFIuQ1G88mKenddpcoXQu-RPSb07GSN62N"/>
+</div>
+</div>
+</header>
+<div class="grid grid-cols-12 gap-6 w-full max-w-7xl mx-auto flex-1">
+<!-- Left Pane: Profile & Subscription (7 Columns) -->
+<div class="col-span-8 flex flex-col gap-6">
+<!-- Hero Profile Card -->
+<section class="glass-panel rounded-[40px] p-10 flex items-end relative overflow-hidden h-[340px]">
+<div class="absolute inset-0 z-0">
+<img alt="Cinema Background" class="w-full h-full object-cover opacity-30" data-alt="A wide cinematic shot of an empty, luxury movie theater with plush velvet seats and atmospheric blue neon lighting tracing the floor. The background is softly blurred to create depth, evoking a sense of premium entertainment and exclusivity. The overall tone is dark, moody, and sophisticated, aligning with a high-end streaming service aesthetic." src="https://lh3.googleusercontent.com/aida-public/AB6AXuAWg_8dLgjur4W6r1qd_oOHm7xL2-29vojaqgkbCiesHiQ-nIMWqowtVao7DOY89EbWzZvA2Xa9tZ32z5EpSTnHFVapmSPH-8XykqBmygEgead-KuWcsw9EkwGqZA4-9DkjoIK6bsYAv2Fzwe-8dr4MkIxBhbHHRkdAUEqRpWLzV-MwWCejJz0CckV2Rk01kBDsfz5EFi88kNDs72fWbg0BnSE1jWm4zlb1NJrfQxGsVIbY4PLSx_3jbG0za5gsc1X3_br2lAcCuSJ8"/>
+<div class="absolute inset-0 bg-gradient-to-t from-background via-background/40 to-transparent"></div>
+</div>
+<div class="relative z-10 flex gap-8 items-center">
+<div class="w-32 h-32 rounded-full border-4 border-primary p-1 shadow-2xl">
+<img class="w-full h-full rounded-full object-cover" data-alt="A high-resolution close-up portrait of a tech-savvy young man with dark, styled hair, looking directly into the camera. He has a warm expression and is illuminated by vibrant neon magenta and cyan accent lights that reflect his passion for modern technology and high-fidelity streaming entertainment." src="https://lh3.googleusercontent.com/aida-public/AB6AXuAT7yR0Ys4RNEHJ1sNWnLpBlWxh5DHSsOzaJLBbcuXz9caglv_SfLkXlzB0AX70NhWM84toA7J2PWMXHBLYPpT2svLq6r2YME5DVFDXezEaoZ0sbRuXgQW-RbkZpD0BriP5eZsLuRyBPq45GvPXCM_hhrvBIJgMDheyqWOycAxd50GFaj8jtcbU8XSsb86JUAcpIpChVyn1eM0d7BVPgXBw947ajoGNsMo50K6sENCC_cgCMf1FbsoKU74iGt7NxAVzmX2gomGJSfPl"/>
+</div>
+<div>
+<div class="flex items-center gap-3">
+<h2 class="font-headline-lg text-headline-lg text-white">Alex Thompson</h2>
+<span class="bg-primary/20 text-primary px-3 py-1 rounded-full text-[12px] font-bold tracking-widest uppercase border border-primary/30">PRO</span>
+</div>
+<p class="text-on-surface-variant font-body-lg">alex.t@cinestream.io • Member since 2021</p>
+<div class="flex gap-4 mt-6">
+<button class="bg-primary-container text-on-primary-container px-8 py-3 rounded-full font-label-md flex items-center gap-2 primary-glow hover:scale-105 transition-transform">
+<span class="material-symbols-outlined" data-icon="edit">edit</span>
+                                    Edit Profile
+                                </button>
+<button class="bg-white/10 text-white px-8 py-3 rounded-full font-label-md border border-white/10 hover:bg-white/20 transition-all">
+                                    Manage Family
+                                </button>
+</div>
+</div>
+</div>
+</section>
+<!-- Subscription & Stats Grid -->
+<div class="grid grid-cols-2 gap-6">
+<div class="glass-panel rounded-[32px] p-8 glass-card">
+<div class="flex justify-between items-start mb-6">
+<div>
+<h3 class="text-on-surface-variant font-label-md uppercase tracking-wider">Current Plan</h3>
+<p class="text-headline-md font-headline-md text-secondary mt-1">Premium Ultra 4K</p>
+</div>
+<span class="material-symbols-outlined text-secondary text-[40px]" data-icon="high_quality">high_quality</span>
+</div>
+<p class="text-on-surface-variant font-body-md mb-8">Next billing: Dec 12, 2023 • $19.99/mo</p>
+<button class="w-full border border-secondary/30 text-secondary py-3 rounded-full font-label-md hover:bg-secondary/10 transition-all flex justify-center items-center gap-2">
+                            Change Plan <span class="material-symbols-outlined" data-icon="arrow_forward">arrow_forward</span>
+</button>
+</div>
+<div class="glass-panel rounded-[32px] p-8 glass-card">
+<h3 class="text-on-surface-variant font-label-md uppercase tracking-wider mb-6">Device Usage</h3>
+<div class="flex flex-col gap-4">
+<div class="flex justify-between items-center">
+<span class="flex items-center gap-2"><span class="material-symbols-outlined text-on-surface-variant" data-icon="tv">tv</span> Living Room Apple TV</span>
+<span class="text-primary font-bold">ACTIVE</span>
+</div>
+<div class="h-1.5 w-full bg-white/5 rounded-full overflow-hidden">
+<div class="h-full bg-primary w-[75%] shadow-[0_0_8px_rgba(189,0,255,0.8)]"></div>
+</div>
+<p class="text-[12px] text-on-surface-variant">3 of 4 devices currently in use</p>
+<button class="mt-2 text-primary font-label-md text-left hover:underline">Revoke access for all devices</button>
+</div>
+</div>
+</div>
+<!-- Watch History / Bento Grid Style -->
+<section>
+<div class="flex justify-between items-center mb-6">
+<h3 class="font-headline-md text-headline-md">Recent Activity</h3>
+<button class="text-primary font-label-md flex items-center gap-1">View All <span class="material-symbols-outlined text-sm" data-icon="chevron_right">chevron_right</span></button>
+</div>
+<div class="grid grid-cols-3 gap-6">
+<div class="glass-panel rounded-3xl overflow-hidden group hover:scale-[1.02] transition-all cursor-pointer">
+<div class="h-40 relative">
+<img class="w-full h-full object-cover" data-alt="A striking movie poster shot for a cyberpunk science fiction thriller. A futuristic city glows with neon blue and magenta lights in the background, while a solitary figure in a sleek technological suit stands on a high ledge. The lighting is high-contrast with intense bloom and a cinematic depth of field." src="https://lh3.googleusercontent.com/aida-public/AB6AXuA9ekhzKjI6Tn0ikYqd395sO7eyaBHkWusGIAj8xeaQiFr3tshb4XPUoHx85knWLCr2iXt95hpwWVdCDQCDBmLxdKqi69EuqjmSquNjsk98T7DBLE8P4qrAM0mi-BowwTGoK0doNMgEd_94AWEHKDuolMNASCm5EPzm-MF_2kp0OM66oTcMXcP87GHbWWatbR3KF0US2-kgbGW0pux6Rc3luxYdSkjqH5umZ84nm3I9J98t0bF8LRsef3ROa1j9zW51YnA_QdxLsvkM"/>
+<div class="absolute inset-0 bg-black/40 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
+<span class="material-symbols-outlined text-5xl text-white" data-icon="play_circle" data-weight="fill">play_circle</span>
+</div>
+<div class="absolute bottom-0 left-0 h-1 bg-primary w-[60%]"></div>
+</div>
+<div class="p-4">
+<h4 class="font-label-md text-white">Ghost in the Shell</h4>
+<p class="text-[12px] text-on-surface-variant">Watched 45m ago • Sci-Fi</p>
+</div>
+</div>
+<div class="glass-panel rounded-3xl overflow-hidden group hover:scale-[1.02] transition-all cursor-pointer">
+<div class="h-40 relative">
+<img class="w-full h-full object-cover" data-alt="A hauntingly beautiful fantasy landscapes featuring a floating mountain range surrounded by ethereal glowing clouds. A bioluminescent forest sparkles below with cool indigo and soft violet hues. The aesthetic is surreal, dreamlike, and intensely immersive, rendered with hyper-realistic textures and cinematic lighting." src="https://lh3.googleusercontent.com/aida-public/AB6AXuC-34BdcISKxfhjNZDmiGlMCxloFQxF9fe1HU5vR3dcFVEuM8XggMyAMvHWgqYyy1zAesoQmiFgHtsyy7IWZreB6rsLTKInZwTX__m3lnPobR4UjRWQCO2PtO1ND4yz_1OsIFkZpNfif3bquy6g3veIeBs5sPAoNRpXHFYbJWtZdazsWeOJad0PXHx250b9RJ0VrDrFxvkNoAMgMSVRvq0KcdFsD4x-2y92MXrEucKsgi7W5hk3zs-SwZxF6mEl8ocMAX36FqPAUFOb"/>
+<div class="absolute inset-0 bg-black/40 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
+<span class="material-symbols-outlined text-5xl text-white" data-icon="play_circle" data-weight="fill">play_circle</span>
+</div>
+<div class="absolute bottom-0 left-0 h-1 bg-primary w-[100%]"></div>
+</div>
+<div class="p-4">
+<h4 class="font-label-md text-white">Avatar: Fire &amp; Ash</h4>
+<p class="text-[12px] text-on-surface-variant">Completed yesterday • Fantasy</p>
+</div>
+</div>
+<div class="glass-panel rounded-3xl overflow-hidden group hover:scale-[1.02] transition-all cursor-pointer">
+<div class="h-40 relative">
+<img class="w-full h-full object-cover" data-alt="A vintage black and white cinematic still from a classic film noir. Dramatic hard shadows and sharp highlights define a mysterious alleyway where a man in a trench coat walks through tendrils of fog. The image has a grainy, high-contrast texture that evokes a sense of nostalgia and timeless mystery." src="https://lh3.googleusercontent.com/aida-public/AB6AXuC9JZWfJuQLpsKYheMWIvQ8e-Zl_QidTPJysay6iOukM3f69zUcrRIFkhwLMtxkttIPCfJYxwyO4F3AL264mhaLr2aePcSO0RvWEOhMJDgimbezclmicqMoOVyVFyTcQgZxO32CrlB7g0yVOykV2nzJvRvdmn_-MLZlsoO4uq3Nx8id3jvuSfuzAd63lenGc_URZZcNYtkh3GLn_74FxmhmDmZQWLkSFosoFjX2faDsIsf5V5uAgm0g4Om1SbYZYkXNnzJ0qTLEA3Yj"/>
+<div class="absolute inset-0 bg-black/40 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
+<span class="material-symbols-outlined text-5xl text-white" data-icon="play_circle" data-weight="fill">play_circle</span>
+</div>
+<div class="absolute bottom-0 left-0 h-1 bg-primary w-[20%]"></div>
+</div>
+<div class="p-4">
+<h4 class="font-label-md text-white">The Night Crawler</h4>
+<p class="text-[12px] text-on-surface-variant">Started 2 days ago • Mystery</p>
+</div>
+</div>
+</div>
+</section>
+</div>
+<!-- Right Pane: Supplemental Info (4 Columns) -->
+<div class="col-span-4 flex flex-col gap-6">
+<!-- Watchlist / Favorites -->
+<section class="glass-panel rounded-[32px] p-6 flex flex-col gap-6 h-fit">
+<div class="flex justify-between items-center">
+<h3 class="font-headline-md text-headline-md text-[20px]">My Watchlist</h3>
+<span class="bg-white/5 px-3 py-1 rounded-full text-[12px] font-bold text-on-surface-variant">12 MOVIES</span>
+</div>
+<div class="flex flex-col gap-4">
+<!-- List Item -->
+<div class="flex items-center gap-4 group cursor-pointer">
+<div class="w-16 h-20 rounded-xl overflow-hidden flex-shrink-0">
+<img class="w-full h-full object-cover" data-alt="A close-up movie poster detail featuring an intricate golden crown resting on a velvet cushion. The lighting is warm and opulent, with golden flecks dancing in the air. The style is regal and dramatic, suggesting a high-stakes historical drama or epic fantasy series." src="https://lh3.googleusercontent.com/aida-public/AB6AXuDLuj7tJE8RO6S4wylzrS4RPHwOkZ229BiXQXr4ZwbWZ29_JYO92OyGpBDvHHqwcfVKc0QYiNkQNxzLRTahQ9l20uKeOd_r9jBXNg7pUdoWXRNzeytrML9DPyhG5gE2Sn71t3B895dBEyUXkZQF_Jg34G1T7Izx3JeJoqRo3XAKILyCleu82QKbMWeYSD1prmH9lJ_lRPtUhKwrsjDPwR1LYtjSXWHacf1Af0HV6nWg-p1CjGvTBdwSpr-RPyRyXnZlglVNLYIBbF29"/>
+</div>
+<div class="flex-1">
+<h4 class="font-label-md text-white group-hover:text-primary transition-colors">The Crown Prince</h4>
+<p class="text-[12px] text-on-surface-variant">Drama • 2023</p>
+</div>
+<span class="material-symbols-outlined text-on-surface-variant opacity-0 group-hover:opacity-100 transition-all" data-icon="delete">delete</span>
+</div>
+<div class="flex items-center gap-4 group cursor-pointer">
+<div class="w-16 h-20 rounded-xl overflow-hidden flex-shrink-0">
+<img class="w-full h-full object-cover" data-alt="A futuristic cockpit view looking out at a swirling stellar nebula in deep space. Glowing consoles and digital displays fill the foreground with soft cyan and orange light. The scene is detailed and technologically advanced, conveying a sense of exploration and grand scale." src="https://lh3.googleusercontent.com/aida-public/AB6AXuD4bDZthSAoruM2I4ND1W5v5fNc_oP6T_iY4UsXGivVoM4Kmk6EAH9iCaHd-dGof2hcyeBStuwHrcj4WXREU2XmU-r1qtcQAW3bAZWBHYaIXg-ZxJ3wXUZRTa531h7v1RFoKP0oUyTI3H5RMfdjlyqSkaTSBx4-b3VsxCTKiLgmBkOnLp5O-Iw6bk7jtnfOAfYiiYOXF4i8Fa_VLVNdBSbxjJxao5kBORGFzcQ1WHxd7lmVx0R8Vn_RFc9_T69DjjbKn3TU5cyGS68k"/>
+</div>
+<div class="flex-1">
+<h4 class="font-label-md text-white group-hover:text-primary transition-colors">Interstellar Drift</h4>
+<p class="text-[12px] text-on-surface-variant">Sci-Fi • 2024</p>
+</div>
+<span class="material-symbols-outlined text-on-surface-variant opacity-0 group-hover:opacity-100 transition-all" data-icon="delete">delete</span>
+</div>
+<div class="flex items-center gap-4 group cursor-pointer">
+<div class="w-16 h-20 rounded-xl overflow-hidden flex-shrink-0">
+<img class="w-full h-full object-cover" data-alt="A lush, mysterious jungle scene at night where exotic plants glow with bioluminescent neon colors. A hidden waterfall cascades into a pool of glowing water. The style is highly artistic and immersive, reminiscent of a high-budget fantasy production with complex lighting and rich textures." src="https://lh3.googleusercontent.com/aida-public/AB6AXuAP9Ta_KET1J1NwcwU8FhIwvWR1QG3QKCzabzf3YDssfksrofe2hF79_7qCqkqv1PXLGmHTJy9-c7eMMTu7B-cxwS3gGKyZ17JNva6StgRMT4MSfKDv_VV4b-QTPTUl_ab8pDq8GzDW-ceE6CpFe10HnljUSDKQJyZ9H995zm7AajKXuM8hM7CzOzreOzhxvlhIcGWCA3-tYEkfuTu-7hNRTld0uTw5HQ9Czzov2S-9AtwzEr9tdcAgsrgeJHzIxrx8Gjerrxsj22L-"/>
+</div>
+<div class="flex-1">
+<h4 class="font-label-md text-white group-hover:text-primary transition-colors">Verdant Realms</h4>
+<p class="text-[12px] text-on-surface-variant">Nature • 2023</p>
+</div>
+<span class="material-symbols-outlined text-on-surface-variant opacity-0 group-hover:opacity-100 transition-all" data-icon="delete">delete</span>
+</div>
+</div>
+<button class="w-full bg-white/5 text-on-surface-variant py-3 rounded-full font-label-md hover:bg-white/10 transition-all">
+                        Discover More
+                    </button>
+</section>
+<!-- Recommendation Engine -->
+<section class="glass-panel rounded-[32px] p-6 flex flex-col gap-6 flex-1">
+<h3 class="font-headline-md text-headline-md text-[20px]">Pick for you</h3>
+<div class="relative rounded-3xl overflow-hidden aspect-[4/5]">
+<img class="w-full h-full object-cover" data-alt="A high-intensity action movie still featuring a futuristic motorcycle chase through a rain-slicked neon-lit city. The motion blur and lens flares create a sense of speed and kinetic energy. The color palette is dominated by electric blues, burning oranges, and deep black shadows, creating a high-fidelity cinematic look." src="https://lh3.googleusercontent.com/aida-public/AB6AXuDKfjfWEm1w3BVWAmfbvtoEOeAcbZu1kEDdKfPYyLCFvXU77lmhjSHzfZ18E2dg_p9b5FLO8WnLWlTGLJ9yUnRxvN5Z4Q10jU8seAsPpOls3EpFbMyl_kkefFCzuUum3QB4TdSuRZ-nMBWHE-tD8QePoYFN00HXZ_wllE6haZD5NzwAdUHk0BNq-5envh0ElAjTa_g44_-rVNe9_k3CP_5pzHH-BAw4zdyitU6cLg-5Z16KkkbEOw9OGdxUX3-YekgmRUTbxRmi3VOd"/>
+<div class="absolute inset-0 bg-gradient-to-t from-black via-transparent to-transparent flex flex-col justify-end p-6">
+<div class="bg-secondary/20 backdrop-blur-md self-start text-secondary px-3 py-1 rounded-full text-[10px] font-bold mb-2 uppercase tracking-widest border border-secondary/30">TRENDING</div>
+<h4 class="font-headline-md text-white mb-2">Renner: 2025</h4>
+<p class="text-on-surface-variant text-[14px] line-clamp-2 mb-4">An AI assistant reshapes love and reality in this mind-bending thriller.</p>
+<button class="w-full bg-secondary text-on-secondary py-3 rounded-full font-label-md hover:scale-105 transition-transform">
+                                Watch Trailer
+                            </button>
+</div>
+</div>
+</section>
+</div>
+</div>
+</main>
+<!-- Floating Action Button (Contextual) -->
+<button class="fixed bottom-8 right-8 w-16 h-16 rounded-full bg-primary-container text-on-primary-container shadow-[0_0_20px_rgba(189,0,255,0.6)] flex items-center justify-center hover:scale-110 active:scale-95 transition-all z-50">
+<span class="material-symbols-outlined text-[32px]" data-icon="support_agent">support_agent</span>
+</button>
+<script>
+        // Interactive Hover Effects for Glass Cards
+        document.querySelectorAll('.glass-panel').forEach(panel => {
+            panel.addEventListener('mousemove', (e) => {
+                const rect = panel.getBoundingClientRect();
+                const x = e.clientX - rect.left;
+                const y = e.clientY - rect.top;
+                
+                panel.style.background = `radial-gradient(circle at ${x}px ${y}px, rgba(255,255,255,0.08) 0%, rgba(31, 31, 39, 0.4) 50%)`;
+            });
+            panel.addEventListener('mouseleave', () => {
+                panel.style.background = 'rgba(31, 31, 39, 0.4)';
+            });
+        });
+
+        // Pulsing animation for the active nav item
+        const activeNav = document.querySelector('.bg-primary-container');
+        if (activeNav) {
+            setInterval(() => {
+                activeNav.classList.toggle('shadow-[0_0_25px_rgba(189,0,255,0.8)]');
+            }, 1000);
+        }
+    </script>
+</body></html>

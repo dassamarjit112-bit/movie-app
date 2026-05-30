@@ -1,0 +1,300 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@700;800&amp;family=Inter:wght@400;500;600&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            "colors": {
+                    "secondary": "#a6e6ff",
+                    "surface-container-high": "#2a2a2a",
+                    "secondary-fixed": "#b7eaff",
+                    "surface-container-lowest": "#0e0e0e",
+                    "on-primary": "#690003",
+                    "inverse-on-surface": "#313030",
+                    "on-surface": "#e5e2e1",
+                    "on-tertiary-container": "#fbf8f7",
+                    "on-error-container": "#ffdad6",
+                    "on-primary-fixed": "#410001",
+                    "surface-dim": "#131313",
+                    "primary-fixed-dim": "#ffb4aa",
+                    "tertiary-container": "#737272",
+                    "inverse-primary": "#c0000c",
+                    "on-primary-container": "#fff7f6",
+                    "on-secondary-fixed": "#001f28",
+                    "surface-container-low": "#1c1b1b",
+                    "surface-tint": "#ffb4aa",
+                    "surface": "#131313",
+                    "surface-bright": "#3a3939",
+                    "surface-container-highest": "#353534",
+                    "secondary-fixed-dim": "#4cd6ff",
+                    "error": "#ffb4ab",
+                    "surface-container": "#201f1f",
+                    "error-container": "#93000a",
+                    "secondary-container": "#14d1ff",
+                    "primary": "#ffb4aa",
+                    "on-secondary-container": "#00566b",
+                    "on-secondary": "#003543",
+                    "inverse-surface": "#e5e2e1",
+                    "outline": "#af8782",
+                    "on-primary-fixed-variant": "#930007",
+                    "on-background": "#e5e2e1",
+                    "on-tertiary": "#313030",
+                    "tertiary-fixed": "#e5e2e1",
+                    "on-secondary-fixed-variant": "#004e60",
+                    "outline-variant": "#5e3f3b",
+                    "on-surface-variant": "#e9bcb6",
+                    "on-tertiary-fixed": "#1c1b1b",
+                    "surface-variant": "#353534",
+                    "tertiary": "#c8c6c5",
+                    "primary-container": "#e50914",
+                    "background": "#131313",
+                    "tertiary-fixed-dim": "#c8c6c5",
+                    "primary-fixed": "#ffdad5",
+                    "on-error": "#690005",
+                    "on-tertiary-fixed-variant": "#474746"
+            },
+            "borderRadius": {
+                    "DEFAULT": "0.125rem",
+                    "lg": "0.25rem",
+                    "xl": "0.5rem",
+                    "full": "0.75rem"
+            },
+            "spacing": {
+                    "container-max": "1440px",
+                    "gutter-mobile": "16px",
+                    "gutter-desktop": "24px",
+                    "margin-desktop": "64px",
+                    "unit": "8px",
+                    "margin-mobile": "20px"
+            },
+            "fontFamily": {
+                    "body-md": ["Inter"],
+                    "label-sm": ["Inter"],
+                    "headline-lg": ["Montserrat"],
+                    "body-lg": ["Inter"],
+                    "display-lg": ["Montserrat"],
+                    "label-md": ["Inter"],
+                    "display-lg-mobile": ["Montserrat"],
+                    "headline-md": ["Montserrat"]
+            },
+            "fontSize": {
+                    "body-md": ["16px", {"lineHeight": "24px", "fontWeight": "400"}],
+                    "label-sm": ["12px", {"lineHeight": "16px", "fontWeight": "500"}],
+                    "headline-lg": ["32px", {"lineHeight": "40px", "fontWeight": "700"}],
+                    "body-lg": ["18px", {"lineHeight": "28px", "fontWeight": "400"}],
+                    "display-lg": ["64px", {"lineHeight": "72px", "letterSpacing": "-0.02em", "fontWeight": "800"}],
+                    "label-md": ["14px", {"lineHeight": "20px", "letterSpacing": "0.05em", "fontWeight": "600"}],
+                    "display-lg-mobile": ["40px", {"lineHeight": "44px", "letterSpacing": "-0.01em", "fontWeight": "800"}],
+                    "headline-md": ["24px", {"lineHeight": "32px", "fontWeight": "700"}]
+            }
+          },
+        },
+      }
+    </script>
+<style>
+        .glass-panel {
+            background: rgba(255, 255, 255, 0.03);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+        }
+        .neon-glow:hover {
+            box-shadow: 0 0 15px rgba(0, 209, 255, 0.3);
+        }
+        body {
+            background-color: #0F0F0F;
+            color: #e5e2e1;
+        }
+    </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="font-body-md text-body-md overflow-x-hidden">
+<!-- TopNavBar Integration (from Shared Components) -->
+<header class="bg-surface/70 backdrop-blur-xl border-b border-white/10 shadow-2xl flex justify-between items-center px-5 h-20 w-full z-50 sticky top-0 md:px-gutter-desktop">
+<div class="flex items-center gap-4">
+<span class="font-display-lg-mobile text-primary-container tracking-tighter sm:font-display-lg">CineStream</span>
+</div>
+<div class="flex items-center gap-4">
+<button class="w-10 h-10 flex items-center justify-center rounded-full hover:bg-white/5 transition-all duration-300 active:scale-95">
+<span class="material-symbols-outlined text-on-surface" data-icon="search">search</span>
+</button>
+<button class="w-10 h-10 flex items-center justify-center rounded-full hover:bg-white/5 transition-all duration-300 active:scale-95 relative">
+<span class="material-symbols-outlined text-on-surface" data-icon="notifications">notifications</span>
+<span class="absolute top-2 right-2 w-2 h-2 bg-primary-container rounded-full"></span>
+</button>
+</div>
+</header>
+<main class="min-h-screen px-margin-mobile pb-24 max-w-lg mx-auto">
+<!-- Profile Header Section -->
+<section class="py-8 flex flex-col items-center">
+<div class="relative group">
+<div class="w-24 h-24 rounded-full p-1 bg-gradient-to-tr from-primary-container to-secondary-container">
+<img alt="User Profile" class="w-full h-full rounded-full object-cover border-2 border-background" data-alt="A professional and sleek studio portrait of a young man with modern grooming, set against a dark, moody cinematic background. The lighting is low-key with a sharp edge light highlighting his silhouette, reflecting the dark cinematic CineStream aesthetic. High contrast and deep blacks dominate the frame, with subtle neon blue highlights catching the edges of the subject's features." src="https://lh3.googleusercontent.com/aida-public/AB6AXuAiv2dUCwThVjvQRVc14LdonyRGHp5npLWtF2_mBWx3sSUTSkm3rTItC5jSAGN2kC5SM-V1JkZNFv-mI6-jSYH40AvZenkw0FkmVYFkD2TO1jqDrS-hujwdGdg2SLUmp0g_bB8DJvUjzg4qPYVHMPuO53qrwE4sgO1SxaRL_qVk2BHqDoiZ1BRe8ZeTcWh0ZYLavDSdRJMFN34nu6TJ1W7mtqc5Y_5lXwFS_xY1xj6PCRW6UD4z5Q9ha5veEOCPmn9lCKUPpHIUlcvD"/>
+</div>
+<button class="absolute bottom-0 right-0 bg-primary-container text-on-primary-container w-8 h-8 rounded-full flex items-center justify-center shadow-lg border-2 border-background scale-105 active:scale-95 transition-transform">
+<span class="material-symbols-outlined text-[18px]" data-icon="edit">edit</span>
+</button>
+</div>
+<div class="mt-4 text-center">
+<h1 class="font-headline-md text-headline-md text-on-surface">Alex Thompson</h1>
+<p class="font-label-md text-label-md text-secondary-fixed opacity-80 mt-1">Premium Member</p>
+</div>
+</section>
+<!-- Account Actions Grid/List -->
+<div class="space-y-4">
+<!-- Category: Account -->
+<div class="space-y-2">
+<h2 class="font-label-md text-label-md text-on-surface-variant px-2">ACCOUNT</h2>
+<!-- Profile Link -->
+<button class="w-full glass-panel rounded-xl p-4 flex items-center justify-between group transition-all duration-300 hover:bg-white/5 active:scale-[0.98]">
+<div class="flex items-center gap-4">
+<div class="w-10 h-10 rounded-lg bg-surface-container flex items-center justify-center text-primary-container group-hover:scale-110 transition-transform">
+<span class="material-symbols-outlined" data-icon="person">person</span>
+</div>
+<div class="text-left">
+<p class="font-body-md text-body-md text-on-surface">Profile Information</p>
+<p class="font-label-sm text-label-sm text-on-surface-variant">Email, Password, Personal Info</p>
+</div>
+</div>
+<span class="material-symbols-outlined text-on-surface-variant group-hover:translate-x-1 transition-transform" data-icon="chevron_right">chevron_right</span>
+</button>
+<!-- Subscription Link -->
+<button class="w-full glass-panel rounded-xl p-4 flex items-center justify-between group transition-all duration-300 hover:bg-white/5 active:scale-[0.98]">
+<div class="flex items-center gap-4">
+<div class="w-10 h-10 rounded-lg bg-surface-container flex items-center justify-center text-secondary-container group-hover:scale-110 transition-transform">
+<span class="material-symbols-outlined" data-icon="card_membership">card_membership</span>
+</div>
+<div class="text-left">
+<p class="font-body-md text-body-md text-on-surface">Subscription</p>
+<p class="font-label-sm text-label-sm text-secondary">CineStream Ultimate • $14.99/mo</p>
+</div>
+</div>
+<span class="material-symbols-outlined text-on-surface-variant group-hover:translate-x-1 transition-transform" data-icon="chevron_right">chevron_right</span>
+</button>
+</div>
+<!-- Category: Content -->
+<div class="space-y-2 pt-2">
+<h2 class="font-label-md text-label-md text-on-surface-variant px-2">CONTENT &amp; DEVICE</h2>
+<!-- Downloads Link -->
+<button class="w-full glass-panel rounded-xl p-4 flex items-center justify-between group transition-all duration-300 hover:bg-white/5 active:scale-[0.98]">
+<div class="flex items-center gap-4">
+<div class="w-10 h-10 rounded-lg bg-surface-container flex items-center justify-center text-on-surface group-hover:scale-110 transition-transform">
+<span class="material-symbols-outlined" data-icon="download">download</span>
+</div>
+<div class="text-left">
+<p class="font-body-md text-body-md text-on-surface">Downloads</p>
+<p class="font-label-sm text-label-sm text-on-surface-variant">12 items • 4.2 GB used</p>
+</div>
+</div>
+<span class="material-symbols-outlined text-on-surface-variant group-hover:translate-x-1 transition-transform" data-icon="chevron_right">chevron_right</span>
+</button>
+<!-- My List Link -->
+<button class="w-full glass-panel rounded-xl p-4 flex items-center justify-between group transition-all duration-300 hover:bg-white/5 active:scale-[0.98]">
+<div class="flex items-center gap-4">
+<div class="w-10 h-10 rounded-lg bg-surface-container flex items-center justify-center text-on-surface group-hover:scale-110 transition-transform">
+<span class="material-symbols-outlined" data-icon="playlist_play">playlist_play</span>
+</div>
+<div class="text-left">
+<p class="font-body-md text-body-md text-on-surface">Watchlist</p>
+<p class="font-label-sm text-label-sm text-on-surface-variant">24 movies and shows</p>
+</div>
+</div>
+<span class="material-symbols-outlined text-on-surface-variant group-hover:translate-x-1 transition-transform" data-icon="chevron_right">chevron_right</span>
+</button>
+</div>
+<!-- Category: Preferences -->
+<div class="space-y-2 pt-2">
+<h2 class="font-label-md text-label-md text-on-surface-variant px-2">PREFERENCES</h2>
+<!-- Settings Link -->
+<button class="w-full glass-panel rounded-xl p-4 flex items-center justify-between group transition-all duration-300 hover:bg-white/5 active:scale-[0.98]">
+<div class="flex items-center gap-4">
+<div class="w-10 h-10 rounded-lg bg-surface-container flex items-center justify-center text-on-surface group-hover:scale-110 transition-transform">
+<span class="material-symbols-outlined" data-icon="settings">settings</span>
+</div>
+<div class="text-left">
+<p class="font-body-md text-body-md text-on-surface">Settings</p>
+<p class="font-label-sm text-label-sm text-on-surface-variant">Quality, Privacy, Notifications</p>
+</div>
+</div>
+<span class="material-symbols-outlined text-on-surface-variant group-hover:translate-x-1 transition-transform" data-icon="chevron_right">chevron_right</span>
+</button>
+<!-- Help Link -->
+<button class="w-full glass-panel rounded-xl p-4 flex items-center justify-between group transition-all duration-300 hover:bg-white/5 active:scale-[0.98]">
+<div class="flex items-center gap-4">
+<div class="w-10 h-10 rounded-lg bg-surface-container flex items-center justify-center text-on-surface group-hover:scale-110 transition-transform">
+<span class="material-symbols-outlined" data-icon="help_outline">help_outline</span>
+</div>
+<div class="text-left">
+<p class="font-body-md text-body-md text-on-surface">Help Center</p>
+<p class="font-label-sm text-label-sm text-on-surface-variant">FAQ and Support</p>
+</div>
+</div>
+<span class="material-symbols-outlined text-on-surface-variant group-hover:translate-x-1 transition-transform" data-icon="chevron_right">chevron_right</span>
+</button>
+</div>
+<!-- Logout -->
+<div class="pt-6">
+<button class="w-full border border-white/10 rounded-xl p-4 flex items-center justify-center gap-3 text-error transition-all duration-300 hover:bg-error-container/10 active:scale-[0.98]">
+<span class="material-symbols-outlined" data-icon="logout">logout</span>
+<span class="font-label-md">Sign Out</span>
+</button>
+<p class="text-center mt-6 font-label-sm text-on-surface-variant opacity-40">CineStream v4.2.0 (Build 1084)</p>
+</div>
+</div>
+</main>
+<!-- Footer Integration (from Shared Components) -->
+<footer class="bg-surface-container-lowest w-full py-12 border-t border-white/5 flex flex-col md:flex-row justify-between items-center px-5 max-w-container-max mx-auto">
+<div class="text-center md:text-left">
+<span class="font-headline-md text-primary-container">CineStream</span>
+<p class="font-body-md text-secondary mt-2 opacity-80">© 2024 CineStream. All rights reserved.</p>
+</div>
+<div class="flex flex-wrap justify-center gap-6 mt-8 md:mt-0">
+<a class="font-label-sm text-on-surface-variant hover:text-secondary-fixed transition-colors" href="#">Privacy Policy</a>
+<a class="font-label-sm text-on-surface-variant hover:text-secondary-fixed transition-colors" href="#">Terms of Service</a>
+<a class="font-label-sm text-on-surface-variant hover:text-secondary-fixed transition-colors" href="#">Help Center</a>
+<a class="font-label-sm text-on-surface-variant hover:text-secondary-fixed transition-colors" href="#">Contact Us</a>
+</div>
+</footer>
+<!-- Floating Navigation Bar (Mobile Optimized Shell) -->
+<nav class="fixed bottom-0 left-0 right-0 h-16 glass-panel border-t border-white/5 flex justify-around items-center px-4 z-[100] md:hidden">
+<button class="flex flex-col items-center gap-1 text-on-surface/70 hover:text-on-surface transition-colors">
+<span class="material-symbols-outlined" data-icon="home">home</span>
+<span class="font-label-sm text-[10px]">Home</span>
+</button>
+<button class="flex flex-col items-center gap-1 text-on-surface/70 hover:text-on-surface transition-colors">
+<span class="material-symbols-outlined" data-icon="explore">explore</span>
+<span class="font-label-sm text-[10px]">Explore</span>
+</button>
+<button class="flex flex-col items-center gap-1 text-on-surface/70 hover:text-on-surface transition-colors">
+<span class="material-symbols-outlined" data-icon="live_tv">live_tv</span>
+<span class="font-label-sm text-[10px]">TV Shows</span>
+</button>
+<button class="flex flex-col items-center gap-1 text-primary-container">
+<span class="material-symbols-outlined" data-icon="account_circle" style="font-variation-settings: 'FILL' 1;">account_circle</span>
+<span class="font-label-sm text-[10px]">Profile</span>
+</button>
+</nav>
+<script>
+        // Simple micro-interaction for list items
+        document.querySelectorAll('button').forEach(button => {
+            button.addEventListener('touchstart', () => {
+                button.classList.add('scale-[0.98]');
+            });
+            button.addEventListener('touchend', () => {
+                button.classList.remove('scale-[0.98]');
+            });
+        });
+    </script>
+</body></html>

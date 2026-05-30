@@ -1,0 +1,71 @@
+<!-- CineStream — Standalone Gift Code Redemption Page -->
+<div id="giftcode-page" style="min-height:100vh; position:relative; display:flex; align-items:center; justify-content:center; padding:40px var(--space-margin-mobile)">
+  
+  <!-- Cinematic Background -->
+  <div style="position:absolute; inset:0; z-index:0; overflow:hidden;">
+    <img src="https://images.unsplash.com/photo-1489599849927-2ee91cede3ba?w=1920&q=80&auto=format" alt="Cinema Backdrop" style="width:100%; height:100%; object-fit:cover; opacity:0.15; filter:blur(4px);">
+    <div style="position:absolute; inset:0; background:radial-gradient(circle at center, transparent 30%, #0e0e0e 100%)"></div>
+  </div>
+
+  <div id="navbar-mount" style="position:absolute; top:0; left:0; right:0;"></div>
+
+  <!-- Redemption Card Box -->
+  <div class="glass-card" style="position:relative; z-index:10; width:100%; max-width:480px; padding:48px 40px; border-radius:24px; border:1px solid rgba(255,255,255,0.07); box-shadow:0 20px 80px rgba(0,0,0,0.85); text-align:center;">
+    
+    <!-- Animated Gift Card Badge -->
+    <div style="background:linear-gradient(135deg, rgba(229,9,20,0.15) 0%, rgba(20,209,255,0.15) 100%); width:72px; height:72px; border-radius:50%; display:inline-flex; align-items:center; justify-content:center; border:1px solid rgba(255,255,255,0.12); margin-bottom:24px;">
+      <span class="material-symbols-outlined icon-fill" style="color:var(--c-primary-container); font-size:32px; filter:drop-shadow(0 0 10px rgba(229,9,20,0.4))">card_giftcard</span>
+    </div>
+
+    <h1 class="text-headline-lg" style="margin-bottom:8px">Redeem Gift Card</h1>
+    <p style="color:rgba(229,226,225,0.55); font-size:14px; line-height:1.5; margin-bottom:32px;">
+      Unlock unlimited access to high-fidelity movies and series by typing your promotional or gift voucher code below.
+    </p>
+
+    <!-- Code Input field with large styled slots -->
+    <div style="display:flex; flex-direction:column; gap:20px; align-items:stretch;">
+      <div style="position:relative;">
+        <input type="text" id="standalone-gift-input" placeholder="XXXX-XXXX-XXXX" 
+               style="width:100%; text-transform:uppercase; text-align:center; font-family:'Montserrat', monospace; font-size:22px; font-weight:800; letter-spacing:0.08em; padding:16px 20px; border-radius:12px; background:rgba(19,19,19,0.85); border:2px solid rgba(255,255,255,0.08); color:#fff; outline:none; transition:all var(--t-fast);"
+               maxlength="16">
+        <span class="material-symbols-outlined" style="position:absolute; right:16px; top:50%; transform:translateY(-50%); color:rgba(255,255,255,0.25); font-size:20px">barcode</span>
+      </div>
+
+      <button id="standalone-gift-btn" class="btn btn-primary btn-lg" style="width:100%; border-radius:12px; font-weight:800; font-size:15px; letter-spacing:0.06em; box-shadow:0 4px 20px var(--glow-red)">
+        REDEEM PASS
+      </button>
+      
+      <p id="standalone-gift-feedback" style="display:none; font-size:13.5px; font-weight:600; text-align:center; margin-top:8px; line-height:1.4"></p>
+    </div>
+
+    <!-- Divider -->
+    <div style="margin:32px 0 24px; display:flex; align-items:center; gap:12px;">
+      <div style="flex:1; height:1px; background:rgba(255,255,255,0.06)"></div>
+      <span style="font-size:10px; font-weight:700; text-transform:uppercase; letter-spacing:0.1em; color:rgba(229,226,225,0.25)">Need Assistance?</span>
+      <div style="flex:1; height:1px; background:rgba(255,255,255,0.06)"></div>
+    </div>
+
+    <!-- Quick Info Cards -->
+    <div style="text-align:left; font-size:11.5px; color:rgba(229,226,225,0.4); display:flex; flex-direction:column; gap:8px;">
+      <div style="display:flex; gap:8px; align-items:flex-start">
+        <span class="material-symbols-outlined" style="font-size:14px; margin-top:1px; color:var(--c-secondary-container)">info</span>
+        <span>Standard demo codes are <strong>CINE30BASIC</strong>, <strong>CINE30STANDARD</strong>, and <strong>CINE30PREMIUM</strong>.</span>
+      </div>
+      <div style="display:flex; gap:8px; align-items:flex-start">
+        <span class="material-symbols-outlined" style="font-size:14px; margin-top:1px; color:var(--c-secondary-container)">info</span>
+        <span>Once redeemed, the duration is added instantly to your profile billing cycle.</span>
+      </div>
+    </div>
+
+  </div>
+
+  <div id="footer-mount" style="position:absolute; bottom:0; left:0; right:0;"></div>
+  <div id="mobile-nav-mount"></div>
+</div>
+
+<style>
+  #standalone-gift-input:focus {
+    border-color: var(--c-primary-container);
+    box-shadow: 0 0 0 3px rgba(229,9,20,0.15), 0 0 30px rgba(229,9,20,0.08);
+  }
+</style>

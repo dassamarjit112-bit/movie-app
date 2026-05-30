@@ -1,0 +1,277 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>CineStream - TV Shows</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@700;800&amp;family=Inter:wght@400;500;600&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        .glass-panel {
+            background: rgba(19, 19, 19, 0.7);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+        }
+        .network-chip-active {
+            background: #E50914;
+            box-shadow: 0 0 15px rgba(229, 9, 20, 0.4);
+        }
+        .episode-card-glow:hover {
+            box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.1), 0 0 20px rgba(0, 209, 255, 0.2);
+        }
+        body {
+            background-color: #131313;
+            color: #e5e2e1;
+        }
+    </style>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "secondary": "#a6e6ff",
+                        "surface-container-high": "#2a2a2a",
+                        "secondary-fixed": "#b7eaff",
+                        "surface-container-lowest": "#0e0e0e",
+                        "on-primary": "#690003",
+                        "inverse-on-surface": "#313030",
+                        "on-surface": "#e5e2e1",
+                        "on-tertiary-container": "#fbf8f7",
+                        "on-error-container": "#ffdad6",
+                        "on-primary-fixed": "#410001",
+                        "surface-dim": "#131313",
+                        "primary-fixed-dim": "#ffb4aa",
+                        "tertiary-container": "#737272",
+                        "inverse-primary": "#c0000c",
+                        "on-primary-container": "#fff7f6",
+                        "on-secondary-fixed": "#001f28",
+                        "surface-container-low": "#1c1b1b",
+                        "surface-tint": "#ffb4aa",
+                        "surface": "#131313",
+                        "surface-bright": "#3a3939",
+                        "surface-container-highest": "#353534",
+                        "secondary-fixed-dim": "#4cd6ff",
+                        "error": "#ffb4ab",
+                        "surface-container": "#201f1f",
+                        "error-container": "#93000a",
+                        "secondary-container": "#14d1ff",
+                        "primary": "#ffb4aa",
+                        "on-secondary-container": "#00566b",
+                        "on-secondary": "#003543",
+                        "inverse-surface": "#e5e2e1",
+                        "outline": "#af8782",
+                        "on-primary-fixed-variant": "#930007",
+                        "on-background": "#e5e2e1",
+                        "on-tertiary": "#313030",
+                        "tertiary-fixed": "#e5e2e1",
+                        "on-secondary-fixed-variant": "#004e60",
+                        "outline-variant": "#5e3f3b",
+                        "on-surface-variant": "#e9bcb6",
+                        "on-tertiary-fixed": "#1c1b1b",
+                        "surface-variant": "#353534",
+                        "tertiary": "#c8c6c5",
+                        "primary-container": "#e50914",
+                        "background": "#131313",
+                        "tertiary-fixed-dim": "#c8c6c5",
+                        "primary-fixed": "#ffdad5",
+                        "on-error": "#690005",
+                        "on-tertiary-fixed-variant": "#474746"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.125rem",
+                        "lg": "0.25rem",
+                        "xl": "0.5rem",
+                        "full": "0.75rem"
+                    },
+                    "spacing": {
+                        "container-max": "1440px",
+                        "gutter-mobile": "16px",
+                        "gutter-desktop": "24px",
+                        "margin-desktop": "64px",
+                        "unit": "8px",
+                        "margin-mobile": "20px"
+                    },
+                    "fontFamily": {
+                        "body-md": ["Inter"],
+                        "label-sm": ["Inter"],
+                        "headline-lg": ["Montserrat"],
+                        "body-lg": ["Inter"],
+                        "display-lg": ["Montserrat"],
+                        "label-md": ["Inter"],
+                        "display-lg-mobile": ["Montserrat"],
+                        "headline-md": ["Montserrat"]
+                    },
+                    "fontSize": {
+                        "body-md": ["16px", {"lineHeight": "24px", "fontWeight": "400"}],
+                        "label-sm": ["12px", {"lineHeight": "16px", "fontWeight": "500"}],
+                        "headline-lg": ["32px", {"lineHeight": "40px", "fontWeight": "700"}],
+                        "body-lg": ["18px", {"lineHeight": "28px", "fontWeight": "400"}],
+                        "display-lg": ["64px", {"lineHeight": "72px", "letterSpacing": "-0.02em", "fontWeight": "800"}],
+                        "label-md": ["14px", {"lineHeight": "20px", "letterSpacing": "0.05em", "fontWeight": "600"}],
+                        "display-lg-mobile": ["40px", {"lineHeight": "44px", "letterSpacing": "-0.01em", "fontWeight": "800"}],
+                        "headline-md": ["24px", {"lineHeight": "32px", "fontWeight": "700"}]
+                    }
+                },
+            },
+        }
+    </script>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="flex flex-col min-h-screen">
+<!-- TopNavBar (Shared Component adapted for Mobile) -->
+<header class="bg-surface/70 backdrop-blur-xl border-b border-white/10 shadow-2xl flex justify-between items-center px-gutter-mobile h-20 w-full z-50 fixed top-0">
+<div class="font-display-lg-mobile text-primary-container tracking-tighter">CineStream</div>
+<div class="flex items-center gap-4">
+<button class="text-on-surface/70 hover:bg-white/5 transition-all duration-300 p-2 rounded-full">
+<span class="material-symbols-outlined" data-icon="search">search</span>
+</button>
+<div class="w-8 h-8 rounded-full bg-surface-container-highest border border-white/10 overflow-hidden">
+<img alt="User Profile" class="w-full h-full object-cover" data-alt="A professional close-up profile portrait of a stylish user with a clean, modern aesthetic. The background is a soft, blurred studio setting with deep cinematic tones of charcoal and neon blue highlights. The lighting is dramatic and high-contrast, emphasizing a premium and authoritative brand identity consistent with the CineStream dark cinematic theme." src="https://lh3.googleusercontent.com/aida-public/AB6AXuALS0-OMr-Gv9h-gHi72QhgM8ke88GsVZ52M8Yb8U9fYyQ_8DmV_4uz2NQXeq_wjp1jxNojNu1Q2yheXIL-ILeamMFDBRbN5bpJWwIk6uGGp6zrACe9bxcD2N5DxrrZlaCVVEjozIMPMnE9t7THqh1kAF-IQmX9PDoGgBEDQzrZsL21wb62aeD_7L5qJm6RsVKKGIvgLWYddQEONg3-3S5cbOluMINcKmNzULp1XUXStfNcaz3rmUHz-Wi4TxS_i7sB6DYrGxzIocr6"/>
+</div>
+</div>
+</header>
+<main class="mt-20 mb-24 px-gutter-mobile space-y-8 overflow-x-hidden">
+<!-- Network Filters Section -->
+<section class="mt-6 -mx-gutter-mobile overflow-x-auto scrollbar-hide pb-2">
+<div class="flex items-center gap-3 px-gutter-mobile">
+<button class="network-chip-active px-6 py-2 rounded-full font-label-md text-label-md whitespace-nowrap text-on-primary-container">All Shows</button>
+<button class="bg-surface-container-highest px-6 py-2 rounded-full font-label-md text-label-md whitespace-nowrap text-on-surface hover:bg-surface-bright transition-all">HBO</button>
+<button class="bg-surface-container-highest px-6 py-2 rounded-full font-label-md text-label-md whitespace-nowrap text-on-surface hover:bg-surface-bright transition-all">Netflix</button>
+<button class="bg-surface-container-highest px-6 py-2 rounded-full font-label-md text-label-md whitespace-nowrap text-on-surface hover:bg-surface-bright transition-all">Apple TV+</button>
+<button class="bg-surface-container-highest px-6 py-2 rounded-full font-label-md text-label-md whitespace-nowrap text-on-surface hover:bg-surface-bright transition-all">Disney+</button>
+<button class="bg-surface-container-highest px-6 py-2 rounded-full font-label-md text-label-md whitespace-nowrap text-on-surface hover:bg-surface-bright transition-all">Prime Video</button>
+</div>
+</section>
+<!-- New Episodes Section (Horizontal Scroll) -->
+<section>
+<h2 class="font-headline-md text-headline-md mb-4 text-on-surface">New Episodes</h2>
+<div class="flex gap-4 overflow-x-auto scrollbar-hide -mx-gutter-mobile px-gutter-mobile">
+<!-- Episode Card 1 -->
+<div class="min-w-[280px] group relative rounded-xl overflow-hidden episode-card-glow transition-all duration-300">
+<img class="w-full h-40 object-cover" data-alt="A high-octane cinematic still of a futuristic sci-fi city at night, with neon blue and action red lighting reflecting off sleek chrome surfaces. The atmosphere is mysterious and immersive, featuring advanced technology and dramatic shadows. This visual represents a high-budget premium TV series episode, following the CineStream dark cinematic glassmorphic design style." src="https://lh3.googleusercontent.com/aida-public/AB6AXuAsXbs7upuZhzRIZb1rnrSADqv8uNEkDQG8DzcPDs_uck7_q7_M89RnMRiWpRSJMTlGj8WFA5LubEOBT0pqhQV7IIK512GisCQC7NtnI2WMIIptoRN-gGjQLZF-Rtd72ZZVFxxJgu3DHLdrzmVNzZm9B7-pWGx9dThQwAsjkTSWAwHLekbeUB9BbawnFowA3xgVsGqnQmwM8Pwu33lbPRcmnB4GIApgGYN4mBViYWiGFAyadaRI4X126TWCy8VT3zv2-6fBAQilBcEU"/>
+<div class="absolute inset-0 bg-gradient-to-t from-black/90 via-transparent to-transparent"></div>
+<div class="absolute bottom-3 left-3">
+<span class="text-[10px] uppercase font-bold tracking-widest text-secondary mb-1 block">Series Premiere</span>
+<h3 class="font-label-md text-label-md text-white">The Last Frontier</h3>
+<p class="text-label-sm font-label-sm text-on-surface/60">Season 1 • Ep 1</p>
+</div>
+<div class="absolute top-3 right-3 bg-primary-container px-2 py-1 rounded text-[10px] font-bold text-white uppercase">New</div>
+</div>
+<!-- Episode Card 2 -->
+<div class="min-w-[280px] group relative rounded-xl overflow-hidden episode-card-glow transition-all duration-300">
+<img class="w-full h-40 object-cover" data-alt="A moody, atmospheric shot of a dense pine forest shrouded in thick morning fog, with a solitary figure walking along a path lit by cold, blue light. The scene is cinematic and suspenseful, capturing the essence of a mystery drama series. The aesthetic is sophisticated and minimalist, consistent with the premium dark theme of CineStream." src="https://lh3.googleusercontent.com/aida-public/AB6AXuBEq5Qe5PbuYny8356Xk5SaJIFrZiIKasqpUbUBzcLHshnhjHiPLVzlyL2v1pP_c_71rGf4TJzeeGb3sf_MCZWfIARCfQXVPpTjbV3F2mtI-SZVmITPd6WyVBYuhrQ4GfRBoqVczEs57QFNZ9YKoWdlZ8naYFOjTBoSXqYUGXsNxyshsSHt2P1KjmW8ZGQwHmWtbzFXODfnwj-M2XKkG2jGtSy9xVdxgY-63Y66Yhj87Hn-iHLEZpUY4Tbn5WfK6WMD2btRZuAi_s8w"/>
+<div class="absolute inset-0 bg-gradient-to-t from-black/90 via-transparent to-transparent"></div>
+<div class="absolute bottom-3 left-3">
+<span class="text-[10px] uppercase font-bold tracking-widest text-secondary mb-1 block">New Season</span>
+<h3 class="font-label-md text-label-md text-white">Shadow Echoes</h3>
+<p class="text-label-sm font-label-sm text-on-surface/60">Season 3 • Ep 4</p>
+</div>
+</div>
+</div>
+</section>
+<!-- Series Grid Section (Vertical) -->
+<section>
+<div class="flex justify-between items-center mb-4">
+<h2 class="font-headline-md text-headline-md text-on-surface">Trending Series</h2>
+<button class="text-secondary font-label-md text-label-md">View All</button>
+</div>
+<div class="grid grid-cols-2 gap-4">
+<!-- Show 1 -->
+<div class="space-y-2 group">
+<div class="aspect-[2/3] rounded-xl overflow-hidden border border-white/5 relative">
+<img class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110" data-alt="A stylized cinematic poster for a psychological thriller series, featuring high-contrast silhouettes against a deep charcoal background with vibrant neon red accents. The lighting is dramatic and moody, emphasizing architectural lines and a sense of sophisticated suspense. Designed for the premium CineStream dark mode interface." src="https://lh3.googleusercontent.com/aida-public/AB6AXuAWNMMtkaFpRnNuheY-97JVRmjH84lwBzVo9fuUqVA713s4QQJNa4APtcMbuL57EfnpswPBc4NbwJ2Ya1wwV57sAOAD1KVDgHvE1hFUIxtNQtzdpdl8y5_hqeaPJfnmjP3_YgoaZK5wiz68oLczu4ce3RatZEU1On3RtMWFQ7ewE_OT3tA2Qf1DuYmK_hwxSaBD6vlq2b9vY8ZuklDCOOD9zbfKELtZPZ-imb8-ypuE3m8aTnPI6VprvFq5ruRakU3IOcZLtmv17KQG"/>
+<div class="absolute inset-0 bg-black/20 group-hover:bg-black/0 transition-colors"></div>
+<div class="absolute top-2 left-2 bg-black/60 backdrop-blur-md px-2 py-0.5 rounded-md text-[10px] font-bold text-secondary">★ 9.4</div>
+</div>
+<h3 class="font-label-md text-label-md text-on-surface">Midnight Protocol</h3>
+<p class="font-label-sm text-label-sm text-on-surface-variant">Thriller • 2 Seasons</p>
+</div>
+<!-- Show 2 -->
+<div class="space-y-2 group">
+<div class="aspect-[2/3] rounded-xl overflow-hidden border border-white/5 relative">
+<img class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110" data-alt="An artistic cinematic shot of an ancient, mysterious library with dust motes dancing in shafts of cold moonlight. The lighting uses deep blues and sharp highlights to create a sense of historical mystery and high-end production value. The visual tone is dark and luxurious, matching the CineStream premium brand identity." src="https://lh3.googleusercontent.com/aida-public/AB6AXuACAXX4DC7epH4HzSQwrNd3UFRikdDIVxn9pnY7xyfvdDIOSk1-Kn4vxtnHmUmwS07ZfSnort0V1Mx3xAdrR4PsP9UK8G8TBlvuflttw3BUTKA_9tQLZbPj9MWmlQsRjBgLRnxWDKXEHFju_lmBvsu2bShw8REu4_xtb26xzOmI0FuTGjVnvmkGxJAn7jhmqOEefQ1vuoBaNWCKOh4eAucRAPpZi9lXJNiknPxBPgCjDU9hs27GHr8c0dzze78jMxQ5p3Q2v_xVcHUY"/>
+<div class="absolute inset-0 bg-black/20 group-hover:bg-black/0 transition-colors"></div>
+<div class="absolute top-2 left-2 bg-black/60 backdrop-blur-md px-2 py-0.5 rounded-md text-[10px] font-bold text-secondary">★ 8.8</div>
+</div>
+<h3 class="font-label-md text-label-md text-on-surface">The Alchemist</h3>
+<p class="font-label-sm text-label-sm text-on-surface-variant">Drama • 1 Season</p>
+</div>
+<!-- Show 3 -->
+<div class="space-y-2 group">
+<div class="aspect-[2/3] rounded-xl overflow-hidden border border-white/5 relative">
+<img class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110" data-alt="A gritty, urban cityscape at dusk with rain-slicked streets reflecting neon signs in vibrant reds and teals. A lone, sleek vehicle speeds through the frame, creating motion blur. The aesthetic is fast, authoritative, and cinematic, perfectly suited for an action-packed series listing on the CineStream platform." src="https://lh3.googleusercontent.com/aida-public/AB6AXuD9L1pIAjOez-_eFonya61oMnQHFeiKabrFW4KNG5-BrvP7CGRVHC3SBXf6KerPZcCZQaXq8OSjDeEzz6bcgyTfzb0fxP6W1L7NGhZ4zkSD826UEwQCNqc2LE5Ek_vd2SGbfqSBHToAlgn8uFD2ODkeNz_4L6WB26I8db9P7k95dcLpgLg-lHu-xhDA_UYWOq7tryQmmG5RLRNnwaFWK95wCXLzgJFgZTz2DEj-TOTPV4QVS1vqJ5nYjYd949eQny0cgTVMRiZSk9wM"/>
+<div class="absolute inset-0 bg-black/20 group-hover:bg-black/0 transition-colors"></div>
+<div class="absolute top-2 left-2 bg-black/60 backdrop-blur-md px-2 py-0.5 rounded-md text-[10px] font-bold text-secondary">★ 8.2</div>
+</div>
+<h3 class="font-label-md text-label-md text-on-surface">Neon Pulse</h3>
+<p class="font-label-sm text-label-sm text-on-surface-variant">Action • 4 Seasons</p>
+</div>
+<!-- Show 4 -->
+<div class="space-y-2 group">
+<div class="aspect-[2/3] rounded-xl overflow-hidden border border-white/5 relative">
+<img class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110" data-alt="A majestic and slightly eerie shot of an obsidian mountain range under a star-filled violet sky. The lighting is ethereal and wide-angle, giving a sense of epic fantasy and vast scale. The deep purples and blacks are punctuated by bright starlight, creating a premium and immersive visual experience for the CineStream UI." src="https://lh3.googleusercontent.com/aida-public/AB6AXuB9a-YrU6Om6_WCVos6sUEzkuCFO5aRaoXUYl3mN8wwsqQ39IcdZiRx_fbNb9H8sHtv9ObfNremn0g_78w26rglRKiWbECky9KjhXbD_6WcgN4rKt8RZ8aRu6BVfyXpghPz6pdTtJ-DgT3fekp3PS0Z3ww_v-APtJOhyQM2DNfS49ibtNjTGQ6YbXoRRYvUAZeEfGNv4fBgiNsZ2ToKAefYOEUTC5JTEXCWGjEjcvkNiI0iKm7gt3Z77zVyGRb5EV0s8IAy0Kuc-Wv0"/>
+<div class="absolute inset-0 bg-black/20 group-hover:bg-black/0 transition-colors"></div>
+<div class="absolute top-2 left-2 bg-black/60 backdrop-blur-md px-2 py-0.5 rounded-md text-[10px] font-bold text-secondary">★ 9.1</div>
+</div>
+<h3 class="font-label-md text-label-md text-on-surface">Void Walker</h3>
+<p class="font-label-sm text-label-sm text-on-surface-variant">Sci-Fi • 2 Seasons</p>
+</div>
+</div>
+</section>
+</main>
+<!-- BottomNavBar (Shared Component adaptation) -->
+<nav class="fixed bottom-0 left-0 right-0 h-20 bg-surface/70 backdrop-blur-xl border-t border-white/5 z-50 flex items-center justify-around px-4">
+<button class="flex flex-col items-center gap-1 text-on-surface/70 hover:text-on-surface transition-all duration-300">
+<span class="material-symbols-outlined" data-icon="home">home</span>
+<span class="font-label-sm text-label-sm">Home</span>
+</button>
+<button class="flex flex-col items-center gap-1 text-primary-container border-t-2 border-primary-container pt-1 transition-all duration-300">
+<span class="material-symbols-outlined" data-icon="tv" style="font-variation-settings: 'FILL' 1;">tv</span>
+<span class="font-label-sm text-label-sm">TV Shows</span>
+</button>
+<button class="flex flex-col items-center gap-1 text-on-surface/70 hover:text-on-surface transition-all duration-300">
+<span class="material-symbols-outlined" data-icon="movie">movie</span>
+<span class="font-label-sm text-label-sm">Movies</span>
+</button>
+<button class="flex flex-col items-center gap-1 text-on-surface/70 hover:text-on-surface transition-all duration-300">
+<span class="material-symbols-outlined" data-icon="bookmark">bookmark</span>
+<span class="font-label-sm text-label-sm">My List</span>
+</button>
+</nav>
+<script>
+        // Micro-interactions for scrolling effects
+        window.addEventListener('scroll', () => {
+            const header = document.querySelector('header');
+            if (window.scrollY > 20) {
+                header.classList.add('bg-surface/90');
+                header.classList.remove('bg-surface/70');
+            } else {
+                header.classList.add('bg-surface/70');
+                header.classList.remove('bg-surface/90');
+            }
+        });
+
+        // Network chip selection logic
+        const chips = document.querySelectorAll('.px-6.py-2.rounded-full');
+        chips.forEach(chip => {
+            chip.addEventListener('click', () => {
+                chips.forEach(c => {
+                    c.classList.remove('network-chip-active', 'text-on-primary-container');
+                    c.classList.add('bg-surface-container-highest', 'text-on-surface');
+                });
+                chip.classList.remove('bg-surface-container-highest', 'text-on-surface');
+                chip.classList.add('network-chip-active', 'text-on-primary-container');
+            });
+        });
+    </script>
+</body></html>

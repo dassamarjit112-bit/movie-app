@@ -1,0 +1,60 @@
+<!-- CineStream — Movies Page -->
+<div id="movies-page">
+  <div id="navbar-mount"></div>
+
+  <!-- Page Header -->
+  <div style="padding:100px var(--space-margin-desktop) 0;background:linear-gradient(to bottom,rgba(229,9,20,0.06) 0%,transparent 100%)">
+    <div style="max-width:var(--space-container-max);margin:0 auto">
+      <div class="badge badge-red" style="margin-bottom:12px">Library</div>
+      <h1 class="text-display-md" style="margin-bottom:8px">Movies</h1>
+      <p style="color:rgba(229,226,225,0.55);font-size:16px">Explore our complete cinematic collection</p>
+    </div>
+  </div>
+
+  <!-- Filter Bar -->
+  <div style="padding:24px var(--space-margin-desktop);position:sticky;top:72px;z-index:40;background:rgba(14,14,14,0.85);backdrop-filter:blur(20px);border-bottom:1px solid rgba(255,255,255,0.05)">
+    <div style="max-width:var(--space-container-max);margin:0 auto;display:flex;gap:12px;flex-wrap:wrap;align-items:center">
+      <!-- Search -->
+      <div style="flex:1;min-width:200px;display:flex;align-items:center;gap:8px;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.08);border-radius:8px;padding:10px 16px">
+        <span class="material-symbols-outlined" style="font-size:18px;color:rgba(229,226,225,0.4)">search</span>
+        <input id="movie-search" type="text" placeholder="Search movies..." 
+               style="background:none;border:none;outline:none;color:var(--c-on-surface);font-size:14px;width:100%"
+               oninput="MoviesPage.search(this.value)">
+      </div>
+      <!-- Genre -->
+      <select id="genre-filter" class="input-field" style="width:auto;padding:10px 16px;cursor:pointer" onchange="MoviesPage.filter()">
+        <option value="">All Genres</option>
+        <option value="Action">Action</option>
+        <option value="Sci-Fi">Sci-Fi</option>
+        <option value="Thriller">Thriller</option>
+        <option value="Drama">Drama</option>
+        <option value="Fantasy">Fantasy</option>
+        <option value="Horror">Horror</option>
+        <option value="Documentary">Documentary</option>
+        <option value="Crime">Crime</option>
+        <option value="Romance">Romance</option>
+      </select>
+      <!-- Sort -->
+      <select id="sort-filter" class="input-field" style="width:auto;padding:10px 16px;cursor:pointer" onchange="MoviesPage.filter()">
+        <option value="trending">Trending</option>
+        <option value="rating">Top Rated</option>
+        <option value="newest">Newest</option>
+        <option value="az">A–Z</option>
+      </select>
+      <!-- Results count -->
+      <span id="movie-count" style="font-size:13px;color:rgba(229,226,225,0.4);white-space:nowrap"></span>
+    </div>
+  </div>
+
+  <!-- Movie Grid -->
+  <div style="padding:32px var(--space-margin-desktop);max-width:var(--space-container-max);margin:0 auto">
+    <div class="poster-grid" id="movies-grid"></div>
+    <div id="no-results" style="display:none;text-align:center;padding:80px 0">
+      <span class="material-symbols-outlined" style="font-size:64px;color:rgba(229,226,225,0.15);display:block;margin-bottom:16px">movie_off</span>
+      <p style="color:rgba(229,226,225,0.4);font-size:16px">No movies found. Try a different search or filter.</p>
+    </div>
+  </div>
+
+  <div id="footer-mount"></div>
+  <div id="mobile-nav-mount"></div>
+</div>

@@ -1,0 +1,24 @@
+{
+  "name": "cinestream-ott",
+  "version": "1.0.0",
+  "description": "CineStream OTT Platform - Premium Cinema Streaming SPA",
+  "main": "index.html",
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "preview": "vite preview"
+  },
+  "keywords": [
+    "ott",
+    "streaming",
+    "hls",
+    "supabase",
+    "spa",
+    "vanilla"
+  ],
+  "author": "CineStream Team",
+  "license": "MIT",
+  "devDependencies": {
+    "vite": "^5.0.0"
+  }
+}

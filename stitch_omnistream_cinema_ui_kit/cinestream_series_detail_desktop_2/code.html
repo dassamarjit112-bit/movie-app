@@ -1,0 +1,447 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>CineStream - Neon Chronicles</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700;800&amp;family=Be+Vietnam+Pro:wght@400;500&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<style>
+        body {
+            background: #0d0d15;
+            color: #e4e1ed;
+            overflow: hidden;
+            font-family: 'Be Vietnam Pro', sans-serif;
+        }
+
+        .glass-panel {
+            background: rgba(19, 19, 27, 0.4);
+            backdrop-filter: blur(40px);
+            -webkit-backdrop-filter: blur(40px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .glass-card {
+            background: linear-gradient(180deg, rgba(255, 255, 255, 0.1) 0%, rgba(255, 255, 255, 0) 100%);
+            backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .neon-glow-primary {
+            box-shadow: 0 0 20px rgba(189, 0, 255, 0.4);
+        }
+
+        .neon-glow-secondary {
+            box-shadow: 0 0 15px rgba(0, 238, 252, 0.3);
+        }
+
+        .sidebar-indicator {
+            position: absolute;
+            left: 0;
+            width: 4px;
+            height: 20px;
+            background: #bd00ff;
+            border-radius: 0 4px 4px 0;
+        }
+
+        /* Custom scrollbar for inner panels */
+        .custom-scrollbar::-webkit-scrollbar {
+            width: 4px;
+        }
+        .custom-scrollbar::-webkit-scrollbar-track {
+            background: transparent;
+        }
+        .custom-scrollbar::-webkit-scrollbar-thumb {
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 10px;
+        }
+
+        @keyframes pulse {
+            0% { transform: scale(1); opacity: 0.8; }
+            50% { transform: scale(1.05); opacity: 1; }
+            100% { transform: scale(1); opacity: 0.8; }
+        }
+        .animate-pulse-subtle {
+            animation: pulse 4s infinite ease-in-out;
+        }
+    </style>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "surface-variant": "#34343d",
+                        "inverse-surface": "#e4e1ed",
+                        "on-error-container": "#ffdad6",
+                        "error": "#ffb4ab",
+                        "on-tertiary-container": "#ffffff",
+                        "primary": "#ecb2ff",
+                        "on-tertiary-fixed": "#1b0063",
+                        "on-secondary-fixed": "#002022",
+                        "surface-container-highest": "#34343d",
+                        "surface-bright": "#393841",
+                        "secondary": "#d3fbff",
+                        "surface-container-high": "#292932",
+                        "on-surface-variant": "#d4c0d7",
+                        "on-secondary-fixed-variant": "#004f54",
+                        "tertiary-container": "#7658ff",
+                        "secondary-container": "#00eefc",
+                        "on-surface": "#e4e1ed",
+                        "tertiary-fixed": "#e5deff",
+                        "surface": "#13131b",
+                        "outline-variant": "#514255",
+                        "primary-fixed": "#f8d8ff",
+                        "primary-container": "#bd00ff",
+                        "error-container": "#93000a",
+                        "surface-container": "#1f1f27",
+                        "tertiary-fixed-dim": "#c9bfff",
+                        "surface-container-low": "#1b1b23",
+                        "on-primary-fixed": "#320047",
+                        "on-tertiary": "#2f009c",
+                        "inverse-on-surface": "#303038",
+                        "secondary-fixed": "#7df4ff",
+                        "on-secondary": "#00363a",
+                        "secondary-fixed-dim": "#00dbe9",
+                        "on-primary": "#520071",
+                        "on-background": "#e4e1ed",
+                        "on-tertiary-fixed-variant": "#4500d8",
+                        "tertiary": "#c9bfff",
+                        "on-secondary-container": "#00686f",
+                        "surface-tint": "#ecb2ff",
+                        "on-primary-container": "#ffffff",
+                        "surface-container-lowest": "#0d0d15",
+                        "on-primary-fixed-variant": "#74009f",
+                        "on-error": "#690005",
+                        "primary-fixed-dim": "#ecb2ff",
+                        "outline": "#9d8ba0",
+                        "background": "#13131b",
+                        "inverse-primary": "#9900cf",
+                        "surface-dim": "#13131b"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.25rem",
+                        "lg": "0.5rem",
+                        "xl": "0.75rem",
+                        "full": "9999px"
+                    },
+                    "fontFamily": {
+                        "body-md": ["Be Vietnam Pro"],
+                        "headline-lg-mobile": ["Plus Jakarta Sans"],
+                        "body-lg": ["Be Vietnam Pro"],
+                        "display-lg": ["Plus Jakarta Sans"],
+                        "headline-md": ["Plus Jakarta Sans"],
+                        "headline-lg": ["Plus Jakarta Sans"],
+                        "label-md": ["Plus Jakarta Sans"]
+                    },
+                    "fontSize": {
+                        "body-md": ["16px", {"lineHeight": "24px", "fontWeight": "400"}],
+                        "headline-lg-mobile": ["28px", {"lineHeight": "36px", "fontWeight": "700"}],
+                        "body-lg": ["18px", {"lineHeight": "28px", "fontWeight": "400"}],
+                        "display-lg": ["48px", {"lineHeight": "56px", "letterSpacing": "-0.02em", "fontWeight": "700"}],
+                        "headline-md": ["24px", {"lineHeight": "32px", "fontWeight": "600"}],
+                        "headline-lg": ["32px", {"lineHeight": "40px", "fontWeight": "700"}],
+                        "label-md": ["14px", {"lineHeight": "20px", "letterSpacing": "0.05em", "fontWeight": "600"}]
+                    }
+                }
+            }
+        }
+    </script>
+</head>
+<body class="h-screen w-screen overflow-hidden flex items-center justify-center p-6">
+<!-- Cinematic Background -->
+<div class="fixed inset-0 z-0">
+<img class="w-full h-full object-cover opacity-60 scale-105 blur-[2px]" data-alt="A cinematic, high-fidelity landscape of a sprawling futuristic cyberpunk city at dusk. The skyline is dominated by towering chrome skyscrapers with glowing neon violet and cyan lights reflecting off a misty atmosphere. Deep purple nebulas swirl in the dark sky above, casting a soft ethereal glow over the entire scene. The lighting is moody and high-contrast, perfectly matching a premium streaming service aesthetic." src="https://lh3.googleusercontent.com/aida-public/AB6AXuCDoQ0QeB-PXQEqJs8iIU7iOPWSsjBqiaq_kcYMSiPp__GaHbVLs8rxBv9GBHxwsQm4qhc3Ag0qcYWuiZg8_THHDpe-VngAEqq9dCujttTqvL8yATMCkG-Fl_bzxFkWFHoZez3gVAZ8PTfVVYIbYbA4nywe5Vjld5EXE-yWny0yKvrkJbMOxX9HrGsLAFf3uCtC-SsZvKkIbVqIV6qOrhPhtu0pNTU1OsQVGJVemVHTBWVuE6BKRqub1otXuYmiQs9FQVM4iEARDXY-"/>
+<div class="absolute inset-0 bg-gradient-to-t from-surface via-transparent to-surface/40"></div>
+</div>
+<!-- Main App Container -->
+<main class="relative z-10 w-full h-full max-w-[1600px] flex gap-6 overflow-hidden">
+<!-- Sidebar Navigation (SideNavBar Shared Component) -->
+<nav class="fixed left-6 top-1/2 -translate-y-1/2 h-[400px] w-20 rounded-full border border-white/10 bg-surface/40 backdrop-blur-[40px] shadow-2xl flex flex-col items-center justify-center gap-6 z-50">
+<div class="mb-4">
+<span class="material-symbols-outlined text-primary font-display-lg text-display-lg" style="font-variation-settings: 'FILL' 1;">movie_filter</span>
+</div>
+<!-- Discover (Active) -->
+<button class="relative bg-primary-container text-on-primary-container rounded-full p-3 shadow-[0_0_15px_rgba(189,0,255,0.4)] scale-110 active:scale-95 transition-all duration-300">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">grid_view</span>
+</button>
+<button class="text-on-surface-variant p-3 hover:bg-white/10 transition-all duration-300 rounded-full">
+<span class="material-symbols-outlined">notifications</span>
+</button>
+<button class="text-on-surface-variant p-3 hover:bg-white/10 transition-all duration-300 rounded-full">
+<span class="material-symbols-outlined">calendar_today</span>
+</button>
+<button class="text-on-surface-variant p-3 hover:bg-white/10 transition-all duration-300 rounded-full">
+<span class="material-symbols-outlined">person</span>
+</button>
+<button class="text-on-surface-variant p-3 hover:bg-white/10 transition-all duration-300 rounded-full">
+<span class="material-symbols-outlined">settings</span>
+</button>
+</nav>
+<!-- Main Content Area -->
+<div class="flex-1 flex flex-col ml-24 gap-6 h-full">
+<!-- Top Navigation Bar -->
+<header class="flex justify-between items-center w-full max-w-7xl px-8 py-3 rounded-full bg-surface-container/40 backdrop-blur-[40px] border border-white/10 shadow-lg mt-2 self-center">
+<div class="flex items-center gap-8">
+<h1 class="font-headline-md text-headline-md font-bold text-on-surface">CineStream</h1>
+<nav class="hidden md:flex gap-2">
+<a class="bg-tertiary-container text-on-tertiary-container rounded-full px-6 py-2 font-label-md text-label-md" href="#">Movies</a>
+<a class="text-on-surface-variant px-6 py-2 hover:text-primary transition-colors font-label-md text-label-md" href="#">TV Series</a>
+<a class="text-on-surface-variant px-6 py-2 hover:text-primary transition-colors font-label-md text-label-md" href="#">Animation</a>
+<a class="text-on-surface-variant px-6 py-2 hover:text-primary transition-colors font-label-md text-label-md" href="#">Mystery</a>
+</nav>
+</div>
+<div class="flex items-center gap-4">
+<div class="relative group">
+<span class="material-symbols-outlined absolute left-4 top-1/2 -translate-y-1/2 text-on-surface-variant">search</span>
+<input class="bg-black/40 border-none rounded-full pl-12 pr-4 py-2 w-48 focus:ring-2 focus:ring-secondary/50 focus:w-64 transition-all duration-300 text-body-md" placeholder="Search..." type="text"/>
+</div>
+<button class="text-on-surface-variant hover:text-secondary"><span class="material-symbols-outlined">notifications</span></button>
+<div class="w-10 h-10 rounded-full border-2 border-primary/50 overflow-hidden cursor-pointer hover:scale-110 transition-transform">
+<img class="w-full h-full object-cover" data-alt="A professional portrait of a tech-savvy user in their late 20s, styled with cool-toned studio lighting that features subtle cyan and magenta highlights. The background is a blurred dark office with soft bokeh circles. The person has a friendly but modern expression, wearing premium dark knitwear, fitting the sleek and high-end aesthetic of CineStream." src="https://lh3.googleusercontent.com/aida-public/AB6AXuBfkFiVScNAI7TqiGW59BiK6kgPqWfmZ3p_eQWe2wHwR-tBef7jkfKgVZxOAv3UYlZofTqnEtQ5j9EVCKE6B81tqykOS2KIJMGnN3Y3u2ujcJW6zCnw5lkYiZkXE_rNGiAAYy0lKx2SEQiJYeTz9fK9Gn55J4d44gQEOt0eLwTvhgNNu7z73eAYzwDyqAv7NAJzjIaIrG4rB-Jgq3nAyPvgvKhySiyw1rO3v_9hKTMMCkd2RRzKUYcoOHY_EJ79APNXVVfmFBvtnR05"/>
+</div>
+</div>
+</header>
+<!-- Content Canvas -->
+<div class="flex gap-6 h-full pb-6 overflow-hidden">
+<!-- Left Panel: Movie Detail & Recommendations -->
+<div class="flex-[7] flex flex-col gap-6 overflow-y-auto pr-2 custom-scrollbar">
+<!-- Hero Section -->
+<div class="relative rounded-[48px] overflow-hidden min-h-[500px] flex-shrink-0 group">
+<img class="absolute inset-0 w-full h-full object-cover transition-transform duration-700 group-hover:scale-110" data-alt="A breathtaking cinematic still from the sci-fi epic 'Neon Chronicles' featuring two protagonists standing on a balcony overlooking a vast futuristic metropolis. The sky is filled with glowing holographic advertisements and flying vehicles. The primary colors are deep indigo and electric purple. High-energy lighting emphasizes the sleek textures of their futuristic suits and the metallic surfaces of the balcony." src="https://lh3.googleusercontent.com/aida-public/AB6AXuBLveKNu2HmqP-YFhc7p9DFPTlc-SUhYPA57IUGDJIogbvfjI1Ny0SKg1iPfqJReej9jcASnBomKXAjMhiJHInqSdVPcm2Of3aeXoAMpvFWSVVZTaizK8F3XLo5JDGf7-nWai9YZcfZhSDcgYkHWLVeGtjDTSKY1XTPmxzPA1osRWc1NXW1QDohwNo2n5-GclF9yUs2EmibR5jr7DPMox9slRTTU0Tb1FVYQTkHu9lAZz3hv3Oy2MdSF0LhJO4rDEDPsVxYbgG8zjz5"/>
+<div class="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent"></div>
+<div class="absolute top-8 left-8 flex gap-3">
+<span class="px-4 py-1.5 rounded-full bg-white/20 backdrop-blur-md text-white font-label-md text-[12px] border border-white/20">4K ULTRA HD</span>
+<span class="px-4 py-1.5 rounded-full bg-primary-container/80 backdrop-blur-md text-white font-label-md text-[12px] border border-primary/40">TRENDING #1</span>
+</div>
+<div class="absolute bottom-10 left-10 right-10 flex flex-col gap-4">
+<div class="flex gap-2 mb-2">
+<span class="text-secondary font-label-md text-label-md">Sci-Fi</span>
+<span class="text-white/40">•</span>
+<span class="text-secondary font-label-md text-label-md">Action</span>
+<span class="text-white/40">•</span>
+<span class="text-secondary font-label-md text-label-md">Mystery</span>
+</div>
+<h2 class="font-display-lg text-display-lg text-white leading-none">Neon Chronicles</h2>
+<p class="max-w-2xl text-white/80 font-body-lg text-body-lg leading-relaxed">
+                                In the year 2184, the line between man and machine vanishes. Follow Jace and Lyra as they navigate the neon-lit underworld of Neo-Veridia to stop a global digital collapse.
+                            </p>
+<div class="flex items-center gap-6 mt-4">
+<button class="bg-primary-container text-white px-10 py-4 rounded-full font-headline-md flex items-center gap-3 neon-glow-primary hover:scale-105 active:scale-95 transition-all">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">play_arrow</span>
+                                    Watch Now
+                                </button>
+<button class="bg-white/10 hover:bg-white/20 backdrop-blur-xl border border-white/20 text-white px-8 py-4 rounded-full font-headline-md flex items-center gap-3 transition-all">
+<span class="material-symbols-outlined">add</span>
+                                    My List
+                                </button>
+<div class="flex -space-x-3 ml-4">
+<img class="w-10 h-10 rounded-full border-2 border-surface" data-alt="Portrait of Alexander Vance, a lead actor with a rugged look." src="https://lh3.googleusercontent.com/aida-public/AB6AXuB4Jxu5zcU8DZ14W5SHWRPCH17wUB2m1qu6H0rJosHt9wtkAL-dUxE62wncsGfOMPV5-XJbccM2HKS737qwFywGtk23XzJnu-DOhvOJce1w7Rb0k1FRuDWBKkq1e_AHim5HFTPlDGd28txgWs1CN-qUe7pPhw6wFGYkHRFAspiYZArUGd5EqMJTSzGuAD6pHeeIWBYN8ACYnveiWuy9pCpvChfSa5XVYfMzQvhS9hJA4P-WBfkHSPKtKSLqsYLoy4Unuo7qv1duKjXm"/>
+<img class="w-10 h-10 rounded-full border-2 border-surface" data-alt="Portrait of Sarah Chen, a lead actress with sharp features." src="https://lh3.googleusercontent.com/aida-public/AB6AXuDm0m75T4Yvr3p8qXWRPEjLu9l0m7oy5TzrXEelUDQMhxr9DcFbNQtXorllw7AcDBbLujJTjlcvht94NJ2OHAnlnhC_GLj0YwgBFObUtqYMndbo-4wxhe2Tlz9E8x3oEDFFLI2VNDG9nCNRVio9Pk77gMklJ_0WydY-wCLsOeZe1U_nsTNfCgOALAS0tDJn5UszWoJQY1C0hy0Dj2Cth_LwFYmD2u-mfmJXlnyDCiq5CpUukqSciZ7j2WrTqehn_3GHaQnGU4On1pdD"/>
+<div class="w-10 h-10 rounded-full border-2 border-surface bg-surface-variant flex items-center justify-center text-[10px] font-bold">+24</div>
+</div>
+</div>
+</div>
+<!-- Player Controls (Floating Right) -->
+<div class="absolute bottom-10 right-10 flex gap-4">
+<button class="w-12 h-12 rounded-full bg-white/10 backdrop-blur-md flex items-center justify-center hover:bg-white/30 transition-colors">
+<span class="material-symbols-outlined">volume_up</span>
+</button>
+<button class="w-12 h-12 rounded-full bg-white/10 backdrop-blur-md flex items-center justify-center hover:bg-white/30 transition-colors">
+<span class="material-symbols-outlined">fullscreen</span>
+</button>
+</div>
+</div>
+<!-- Recommended / More Like This -->
+<section class="flex flex-col gap-6">
+<div class="flex justify-between items-center px-4">
+<h3 class="font-headline-md text-headline-md text-on-surface">More Like This</h3>
+<button class="text-primary font-label-md hover:underline">View All</button>
+</div>
+<div class="grid grid-cols-4 gap-6">
+<!-- Rec 1 -->
+<div class="glass-card rounded-[32px] p-4 flex flex-col gap-4 group cursor-pointer">
+<div class="aspect-[3/4] rounded-[24px] overflow-hidden relative">
+<img class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500" data-alt="Movie poster for 'The Silent Void', featuring a lone astronaut drifting in a vibrant nebula of deep blues and oranges. High-quality digital art, cinematic lighting, sharp details." src="https://lh3.googleusercontent.com/aida-public/AB6AXuBRB7pmORcv3_Cxj97HaR2GmEBiMl267AJ9kwsRu1UldscxydQgAJr9yDPQuo3b42ggbXhZjN28yv1Z5Se0ULiTmF4cdQLqC_UYJv7Pq37_wXnp57yuiDqRWXq_RARxF9huSDY11hvlw_tTBbuWzCUZKZLNK2lRTRTvzNkmSw2MJaFJ2TOqJ82okPCh73EhdQXeyOI7gGUI85p_WdomI8Lyuq8CoQtsT0gIQkfCkthibRGrbslk-2KbMoKswDz9FelXjM9DkiMUOFvV"/>
+<div class="absolute top-3 right-3 w-8 h-8 rounded-full bg-black/40 backdrop-blur-md flex items-center justify-center">
+<span class="material-symbols-outlined text-[16px]">favorite</span>
+</div>
+</div>
+<div>
+<p class="font-label-md text-label-md text-on-surface truncate">The Silent Void</p>
+<p class="text-[12px] text-on-surface-variant">2023 • Sci-Fi Thriller</p>
+</div>
+</div>
+<!-- Rec 2 -->
+<div class="glass-card rounded-[32px] p-4 flex flex-col gap-4 group cursor-pointer">
+<div class="aspect-[3/4] rounded-[24px] overflow-hidden relative">
+<img class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500" data-alt="Movie poster for 'Chrome Heart', a cyberpunk romance set in a rainy neon street. Vivid reflections and rain particles. Atmospheric lighting." src="https://lh3.googleusercontent.com/aida-public/AB6AXuAkumDNaCbm_usvWyhX5b2YPMyxsStUFvtvzUV8dShpljgAnvfHc3e8Ke5at3DQtoRJhjw_7Q7z7sXF1Ak39TH53eayM_xqaUQj1ebBxOq8ECisib4TYkJxDvPMkC2x1rk5VBN_ImJZfR5Vw7M58eVJE3lnVzbwUihKXtjfC_SUvbI7B4o69XiV4in8Kev0clwF0gMqhxuXpeYrfAbDJrGd1wT7UazejoEeiebYq1Ig9X5De1JnH5pfeA1M78YldpRZV7jSTDXUSfSE"/>
+</div>
+<div>
+<p class="font-label-md text-label-md text-on-surface truncate">Chrome Heart</p>
+<p class="text-[12px] text-on-surface-variant">2024 • Romance</p>
+</div>
+</div>
+<!-- Rec 3 -->
+<div class="glass-card rounded-[32px] p-4 flex flex-col gap-4 group cursor-pointer">
+<div class="aspect-[3/4] rounded-[24px] overflow-hidden relative">
+<img class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500" data-alt="Poster for 'Deep Orbit', an abstract space voyage film. Swirling gravity wells and warped light. High-end CGI visual style." src="https://lh3.googleusercontent.com/aida-public/AB6AXuBGvtbcVGh94muJ9B9niJ_gU6ZbVTaT_rSaWVEahY72Uk_83HTbxvgQxPXBoI12jOkfgxJrUxHqnHZRF8miLjF1hogJCIYOrHDAwY6jPRqgYDeDDy6wFnEls_DY8qeNp5-nKad-D8YvnPdDA2KvA4g__CkC_-CDXmnCggezvYiSK0W-iHsJOBueOJVzz3SFFBO99D6Cr6st9FH-PfDwsTqYmE53LJSq95kM8o0Xx56q1r8iqc0an38dFequJnvDjSMTaiIMMPH48PVw"/>
+</div>
+<div>
+<p class="font-label-md text-label-md text-on-surface truncate">Deep Orbit</p>
+<p class="text-[12px] text-on-surface-variant">2022 • Documentary</p>
+</div>
+</div>
+<!-- Rec 4 -->
+<div class="glass-card rounded-[32px] p-4 flex flex-col gap-4 group cursor-pointer">
+<div class="aspect-[3/4] rounded-[24px] overflow-hidden relative">
+<img class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500" data-alt="Poster for 'Midnight Signal', a mystery film about alien contact. Ethereal light beams coming from the sky into a dark forest." src="https://lh3.googleusercontent.com/aida-public/AB6AXuAY0sRqZUCOuN2LbbSQbflAsW7Te-3elnLJAqYGkwCMbUAr-eoz_UJUWFWJxDEZ8dhUpWuBQrPPhj3ocTZk8oyN_PyXOouTAtiMPFbX84gLxOlIN2DVNMpTQnLveJIBxtMAKKLl0E_oVRUtDA3vF8onqAcnV54wQZR8tnf3wNKtpKTl4RHHSiQU_9Xzkr86VA49D3OwZPVXHECz6fPOSkH36bfz0pRuXNPp295VDqlDPc7zzkh7jcrlJfirUpfhT7q74C5hwQ9pgKn0"/>
+</div>
+<div>
+<p class="font-label-md text-label-md text-on-surface truncate">Midnight Signal</p>
+<p class="text-[12px] text-on-surface-variant">2025 • Mystery</p>
+</div>
+</div>
+</div>
+</section>
+</div>
+<!-- Right Panel: Episodes & Cast Info -->
+<aside class="flex-[3] flex flex-col gap-6 overflow-hidden">
+<!-- Episode List -->
+<div class="glass-panel rounded-[40px] p-6 flex-1 flex flex-col overflow-hidden">
+<div class="flex justify-between items-center mb-6">
+<h3 class="font-headline-md text-headline-md text-on-surface">Episodes</h3>
+<button class="flex items-center gap-2 text-on-surface-variant bg-white/5 px-4 py-2 rounded-full text-[12px] hover:bg-white/10">
+                                Season 1 <span class="material-symbols-outlined text-[16px]">expand_more</span>
+</button>
+</div>
+<div class="flex-1 overflow-y-auto pr-2 custom-scrollbar flex flex-col gap-4">
+<!-- Ep 1 -->
+<div class="group flex gap-4 p-3 rounded-[24px] hover:bg-white/5 transition-all cursor-pointer border border-transparent hover:border-white/10">
+<div class="w-32 h-20 rounded-[16px] overflow-hidden relative flex-shrink-0">
+<img class="w-full h-full object-cover" data-alt="A tech-heavy room with dozens of glowing computer monitors. High-tech futuristic interior. Electric blue lighting." src="https://lh3.googleusercontent.com/aida-public/AB6AXuDPp35mUTr8FVy0vclMkl3jMLI-nnRXL0GkwUIzAVOHCNCwFw7xmENfhsZLAdU8SiYCyhAV62s5jzal5y9r0-bvb39u5K4VBBde__jaxrzmIZJYEvXvd_79EOpc-lKRxeDxv9hy4a8NEtd1jJ4o5qlTOFBTW9r8r6RxAUtVawngym8H34VR2ReRHfiqSeN4weIsDQ752ZK5Si0Uple931zSjBqiNpJlclc0slbqzRLacm6uADV5biiJGd6ZnB1xpbwiG5K8l9ZUUlue"/>
+<div class="absolute inset-0 bg-black/40 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
+<span class="material-symbols-outlined text-white">play_circle</span>
+</div>
+</div>
+<div class="flex flex-col justify-center overflow-hidden">
+<p class="font-label-md text-label-md text-on-surface truncate">01. Digital Dawn</p>
+<p class="text-[12px] text-on-surface-variant">48 mins</p>
+</div>
+</div>
+<!-- Ep 2 -->
+<div class="group flex gap-4 p-3 rounded-[24px] hover:bg-white/5 transition-all cursor-pointer border border-transparent hover:border-white/10">
+<div class="w-32 h-20 rounded-[16px] overflow-hidden relative flex-shrink-0">
+<img class="w-full h-full object-cover" data-alt="Abstract digital data streams visualized as golden particles. Futuristic technology concept art." src="https://lh3.googleusercontent.com/aida-public/AB6AXuDPvozUPuXgJC5gGIToj2MGKgUzSUX2rLhMAwL8miOJe7pIscF5XewM3rcCYBTmawY-oqmhAIxyoCgJMCoBGOco_UgHRqQu-OmLT8rjKWSx8kgs6TH0vAgHXIHFFvkCiSuKAloyf-d2tp2Pf_VnFhy_4mQmsgyTiJCHU2pVRonFTQkpe7hRnaZIZLF09LZxFvz5ZIjmgpZtE2KksEUYdEUXPW3sMxZWDip3h3jnWyLqQtYcslbjbpfY9M-gGP7BL2_UMol1U-ncderd"/>
+<div class="absolute inset-0 bg-black/40 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
+<span class="material-symbols-outlined text-white">play_circle</span>
+</div>
+</div>
+<div class="flex flex-col justify-center overflow-hidden">
+<p class="font-label-md text-label-md text-on-surface truncate">02. Silicon Shadows</p>
+<p class="text-[12px] text-on-surface-variant">52 mins</p>
+</div>
+</div>
+<!-- Ep 3 -->
+<div class="group flex gap-4 p-3 rounded-[24px] hover:bg-white/5 transition-all cursor-pointer border border-transparent hover:border-white/10 bg-white/10 border-white/20">
+<div class="w-32 h-20 rounded-[16px] overflow-hidden relative flex-shrink-0">
+<img class="w-full h-full object-cover" data-alt="Cyberpunk street market with glowing signs in Japanese. Vivid reds and blues. Atmospheric mist." src="https://lh3.googleusercontent.com/aida-public/AB6AXuDlrebyFpsKYipr-RnPLxXdpm90WI8i_N4040Uoa3RNx6j0Ezoxt_AJAhHbDohRBcSWttRm5iuPwdoxrPSH6cljtIq9HcEhkkjKu6BIC4TKXQJs75-A9TNq34cR6uBCOkFB5hmMLG5Dvtk8IU9gvqwX7znJN861BHP-csaZ8GIDnhD_EVNibXLMAT5ZyqND97-5VHABLbt8wPBZYzm-pkeu-KaGxCD8GbbNdClesmdfhB975r-lv-7t9iz8Y3-Q6BYBc_opDSC2u9u0"/>
+<div class="absolute inset-0 bg-primary-container/40 flex items-center justify-center">
+<span class="material-symbols-outlined text-white" style="font-variation-settings: 'FILL' 1;">play_circle</span>
+</div>
+<div class="absolute bottom-1 left-0 right-0 h-1 bg-white/20">
+<div class="h-full bg-primary-container w-[40%]"></div>
+</div>
+</div>
+<div class="flex flex-col justify-center overflow-hidden">
+<p class="font-label-md text-label-md text-on-surface truncate">03. The Glitch</p>
+<p class="text-[12px] text-on-surface-variant">Playing • 18:24 left</p>
+</div>
+</div>
+<!-- Ep 4 -->
+<div class="group flex gap-4 p-3 rounded-[24px] hover:bg-white/5 transition-all cursor-pointer border border-transparent hover:border-white/10">
+<div class="w-32 h-20 rounded-[16px] overflow-hidden relative flex-shrink-0">
+<img class="w-full h-full object-cover" data-alt="Minimalist futuristic hallway with white geometric patterns. Deep perspective. High-key lighting." src="https://lh3.googleusercontent.com/aida-public/AB6AXuDVWJI4Ge_9mvSHlngMSNb8QIbYq7YKidXhk6886bjV1hDA5-jixkN4xJ8Wart5SrSqaZjCAQC43Ft1tHt3cHZ4o6O1bI1EjSnlak7DZl_p5bYs7Gw1LEleAzIt-cTBtUMo6p3ycrlbGx53EZ90sLLvN8EqHNcjal2lTx0UUP_Mk025FC7vPlP2eGTxpIVtQerwmvtbi2uI8l5Iz8vdhj0QrPaPxfQdOceZ5KUsoQcACXbtwppBK0Qrvp1q0jWpAcQx-PHKKAzWTxr_"/>
+<div class="absolute inset-0 bg-black/40 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
+<span class="material-symbols-outlined text-white">play_circle</span>
+</div>
+</div>
+<div class="flex flex-col justify-center overflow-hidden">
+<p class="font-label-md text-label-md text-on-surface truncate">04. Binary Bonds</p>
+<p class="text-[12px] text-on-surface-variant">45 mins</p>
+</div>
+</div>
+</div>
+</div>
+<!-- Cast & Crew -->
+<div class="glass-panel rounded-[40px] p-6 h-[260px] flex flex-col">
+<h3 class="font-headline-md text-headline-md text-on-surface mb-6">Cast</h3>
+<div class="flex gap-4 overflow-x-auto pb-4 custom-scrollbar">
+<div class="flex flex-col items-center gap-3 min-w-[80px]">
+<div class="w-16 h-16 rounded-full overflow-hidden border-2 border-primary/30">
+<img class="w-full h-full object-cover" data-alt="Close up of Alexander Vance" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAFPcB9-FPxnG0TDqFwgT8yemS9HZQo7xsgrlBFpI0345ZQ9bBoJm9mOf5A3Yeel-miEtug79w3dWhNBWZNkiWOJs5MzIV0cOjj8zJCWPXtJjao6d-TZfNXw17oSHOVNimTsCd_9tfmpWdTL2CcHUI0WpG8Z-MtyioksM1crbmccDmP9FfJuA56ohpP9UTL0wYtomKPNvdPW93osZ73rCep7IKI_LJbZONz_SbVGe7ttXRJggMp5FUElwTPbpKow7lDRJublBMuayQz"/>
+</div>
+<div class="text-center">
+<p class="text-[10px] font-bold text-on-surface truncate w-20">Alexander Vance</p>
+<p class="text-[9px] text-on-surface-variant">Jace</p>
+</div>
+</div>
+<div class="flex flex-col items-center gap-3 min-w-[80px]">
+<div class="w-16 h-16 rounded-full overflow-hidden border-2 border-secondary/30">
+<img class="w-full h-full object-cover" data-alt="Close up of Sarah Chen" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDfPc1f9zA_lggTCF_2W9ww77ksi_S852gk1ZaXDLCpscrheOuNljA4Z0O6UdA7uNOwZooBGpl1FIRmnYpr-piSEE9DgECz70qv-uDtr0b1t-PrTJkUo9dYQ74Dqo_XcCw3qVyufNk6dKgIJNtZxHOz7xDf2C6Y-_mcYljIeHevdSR9xbrbjXNMfUeF1pJgVF0Hch5mQ2lS4GhphRhHSRIlYzKWLbGPWaik3itUkb843qzghE-zl_lxFCnvor3FaOB8C5K4qzbrf8tc"/>
+</div>
+<div class="text-center">
+<p class="text-[10px] font-bold text-on-surface truncate w-20">Sarah Chen</p>
+<p class="text-[9px] text-on-surface-variant">Lyra</p>
+</div>
+</div>
+<div class="flex flex-col items-center gap-3 min-w-[80px]">
+<div class="w-16 h-16 rounded-full overflow-hidden border-2 border-white/20">
+<img class="w-full h-full object-cover" data-alt="Close up of Marcus Thorne" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBb377UJzd0Ymx57f15mNKUIPovxIl0JMMXHHG8e-wmBw-gutiC_14YlLJBXh68HppVsvN_re1ErMxXsx2Q9bkFhhoN4hEqtJUnfg68puLY2SNwlkBCdy69Y7trkosBING27MHS95dJEjABexACD3NyW7dRv-4WJL3DWGjJ-5q7zw4qR2MmPUbDxWk4eVlMYR3J1lriA9YwbG_iiy26LCuJDSSCMdWzfYEamdzHeserDZql5nC19HcSryoFOMEIRlhATVce1IVVILML"/>
+</div>
+<div class="text-center">
+<p class="text-[10px] font-bold text-on-surface truncate w-20">Marcus Thorne</p>
+<p class="text-[9px] text-on-surface-variant">Dr. Aris</p>
+</div>
+</div>
+<div class="flex flex-col items-center gap-3 min-w-[80px]">
+<div class="w-16 h-16 rounded-full overflow-hidden border-2 border-white/20">
+<img class="w-full h-full object-cover" data-alt="Close up of Elena Reyes" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBoLi2Jca7R348cMVdjS0RLTtN9U_1lsx6nXZ1CvJlgBXIQbDmKYrzIFW4zjjUUUh0uP1_gRiHtXcGVwJVKNaVa9qnja-wfOIvpXicU0sBBXg_aXCgtomRb3BJ9ARbgwLG3CtFv6daW-4KRNgREufhphrUpsSKpaiftPMFJxuYxjDsr-oJd6I1wj1xW7U_cQdmphYlad-YrR8UZd663vnCkiW2B77yrkIkukx6drrDQvjNWYKLSK6vtlq601hDwvzgpsS-U6XSJMt9q"/>
+</div>
+<div class="text-center">
+<p class="text-[10px] font-bold text-on-surface truncate w-20">Elena Reyes</p>
+<p class="text-[9px] text-on-surface-variant">Echo</p>
+</div>
+</div>
+</div>
+</div>
+</aside>
+</div>
+</div>
+</main>
+<!-- Floating Action Button for Support/Help (Optional flair) -->
+<div class="fixed bottom-10 right-10 z-50">
+<button class="w-14 h-14 rounded-2xl bg-secondary-container text-on-secondary-container shadow-lg flex items-center justify-center neon-glow-secondary hover:scale-110 active:scale-95 transition-all">
+<span class="material-symbols-outlined">chat_bubble</span>
+</button>
+</div>
+<!-- Micro-interactions Script -->
+<script>
+        // Simple interactivity for demonstration
+        document.querySelectorAll('button').forEach(btn => {
+            btn.addEventListener('mouseenter', () => {
+                // Potential sound effect or haptic trigger point
+            });
+        });
+
+        // Dynamic background parallax effect
+        window.addEventListener('mousemove', (e) => {
+            const bg = document.querySelector('.fixed.inset-0 img');
+            const x = (e.clientX / window.innerWidth - 0.5) * 20;
+            const y = (e.clientY / window.innerHeight - 0.5) * 20;
+            bg.style.transform = `scale(1.05) translate(${x}px, ${y}px)`;
+        });
+    </script>
+</body></html>

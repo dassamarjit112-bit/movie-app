@@ -1,0 +1,331 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>CineStream - Explore the Cosmic Pulse</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700;800&amp;family=Be+Vietnam+Pro:wght@400;500&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            "colors": {
+                    "surface-dim": "#13131b",
+                    "background": "#13131b",
+                    "tertiary-container": "#7658ff",
+                    "surface-container-low": "#1b1b23",
+                    "on-primary": "#520071",
+                    "inverse-on-surface": "#303038",
+                    "error": "#ffb4ab",
+                    "surface-container-lowest": "#0d0d15",
+                    "on-tertiary": "#2f009c",
+                    "primary-fixed-dim": "#ecb2ff",
+                    "secondary-container": "#00eefc",
+                    "tertiary-fixed-dim": "#c9bfff",
+                    "tertiary": "#c9bfff",
+                    "surface-bright": "#393841",
+                    "on-secondary": "#00363a",
+                    "surface-variant": "#34343d",
+                    "secondary-fixed-dim": "#00dbe9",
+                    "outline-variant": "#514255",
+                    "secondary": "#d3fbff",
+                    "inverse-surface": "#e4e1ed",
+                    "secondary-fixed": "#7df4ff",
+                    "on-tertiary-fixed-variant": "#4500d8",
+                    "on-primary-fixed": "#320047",
+                    "surface-container": "#1f1f27",
+                    "on-secondary-fixed-variant": "#004f54",
+                    "on-primary-container": "#ffffff",
+                    "on-surface-variant": "#d4c0d7",
+                    "inverse-primary": "#9900cf",
+                    "on-background": "#e4e1ed",
+                    "on-secondary-fixed": "#002022",
+                    "primary": "#ecb2ff",
+                    "on-primary-fixed-variant": "#74009f",
+                    "primary-container": "#bd00ff",
+                    "surface-container-highest": "#34343d",
+                    "on-secondary-container": "#00686f",
+                    "surface-container-high": "#292932",
+                    "tertiary-fixed": "#e5deff",
+                    "on-surface": "#e4e1ed",
+                    "primary-fixed": "#f8d8ff",
+                    "outline": "#9d8ba0",
+                    "surface-tint": "#ecb2ff",
+                    "on-error-container": "#ffdad6",
+                    "error-container": "#93000a",
+                    "on-tertiary-container": "#ffffff",
+                    "surface": "#13131b",
+                    "on-tertiary-fixed": "#1b0063",
+                    "on-error": "#690005"
+            },
+            "borderRadius": {
+                    "DEFAULT": "0.25rem",
+                    "lg": "0.5rem",
+                    "xl": "0.75rem",
+                    "full": "9999px"
+            },
+            "spacing": {
+                    "section-gap": "32px",
+                    "container-padding": "24px",
+                    "stack-sm": "8px",
+                    "stack-md": "16px",
+                    "sidebar-width": "80px",
+                    "gutter": "16px"
+            },
+            "fontFamily": {
+                    "display-lg": ["Plus Jakarta Sans"],
+                    "body-lg": ["Be Vietnam Pro"],
+                    "headline-md": ["Plus Jakarta Sans"],
+                    "headline-lg": ["Plus Jakarta Sans"],
+                    "label-md": ["Plus Jakarta Sans"],
+                    "headline-lg-mobile": ["Plus Jakarta Sans"],
+                    "body-md": ["Be Vietnam Pro"]
+            },
+            "fontSize": {
+                    "display-lg": ["48px", {"lineHeight": "56px", "letterSpacing": "-0.02em", "fontWeight": "700"}],
+                    "body-lg": ["18px", {"lineHeight": "28px", "fontWeight": "400"}],
+                    "headline-md": ["24px", {"lineHeight": "32px", "fontWeight": "600"}],
+                    "headline-lg": ["32px", {"lineHeight": "40px", "fontWeight": "700"}],
+                    "label-md": ["14px", {"lineHeight": "20px", "letterSpacing": "0.05em", "fontWeight": "600"}],
+                    "headline-lg-mobile": ["28px", {"lineHeight": "36px", "fontWeight": "700"}],
+                    "body-md": ["16px", {"lineHeight": "24px", "fontWeight": "400"}]
+            }
+          },
+        },
+      }
+    </script>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        .glass-card {
+            background: linear-gradient(135deg, rgba(255, 255, 255, 0.1) 0%, rgba(255, 255, 255, 0.02) 100%);
+            backdrop-filter: blur(40px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        .neon-glow-primary {
+            box-shadow: 0 0 20px rgba(236, 178, 255, 0.3);
+        }
+        .neon-glow-secondary {
+            box-shadow: 0 0 15px rgba(0, 238, 252, 0.2);
+        }
+        body {
+            background: radial-gradient(circle at 50% 50%, #1a1a2e 0%, #13131b 100%);
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+        .hide-scrollbar::-webkit-scrollbar {
+            display: none;
+        }
+        .hide-scrollbar {
+            -ms-overflow-style: none;
+            scrollbar-width: none;
+        }
+        .animate-pulse-subtle {
+            animation: pulse-subtle 3s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+        }
+        @keyframes pulse-subtle {
+            0%, 100% { opacity: 1; transform: scale(1); }
+            50% { opacity: 0.8; transform: scale(0.98); }
+        }
+    </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="text-on-surface font-body-md selection:bg-primary-container selection:text-on-primary">
+<!-- Background Atmospheric Effect -->
+<div class="fixed inset-0 pointer-events-none z-0">
+<div class="absolute top-[-10%] left-[-10%] w-[60%] h-[60%] rounded-full bg-primary/10 blur-[120px]"></div>
+<div class="absolute bottom-[-10%] right-[-10%] w-[60%] h-[60%] rounded-full bg-tertiary-container/10 blur-[120px]"></div>
+</div>
+<!-- TopAppBar -->
+<header class="fixed top-0 left-0 w-full z-50 flex justify-between items-center px-container-padding py-4 bg-surface-container/30 dark:bg-surface-container/30 backdrop-blur-[40px] rounded-b-xl border-b border-white/10 shadow-[0_8px_32px_0_rgba(0,0,0,0.3)]">
+<button class="flex items-center justify-center p-2 rounded-full hover:bg-white/5 transition-colors active:scale-95 text-primary">
+<span class="material-symbols-outlined" data-icon="menu">menu</span>
+</button>
+<h1 class="font-display-lg text-headline-lg-mobile tracking-tighter text-transparent bg-clip-text bg-gradient-to-r from-primary to-tertiary-container">CINESTREAM</h1>
+<button class="flex items-center justify-center p-2 rounded-full hover:bg-white/5 transition-colors active:scale-95 text-primary">
+<span class="material-symbols-outlined" data-icon="search">search</span>
+</button>
+</header>
+<main class="relative z-10 pt-24 pb-32 px-container-padding space-y-section-gap">
+<!-- Hero Carousel Section (Cyberpulse) -->
+<section class="relative">
+<div class="glass-card relative w-full h-[460px] rounded-[32px] overflow-hidden group">
+<img alt="Cyberpulse Hero" class="absolute inset-0 w-full h-full object-cover group-hover:scale-105 transition-transform duration-700" data-alt="A cinematic hero shot of a futuristic cyberpunk city with vibrant neon magenta and cyan lighting, reflecting off rain-slicked pavement. The atmosphere is dense and moody with misty atmospheric haze. A central figure in sleek digital armor looks out over a massive holographic megastructure. High-fidelity glassmorphism aesthetic with cosmic particle effects." src="https://lh3.googleusercontent.com/aida-public/AB6AXuDCIx-foZZALW8wItObFtPfYwN4GOzD0j8KCkxY6mHzUTD-wxmOsd6hmRxVLgB6Te_hz6oqtfcVa7Lweszd0KqNu7_0bBeRVQ7fHNG23FRYXRJWCEUvfZV_N2KkLmA4QsBub5kfOfG-LRmgip9hGTKZNakHCcm23FpeLK1xbKLpacUN8C7EBO3A9jRhzYWSc-NdLgQzmVBGxN6TygwOUgzxOKC2d3uPgpVHo-MoGw8HcsOMF8P6N0iFp4Bglm4nMYbMJ_rQcDMhf646"/>
+<div class="absolute inset-0 bg-gradient-to-t from-surface-dim via-surface-dim/40 to-transparent"></div>
+<div class="absolute bottom-0 left-0 w-full p-8 space-y-4">
+<div class="flex gap-2">
+<span class="px-3 py-1 bg-white/10 backdrop-blur-md rounded-full font-label-md text-label-md border border-white/10 uppercase">Cyberpunk</span>
+<span class="px-3 py-1 bg-primary/20 backdrop-blur-md rounded-full font-label-md text-label-md border border-primary/30 text-primary uppercase">Trending Now</span>
+</div>
+<h2 class="font-display-lg text-headline-lg-mobile leading-none">CYBERPULSE: RIFT</h2>
+<p class="text-on-surface-variant font-body-md line-clamp-2 max-w-[90%]">In a world where memory is a commodity, one rogue hacker discovers a pulse that could reset humanity's digital chains.</p>
+<div class="flex items-center gap-4 pt-2">
+<button class="flex-1 flex items-center justify-center gap-2 bg-gradient-to-r from-primary-container to-tertiary-container text-on-primary-container py-4 rounded-2xl font-headline-md text-headline-md neon-glow-primary active:scale-95 transition-all">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">play_arrow</span>
+                            Watch Now
+                        </button>
+<button class="w-16 h-16 flex items-center justify-center rounded-2xl glass-card border border-white/20 active:scale-95 transition-all">
+<span class="material-symbols-outlined" data-icon="add">add</span>
+</button>
+</div>
+</div>
+<!-- Carousel Indicators -->
+<div class="absolute top-8 right-8 flex flex-col gap-2">
+<div class="w-1 h-8 bg-primary rounded-full"></div>
+<div class="w-1 h-3 bg-white/20 rounded-full"></div>
+<div class="w-1 h-3 bg-white/20 rounded-full"></div>
+</div>
+</div>
+</section>
+<!-- Continue Watching Section -->
+<section class="space-y-stack-md">
+<div class="flex justify-between items-center">
+<h3 class="font-headline-md text-headline-md">Continue Watching</h3>
+<button class="text-primary font-label-md text-label-md">See All</button>
+</div>
+<div class="flex gap-4 overflow-x-auto hide-scrollbar pb-2">
+<!-- Progress Card 1 -->
+<div class="flex-none w-[280px] glass-card rounded-3xl overflow-hidden group active:scale-95 transition-all">
+<div class="relative h-40">
+<img alt="Echoes" class="w-full h-full object-cover" data-alt="A dark science fiction scene with a lone astronaut standing on a desolate moon looking at a giant purple nebula in the sky. Deep cinematic lighting, violet and indigo color palette, with high-end digital gloss and sharp reflections. High-resolution textures and cosmic atmospheric haze." src="https://lh3.googleusercontent.com/aida-public/AB6AXuAlXyIG86KDY-7foZMbbx2GIaeNNuED_wD7dBz1N7ElIK4nQTKGYqLWL59xZJxSJzy5sSN18rxMcxl3UjxUx8OOB4ICPOzCrsWUdJ7zrhTKDHXFX_0nBSzEeH_E90-tB9Gq_bq-WNa168QNdMTA9sgIGzk1YlI7u21P0j9S2tAoHZqSpjAGOtTSSVE7achj-jx_czo_OaTL7NuZ0NN2C5S4yQM4zjqkYYjsHKTlmTEduakIiMiwyXIWSbJIPwENgNnzTwo2Ipn7Ydp9"/>
+<div class="absolute inset-0 bg-black/20 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
+<span class="material-symbols-outlined text-white text-4xl" data-icon="play_circle">play_circle</span>
+</div>
+<div class="absolute bottom-0 left-0 w-full h-1 bg-white/10">
+<div class="h-full bg-secondary-container neon-glow-secondary" style="width: 75%;"></div>
+</div>
+</div>
+<div class="p-4">
+<p class="font-headline-md text-label-md truncate">Echoes of the Void</p>
+<p class="text-on-surface-variant font-label-md text-[12px]">S2 • E4 • 12m left</p>
+</div>
+</div>
+<!-- Progress Card 2 -->
+<div class="flex-none w-[280px] glass-card rounded-3xl overflow-hidden group active:scale-95 transition-all">
+<div class="relative h-40">
+<img alt="Synthetica" class="w-full h-full object-cover" data-alt="Intricate close-up of an android's face with exposed circuitry glowing in cyan and magenta. The lighting is high-contrast, casting deep shadows that blend into a dark obsidian background. Sleek futuristic aesthetic with micro-particle details and glass-like surface textures." src="https://lh3.googleusercontent.com/aida-public/AB6AXuBCIeQ3eOhtTMqmQWSPEFt8ZPGHeGMX75iQhBAH9V1y3bQlEJmmHkLMOI2NOdCOKE3Fp1THGklovLO0o8kHqt0gtSKStArpJ1FfHDC7jWmcp8QfipIJQ3B7XDzQH4bIOc8R-AmaQ2J8C7uLGWXTzE__fje6c3xyWo1f0-OwwhMbC2pOwWkvJVny-fPS9zTZ82gRzEWPHNBGPA-bV_VAEaEdQq6iDwvk75DP0MDJ4812p5PnSbqW2tWL8aDrA7LwcS8uB8sAW0EeFAwC"/>
+<div class="absolute inset-0 bg-black/20 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
+<span class="material-symbols-outlined text-white text-4xl" data-icon="play_circle">play_circle</span>
+</div>
+<div class="absolute bottom-0 left-0 w-full h-1 bg-white/10">
+<div class="h-full bg-secondary-container neon-glow-secondary" style="width: 30%;"></div>
+</div>
+</div>
+<div class="p-4">
+<p class="font-headline-md text-label-md truncate">Synthetica Dreams</p>
+<p class="text-on-surface-variant font-label-md text-[12px]">Movie • 1h 42m left</p>
+</div>
+</div>
+</div>
+</section>
+<!-- Trending Now Vertical Section -->
+<section class="space-y-stack-md">
+<h3 class="font-headline-md text-headline-md">Trending Now</h3>
+<div class="space-y-4">
+<!-- Trending Item 1 -->
+<div class="flex gap-4 p-3 glass-card rounded-3xl group active:scale-[0.98] transition-all">
+<div class="relative w-24 h-32 flex-none rounded-2xl overflow-hidden">
+<img alt="Solstice" class="w-full h-full object-cover" data-alt="A mystical forest scene at twilight with giant glowing mushrooms emitting a soft purple light. A thin fog drifts through the dark trees. The visual style is ethereal and magical, with deep jewel tones and shimmering light particles. Cinematic depth of field and premium glassmorphic overlay vibes." src="https://lh3.googleusercontent.com/aida-public/AB6AXuB-OZPPfFfvSXes1KE7dVWg41dn316jLwxQmJulrOxqbT7szwXomJfqrm5gpQ_LRhxuDaqcrIJC1NGtN7nA0IHqsddsbAbgog5GfRebLJdt0JYQxaicRAUUK9Dj8jh1Rjdu_69qe_GDYFVUXHxYdfNqFUJ3thomCdY5d_IR8K87_5xLmswloLs-BcVoIZLPpkd1oC-RuxEnXiIV7VhAve4kOmp4vM22xt4OIZTfBmKbL86XjvmFp-4GkhR9cj2tHnPWPCmCl7tU3Vr6"/>
+<div class="absolute top-2 left-2 w-6 h-6 bg-primary-container text-on-primary-container rounded flex items-center justify-center font-bold text-[10px]">1</div>
+</div>
+<div class="flex-1 flex flex-col justify-center gap-1">
+<div class="flex items-center gap-2">
+<span class="font-label-md text-[10px] text-primary px-2 border border-primary/30 rounded uppercase">Series</span>
+<span class="text-on-surface-variant text-[12px]">⭐ 9.4</span>
+</div>
+<h4 class="font-headline-md text-body-lg">Solstice Protocol</h4>
+<p class="text-on-surface-variant font-body-md text-sm line-clamp-2">Survival takes a cosmic turn when the sun never sets on the orbital station.</p>
+</div>
+<div class="flex items-center pr-2">
+<button class="w-10 h-10 rounded-full border border-white/10 flex items-center justify-center hover:bg-white/10">
+<span class="material-symbols-outlined text-primary" data-icon="bookmark">bookmark</span>
+</button>
+</div>
+</div>
+<!-- Trending Item 2 -->
+<div class="flex gap-4 p-3 glass-card rounded-3xl group active:scale-[0.98] transition-all">
+<div class="relative w-24 h-32 flex-none rounded-2xl overflow-hidden">
+<img alt="Stardust" class="w-full h-full object-cover" data-alt="A dramatic view of a space station orbiting a vibrant earth-like planet with swirling clouds and deep blue oceans. Bright sunlight flares across the metallic surface of the station. Epic cinematic scale, high contrast lighting, and a crisp, modern sci-fi atmosphere." src="https://lh3.googleusercontent.com/aida-public/AB6AXuAtn5WbnvIb9RdPaCqYWzCUdUDBFwYAdjZoxZTZSJ1YTDAv-53g1tEd_KurHkOA3NUojvfTDcC3Bj9B-audXc3cQZYc2TpzNxePvRSabh9nAS9V1V0_f50bW7qwflgoSQVsxrzaxbORswCDyU0ue8xmg_jpqv0GWGHkCEPXp_IsAzeYw3uvoWR7IoLLdatBB_UvKQI5f558MaXilrCPfq-r80qDfPSWIffxIrzTa3IIJbYWvrtJaSwP6wKLinXLzAr10paXnjfFAOSc"/>
+<div class="absolute top-2 left-2 w-6 h-6 bg-surface-container-high text-white rounded flex items-center justify-center font-bold text-[10px]">2</div>
+</div>
+<div class="flex-1 flex flex-col justify-center gap-1">
+<div class="flex items-center gap-2">
+<span class="font-label-md text-[10px] text-tertiary px-2 border border-tertiary/30 rounded uppercase">Movie</span>
+<span class="text-on-surface-variant text-[12px]">⭐ 8.9</span>
+</div>
+<h4 class="font-headline-md text-body-lg">Stardust Drift</h4>
+<p class="text-on-surface-variant font-body-md text-sm line-clamp-2">A lone pilot must navigate the remains of a shattered asteroid belt.</p>
+</div>
+<div class="flex items-center pr-2">
+<button class="w-10 h-10 rounded-full border border-white/10 flex items-center justify-center hover:bg-white/10">
+<span class="material-symbols-outlined text-on-surface-variant" data-icon="bookmark">bookmark</span>
+</button>
+</div>
+</div>
+</div>
+</section>
+</main>
+<!-- BottomNavBar -->
+<nav class="fixed bottom-6 left-1/2 -translate-x-1/2 w-full max-w-md z-50 flex justify-around items-center px-4 py-2 bg-surface-container-low/40 dark:bg-surface-container-low/40 backdrop-blur-[40px] docked full-width mx-container-padding rounded-full border border-white/10 w-[calc(100%-48px)] shadow-[0_-8px_32px_0_rgba(0,0,0,0.5)]">
+<!-- Active Item (Home) -->
+<a class="flex items-center justify-center bg-gradient-to-br from-primary to-tertiary-container text-on-primary rounded-full p-3 shadow-[0_0_20px_rgba(236,178,255,0.4)] transition-all duration-300 hover:text-secondary" href="#">
+<span class="material-symbols-outlined" data-icon="home" style="font-variation-settings: 'FILL' 1;">home</span>
+</a>
+<!-- Inactive Items -->
+<a class="flex items-center justify-center text-on-surface-variant/70 p-3 hover:text-secondary transition-all duration-300" href="#">
+<span class="material-symbols-outlined" data-icon="explore">explore</span>
+</a>
+<a class="flex items-center justify-center text-on-surface-variant/70 p-3 hover:text-secondary transition-all duration-300" href="#">
+<span class="material-symbols-outlined" data-icon="movie_filter">movie_filter</span>
+</a>
+<a class="flex items-center justify-center text-on-surface-variant/70 p-3 hover:text-secondary transition-all duration-300" href="#">
+<span class="material-symbols-outlined" data-icon="person">person</span>
+</a>
+</nav>
+<script>
+        // Micro-interaction for the Nav Tabs
+        const navItems = document.querySelectorAll('nav a');
+        navItems.forEach(item => {
+            item.addEventListener('click', function(e) {
+                if(this.classList.contains('text-on-primary')) return;
+                
+                // Clear active states
+                navItems.forEach(ni => {
+                    ni.className = "flex items-center justify-center text-on-surface-variant/70 p-3 hover:text-secondary transition-all duration-300";
+                    const span = ni.querySelector('span');
+                    if(span) span.style.fontVariationSettings = "'FILL' 0";
+                });
+
+                // Set active state
+                this.className = "flex items-center justify-center bg-gradient-to-br from-primary to-tertiary-container text-on-primary rounded-full p-3 shadow-[0_0_20px_rgba(236,178,255,0.4)] transition-all duration-300";
+                const activeSpan = this.querySelector('span');
+                if(activeSpan) activeSpan.style.fontVariationSettings = "'FILL' 1";
+                
+                // Pulse effect
+                this.style.animation = 'none';
+                this.offsetHeight; // trigger reflow
+                this.style.animation = 'neon-pulse 0.6s ease-out';
+            });
+        });
+
+        // Add pulse animation keyframe dynamically
+        const style = document.createElement('style');
+        style.innerHTML = `
+            @keyframes neon-pulse {
+                0% { box-shadow: 0 0 0 0 rgba(236, 178, 255, 0.7); }
+                70% { box-shadow: 0 0 0 15px rgba(236, 178, 255, 0); }
+                100% { box-shadow: 0 0 0 0 rgba(236, 178, 255, 0); }
+            }
+        `;
+        document.head.appendChild(style);
+    </script>
+</body></html>

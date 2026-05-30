@@ -1,0 +1,374 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>TV Shows | CineStream</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@700;800&amp;family=Inter:wght@400;500;600&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            "colors": {
+                    "secondary": "#a6e6ff",
+                    "surface-container-high": "#2a2a2a",
+                    "secondary-fixed": "#b7eaff",
+                    "surface-container-lowest": "#0e0e0e",
+                    "on-primary": "#690003",
+                    "inverse-on-surface": "#313030",
+                    "on-surface": "#e5e2e1",
+                    "on-tertiary-container": "#fbf8f7",
+                    "on-error-container": "#ffdad6",
+                    "on-primary-fixed": "#410001",
+                    "surface-dim": "#131313",
+                    "primary-fixed-dim": "#ffb4aa",
+                    "tertiary-container": "#737272",
+                    "inverse-primary": "#c0000c",
+                    "on-primary-container": "#fff7f6",
+                    "on-secondary-fixed": "#001f28",
+                    "surface-container-low": "#1c1b1b",
+                    "surface-tint": "#ffb4aa",
+                    "surface": "#131313",
+                    "surface-bright": "#3a3939",
+                    "surface-container-highest": "#353534",
+                    "secondary-fixed-dim": "#4cd6ff",
+                    "error": "#ffb4ab",
+                    "surface-container": "#201f1f",
+                    "error-container": "#93000a",
+                    "secondary-container": "#14d1ff",
+                    "primary": "#ffb4aa",
+                    "on-secondary-container": "#00566b",
+                    "on-secondary": "#003543",
+                    "inverse-surface": "#e5e2e1",
+                    "outline": "#af8782",
+                    "on-primary-fixed-variant": "#930007",
+                    "on-background": "#e5e2e1",
+                    "on-tertiary": "#313030",
+                    "tertiary-fixed": "#e5e2e1",
+                    "on-secondary-fixed-variant": "#004e60",
+                    "outline-variant": "#5e3f3b",
+                    "on-surface-variant": "#e9bcb6",
+                    "on-tertiary-fixed": "#1c1b1b",
+                    "surface-variant": "#353534",
+                    "tertiary": "#c8c6c5",
+                    "primary-container": "#e50914",
+                    "background": "#131313",
+                    "tertiary-fixed-dim": "#c8c6c5",
+                    "primary-fixed": "#ffdad5",
+                    "on-error": "#690005",
+                    "on-tertiary-fixed-variant": "#474746"
+            },
+            "borderRadius": {
+                    "DEFAULT": "0.125rem",
+                    "lg": "0.25rem",
+                    "xl": "0.5rem",
+                    "full": "0.75rem"
+            },
+            "spacing": {
+                    "container-max": "1440px",
+                    "gutter-mobile": "16px",
+                    "gutter-desktop": "24px",
+                    "margin-desktop": "64px",
+                    "unit": "8px",
+                    "margin-mobile": "20px"
+            },
+            "fontFamily": {
+                    "body-md": ["Inter"],
+                    "label-sm": ["Inter"],
+                    "headline-lg": ["Montserrat"],
+                    "body-lg": ["Inter"],
+                    "display-lg": ["Montserrat"],
+                    "label-md": ["Inter"],
+                    "display-lg-mobile": ["Montserrat"],
+                    "headline-md": ["Montserrat"]
+            },
+            "fontSize": {
+                    "body-md": ["16px", {"lineHeight": "24px", "fontWeight": "400"}],
+                    "label-sm": ["12px", {"lineHeight": "16px", "fontWeight": "500"}],
+                    "headline-lg": ["32px", {"lineHeight": "40px", "fontWeight": "700"}],
+                    "body-lg": ["18px", {"lineHeight": "28px", "fontWeight": "400"}],
+                    "display-lg": ["64px", {"lineHeight": "72px", "letterSpacing": "-0.02em", "fontWeight": "800"}],
+                    "label-md": ["14px", {"lineHeight": "20px", "letterSpacing": "0.05em", "fontWeight": "600"}],
+                    "display-lg-mobile": ["40px", {"lineHeight": "44px", "letterSpacing": "-0.01em", "fontWeight": "800"}],
+                    "headline-md": ["24px", {"lineHeight": "32px", "fontWeight": "700"}]
+            }
+          },
+        },
+      }
+    </script>
+<style>
+        body { background-color: #0F0F0F; color: #e5e2e1; }
+        .glass-panel { background: rgba(255, 255, 255, 0.05); backdrop-filter: blur(20px); border: 1px solid rgba(255, 255, 255, 0.1); }
+        .movie-card:hover .meta-overlay { opacity: 1; transform: translateY(0); }
+        .scroll-hide::-webkit-scrollbar { display: none; }
+        .scroll-hide { -ms-overflow-style: none; scrollbar-width: none; }
+    </style>
+</head>
+<body class="font-body-md text-body-md overflow-x-hidden">
+<!-- TopNavBar -->
+<nav class="bg-surface/70 backdrop-blur-xl border-b border-white/10 shadow-2xl flex justify-between items-center px-gutter-desktop h-20 w-full z-50 docked full-width top-0 sticky">
+<div class="flex items-center gap-12">
+<span class="font-display-lg text-primary-container tracking-tighter cursor-pointer">CineStream</span>
+<div class="hidden md:flex items-center gap-8">
+<a class="font-label-md text-label-md text-on-surface/70 hover:text-on-surface transition-colors" href="#">Home</a>
+<a class="font-label-md text-label-md text-primary-container border-b-2 border-primary-container pb-1" href="#">TV Shows</a>
+<a class="font-label-md text-label-md text-on-surface/70 hover:text-on-surface transition-colors" href="#">Movies</a>
+</div>
+</div>
+<div class="flex items-center gap-6">
+<div class="relative hidden lg:block">
+<span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-on-surface/50">search</span>
+<input class="bg-surface-container-low border border-white/10 rounded-full py-2 pl-10 pr-4 w-64 focus:outline-none focus:border-secondary transition-all text-label-md" placeholder="Titles, people, genres" type="text"/>
+</div>
+<div class="flex items-center gap-4">
+<button class="material-symbols-outlined text-on-surface/70 hover:bg-white/5 p-2 rounded-full transition-all duration-300 scale-105 active:scale-95">search</button>
+<button class="material-symbols-outlined text-on-surface/70 hover:bg-white/5 p-2 rounded-full transition-all duration-300 scale-105 active:scale-95">notifications</button>
+<img alt="User Profile" class="w-10 h-10 rounded-full border border-white/20" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBUURj55e28NHkdkB7eU5c_olNHaZ5KUM9d8cxUOBa9_NGxeZSc_rTklOH6zu_snwHJeypsrmVVSEgWyc3DtdRg1RiNKNM2lhVZmEuGEJzpTv-ZsJFY-4n6FegcKbTivOeVnsmdS74LBQ9QhH-A6DT6D8TdVHi5B6cAXP8dV75-9teOH_SCb5_D2axx6Gh0EXMN4ntbj9wTj4iKSku7GS09dego91OF8c9V2AzHuC4tvh9ox4btK4-40KWWQY_A1_joiD3Yh-2YcwUz"/>
+</div>
+</div>
+</nav>
+<!-- Hero / Top Picks Section -->
+<header class="relative w-full h-[716px] flex items-end px-margin-desktop pb-20">
+<div class="absolute inset-0 z-0">
+<img class="w-full h-full object-cover opacity-60" data-alt="A cinematic wide-angle shot of a sprawling, futuristic cyberpunk cityscape at night, featuring neon-drenched skyscrapers in deep blues and vibrant action reds. Atmospheric fog and rain streaks catch the glowing lights of a massive holographic display. The overall mood is mysterious and high-tech, following a premium dark cinematic aesthetic with heavy contrasts and deep charcoal shadows." src="https://lh3.googleusercontent.com/aida-public/AB6AXuAl_x-pi6gHkOWGLqiPWGYriUK476UKM_lGXUG_SlyOE7CphuVkafQBsDoOEeW9rLqENGG2DuUnokSN13ar0i_qgKZ665LObvFqEVndyVckU_LSgV9ga-YSLImtQKlW4dXw7D68RiRdQB02_tJJpd2b5hUP4C3M381AW8YRAzVqQT6AUTUYAYae4HD86QEiH73X7UOJuHru8ySH9lNvVvP-UhxTB5Ut9nQcGr9pGj-ZpdwVZWA3_mY3QQ62oUpBZl_nKM4XbJdnKzBA"/>
+<div class="absolute inset-0 bg-gradient-to-t from-[#0F0F0F] via-transparent to-transparent"></div>
+</div>
+<div class="relative z-10 max-w-2xl">
+<span class="bg-primary-container text-on-primary-container px-3 py-1 rounded-sm text-label-sm font-label-sm mb-4 inline-block uppercase tracking-widest">Editor's Choice</span>
+<h1 class="font-display-lg text-display-lg-mobile md:text-display-lg text-on-surface mb-4 leading-tight">Neon Shadows</h1>
+<div class="flex items-center gap-4 mb-6 text-on-surface/70 font-label-md">
+<span class="flex items-center gap-1 text-secondary"><span class="material-symbols-outlined text-sm" style="font-variation-settings: 'FILL' 1;">star</span> 9.2</span>
+<span>2024</span>
+<span class="border border-white/30 px-2 py-0.5 rounded text-xs uppercase">18+</span>
+<span>4 Seasons</span>
+</div>
+<p class="text-body-lg font-body-lg text-on-surface/80 mb-8 line-clamp-3">In a city where the sun never rises, a cybernetically enhanced detective uncovers a conspiracy that threatens the very fabric of human existence. A gritty, high-stakes journey into the heart of a neon-soaked underworld.</p>
+<div class="flex gap-4">
+<button class="bg-primary-container text-on-primary-container px-8 py-3 rounded-xl font-label-md flex items-center gap-2 hover:brightness-110 transition-all scale-105 active:scale-95">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">play_arrow</span> Play Now
+                </button>
+<button class="glass-panel px-8 py-3 rounded-xl font-label-md flex items-center gap-2 hover:bg-white/10 transition-all scale-105 active:scale-95">
+<span class="material-symbols-outlined">info</span> More Info
+                </button>
+</div>
+</div>
+</header>
+<!-- Networks Filter -->
+<section class="px-margin-desktop py-12">
+<h2 class="font-headline-md text-headline-md mb-8">Networks</h2>
+<div class="flex gap-4 overflow-x-auto scroll-hide pb-4">
+<!-- Filter Pills -->
+<button class="bg-secondary-container text-on-secondary-container px-6 py-4 rounded-xl flex-shrink-0 font-label-md flex items-center gap-3 transition-all hover:scale-105">
+<span class="material-symbols-outlined">vibration</span> Netflix
+            </button>
+<button class="glass-panel px-6 py-4 rounded-xl flex-shrink-0 font-label-md flex items-center gap-3 transition-all hover:bg-white/10 hover:scale-105">
+<span class="material-symbols-outlined">token</span> HBO Max
+            </button>
+<button class="glass-panel px-6 py-4 rounded-xl flex-shrink-0 font-label-md flex items-center gap-3 transition-all hover:bg-white/10 hover:scale-105">
+<span class="material-symbols-outlined">cloud</span> Prime Video
+            </button>
+<button class="glass-panel px-6 py-4 rounded-xl flex-shrink-0 font-label-md flex items-center gap-3 transition-all hover:bg-white/10 hover:scale-105">
+<span class="material-symbols-outlined">flutter_dash</span> Disney+
+            </button>
+<button class="glass-panel px-6 py-4 rounded-xl flex-shrink-0 font-label-md flex items-center gap-3 transition-all hover:bg-white/10 hover:scale-105">
+<span class="material-symbols-outlined">ios</span> Apple TV+
+            </button>
+<button class="glass-panel px-6 py-4 rounded-xl flex-shrink-0 font-label-md flex items-center gap-3 transition-all hover:bg-white/10 hover:scale-105">
+<span class="material-symbols-outlined">history</span> Hulu
+            </button>
+</div>
+</section>
+<!-- New Releases Row -->
+<section class="px-margin-desktop py-8">
+<div class="flex justify-between items-center mb-6">
+<h2 class="font-headline-md text-headline-md">New Releases</h2>
+<a class="text-secondary font-label-md hover:underline" href="#">View All</a>
+</div>
+<div class="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-6">
+<!-- Card 1 -->
+<div class="group relative aspect-[2/3] rounded-xl overflow-hidden cursor-pointer transition-all duration-500 hover:scale-105 hover:ring-2 hover:ring-secondary/50">
+<img class="w-full h-full object-cover" data-alt="A moody, high-contrast poster for a dark detective TV series. The composition features a lone silhouette standing under a single streetlamp in a rain-slicked urban alleyway. Deep blues and electric cyan accents highlight the wet pavement, while shadows dominate the frame. Dark cinematic lighting and premium glassmorphic textures suggest a sophisticated noir mystery." src="https://lh3.googleusercontent.com/aida-public/AB6AXuCMnvbQDWSHQnEpA1Q0fiF4QA0jSJZ5RlOl9XONgyhZUl59C5cG1jCwagEFT33jXbQW2BkpzsKQQ8651yL5IYntQXzSuKYd1YPOetNAr0BBLuP-yiwnpyixTlqx9RIXfdPoJl6_0VsXFXgCvEamsBZNsZxq92wYApekswkrmpRwAuoE5vYvEdNIy8HtPMw1awt_HBvy0nm55KGwntTsHU4VvophPIx1YRda5ZBFu6rl--U5a4SU2qQMhuAC1e6UlWhxXu3OoJoxk3H4"/>
+<div class="meta-overlay absolute inset-0 bg-black/60 opacity-0 transition-opacity duration-300 flex flex-col justify-end p-4 group-hover:opacity-100">
+<h3 class="font-label-md text-on-surface">The Silent King</h3>
+<div class="flex justify-between text-xs text-secondary mt-1">
+<span>9.0 Rating</span>
+<span>S2 New</span>
+</div>
+</div>
+</div>
+<!-- Card 2 -->
+<div class="group relative aspect-[2/3] rounded-xl overflow-hidden cursor-pointer transition-all duration-500 hover:scale-105 hover:ring-2 hover:ring-secondary/50">
+<img class="w-full h-full object-cover" data-alt="A futuristic sci-fi poster showcasing a sleek, metallic spaceship interior bathed in sterile white and glowing neon blue light. A central protagonist is looking out of a massive portal at a colorful nebula in space. The aesthetic is clean, technical, and premium with subtle frosted glass overlays and sharp, modern typography." src="https://lh3.googleusercontent.com/aida-public/AB6AXuBD6jOwb_yVoYMHi0sVypUMnbfseEFwYfYoDm3TO11yNIRosaZ45aueszSNSgXPBXNbYDJvf9mqYu00WNJUh6XCh2jzQbgZpeejLqqvcvDgoAEsajoLt2Dt3i4sSRAHaKjI6NDxy0FoeeQ5ZNw6xMJZMYoEsOpL4QhE_A0ET8cIVDiWxzJ3efmZ0sJG3jqiOlNU8UEllmVVjtYoft-LGnPOycRfKn2y4Sgy1en9M4sna1tr9yBdNtlzvVk5254c-XoR-qVtwZ4CbrKM"/>
+<div class="meta-overlay absolute inset-0 bg-black/60 opacity-0 transition-opacity duration-300 flex flex-col justify-end p-4 group-hover:opacity-100">
+<h3 class="font-label-md text-on-surface">Stellar Void</h3>
+<div class="flex justify-between text-xs text-secondary mt-1">
+<span>8.8 Rating</span>
+<span>Full Season</span>
+</div>
+</div>
+</div>
+<!-- Card 3 -->
+<div class="group relative aspect-[2/3] rounded-xl overflow-hidden cursor-pointer transition-all duration-500 hover:scale-105 hover:ring-2 hover:ring-secondary/50">
+<img class="w-full h-full object-cover" data-alt="An evocative poster for a historical drama set in a medieval castle during a winter storm. Warm orange candlelight flickers against cold, grey stone walls and falling snow. A figure in elaborate velvet robes stands in the center of the frame. The lighting is dramatic and cinematic, with a color palette of deep amber and icy whites." src="https://lh3.googleusercontent.com/aida-public/AB6AXuA8meuif-0ycmpVlxo-o_dO9bBxhimROC6UlJwH6W5XnjlemuXfLKkYrcxu-3QWDzIcwi_KZJl474saXN_-zND-tWgcgTmGhdNrXeLn_OYeot2iyTbvklT9uhdxkIPskWVP7qyuhYtspL_ifpwBN-n2ny-xBt-4AIkkicBX8LSUqZaKNAJiyN5_acam0KDWCfBAxA8v20JjPjdoHq9rvUiIVV3b2lIJliSv7LwwhZMYARXz186rT7jCiTr6mXtQf4GWyb7h57cz3k_w"/>
+<div class="meta-overlay absolute inset-0 bg-black/60 opacity-0 transition-opacity duration-300 flex flex-col justify-end p-4 group-hover:opacity-100">
+<h3 class="font-label-md text-on-surface">Iron Crown</h3>
+<div class="flex justify-between text-xs text-secondary mt-1">
+<span>9.5 Rating</span>
+<span>Trending</span>
+</div>
+</div>
+</div>
+<!-- Card 4 -->
+<div class="group relative aspect-[2/3] rounded-xl overflow-hidden cursor-pointer transition-all duration-500 hover:scale-105 hover:ring-2 hover:ring-secondary/50">
+<img class="w-full h-full object-cover" data-alt="A vibrant, energetic poster for a modern supernatural thriller. Stylized purple and pink neon bolts crackle across a dark suburban street at night. A group of teenagers on bicycles are fleeing from an unseen force. The mood is nostalgic yet edgy, with high contrast and saturated neon colors against deep blacks." src="https://lh3.googleusercontent.com/aida-public/AB6AXuDvip64Pah7SzgrPdByj5JGkN-48sHKcM70nLfwAkw4vTIJiB6K2uEs-tVYR9EcqaKNrSSvKCPqo31kEb_0FSomND8HW4XOO4EUhYY5MUk51AKcVwxEk9xCbsbA3tgv31MDnNSoGxPXfxjUjwjiMBHWtQHqU2NTQv112xBg4-SqcNzVBfxgzibuDNvyPLTOBvQ2P-IbxieviqSvm_aTjffxfEsXTyUVSwE3fFl60TlGaqv2_rw2cFcnT_dQXBWtODIafWSSvtiIwRWD"/>
+<div class="meta-overlay absolute inset-0 bg-black/60 opacity-0 transition-opacity duration-300 flex flex-col justify-end p-4 group-hover:opacity-100">
+<h3 class="font-label-md text-on-surface">Static Pulse</h3>
+<div class="flex justify-between text-xs text-secondary mt-1">
+<span>8.4 Rating</span>
+<span>New Series</span>
+</div>
+</div>
+</div>
+<!-- Card 5 -->
+<div class="group relative aspect-[2/3] rounded-xl overflow-hidden cursor-pointer transition-all duration-500 hover:scale-105 hover:ring-2 hover:ring-secondary/50">
+<img class="w-full h-full object-cover" data-alt="A minimalist psychological thriller poster featuring a close-up of a human eye with a distorted, digital glitch effect. The color palette is monochromatic with sharp bursts of glitchy red and cyan. The lighting is stark and unsettling, emphasizing the high-detail textures and premium, modern artistic direction." src="https://lh3.googleusercontent.com/aida-public/AB6AXuAYTxn105p-i3dwqOxCJnIizislV_Ogci5TIhbIQ0-FfxsEPtpYW-OPQe-dIHeSMRHk05QsltPXOhcf2KxJuPxM3XkdV_3sqIsCE8wvtIaDFzLQdMIzmM1lec1X4bKqyHMYfFC9AlXOMOo_5JRWGFc_i7kI49qDj3Zo4OhVgpPeFH9B9VO8CNzDPJ-Hr_G4sgt_eBqdjXkOz01IIWp2pLwYVL6dA5E-4dGDSmHC7YfImdEW6TtI2TQPdONq02-Bsx8CCG-GtEk-gzG1"/>
+<div class="meta-overlay absolute inset-0 bg-black/60 opacity-0 transition-opacity duration-300 flex flex-col justify-end p-4 group-hover:opacity-100">
+<h3 class="font-label-md text-on-surface">Data Breach</h3>
+<div class="flex justify-between text-xs text-secondary mt-1">
+<span>8.7 Rating</span>
+<span>Full Season</span>
+</div>
+</div>
+</div>
+<!-- Card 6 -->
+<div class="group relative aspect-[2/3] rounded-xl overflow-hidden cursor-pointer transition-all duration-500 hover:scale-105 hover:ring-2 hover:ring-secondary/50">
+<img class="w-full h-full object-cover" data-alt="A cinematic poster for an adventure series set in a lush, prehistoric jungle. Enormous fern leaves and ancient stone ruins are illuminated by shafts of golden sunlight piercing through the canopy. The style is rich and detailed, with a vibrant green and earthy brown palette, accented by the golden glow of the sun." src="https://lh3.googleusercontent.com/aida-public/AB6AXuDBI6mt9xVHgyx7NCtmAdMjTcHEyTwNQtWlBOTj-d7AAGoPDXHaTui_0kzfLZMZ2NXIqXhsp58gJCntQIB_jheqn9jCf8hOsG0OiZVN5BF4VbpeJ0JJIfVjvJZ-AOk-OX2YCmLY4H8zjdB_ee33tun4hEi6aPWnzQL5fQJmBjyLB6ZFmY1qtisyofb7UzqUtRph-fFCm2hCqJrfylFYgjkQLBfGgqDmpOo-4-bfgxoOK8sr_Hb7Sz0CaW1kDn7JzCmprXcu5czgsChV"/>
+<div class="meta-overlay absolute inset-0 bg-black/60 opacity-0 transition-opacity duration-300 flex flex-col justify-end p-4 group-hover:opacity-100">
+<h3 class="font-label-md text-on-surface">Primal Echo</h3>
+<div class="flex justify-between text-xs text-secondary mt-1">
+<span>9.1 Rating</span>
+<span>Original</span>
+</div>
+</div>
+</div>
+</div>
+</section>
+<!-- Coming Soon Section (Bento Style) -->
+<section class="px-margin-desktop py-16">
+<h2 class="font-headline-md text-headline-md mb-8">Coming Soon</h2>
+<div class="grid grid-cols-1 md:grid-cols-3 gap-6 h-[600px]">
+<!-- Large Feature -->
+<div class="md:col-span-2 relative rounded-2xl overflow-hidden group">
+<img class="w-full h-full object-cover" data-alt="A breathtaking cinematic vista of a desert planet with two suns setting over a spice-mine operation. Giant mechanical crawlers are silhouetted against a brilliant orange and red sky. The overall feel is epic and grand, with a warm color palette and high-contrast dramatic lighting, reflecting a premium sci-fi epic." src="https://lh3.googleusercontent.com/aida-public/AB6AXuBIT9f53l8uanuokU2J2k-RlTb75qkTiBgXKsdE2WkJHYdNu6QeXrnqTSltf4zS8v95oUtM8zRvKnSjSm5OZet84-WKfbeQ-BbLQeqC8Vth0GoZ8lf_nQX_OZmOMjmA6doz0cgnv2-WzJL6CShN-EmUEEKFSzDKSyE1iMd9-Eu841aTMlgDUB43edwJqaYWC0Bm1cTXApMNnS78AlWn2j_pGTz9CasyL4jcFOn-NR6jM90lRlwceK2rQL3K856UuVmkJChGFO4PHTgx"/>
+<div class="absolute inset-0 bg-gradient-to-t from-black/90 via-black/20 to-transparent flex flex-col justify-end p-10">
+<span class="text-secondary font-label-md mb-2">Premiere: Oct 12</span>
+<h3 class="font-headline-lg text-headline-lg mb-4">Dune: Origins</h3>
+<p class="text-on-surface/70 max-w-lg mb-6">Discover the untold story of the guilds that shaped the galaxy. A new limited series event coming exclusively to CineStream.</p>
+<button class="w-fit glass-panel px-6 py-3 rounded-xl font-label-md flex items-center gap-2 hover:bg-white/10 transition-all">
+<span class="material-symbols-outlined">notifications</span> Remind Me
+                    </button>
+</div>
+</div>
+<!-- Stacked Sidebar -->
+<div class="flex flex-col gap-6">
+<div class="h-1/2 relative rounded-2xl overflow-hidden group">
+<img class="w-full h-full object-cover" data-alt="A sleek and stylish poster for a high-fashion crime drama. A woman in a tailored suit walks down a Parisian street at twilight. Soft bokeh lights and elegant architectural details frame the scene. The mood is sophisticated and mysterious, with a color palette of deep navy, muted golds, and soft cream." src="https://lh3.googleusercontent.com/aida-public/AB6AXuCces8GM-DbV5iRKZhqEHB_8MlleRnk8wMUoIcKx7mYIWWzIKJlsnv6AwfFTVAgXw2XZJG3HfPr2DL3RrOVHqs7zQbMoyQxrj2FAnzbIJy6mK3VU6ZGbRJIKi7-0HLS22sjsYJqJA7S3I-sxWg7bi9gZktau89US-F05TgTo-d6oltjycLS4aPqREHgrXidjalRmXvV4xLuD1D60LhmkklyUTIirq4ynSK4j68R-544By3c5D1P5PBb1QzpK6IZfkbidq1LaoTR3xSg"/>
+<div class="absolute inset-0 bg-black/40 flex flex-col justify-end p-6">
+<span class="text-secondary-fixed text-xs font-label-sm">Nov 5</span>
+<h4 class="font-headline-md text-headline-md text-sm mt-1">Velvet Heist</h4>
+</div>
+</div>
+<div class="h-1/2 relative rounded-2xl overflow-hidden group">
+<img class="w-full h-full object-cover" data-alt="A dramatic poster for a sports documentary series. A lone athlete is silhouetted against the blinding stadium lights in a dark arena. The lighting creates a powerful halo effect, and the atmosphere is thick with intensity and focus. High-contrast black and white photography with subtle grain for a gritty, premium look." src="https://lh3.googleusercontent.com/aida-public/AB6AXuC0SkgOE2feuaNEn9xyjxRVNytOW7yriV8EV9XxKQtwUa8zfPKA2fBvqPJgBGKMdRvHYU-pwytdCOxVqN0ZmQ6zlVrfkf3RqcpXriJYCRZIenw2HkLjldqtYpxRtMSNhd7oizuHdMcEiLsPdoWKwN6o6DhItdPa2bv7o86IBUAN4IeGgh_be1MTmLtxnZd2zvYilm8oHMHvUS8gVJVX1inlVDCMOZnEY4FNKinw5dxKKrj6lJUs3Okm9t4P5GPA2Ze2dPjPn0IKCDbc"/>
+<div class="absolute inset-0 bg-black/40 flex flex-col justify-end p-6">
+<span class="text-secondary-fixed text-xs font-label-sm">Dec 1</span>
+<h4 class="font-headline-md text-headline-md text-sm mt-1">Under the Lights</h4>
+</div>
+</div>
+</div>
+</div>
+</section>
+<!-- Genre Grid -->
+<section class="px-margin-desktop py-12">
+<h2 class="font-headline-md text-headline-md mb-8">Popular Genres</h2>
+<div class="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-8 gap-4">
+<div class="glass-panel h-24 rounded-xl flex items-center justify-center font-label-md hover:bg-secondary-container hover:text-on-secondary-container transition-all cursor-pointer">Action</div>
+<div class="glass-panel h-24 rounded-xl flex items-center justify-center font-label-md hover:bg-secondary-container hover:text-on-secondary-container transition-all cursor-pointer">Comedy</div>
+<div class="glass-panel h-24 rounded-xl flex items-center justify-center font-label-md hover:bg-secondary-container hover:text-on-secondary-container transition-all cursor-pointer">Drama</div>
+<div class="glass-panel h-24 rounded-xl flex items-center justify-center font-label-md hover:bg-secondary-container hover:text-on-secondary-container transition-all cursor-pointer">Sci-Fi</div>
+<div class="glass-panel h-24 rounded-xl flex items-center justify-center font-label-md hover:bg-secondary-container hover:text-on-secondary-container transition-all cursor-pointer">Horror</div>
+<div class="glass-panel h-24 rounded-xl flex items-center justify-center font-label-md hover:bg-secondary-container hover:text-on-secondary-container transition-all cursor-pointer">Mystery</div>
+<div class="glass-panel h-24 rounded-xl flex items-center justify-center font-label-md hover:bg-secondary-container hover:text-on-secondary-container transition-all cursor-pointer">Docuseries</div>
+<div class="glass-panel h-24 rounded-xl flex items-center justify-center font-label-md hover:bg-secondary-container hover:text-on-secondary-container transition-all cursor-pointer">Reality</div>
+</div>
+</section>
+<!-- Footer -->
+<footer class="bg-surface-container-lowest w-full py-12 border-t border-white/5 mt-20">
+<div class="flex flex-col md:flex-row justify-between items-center px-gutter-desktop max-w-container-max mx-auto">
+<div class="flex flex-col items-center md:items-start mb-8 md:mb-0">
+<span class="font-headline-md text-primary-container mb-4">CineStream</span>
+<p class="text-on-surface-variant font-body-md text-sm text-center md:text-left opacity-60">© 2024 CineStream. All rights reserved.</p>
+</div>
+<div class="flex flex-wrap justify-center gap-8 text-on-surface-variant font-label-sm">
+<a class="hover:text-secondary-fixed transition-colors opacity-80 hover:opacity-100" href="#">Privacy Policy</a>
+<a class="hover:text-secondary-fixed transition-colors opacity-80 hover:opacity-100" href="#">Terms of Service</a>
+<a class="hover:text-secondary-fixed transition-colors opacity-80 hover:opacity-100" href="#">Help Center</a>
+<a class="hover:text-secondary-fixed transition-colors opacity-80 hover:opacity-100" href="#">Contact Us</a>
+</div>
+<div class="flex gap-4 mt-8 md:mt-0">
+<button class="w-10 h-10 rounded-full glass-panel flex items-center justify-center hover:bg-white/10 transition-all">
+<span class="material-symbols-outlined text-xl">share</span>
+</button>
+<button class="w-10 h-10 rounded-full glass-panel flex items-center justify-center hover:bg-white/10 transition-all">
+<span class="material-symbols-outlined text-xl">language</span>
+</button>
+</div>
+</div>
+</footer>
+<!-- Bottom Navigation (Mobile Only) -->
+<div class="md:hidden fixed bottom-0 left-0 right-0 h-16 bg-surface/90 backdrop-blur-xl border-t border-white/5 flex items-center justify-around z-50">
+<button class="flex flex-col items-center gap-1 text-on-surface/50">
+<span class="material-symbols-outlined">home</span>
+<span class="text-[10px] font-label-sm">Home</span>
+</button>
+<button class="flex flex-col items-center gap-1 text-primary-container">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">tv</span>
+<span class="text-[10px] font-label-sm">Shows</span>
+</button>
+<button class="flex flex-col items-center gap-1 text-on-surface/50">
+<span class="material-symbols-outlined">movie</span>
+<span class="text-[10px] font-label-sm">Movies</span>
+</button>
+<button class="flex flex-col items-center gap-1 text-on-surface/50">
+<span class="material-symbols-outlined">person</span>
+<span class="text-[10px] font-label-sm">Profile</span>
+</button>
+</div>
+<script>
+        // Micro-interactions and scroll effects
+        window.addEventListener('scroll', () => {
+            const nav = document.querySelector('nav');
+            if (window.scrollY > 50) {
+                nav.classList.add('bg-surface/95', 'shadow-2xl');
+                nav.classList.remove('bg-surface/70');
+            } else {
+                nav.classList.add('bg-surface/70');
+                nav.classList.remove('bg-surface/95', 'shadow-2xl');
+            }
+        });
+
+        // Hover effect for cards - adding a glow
+        document.querySelectorAll('.group').forEach(card => {
+            card.addEventListener('mouseenter', () => {
+                card.style.boxShadow = '0 0 20px rgba(0, 209, 255, 0.2)';
+            });
+            card.addEventListener('mouseleave', () => {
+                card.style.boxShadow = 'none';
+            });
+        });
+    </script>
+</body></html>

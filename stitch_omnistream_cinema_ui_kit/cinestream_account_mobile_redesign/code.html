@@ -1,0 +1,289 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>CineStream - Profile</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700&amp;family=Be+Vietnam+Pro:wght@400;500;600&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            "colors": {
+                    "surface-dim": "#13131b",
+                    "background": "#13131b",
+                    "tertiary-container": "#7658ff",
+                    "surface-container-low": "#1b1b23",
+                    "on-primary": "#520071",
+                    "inverse-on-surface": "#303038",
+                    "error": "#ffb4ab",
+                    "surface-container-lowest": "#0d0d15",
+                    "on-tertiary": "#2f009c",
+                    "primary-fixed-dim": "#ecb2ff",
+                    "secondary-container": "#00eefc",
+                    "tertiary-fixed-dim": "#c9bfff",
+                    "tertiary": "#c9bfff",
+                    "surface-bright": "#393841",
+                    "on-secondary": "#00363a",
+                    "surface-variant": "#34343d",
+                    "secondary-fixed-dim": "#00dbe9",
+                    "outline-variant": "#514255",
+                    "secondary": "#d3fbff",
+                    "inverse-surface": "#e4e1ed",
+                    "secondary-fixed": "#7df4ff",
+                    "on-tertiary-fixed-variant": "#4500d8",
+                    "on-primary-fixed": "#320047",
+                    "surface-container": "#1f1f27",
+                    "on-secondary-fixed-variant": "#004f54",
+                    "on-primary-container": "#ffffff",
+                    "on-surface-variant": "#d4c0d7",
+                    "inverse-primary": "#9900cf",
+                    "on-background": "#e4e1ed",
+                    "on-secondary-fixed": "#002022",
+                    "primary": "#ecb2ff",
+                    "on-primary-fixed-variant": "#74009f",
+                    "primary-container": "#bd00ff",
+                    "surface-container-highest": "#34343d",
+                    "on-secondary-container": "#00686f",
+                    "surface-container-high": "#292932",
+                    "tertiary-fixed": "#e5deff",
+                    "on-surface": "#e4e1ed",
+                    "primary-fixed": "#f8d8ff",
+                    "outline": "#9d8ba0",
+                    "surface-tint": "#ecb2ff",
+                    "on-error-container": "#ffdad6",
+                    "error-container": "#93000a",
+                    "on-tertiary-container": "#ffffff",
+                    "surface": "#13131b",
+                    "on-tertiary-fixed": "#1b0063",
+                    "on-error": "#690005"
+            },
+            "borderRadius": {
+                    "DEFAULT": "0.25rem",
+                    "lg": "0.5rem",
+                    "xl": "0.75rem",
+                    "full": "9999px"
+            },
+            "spacing": {
+                    "section-gap": "32px",
+                    "container-padding": "24px",
+                    "stack-sm": "8px",
+                    "stack-md": "16px",
+                    "sidebar-width": "80px",
+                    "gutter": "16px"
+            },
+            "fontFamily": {
+                    "display-lg": ["Plus Jakarta Sans"],
+                    "body-lg": ["Be Vietnam Pro"],
+                    "headline-md": ["Plus Jakarta Sans"],
+                    "headline-lg": ["Plus Jakarta Sans"],
+                    "label-md": ["Plus Jakarta Sans"],
+                    "headline-lg-mobile": ["Plus Jakarta Sans"],
+                    "body-md": ["Be Vietnam Pro"]
+            },
+            "fontSize": {
+                    "display-lg": ["48px", {"lineHeight": "56px", "letterSpacing": "-0.02em", "fontWeight": "700"}],
+                    "body-lg": ["18px", {"lineHeight": "28px", "fontWeight": "400"}],
+                    "headline-md": ["24px", {"lineHeight": "32px", "fontWeight": "600"}],
+                    "headline-lg": ["32px", {"lineHeight": "40px", "fontWeight": "700"}],
+                    "label-md": ["14px", {"lineHeight": "20px", "letterSpacing": "0.05em", "fontWeight": "600"}],
+                    "headline-lg-mobile": ["28px", {"lineHeight": "36px", "fontWeight": "700"}],
+                    "body-md": ["16px", {"lineHeight": "24px", "fontWeight": "400"}]
+            }
+          },
+        },
+      }
+    </script>
+<style>
+        .glass-panel {
+            background: rgba(31, 31, 39, 0.4);
+            backdrop-filter: blur(40px);
+            -webkit-backdrop-filter: blur(40px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        .neon-glow-primary {
+            box-shadow: 0 0 20px rgba(236, 178, 255, 0.3);
+        }
+        .cosmic-bg {
+            background-image: radial-gradient(circle at 20% 30%, rgba(189, 0, 255, 0.15) 0%, transparent 40%),
+                              radial-gradient(circle at 80% 70%, rgba(0, 238, 252, 0.1) 0%, transparent 40%);
+        }
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        .nav-active-glow {
+            box-shadow: 0 0 15px rgba(236, 178, 255, 0.5);
+        }
+    </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="bg-surface-dim text-on-surface font-body-md text-body-md min-h-screen cosmic-bg selection:bg-primary selection:text-on-primary">
+<!-- Top AppBar -->
+<header class="fixed top-0 left-0 w-full z-50 flex justify-between items-center px-container-padding py-4 bg-surface-container/30 backdrop-blur-[40px] rounded-b-xl border-b border-white/10 shadow-[0_8px_32px_0_rgba(0,0,0,0.3)]">
+<h1 class="font-display-lg text-headline-lg-mobile tracking-tighter text-transparent bg-clip-text bg-gradient-to-r from-primary to-tertiary-container uppercase">CINESTREAM</h1>
+<div class="flex gap-4">
+<button class="w-10 h-10 flex items-center justify-center rounded-full glass-panel hover:bg-white/5 transition-colors">
+<span class="material-symbols-outlined text-primary">search</span>
+</button>
+<button class="w-10 h-10 flex items-center justify-center rounded-full glass-panel hover:bg-white/5 transition-colors">
+<span class="material-symbols-outlined text-primary">menu</span>
+</button>
+</div>
+</header>
+<main class="pt-24 pb-32 px-container-padding max-w-lg mx-auto space-y-6">
+<!-- Profile Header -->
+<section class="glass-panel rounded-[2rem] p-6 flex flex-col items-center text-center relative overflow-hidden">
+<!-- Decorative Glow -->
+<div class="absolute -top-10 -right-10 w-32 h-32 bg-primary/20 blur-[60px]"></div>
+<div class="relative mb-4">
+<div class="w-24 h-24 rounded-full p-1 bg-gradient-to-tr from-primary via-tertiary to-secondary neon-glow-primary">
+<img alt="User Profile" class="w-full h-full rounded-full object-cover border-2 border-surface-dim" data-alt="A cinematic close-up portrait of a stylish young man with short dark hair, looking confidently into the camera. The lighting is dramatic and futuristic, with vibrant magenta and cyan neon reflections highlighting his facial features. The background is a soft, deep-space cosmic blur of dark purples and blues, creating a premium high-tech digital aesthetic consistent with a luxury streaming platform." src="https://lh3.googleusercontent.com/aida-public/AB6AXuCYN0Rp6vSl-vtQ5daZOxk3aBLBB-7ypiKXYU5QYASgICcDFZQDZcEysIzQE-G6eR9P3S-J5rZufuRkz0dK79i2nCmXfdJR6dnpg4n9hVCidDsAknpS34hPjWjxSP0xEs3WoS0IrVjXByeA_Z8W0dN38Ps8tglg8DiO1McRy7kQF3u7cDnSAozeOrQQGW5Z8CmweNkUt78N5uagtvx5Re_DGIBGc35MIK2bG-NrUzJC0vIT8DkTInvgGdJ-X8SSLDPrQ3Il4VbIvAZv"/>
+</div>
+<div class="absolute bottom-0 right-0 bg-secondary-container text-on-secondary-container rounded-full p-1 border-2 border-surface-dim">
+<span class="material-symbols-outlined text-[16px] block" style="font-variation-settings: 'FILL' 1;">verified</span>
+</div>
+</div>
+<h2 class="font-headline-lg-mobile text-headline-lg-mobile text-on-surface">Alex Vanguard</h2>
+<p class="text-on-surface-variant font-label-md text-label-md uppercase tracking-widest mt-1">Founding Member • Cinephile</p>
+<div class="flex gap-3 mt-6">
+<button class="px-6 py-2 rounded-full bg-surface-variant/40 border border-white/10 hover:bg-white/10 transition-all font-label-md text-label-md">Edit Profile</button>
+<button class="w-10 h-10 rounded-full flex items-center justify-center bg-surface-variant/40 border border-white/10">
+<span class="material-symbols-outlined text-on-surface-variant">share</span>
+</button>
+</div>
+</section>
+<!-- Subscription Card -->
+<section class="relative group">
+<div class="absolute inset-0 bg-gradient-to-r from-primary/20 to-tertiary-container/20 blur-xl opacity-50 group-hover:opacity-80 transition-opacity"></div>
+<div class="glass-panel rounded-[2rem] p-6 relative border-primary/20">
+<div class="flex justify-between items-start mb-6">
+<div>
+<span class="bg-primary/10 text-primary px-3 py-1 rounded-full text-[10px] font-bold uppercase tracking-tighter border border-primary/20">Active Plan</span>
+<h3 class="font-headline-md text-headline-md mt-2">Premium Ultra 4K</h3>
+</div>
+<span class="material-symbols-outlined text-primary text-4xl" style="font-variation-settings: 'FILL' 1;">diamond</span>
+</div>
+<div class="space-y-3 mb-6">
+<div class="flex items-center gap-3">
+<span class="material-symbols-outlined text-secondary text-sm">check_circle</span>
+<span class="text-on-surface-variant font-label-md">Unlimited IMAX Enhanced Streaming</span>
+</div>
+<div class="flex items-center gap-3">
+<span class="material-symbols-outlined text-secondary text-sm">check_circle</span>
+<span class="text-on-surface-variant font-label-md">Spatial Audio &amp; Dolby Atmos</span>
+</div>
+</div>
+<button class="w-full py-4 rounded-2xl bg-gradient-to-br from-primary to-tertiary-container text-on-primary font-headline-md text-headline-md shadow-[0_4px_20px_rgba(189,0,255,0.3)] active:scale-[0.98] transition-transform">
+                    Manage Subscription
+                </button>
+</div>
+</section>
+<!-- Device Usage Tracking (Bento-ish Row) -->
+<section class="grid grid-cols-2 gap-4">
+<div class="glass-panel rounded-3xl p-5">
+<span class="material-symbols-outlined text-secondary mb-3">devices</span>
+<p class="text-on-surface-variant text-[12px] uppercase font-bold tracking-wider">Devices</p>
+<p class="font-headline-md text-headline-md mt-1">3/5</p>
+<div class="w-full h-1 bg-white/10 rounded-full mt-3 overflow-hidden">
+<div class="h-full bg-secondary w-[60%]"></div>
+</div>
+</div>
+<div class="glass-panel rounded-3xl p-5">
+<span class="material-symbols-outlined text-primary mb-3">speed</span>
+<p class="text-on-surface-variant text-[12px] uppercase font-bold tracking-wider">Data Used</p>
+<p class="font-headline-md text-headline-md mt-1">1.2 TB</p>
+<p class="text-on-surface-variant/60 text-[10px] mt-1">Reset in 12 days</p>
+</div>
+</section>
+<!-- Navigation List -->
+<section class="glass-panel rounded-[2rem] overflow-hidden">
+<div class="divide-y divide-white/5">
+<a class="flex items-center justify-between p-5 hover:bg-white/5 transition-colors group" href="#">
+<div class="flex items-center gap-4">
+<div class="w-10 h-10 rounded-xl bg-surface-variant/40 flex items-center justify-center group-hover:bg-primary/20 transition-colors">
+<span class="material-symbols-outlined text-on-surface-variant group-hover:text-primary">settings</span>
+</div>
+<span class="font-body-md text-body-md">Account Settings</span>
+</div>
+<span class="material-symbols-outlined text-on-surface-variant">chevron_right</span>
+</a>
+<a class="flex items-center justify-between p-5 hover:bg-white/5 transition-colors group" href="#">
+<div class="flex items-center gap-4">
+<div class="w-10 h-10 rounded-xl bg-surface-variant/40 flex items-center justify-center group-hover:bg-primary/20 transition-colors">
+<span class="material-symbols-outlined text-on-surface-variant group-hover:text-primary">history</span>
+</div>
+<span class="font-body-md text-body-md">Watch History</span>
+</div>
+<span class="material-symbols-outlined text-on-surface-variant">chevron_right</span>
+</a>
+<a class="flex items-center justify-between p-5 hover:bg-white/5 transition-colors group" href="#">
+<div class="flex items-center gap-4">
+<div class="w-10 h-10 rounded-xl bg-surface-variant/40 flex items-center justify-center group-hover:bg-primary/20 transition-colors">
+<span class="material-symbols-outlined text-on-surface-variant group-hover:text-primary">download</span>
+</div>
+<span class="font-body-md text-body-md">My Downloads</span>
+</div>
+<span class="material-symbols-outlined text-on-surface-variant">chevron_right</span>
+</a>
+<a class="flex items-center justify-between p-5 hover:bg-white/5 transition-colors group" href="#">
+<div class="flex items-center gap-4">
+<div class="w-10 h-10 rounded-xl bg-surface-variant/40 flex items-center justify-center group-hover:bg-primary/20 transition-colors">
+<span class="material-symbols-outlined text-on-surface-variant group-hover:text-primary">help</span>
+</div>
+<span class="font-body-md text-body-md">Help &amp; Support</span>
+</div>
+<span class="material-symbols-outlined text-on-surface-variant">chevron_right</span>
+</a>
+</div>
+</section>
+<!-- Logout Button -->
+<button class="w-full p-5 rounded-2xl border border-error/30 text-error font-body-md text-body-md flex items-center justify-center gap-2 hover:bg-error/10 transition-colors">
+<span class="material-symbols-outlined">logout</span>
+            Sign Out
+        </button>
+</main>
+<!-- Bottom Navigation Bar -->
+<nav class="fixed bottom-6 left-1/2 -translate-x-1/2 w-[calc(100%-48px)] max-w-md z-50 flex justify-around items-center px-4 py-2 bg-surface-container-low/40 backdrop-blur-[40px] rounded-full border border-white/10 shadow-[0_-8px_32px_0_rgba(0,0,0,0.5)]">
+<a class="flex items-center justify-center text-on-surface-variant/70 p-3 hover:text-secondary transition-all duration-300" href="#">
+<span class="material-symbols-outlined" data-icon="home">home</span>
+</a>
+<a class="flex items-center justify-center text-on-surface-variant/70 p-3 hover:text-secondary transition-all duration-300" href="#">
+<span class="material-symbols-outlined" data-icon="explore">explore</span>
+</a>
+<a class="flex items-center justify-center text-on-surface-variant/70 p-3 hover:text-secondary transition-all duration-300" href="#">
+<span class="material-symbols-outlined" data-icon="movie_filter">movie_filter</span>
+</a>
+<a class="flex items-center justify-center bg-gradient-to-br from-primary to-tertiary-container text-on-primary rounded-full p-3 nav-active-glow" href="#">
+<span class="material-symbols-outlined" data-icon="person" style="font-variation-settings: 'FILL' 1;">person</span>
+</a>
+</nav>
+<script>
+        // Micro-interaction for buttons
+        document.querySelectorAll('button, a').forEach(el => {
+            el.addEventListener('mousedown', () => {
+                el.style.transform = 'scale(0.96)';
+            });
+            el.addEventListener('mouseup', () => {
+                el.style.transform = 'scale(1)';
+            });
+            el.addEventListener('mouseleave', () => {
+                el.style.transform = 'scale(1)';
+            });
+        });
+
+        // Atmospheric parallax effect on cosmic background
+        window.addEventListener('mousemove', (e) => {
+            const moveX = (e.clientX / window.innerWidth - 0.5) * 20;
+            const moveY = (e.clientY / window.innerHeight - 0.5) * 20;
+            document.body.style.backgroundPosition = `${moveX}px ${moveY}px`;
+        });
+    </script>
+</body></html>

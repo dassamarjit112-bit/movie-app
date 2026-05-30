@@ -1,0 +1,416 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>CineStream - Series Detail</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@700;800&amp;family=Inter:wght@400;500;600&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            "colors": {
+                    "secondary": "#a6e6ff",
+                    "surface-container-high": "#2a2a2a",
+                    "secondary-fixed": "#b7eaff",
+                    "surface-container-lowest": "#0e0e0e",
+                    "on-primary": "#690003",
+                    "inverse-on-surface": "#313030",
+                    "on-surface": "#e5e2e1",
+                    "on-tertiary-container": "#fbf8f7",
+                    "on-error-container": "#ffdad6",
+                    "on-primary-fixed": "#410001",
+                    "surface-dim": "#131313",
+                    "primary-fixed-dim": "#ffb4aa",
+                    "tertiary-container": "#737272",
+                    "inverse-primary": "#c0000c",
+                    "on-primary-container": "#fff7f6",
+                    "on-secondary-fixed": "#001f28",
+                    "surface-container-low": "#1c1b1b",
+                    "surface-tint": "#ffb4aa",
+                    "surface": "#131313",
+                    "surface-bright": "#3a3939",
+                    "surface-container-highest": "#353534",
+                    "secondary-fixed-dim": "#4cd6ff",
+                    "error": "#ffb4ab",
+                    "surface-container": "#201f1f",
+                    "error-container": "#93000a",
+                    "secondary-container": "#14d1ff",
+                    "primary": "#ffb4aa",
+                    "on-secondary-container": "#00566b",
+                    "on-secondary": "#003543",
+                    "inverse-surface": "#e5e2e1",
+                    "outline": "#af8782",
+                    "on-primary-fixed-variant": "#930007",
+                    "on-background": "#e5e2e1",
+                    "on-tertiary": "#313030",
+                    "tertiary-fixed": "#e5e2e1",
+                    "on-secondary-fixed-variant": "#004e60",
+                    "outline-variant": "#5e3f3b",
+                    "on-surface-variant": "#e9bcb6",
+                    "on-tertiary-fixed": "#1c1b1b",
+                    "surface-variant": "#353534",
+                    "tertiary": "#c8c6c5",
+                    "primary-container": "#e50914",
+                    "background": "#131313",
+                    "tertiary-fixed-dim": "#c8c6c5",
+                    "primary-fixed": "#ffdad5",
+                    "on-error": "#690005",
+                    "on-tertiary-fixed-variant": "#474746"
+            },
+            "borderRadius": {
+                    "DEFAULT": "0.125rem",
+                    "lg": "0.25rem",
+                    "xl": "0.5rem",
+                    "full": "0.75rem"
+            },
+            "spacing": {
+                    "container-max": "1440px",
+                    "gutter-mobile": "16px",
+                    "gutter-desktop": "24px",
+                    "margin-desktop": "64px",
+                    "unit": "8px",
+                    "margin-mobile": "20px"
+            },
+            "fontFamily": {
+                    "body-md": ["Inter"],
+                    "label-sm": ["Inter"],
+                    "headline-lg": ["Montserrat"],
+                    "body-lg": ["Inter"],
+                    "display-lg": ["Montserrat"],
+                    "label-md": ["Inter"],
+                    "display-lg-mobile": ["Montserrat"],
+                    "headline-md": ["Montserrat"]
+            },
+            "fontSize": {
+                    "body-md": ["16px", {"lineHeight": "24px", "fontWeight": "400"}],
+                    "label-sm": ["12px", {"lineHeight": "16px", "fontWeight": "500"}],
+                    "headline-lg": ["32px", {"lineHeight": "40px", "fontWeight": "700"}],
+                    "body-lg": ["18px", {"lineHeight": "28px", "fontWeight": "400"}],
+                    "display-lg": ["64px", {"lineHeight": "72px", "letterSpacing": "-0.02em", "fontWeight": "800"}],
+                    "label-md": ["14px", {"lineHeight": "20px", "letterSpacing": "0.05em", "fontWeight": "600"}],
+                    "display-lg-mobile": ["40px", {"lineHeight": "44px", "letterSpacing": "-0.01em", "fontWeight": "800"}],
+                    "headline-md": ["24px", {"lineHeight": "32px", "fontWeight": "700"}]
+            }
+          },
+        },
+      }
+    </script>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        .glass-panel {
+            background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        .text-glow-neon {
+            text-shadow: 0 0 10px rgba(0, 209, 255, 0.5);
+        }
+        .hero-gradient {
+            background: linear-gradient(to bottom, rgba(15, 15, 15, 0) 0%, rgba(15, 15, 15, 0.8) 50%, rgba(19, 19, 19, 1) 100%);
+        }
+        .custom-scrollbar::-webkit-scrollbar {
+            width: 4px;
+        }
+        .custom-scrollbar::-webkit-scrollbar-track {
+            background: rgba(255, 255, 255, 0.05);
+        }
+        .custom-scrollbar::-webkit-scrollbar-thumb {
+            background: #E50914;
+            border-radius: 2px;
+        }
+    </style>
+</head>
+<body class="bg-background text-on-surface font-body-md selection:bg-primary-container selection:text-white overflow-x-hidden">
+<!-- TopNavBar -->
+<header class="bg-surface/70 backdrop-blur-xl docked full-width top-0 sticky border-b border-white/10 shadow-2xl flex justify-between items-center px-gutter-desktop h-20 w-full z-50">
+<div class="flex items-center gap-12">
+<h1 class="font-display-lg text-primary-container tracking-tighter cursor-pointer">CineStream</h1>
+<nav class="hidden md:flex gap-8">
+<a class="font-label-md text-label-md text-on-surface/70 hover:text-on-surface transition-colors" href="#">Home</a>
+<a class="font-label-md text-label-md text-primary-container border-b-2 border-primary-container pb-1" href="#">TV Shows</a>
+<a class="font-label-md text-label-md text-on-surface/70 hover:text-on-surface transition-colors" href="#">Movies</a>
+</nav>
+</div>
+<div class="flex items-center gap-6">
+<div class="relative group hidden lg:block">
+<input class="bg-surface-container-low border border-white/10 rounded-full px-6 py-2 w-64 focus:outline-none focus:border-secondary transition-all text-label-md" placeholder="Search titles..." type="text"/>
+<span class="material-symbols-outlined absolute right-4 top-1/2 -translate-y-1/2 text-on-surface/50">search</span>
+</div>
+<div class="flex items-center gap-4">
+<button class="hover:bg-white/5 transition-all duration-300 p-2 rounded-full scale-105 active:scale-95 transition-transform">
+<span class="material-symbols-outlined text-on-surface" data-icon="notifications">notifications</span>
+</button>
+<img alt="User Profile" class="w-10 h-10 rounded-full border-2 border-primary-container object-cover" data-alt="A professional close-up portrait of a modern individual with a friendly expression. The lighting is soft and cinematic, with a blurred dark architectural background that suggests a premium technology environment. The overall aesthetic is clean and high-end, utilizing deep blacks and subtle highlights to create a polished user profile image for a streaming platform." src="https://lh3.googleusercontent.com/aida-public/AB6AXuBXJKyawbX7wqGZD3IDQR2h27EhYTp_i_Lp6Aa5gzE4LmqxiBUKreGdZ3KRxdmsgC8PbUVyNt1gHmMTAmi8DkF-CAF4UsEmNVA59gEz-Bc6tf1CHGWWBxDZJT8Fxe73bigPYEAOJqIO7tAjySuwfOUGSev3G37pzgj9Ptiqp2aiuiY-nyne55gWj3F4o8pgiwCaS2lZsSqM-2mdQJcUYxyKAG1_wxdjZqeAbzcJN0h4Q7OuekOWg5NYOoSbRF7rLvFeuoyTie91gjDg"/>
+</div>
+</div>
+</header>
+<main>
+<!-- Hero Section -->
+<section class="relative h-[870px] w-full flex items-end">
+<div class="absolute inset-0 z-0">
+<img alt="Series Hero Background" class="w-full h-full object-cover" data-alt="A cinematic, ultra-high-definition landscape still from a high-budget sci-fi series. Massive futuristic structures rise through a misty, neon-lit atmosphere dominated by deep blues and vibrant reds. The scene captures an epic sense of scale and drama, with soft cinematic lighting that creates a deep, atmospheric mood suitable for a premium dark-themed streaming interface." src="https://lh3.googleusercontent.com/aida-public/AB6AXuAyp2LrKF0Rwn5nVo7VFQX3TPKeRnIGIgt2UeDtyhhT_EclxXNO1B7rSt_YOUGAvxtbAzjDhg563kqqzCLNjBWz5qQr1sB7g7c1LxkNZdvguiulLv_lrKszKgxMPoGIYzimHgTc27ogyQaR2HNyqPRfqChb00I4iBuKb_ARQe-M6ZqaEQrv_DfREJ0X88QZA787r97bJk-rv0E_I3EaAQ9BnwxcK_CW-WZgPmG38dTQ3-BbESy6l7CsKOE4zhFN9tpZ-lzMiKAIWHmK"/>
+<div class="absolute inset-0 hero-gradient"></div>
+</div>
+<div class="relative z-10 w-full px-margin-desktop pb-16 max-w-container-max mx-auto">
+<div class="max-w-2xl">
+<div class="flex items-center gap-4 mb-6">
+<span class="bg-primary-container px-3 py-1 rounded-sm text-label-sm font-label-sm uppercase tracking-widest text-white">New Release</span>
+<div class="flex items-center gap-2 text-secondary font-label-md">
+<span class="material-symbols-outlined text-[18px]" style="font-variation-settings: 'FILL' 1;">star</span>
+<span>9.2 Rating</span>
+</div>
+</div>
+<h2 class="font-display-lg text-display-lg text-white mb-4">NEON CHRONICLES</h2>
+<div class="flex items-center gap-4 mb-6 text-on-surface/80 font-body-md">
+<span>2024</span>
+<span class="w-1 h-1 bg-on-surface/30 rounded-full"></span>
+<span>4 Seasons</span>
+<span class="w-1 h-1 bg-on-surface/30 rounded-full"></span>
+<span class="border border-white/30 px-2 py-0.5 rounded text-xs">ULTRA HD 4K</span>
+</div>
+<p class="text-body-lg font-body-lg text-on-surface/90 mb-8 line-clamp-3">
+                        In a fractured future where memories are a traded commodity, a rogue data-architect uncovers a conspiracy that spans the digital afterlife. Every connection has a price, and the truth is the most dangerous asset of all.
+                    </p>
+<div class="flex flex-wrap gap-4">
+<button class="bg-primary-container text-white px-8 py-4 rounded-xl flex items-center gap-3 font-headline-md hover:brightness-110 hover:shadow-[0_0_20px_rgba(229,9,20,0.4)] transition-all active:scale-95">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">play_arrow</span>
+                            Watch Now
+                        </button>
+<button class="glass-panel text-white px-8 py-4 rounded-xl flex items-center gap-3 font-headline-md border border-white/20 hover:bg-white/10 transition-all active:scale-95">
+<span class="material-symbols-outlined">add</span>
+                            My List
+                        </button>
+</div>
+</div>
+</div>
+</section>
+<!-- Content Grid Section -->
+<section class="px-margin-desktop py-20 max-w-container-max mx-auto grid grid-cols-1 lg:grid-cols-12 gap-12">
+<!-- Episodes List (Left Column) -->
+<div class="lg:col-span-8">
+<div class="flex justify-between items-end mb-8">
+<h3 class="font-headline-lg text-headline-lg">Episodes</h3>
+<div class="relative">
+<button class="flex items-center gap-2 glass-panel px-4 py-2 rounded-lg text-label-md border border-white/10">
+                            Season 4
+                            <span class="material-symbols-outlined">expand_more</span>
+</button>
+</div>
+</div>
+<div class="space-y-6">
+<!-- Episode Item 1 -->
+<div class="group glass-panel rounded-xl overflow-hidden flex flex-col md:flex-row border border-white/5 hover:border-secondary/30 transition-all duration-300">
+<div class="md:w-64 h-36 relative overflow-hidden shrink-0">
+<img alt="Episode 1 Thumbnail" class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500" data-alt="A cinematic episode thumbnail showing a detailed futuristic interior of a data center. Pulsing neon blue lights illuminate long rows of servers, casting long shadows. A lone figure stands in the distance, partially obscured by technological fog. The atmosphere is dense and high-tech, fitting the dark cinematic brand aesthetic with deep shadows and glowing accents." src="https://lh3.googleusercontent.com/aida-public/AB6AXuCu8tEkSqlK27pBZpc8i2UeGQ1aGFq3iNvYCzd5Xh4UfuzbfO33_H9tcujID15IQaH-KqLyuP_OCIucKC66K-Nr8tlC9KrvAuQRJ3LT5A5Sdjj5V_BSnWe51G9IhDUJb-Ud_pkRNtF0J0SEHqCNIYDQAWi0E1JSg5-92Wyfn2yFHVmbTdcxOtHIG8KibfTsoQ2aCYpzZwxlUinbBgL_Zm2_QHbt2yq4DCMFioWt13mjxF4giCdYpETZjoG5FJag1L901xMIiswyK1m7"/>
+<div class="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity bg-black/40">
+<span class="material-symbols-outlined text-white text-4xl" style="font-variation-settings: 'FILL' 1;">play_circle</span>
+</div>
+<div class="absolute bottom-2 right-2 bg-black/80 px-2 py-0.5 rounded text-[10px] text-white">48m</div>
+</div>
+<div class="p-6 flex flex-col justify-center">
+<div class="flex justify-between mb-2">
+<h4 class="font-headline-md text-on-surface">1. The Ghost Protocol</h4>
+<span class="text-secondary font-label-sm">8.9</span>
+</div>
+<p class="text-on-surface/70 text-body-md line-clamp-2">Elias discovers a corrupted file that shouldn't exist, leading him into the lower depths of the Neo-Tokyo cloud strata.</p>
+</div>
+</div>
+<!-- Episode Item 2 -->
+<div class="group glass-panel rounded-xl overflow-hidden flex flex-col md:flex-row border border-white/5 hover:border-secondary/30 transition-all duration-300">
+<div class="md:w-64 h-36 relative overflow-hidden shrink-0">
+<img alt="Episode 2 Thumbnail" class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500" data-alt="A striking wide shot thumbnail of a rainy futuristic city at night. Infinite skyscrapers with holographic advertisements reflected in puddles on the ground. The palette is dominated by deep charcoals and electric cyan glows. The mood is melancholic yet visually rich, emphasizing the premium quality of the series' production design." src="https://lh3.googleusercontent.com/aida-public/AB6AXuAdJ_4BmTgHWIZ-foUEFt0jY7U7F6uZZtj77u6M_v0u4OEHaXC-JTFjA94wM54UmNi5PNrdH2EWxyIbQaLwZNqrmdejEVUqPB5bZqCUI5apjHoZrZJQG6RgYrEfK0SF9jL_q-vGC8L5XD3ytlBRsjlk2lhJssQuWw2UwZumisfVmOUKUK9uSTQOGi6laWEypFfVTOBywvIIUbRmtZ1fvwodphr7c87J37bvSisLzrUSv5wxYe1C5nbPkP_VLX8s_leWjbSFNYK6k4yB"/>
+<div class="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity bg-black/40">
+<span class="material-symbols-outlined text-white text-4xl" style="font-variation-settings: 'FILL' 1;">play_circle</span>
+</div>
+<div class="absolute bottom-2 right-2 bg-black/80 px-2 py-0.5 rounded text-[10px] text-white">52m</div>
+</div>
+<div class="p-6 flex flex-col justify-center">
+<div class="flex justify-between mb-2">
+<h4 class="font-headline-md text-on-surface">2. Shards of Memory</h4>
+<span class="text-secondary font-label-sm">9.4</span>
+</div>
+<p class="text-on-surface/70 text-body-md line-clamp-2">A memory leak in the Central Core causes massive hallucinations across the city's elite, revealing long-buried secrets.</p>
+</div>
+</div>
+<!-- Episode Item 3 -->
+<div class="group glass-panel rounded-xl overflow-hidden flex flex-col md:flex-row border border-white/5 hover:border-secondary/30 transition-all duration-300">
+<div class="md:w-64 h-36 relative overflow-hidden shrink-0">
+<img alt="Episode 3 Thumbnail" class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500" data-alt="A stylized digital representation of a neural network glowing in a void. Intricate webs of light connect floating geometric data nodes. The lighting is harsh and high-contrast, with neon red signals indicating an error or threat. The visual style is abstract, sophisticated, and aligns perfectly with the sci-fi tech narrative of the series." src="https://lh3.googleusercontent.com/aida-public/AB6AXuDp1a3xZGaOXIf_cfiGf_UA97zZakJocRqwEGMm7YLEFQIo9uFHbJruv1G1J71thoD6Nfkcbdp2-a49dsvIwMLRlMc21MGwqSPvrhK-Nf8Fzq5LJrPEbvLeQzJs8KqiikEcEn2YBwDQUAE86xMjcdB_2zq3b4WVjy5DVwz2ewN6P5DSaCJwlRcNxlOAUVfm19p6Y44TwMUMR2T4PMdS3OCzcoCXx4t24VcF05IsVlbdf-Tb07lj5Ww87EdfVev-cjspKJ_HsWl971ZQ"/>
+<div class="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity bg-black/40">
+<span class="material-symbols-outlined text-white text-4xl" style="font-variation-settings: 'FILL' 1;">play_circle</span>
+</div>
+<div class="absolute bottom-2 right-2 bg-black/80 px-2 py-0.5 rounded text-[10px] text-white">45m</div>
+</div>
+<div class="p-6 flex flex-col justify-center">
+<div class="flex justify-between mb-2">
+<h4 class="font-headline-md text-on-surface">3. Zero Day Event</h4>
+<span class="text-secondary font-label-sm">9.1</span>
+</div>
+<p class="text-on-surface/70 text-body-md line-clamp-2">As the city prepares for the Great Sync, a rogue virus threatens to permanently disconnect the populace.</p>
+</div>
+</div>
+</div>
+</div>
+<!-- Side Info (Right Column) -->
+<div class="lg:col-span-4 space-y-12">
+<!-- Cast Section -->
+<div>
+<h3 class="font-headline-md text-headline-md mb-6">Cast</h3>
+<div class="space-y-4">
+<div class="flex items-center gap-4 group">
+<img alt="Actor 1" class="w-12 h-12 rounded-full object-cover border border-white/10 group-hover:border-secondary transition-colors" data-alt="A professional headshot of a male actor in his late 20s. He has a serious, intense expression suited for a dramatic lead. The lighting is cinematic with deep shadows and a soft rim light, set against a dark grey background. The style is consistent with high-end TV series casting photography." src="https://lh3.googleusercontent.com/aida-public/AB6AXuD1SK7FzJ5B5p5i-fsuJYxdO-kTKkhQ6rrc7tRnBcblD9v4-sGgXKxrM-WtKcodzQVWOuPLh21Jl-yipd4-1NZcyCF2sabeDZNvj8MigmQg3wVhoidG4N0dF3TYMmmPlSYBJDahl95Cw-4uzMUi9NXpBHYY67KiVQbioxXNBBQi3q5ikfsFsCUEZcpiqmpu-cmBUo7iyDfoIe2BJpdTKxnw7R6GofwOQFBru8vnjgfCZmzaA3TayMLuLNAKEAcqLriwDOOgCde1z13e"/>
+<div>
+<p class="font-label-md text-white">Alexander Vance</p>
+<p class="text-label-sm text-on-surface/50">as Elias Thorne</p>
+</div>
+</div>
+<div class="flex items-center gap-4 group">
+<img alt="Actor 2" class="w-12 h-12 rounded-full object-cover border border-white/10 group-hover:border-secondary transition-colors" data-alt="A professional headshot of a female actor with a sharp, intelligent look. She has vibrant hair and expressive eyes. The photography is crisp with a cool color grade, highlighting her features against a moody, dark background typical of a premium sci-fi drama production." src="https://lh3.googleusercontent.com/aida-public/AB6AXuASxr6Jw5cBWNxomiT6tl7LgzwL8C3JKY4zra31LUzrqYChseA4nm5JMWYQzMit-x1fAFqjTCC4sNiPvNVapr5yXGFxhAq_3LbcA4T9VOtxzxiVYkraFxqDwDv4cKEtOgFo0-DfcuGHWgbQeSBj1FmR3d-x5DivcWECL7iqWifLRpt0-Ouh0WKX61w-7EW_393FmfX3kXQnJSdMabgANyGUK8CgVJ6EwNUnEa1UtqoUVsYlto1yqn-l7O2yN9pz7IpQIAmTlAElieQB"/>
+<div>
+<p class="font-label-md text-white">Sarah Chen</p>
+<p class="text-label-sm text-on-surface/50">as Mia Sato</p>
+</div>
+</div>
+<div class="flex items-center gap-4 group">
+<img alt="Actor 3" class="w-12 h-12 rounded-full object-cover border border-white/10 group-hover:border-secondary transition-colors" data-alt="A portrait of a seasoned actor with distinguished features. He wears a calm, authoritative expression. The image is captured with high-contrast cinematic lighting that creates a strong dramatic presence, fitting for a sophisticated antagonist or mentor character in a dark cinematic world." src="https://lh3.googleusercontent.com/aida-public/AB6AXuCGRPSk6s2_86di6T_gQANVLJ6JXwNlcgrNTICiWqncKWHB7uyzUomqOF_fge97jKyG8cwJS6OyRqpLZF3bf6Zz0EF5n288TlfX_65LK2jAKsq8tyn-Ia2BDhLDQIYZOMcVF7e-TatkfsrQcSF8wfidF0gpLF4cLEX9M5mi1T6SajxCFtTjBVbjY3xcpjbO3rT1PA2PBn-JxpBzzegRwiW8ZuJATFSqDdGmlLPgwoCmFJ8hGGpss8lYxfDq7_RIskKIylxFUtHzsiCM"/>
+<div>
+<p class="font-label-md text-white">Marcus Sterling</p>
+<p class="text-label-sm text-on-surface/50">as Director Grey</p>
+</div>
+</div>
+</div>
+</div>
+<!-- More Details -->
+<div class="glass-panel p-8 rounded-2xl border border-white/10">
+<h3 class="font-headline-md text-on-surface mb-6">Series Info</h3>
+<div class="space-y-4 text-label-md">
+<div class="flex justify-between">
+<span class="text-on-surface/50">Creator</span>
+<span class="text-white">Lana Wachowski</span>
+</div>
+<div class="flex justify-between">
+<span class="text-on-surface/50">Genre</span>
+<span class="text-white">Sci-Fi, Thriller</span>
+</div>
+<div class="flex justify-between">
+<span class="text-on-surface/50">Language</span>
+<span class="text-white">English (5.1)</span>
+</div>
+<div class="flex justify-between">
+<span class="text-on-surface/50">Subtitles</span>
+<span class="text-white">CC, EN, FR, ES</span>
+</div>
+</div>
+</div>
+</div>
+</section>
+<!-- Recommendations Section -->
+<section class="px-margin-desktop py-20 bg-surface-container-low/30">
+<div class="max-w-container-max mx-auto">
+<h3 class="font-headline-lg text-headline-lg mb-10">More Like This</h3>
+<div class="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-5 gap-6">
+<!-- Recommendation Card 1 -->
+<div class="group relative overflow-hidden rounded-xl bg-surface-container transition-all hover:scale-105 duration-300 border border-white/5 hover:border-secondary/50">
+<img alt="Rec 1" class="aspect-[2/3] w-full object-cover" data-alt="A movie poster visual for a futuristic detective drama. A rain-soaked street in a vertical city, with bright neon signs in orange and blue casting light onto dark metallic surfaces. The composition is dynamic and moody, fitting the premium aesthetic of a cinematic streaming service." src="https://lh3.googleusercontent.com/aida-public/AB6AXuBGICNCJqGNjwv9eAxAIP68tzyd6uhLOpTUFvEFyt2uqOpDLGu4XjukyEgneid5JS6FsoVQ_7UB7v96OaK2QQnKTNCzrrKaHn_v2rLWeONktQbkb5bgTBC_8lyd1KvllxpgYtTtYLkMfclIL6WNhoOV07uij7v5gNkcUnedo1iOkVhFRcfmxdW4lFyTILZhIs1HsZzmpcuv_zs5oLYqaF8UvHncOLM7nM1iVjd-7VuUi9DJF62aRw4w8sUP_zAWEiHd4M07SAjJKWwh"/>
+<div class="absolute inset-0 bg-gradient-to-t from-black/90 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity p-4 flex flex-col justify-end">
+<p class="font-headline-md text-white text-sm">Pulse Zero</p>
+<div class="flex items-center gap-2 mt-1">
+<span class="text-secondary text-xs">92% Match</span>
+<span class="text-on-surface/50 text-[10px]">2023</span>
+</div>
+</div>
+</div>
+<!-- Recommendation Card 2 -->
+<div class="group relative overflow-hidden rounded-xl bg-surface-container transition-all hover:scale-105 duration-300 border border-white/5 hover:border-secondary/50">
+<img alt="Rec 2" class="aspect-[2/3] w-full object-cover" data-alt="A cinematic teaser image for a mysterious psychological thriller. A dark hallway lit only by a flickering red light at the end, creating an atmosphere of suspense and high stakes. The visual style is minimal yet impactful, using depth and shadow to evoke curiosity in a sophisticated dark-mode UI." src="https://lh3.googleusercontent.com/aida-public/AB6AXuCSLy8lMcStt6fK9aZHvPQrDdvPOmixG2Uf65ze5dfdfBMLU6dnnvmk4WxR8BUSWTUtxmT0Cy3Qu3e1WeEaIXMFfGcz_sv7zJAPjSix7-b5csIaScorhSs3wssG00Zec_Q2c7869i8OGeMZm66Z_Wq7ppHw2CUt5qu4OvehYuqLAX7vsOig2HKYcYtQyKDG-9dWz1tN6TN-O6VLjJvUyzBSvbfhe5gagnLkbRmJNSdlQbIYmZx76ajJJ5CuxhbB_a2fZQPoqawad9rA"/>
+<div class="absolute inset-0 bg-gradient-to-t from-black/90 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity p-4 flex flex-col justify-end">
+<p class="font-headline-md text-white text-sm">Mind Glitch</p>
+<div class="flex items-center gap-2 mt-1">
+<span class="text-secondary text-xs">88% Match</span>
+<span class="text-on-surface/50 text-[10px]">2024</span>
+</div>
+</div>
+</div>
+<!-- Recommendation Card 3 -->
+<div class="group relative overflow-hidden rounded-xl bg-surface-container transition-all hover:scale-105 duration-300 border border-white/5 hover:border-secondary/50">
+<img alt="Rec 3" class="aspect-[2/3] w-full object-cover" data-alt="A vivid, stylized artwork for an epic space opera. A giant nebula with swirling colors of violet and gold, framed by the silhouette of a massive spacecraft. The aesthetic is grand and cinematic, maintaining the high-performance authoritative tone of the streaming brand." src="https://lh3.googleusercontent.com/aida-public/AB6AXuBC4A8hDLYa6_mT5tKARpOGxzJxFe-hpqraXIRjHJ6jurz4zKGOlyt8WqzAzKTMGv29CkugXngVd8mmrtQ2gzC46F9MNiIUg2dbQlPqZTacHwBXR6uRAS-pRdEdLoZTSu3yO9GBZ0X_DkG3ibWHH9oTme4V6s3RrxJA--iSy98pRGVzmzwWdk0q5YlT0NTh5EyYxVxCM4Vz6daN6Z9mSWgrONtU54uz6hR0Yy4anSZZ-ssMe2yeVcZwOdCXaqu3e1mCnihXxSIApGvy"/>
+<div class="absolute inset-0 bg-gradient-to-t from-black/90 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity p-4 flex flex-col justify-end">
+<p class="font-headline-md text-white text-sm">Void Walker</p>
+<div class="flex items-center gap-2 mt-1">
+<span class="text-secondary text-xs">85% Match</span>
+<span class="text-on-surface/50 text-[10px]">2022</span>
+</div>
+</div>
+</div>
+<!-- Recommendation Card 4 -->
+<div class="group relative overflow-hidden rounded-xl bg-surface-container transition-all hover:scale-105 duration-300 border border-white/5 hover:border-secondary/50">
+<img alt="Rec 4" class="aspect-[2/3] w-full object-cover" data-alt="An atmospheric still for a high-octane action series. A high-speed chase through a neon-lit tunnel, with motion blur streaks of light and high-contrast reflections on metallic car surfaces. The energy is intense and the visual polish is consistent with a premium cinematic experience." src="https://lh3.googleusercontent.com/aida-public/AB6AXuATjD7_pW9eK9k0_nQyWDNI18T2PvFOsvBvaxLCBh4DaTCxlIkcxNz-7i-gh3eRboGby2IS2v5bwYPwk-Yrb393kAzb-SUYXJg4txBlHajwYh5Z5yCjED7B3XFUVuDggaIJ3SXurfXZ81U_HlAmmxfDlVZzAikOuyo_fsTl2lCWeJ3H7GPnwV-SCZ85PySNmyO0NqmQS1thEbtP-hib5Mhv1WS5iOwJlMo5s6WtS7r4-oNtBWddifm80xeMGxT_adF7EiNw9maC91wd"/>
+<div class="absolute inset-0 bg-gradient-to-t from-black/90 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity p-4 flex flex-col justify-end">
+<p class="font-headline-md text-white text-sm">After Burner</p>
+<div class="flex items-center gap-2 mt-1">
+<span class="text-secondary text-xs">81% Match</span>
+<span class="text-on-surface/50 text-[10px]">2024</span>
+</div>
+</div>
+</div>
+<!-- Recommendation Card 5 -->
+<div class="group relative overflow-hidden rounded-xl bg-surface-container transition-all hover:scale-105 duration-300 border border-white/5 hover:border-secondary/50">
+<img alt="Rec 5" class="aspect-[2/3] w-full object-cover" data-alt="A moody, high-contrast shot for a political conspiracy thriller. A dimly lit meeting room with long shadows, a single shaft of light illuminating documents on a table. The atmosphere is dense with tension and mystery, reflecting the sophisticated storytelling of the series catalog." src="https://lh3.googleusercontent.com/aida-public/AB6AXuBRYSCsxDZu0B3b_jDojVt2sa0qGp40VbHglSCywmXctP9TrtO9vvaJsxFg_9ur4scf9WK5_yJJRSMthl1i_aZx986_LMhwykBFYWLNnAHapq8p_QqkkQymixEFqdHp0xhA4l4g4uI-VyXlhse_zxxsMtyG2kMNxceC19gTYBz7db5SqDfIReXAuWExDfv-UA7PwN7AxJzPjSr6CUFbkYy-48lCXt9u7kNII4OV8kizvm9Y-GO95-tcv6ce9o1niFPoNmvxOPup9-BI"/>
+<div class="absolute inset-0 bg-gradient-to-t from-black/90 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity p-4 flex flex-col justify-end">
+<p class="font-headline-md text-white text-sm">State of Power</p>
+<div class="flex items-center gap-2 mt-1">
+<span class="text-secondary text-xs">79% Match</span>
+<span class="text-on-surface/50 text-[10px]">2021</span>
+</div>
+</div>
+</div>
+</div>
+</div>
+</section>
+</main>
+<!-- Footer -->
+<footer class="bg-surface-container-lowest border-t border-white/5 w-full py-12 flex flex-col md:flex-row justify-between items-center px-gutter-desktop max-w-container-max mx-auto">
+<div class="mb-8 md:mb-0">
+<h4 class="font-headline-md text-primary-container mb-2">CineStream</h4>
+<p class="font-label-sm text-label-sm text-on-surface-variant">© 2024 CineStream. All rights reserved.</p>
+</div>
+<div class="flex gap-8">
+<a class="font-label-sm text-label-sm text-on-surface-variant hover:text-secondary-fixed transition-colors opacity-80 hover:opacity-100" href="#">Privacy Policy</a>
+<a class="font-label-sm text-label-sm text-on-surface-variant hover:text-secondary-fixed transition-colors opacity-80 hover:opacity-100" href="#">Terms of Service</a>
+<a class="font-label-sm text-label-sm text-on-surface-variant hover:text-secondary-fixed transition-colors opacity-80 hover:opacity-100" href="#">Help Center</a>
+<a class="font-label-sm text-label-sm text-on-surface-variant hover:text-secondary-fixed transition-colors opacity-80 hover:opacity-100" href="#">Contact Us</a>
+</div>
+</footer>
+<!-- Video Progress Micro-Interaction Placeholder -->
+<div class="fixed bottom-0 left-0 w-full h-1 z-[60] bg-white/10">
+<div class="h-full bg-secondary shadow-[0_0_10px_#00D1FF]" id="scroll-progress" style="width: 0%"></div>
+</div>
+<script>
+        // Micro-interaction for scroll progress
+        window.addEventListener('scroll', () => {
+            const winScroll = document.body.scrollTop || document.documentElement.scrollTop;
+            const height = document.documentElement.scrollHeight - document.documentElement.clientHeight;
+            const scrolled = (winScroll / height) * 100;
+            document.getElementById('scroll-progress').style.width = scrolled + "%";
+        });
+
+        // Hover scale effect for buttons
+        const buttons = document.querySelectorAll('button');
+        buttons.forEach(btn => {
+            btn.addEventListener('mouseenter', () => {
+                btn.classList.add('scale-105');
+            });
+            btn.addEventListener('mouseleave', () => {
+                btn.classList.remove('scale-105');
+            });
+        });
+    </script>
+</body></html>

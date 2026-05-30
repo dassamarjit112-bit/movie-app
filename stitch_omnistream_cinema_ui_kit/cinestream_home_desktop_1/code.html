@@ -1,0 +1,442 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@700;800&amp;family=Inter:wght@400;500;600&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            "colors": {
+                    "secondary": "#a6e6ff",
+                    "surface-container-high": "#2a2a2a",
+                    "secondary-fixed": "#b7eaff",
+                    "surface-container-lowest": "#0e0e0e",
+                    "on-primary": "#690003",
+                    "inverse-on-surface": "#313030",
+                    "on-surface": "#e5e2e1",
+                    "on-tertiary-container": "#fbf8f7",
+                    "on-error-container": "#ffdad6",
+                    "on-primary-fixed": "#410001",
+                    "surface-dim": "#131313",
+                    "primary-fixed-dim": "#ffb4aa",
+                    "tertiary-container": "#737272",
+                    "inverse-primary": "#c0000c",
+                    "on-primary-container": "#fff7f6",
+                    "on-secondary-fixed": "#001f28",
+                    "surface-container-low": "#1c1b1b",
+                    "surface-tint": "#ffb4aa",
+                    "surface": "#131313",
+                    "surface-bright": "#3a3939",
+                    "surface-container-highest": "#353534",
+                    "secondary-fixed-dim": "#4cd6ff",
+                    "error": "#ffb4ab",
+                    "surface-container": "#201f1f",
+                    "error-container": "#93000a",
+                    "secondary-container": "#14d1ff",
+                    "primary": "#ffb4aa",
+                    "on-secondary-container": "#00566b",
+                    "on-secondary": "#003543",
+                    "inverse-surface": "#e5e2e1",
+                    "outline": "#af8782",
+                    "on-primary-fixed-variant": "#930007",
+                    "on-background": "#e5e2e1",
+                    "on-tertiary": "#313030",
+                    "tertiary-fixed": "#e5e2e1",
+                    "on-secondary-fixed-variant": "#004e60",
+                    "outline-variant": "#5e3f3b",
+                    "on-surface-variant": "#e9bcb6",
+                    "on-tertiary-fixed": "#1c1b1b",
+                    "surface-variant": "#353534",
+                    "tertiary": "#c8c6c5",
+                    "primary-container": "#e50914",
+                    "background": "#131313",
+                    "tertiary-fixed-dim": "#c8c6c5",
+                    "primary-fixed": "#ffdad5",
+                    "on-error": "#690005",
+                    "on-tertiary-fixed-variant": "#474746"
+            },
+            "borderRadius": {
+                    "DEFAULT": "0.125rem",
+                    "lg": "0.25rem",
+                    "xl": "0.5rem",
+                    "full": "0.75rem"
+            },
+            "spacing": {
+                    "container-max": "1440px",
+                    "gutter-mobile": "16px",
+                    "gutter-desktop": "24px",
+                    "margin-desktop": "64px",
+                    "unit": "8px",
+                    "margin-mobile": "20px"
+            },
+            "fontFamily": {
+                    "body-md": ["Inter"],
+                    "label-sm": ["Inter"],
+                    "headline-lg": ["Montserrat"],
+                    "body-lg": ["Inter"],
+                    "display-lg": ["Montserrat"],
+                    "label-md": ["Inter"],
+                    "display-lg-mobile": ["Montserrat"],
+                    "headline-md": ["Montserrat"]
+            },
+            "fontSize": {
+                    "body-md": ["16px", {"lineHeight": "24px", "fontWeight": "400"}],
+                    "label-sm": ["12px", {"lineHeight": "16px", "fontWeight": "500"}],
+                    "headline-lg": ["32px", {"lineHeight": "40px", "fontWeight": "700"}],
+                    "body-lg": ["18px", {"lineHeight": "28px", "fontWeight": "400"}],
+                    "display-lg": ["64px", {"lineHeight": "72px", "letterSpacing": "-0.02em", "fontWeight": "800"}],
+                    "label-md": ["14px", {"lineHeight": "20px", "letterSpacing": "0.05em", "fontWeight": "600"}],
+                    "display-lg-mobile": ["40px", {"lineHeight": "44px", "letterSpacing": "-0.01em", "fontWeight": "800"}],
+                    "headline-md": ["24px", {"lineHeight": "32px", "fontWeight": "700"}]
+            }
+          },
+        },
+      }
+    </script>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        .glass-panel {
+            backdrop-filter: blur(20px);
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        .hero-gradient {
+            background: linear-gradient(0deg, #131313 0%, rgba(19, 19, 19, 0.7) 40%, rgba(19, 19, 19, 0) 100%);
+        }
+        .hide-scrollbar::-webkit-scrollbar {
+            display: none;
+        }
+        .hide-scrollbar {
+            -ms-overflow-style: none;
+            scrollbar-width: none;
+        }
+    </style>
+</head>
+<body class="bg-background text-on-surface font-body-md selection:bg-primary-container selection:text-on-primary-container">
+<!-- Top Navigation Bar -->
+<header class="bg-surface/70 backdrop-blur-xl border-b border-white/10 shadow-2xl flex justify-between items-center px-gutter-desktop h-20 w-full z-50 docked full-width top-0 sticky">
+<div class="flex items-center gap-12">
+<h1 class="font-display-lg text-primary-container tracking-tighter text-[28px] md:text-[32px]">CineStream</h1>
+<nav class="hidden md:flex items-center gap-8">
+<a class="text-primary-container border-b-2 border-primary-container pb-1 font-label-md text-label-md transition-all duration-300" href="#">Home</a>
+<a class="text-on-surface/70 hover:text-on-surface transition-colors font-label-md text-label-md transition-all duration-300" href="#">TV Shows</a>
+<a class="text-on-surface/70 hover:text-on-surface transition-colors font-label-md text-label-md transition-all duration-300" href="#">Movies</a>
+</nav>
+</div>
+<div class="flex items-center gap-6">
+<div class="hidden lg:flex items-center bg-surface-container-highest rounded-full px-4 py-2 border border-white/5 focus-within:border-secondary-container transition-all">
+<span class="material-symbols-outlined text-on-surface-variant text-[20px]">search</span>
+<input class="bg-transparent border-none focus:ring-0 text-label-md font-label-md text-on-surface w-48 placeholder:text-on-surface-variant/50" placeholder="Search titles..." type="text"/>
+</div>
+<div class="flex items-center gap-4">
+<button class="hover:bg-white/5 p-2 rounded-full transition-all duration-300 active:scale-95">
+<span class="material-symbols-outlined text-on-surface">notifications</span>
+</button>
+<div class="w-10 h-10 rounded-full overflow-hidden border border-white/20 hover:scale-105 transition-transform cursor-pointer">
+<img alt="User Profile" data-alt="A professional studio portrait of a modern, smiling man with short dark hair and a neat beard. The lighting is high-key and soft, characteristic of a premium streaming service profile. The background is a clean, neutral grey that complements the cinematic dark UI theme of CineStream, reflecting a high-quality, personal user experience." src="https://lh3.googleusercontent.com/aida-public/AB6AXuASWYs0rHrkkgIDiysh3UOIidvy6f_Aj7g3f8lSy3nD0Rgwh1JosdsWfgjSnKm_Ej5tfLgRMKHNpvGg2Jd3O1vZ9PoftZRVlmVhDdJeI2JohbRmC4LOBy_QRxvn0rAxSOCwje4vlVFdJJ6q2QcEgS7bRhlYfvcGHmu3S_Il0ANEc-BzEl3IXdOAXnPUMAs7vVKW1kdhZCca0Bt-XXtxhtEwr9EZhJWNKMpFVZR42m5-SUbvLZdWr3RrFL_II_Bf06n-HmPj5SD6YoDO"/>
+</div>
+</div>
+</div>
+</header>
+<main class="pb-24">
+<!-- Hero Section -->
+<section class="relative h-[870px] w-full overflow-hidden">
+<div class="absolute inset-0 z-0">
+<img class="w-full h-full object-cover" data-alt="A breathtaking cinematic wide shot of a futuristic cyberpunk city at night under heavy rain. Neon signs in vibrant red and cyan reflect on the wet asphalt streets, creating a high-contrast atmosphere. In the center, a solitary figure in a dark trench coat looks toward a massive holographic billboard. The mood is authoritative and immersive, echoing the premium CineStream brand identity." src="https://lh3.googleusercontent.com/aida-public/AB6AXuBkkYwI_T6rswZN9jrs6nYtVctjNiYu8xje_YmNvfjUdgh2jiS-rh344xjqnDKBj1fRtCvRu18e84JCaTVDG5-nb9y-cOk5vgDhpR_8dlTSFoOy4_b5cLdd3Iw12LZsz8SPoNh8kGiARxq3_4qVXD9vZeK_w_KUO284Kr1wUNe2wSTxv7Qgk7JO8-9wN7h0ZmGepw9EYXRy4Pqo3t2FW_bxCGUZiPbHL-PVKtH_O3KqvZxtIN9JnkRtyjvtn647iRzuKU8zu2mcFd6j"/>
+<div class="absolute inset-0 hero-gradient"></div>
+</div>
+<div class="relative z-10 h-full flex flex-col justify-end px-margin-desktop pb-20 max-w-container-max mx-auto">
+<div class="space-y-6 max-w-2xl">
+<div class="flex items-center gap-3">
+<span class="bg-primary-container text-on-primary-container px-3 py-1 rounded-sm font-label-md text-label-sm tracking-widest uppercase">New Release</span>
+<span class="text-secondary font-label-md text-label-sm flex items-center gap-1">
+<span class="material-symbols-outlined text-[16px]" style="font-variation-settings: 'FILL' 1;">star</span> 4.9 Rating
+                        </span>
+</div>
+<h2 class="font-display-lg text-display-lg leading-[1.1] text-on-surface drop-shadow-2xl">CYBERPULSE: THE LAST ARCHIVE</h2>
+<p class="font-body-lg text-body-lg text-on-surface-variant line-clamp-3">In a world where memories are digital currency, one rogue archivist discovers a secret that could restart humanity’s heartbeat. A visceral journey through the neon-drenched underworld of Neo-Tokyo.</p>
+<div class="flex items-center gap-4 pt-4">
+<button class="bg-primary-container text-on-primary-container px-8 py-4 rounded-lg flex items-center gap-2 font-label-md text-label-md hover:brightness-110 active:scale-95 transition-all shadow-lg shadow-primary-container/20">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">play_arrow</span>
+                            Watch Now
+                        </button>
+<button class="glass-panel px-8 py-4 rounded-lg flex items-center gap-2 font-label-md text-label-md hover:bg-white/10 active:scale-95 transition-all">
+<span class="material-symbols-outlined">info</span>
+                            More Info
+                        </button>
+</div>
+</div>
+</div>
+</section>
+<!-- Categories Quick Nav -->
+<section class="px-margin-desktop py-8 -mt-12 relative z-20">
+<div class="flex gap-4 overflow-x-auto hide-scrollbar">
+<button class="glass-panel px-6 py-3 rounded-full flex-shrink-0 hover:border-secondary transition-all active:scale-95 font-label-md text-label-md">Action</button>
+<button class="glass-panel px-6 py-3 rounded-full flex-shrink-0 hover:border-secondary transition-all active:scale-95 font-label-md text-label-md">Sci-Fi</button>
+<button class="glass-panel px-6 py-3 rounded-full flex-shrink-0 hover:border-secondary transition-all active:scale-95 font-label-md text-label-md">Thriller</button>
+<button class="glass-panel px-6 py-3 rounded-full flex-shrink-0 hover:border-secondary transition-all active:scale-95 font-label-md text-label-md">Drama</button>
+<button class="glass-panel px-6 py-3 rounded-full flex-shrink-0 hover:border-secondary transition-all active:scale-95 font-label-md text-label-md">Documentary</button>
+<button class="glass-panel px-6 py-3 rounded-full flex-shrink-0 hover:border-secondary transition-all active:scale-95 font-label-md text-label-md">Animation</button>
+<button class="glass-panel px-6 py-3 rounded-full flex-shrink-0 hover:border-secondary transition-all active:scale-95 font-label-md text-label-md">Horror</button>
+</div>
+</section>
+<!-- Continue Watching -->
+<section class="px-margin-desktop py-12 space-y-6">
+<div class="flex items-center justify-between">
+<h3 class="font-headline-md text-headline-md text-on-surface">Continue Watching</h3>
+<a class="text-secondary font-label-md text-label-md hover:underline" href="#">View All</a>
+</div>
+<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+<!-- Card 1 -->
+<div class="group relative aspect-video rounded-xl overflow-hidden glass-panel hover:scale-[1.02] transition-all duration-500 cursor-pointer">
+<img class="w-full h-full object-cover opacity-80 group-hover:opacity-100 transition-opacity" data-alt="A cinematic medium shot of a gritty urban rooftop at dusk. Two characters are deep in conversation against a backdrop of a glowing city skyline. The lighting is dramatic, with warm oranges and deep blues, fitting a premium crime drama series. The image has a sharp focus and rich textures, characteristic of high-end cinematic content on CineStream." src="https://lh3.googleusercontent.com/aida-public/AB6AXuBMvGIkrCLA3TQmQNVmG_pZ7FKwm6a-eazAe8ITk3nHslU4X9qH6tpF_Q2cUfYEuYJgYFC7O3-zJzUrYyCjJtDwll6dj6-dQUljsy99Csaq5a53dbmU6PPyLQYTKTfRJtyJMvo1CEegB5c22taUnr_GWcabYkAAj0UPBSmpSCQhlvHoMBnRCZJ3ZOPY_SLPYD6QXpde1eTpVjNpMbLf6B4whdL1iuooIKbyR7TxM4_9038ums9-Z0Vrib33dl_Z8-xDgxMv9WWg-Igh"/>
+<div class="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent flex flex-col justify-end p-4">
+<div class="flex justify-between items-center mb-2">
+<span class="font-label-md text-label-sm text-on-surface">The Concrete Jungle • S2 E4</span>
+<span class="font-label-md text-label-sm text-on-surface/60">42m left</span>
+</div>
+<div class="h-1 w-full bg-white/20 rounded-full overflow-hidden">
+<div class="h-full bg-secondary-container w-[65%]"></div>
+</div>
+</div>
+<div class="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
+<div class="w-12 h-12 bg-primary-container rounded-full flex items-center justify-center shadow-xl">
+<span class="material-symbols-outlined text-white" style="font-variation-settings: 'FILL' 1;">play_arrow</span>
+</div>
+</div>
+</div>
+<!-- Card 2 -->
+<div class="group relative aspect-video rounded-xl overflow-hidden glass-panel hover:scale-[1.02] transition-all duration-500 cursor-pointer">
+<img class="w-full h-full object-cover opacity-80 group-hover:opacity-100 transition-opacity" data-alt="An awe-inspiring wide shot of a spacecraft orbiting a vibrant, detailed Earth. Sunlight glints off the solar panels, creating sharp lens flares and high-contrast highlights. The deep black of space contrasts sharply with the blue and white of the planet. The visual style is crisp, technical, and epic, evoking a high-budget space exploration documentary." src="https://lh3.googleusercontent.com/aida-public/AB6AXuDP5pCVyc8kSjQtui_5xzswm4KkoFKSURM0mrnj_NwzFAoE6FUw74-BxVxh-aoHzoI7Lo5RQFlBAXk4wsgcx_c27AyLJRXwpsttZFDa5bZYd4mV_o7-4_kqAYH4QwClC7Eek8z8o9N8egENa7zpxJfhlHrygBEF54wII0O1JCAvvcUdDzMu4EH-gFJ4MIckpqOtpsDxcsTL0qOMejtNaPjFR16eQJ6qypbuptSzNyTEZnjUD4arum47lvnXRlrGs_Uu89qMqgiLA_eR"/>
+<div class="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent flex flex-col justify-end p-4">
+<div class="flex justify-between items-center mb-2">
+<span class="font-label-md text-label-sm text-on-surface">Cosmic Horizons • E8</span>
+<span class="font-label-md text-label-sm text-on-surface/60">15m left</span>
+</div>
+<div class="h-1 w-full bg-white/20 rounded-full overflow-hidden">
+<div class="h-full bg-secondary-container w-[82%]"></div>
+</div>
+</div>
+<div class="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
+<div class="w-12 h-12 bg-primary-container rounded-full flex items-center justify-center shadow-xl">
+<span class="material-symbols-outlined text-white" style="font-variation-settings: 'FILL' 1;">play_arrow</span>
+</div>
+</div>
+</div>
+<!-- Card 3 -->
+<div class="group relative aspect-video rounded-xl overflow-hidden glass-panel hover:scale-[1.02] transition-all duration-500 cursor-pointer">
+<img class="w-full h-full object-cover opacity-80 group-hover:opacity-100 transition-opacity" data-alt="A moody, atmospheric close-up of an investigator's desk littered with photographs, maps, and coffee stains. A single lamp casts a pool of yellow light, leaving the edges of the frame in deep shadow. The aesthetic is neo-noir and detailed, suggesting a complex psychological thriller. The mood is tense and secretive, perfectly aligned with CineStream’s dark cinematic branding." src="https://lh3.googleusercontent.com/aida-public/AB6AXuDKTAcNZc3nHetC9WnUIySNAbdTD8ZpjvbUZ0PH4i1Fey0Z3tJbdK-Wz7ixzI_cJqmbpH_rV8n7OIMjQBXLrCjnsCaaaVVAvA5HBv8FZ_y_g1nVM9ZDq1vkpddtYGFMkoLr78yZJBxHtrUKYtKkrGy8tdxJqacWy_4fq6DB7bRvGcwPRx2J_87FSEc3DTODVBA6dzIUFjGYGFSyDya10pvbcs6-sWKC6dbjs_5X1kDwNq9eE3w2oOG565fPtcMkGtm8KRBBCkBFHc2c"/>
+<div class="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent flex flex-col justify-end p-4">
+<div class="flex justify-between items-center mb-2">
+<span class="font-label-md text-label-sm text-on-surface">Point of Origin</span>
+<span class="font-label-md text-label-sm text-on-surface/60">1h 12m left</span>
+</div>
+<div class="h-1 w-full bg-white/20 rounded-full overflow-hidden">
+<div class="h-full bg-secondary-container w-[30%]"></div>
+</div>
+</div>
+<div class="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
+<div class="w-12 h-12 bg-primary-container rounded-full flex items-center justify-center shadow-xl">
+<span class="material-symbols-outlined text-white" style="font-variation-settings: 'FILL' 1;">play_arrow</span>
+</div>
+</div>
+</div>
+<!-- Card 4 -->
+<div class="group relative aspect-video rounded-xl overflow-hidden glass-panel hover:scale-[1.02] transition-all duration-500 cursor-pointer">
+<img class="w-full h-full object-cover opacity-80 group-hover:opacity-100 transition-opacity" data-alt="A vibrant, high-energy wide shot of a retro-style video game arcade filled with glowing neon machines. The lighting is saturated with purples, pinks, and greens, creating a nostalgic yet modern synthwave aesthetic. The atmosphere is bustling and fun, suitable for a pop-culture or tech history series, maintaining high visual impact and contrast." src="https://lh3.googleusercontent.com/aida-public/AB6AXuAcVZuVZoEbXWagURWphGfNzGDBYyOEkHhtLylA-j8uGWcJGvpYux8xMLO1uo8Ep84d-V1XHPL-J5RbgsZOWwOkjEUo_ME3eqTmkSXDLRQ6Ss9EEJUV10G4aumg_pTx_3ExFhplLGd3J_-TBcIrK6gHWadGaL8Yl0aoKYhTzMdJUw4wp4uBOC3T0HcHkPMue2xQ9QLXrmwp30c3h5pPf4JvhM3DDSOcXFI1rGxZiJfAJy0DxWr_j1PY4V3VyuK4xP9rrlNocflD05El"/>
+<div class="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent flex flex-col justify-end p-4">
+<div class="flex justify-between items-center mb-2">
+<span class="font-label-md text-label-sm text-on-surface">Pixels to Polygons • E1</span>
+<span class="font-label-md text-label-sm text-on-surface/60">5m left</span>
+</div>
+<div class="h-1 w-full bg-white/20 rounded-full overflow-hidden">
+<div class="h-full bg-secondary-container w-[95%]"></div>
+</div>
+</div>
+<div class="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
+<div class="w-12 h-12 bg-primary-container rounded-full flex items-center justify-center shadow-xl">
+<span class="material-symbols-outlined text-white" style="font-variation-settings: 'FILL' 1;">play_arrow</span>
+</div>
+</div>
+</div>
+</div>
+</section>
+<!-- Trending Now -->
+<section class="px-margin-desktop py-8 space-y-6">
+<h3 class="font-headline-md text-headline-md text-on-surface">Trending Now</h3>
+<div class="flex gap-6 overflow-x-auto hide-scrollbar pb-4">
+<!-- Movie Poster Items -->
+<div class="flex-shrink-0 w-48 group cursor-pointer">
+<div class="relative aspect-[2/3] rounded-xl overflow-hidden border border-white/10 group-hover:border-secondary-container/50 group-hover:scale-105 transition-all duration-300">
+<img class="w-full h-full object-cover" data-alt="A professional movie poster featuring an abstract, swirling celestial nebula in deep purples and electric blues. In the center, a minimalist white silhouette of an astronaut stands alone. The lighting is dramatic and moody, capturing a sense of cosmic solitude. The overall style is premium and cinematic, fitting for a top-tier science fiction feature on CineStream." src="https://lh3.googleusercontent.com/aida-public/AB6AXuB5rnSxZRwzIpspqPuvKoTQW3qbTQUTs6Psx1h-Fi8SoD865lkK8W1eA8HvB4oEvk5pDP2W9eIfayx2d_kjLEDAjNlacZCWfJzeYxkYVP4EyxdUVPajLBgKw9JvRt1_X_zpauce5SqZL7aT1oOmjF0Il0SnWskU6Yln0M87jWPZhYOP0iuhhvwYdbAZChVz77lhUH6uxmcrzLW46dawkKCbe6nM9Kl2KrX8XRtGJJUEed72Ij0ME5C7az8xeusv2hKZ0q7CG9TTIJ_q"/>
+<div class="absolute top-2 right-2 glass-panel p-1.5 rounded-lg flex items-center gap-1">
+<span class="material-symbols-outlined text-[14px] text-primary" style="font-variation-settings: 'FILL' 1;">bolt</span>
+<span class="text-[10px] font-bold">TOP 10</span>
+</div>
+</div>
+<p class="mt-3 font-label-md text-label-md truncate">Void Walker</p>
+<p class="font-label-sm text-label-sm text-on-surface/50">2024 • Sci-Fi</p>
+</div>
+<div class="flex-shrink-0 w-48 group cursor-pointer">
+<div class="relative aspect-[2/3] rounded-xl overflow-hidden border border-white/10 group-hover:border-secondary-container/50 group-hover:scale-105 transition-all duration-300">
+<img class="w-full h-full object-cover" data-alt="A high-contrast cinematic shot of a classic sports car speeding through a desert landscape at sunrise. Long shadows stretch across the orange sand, and dust kicks up behind the vehicle. The lighting is warm and intense, creating a sense of speed and freedom. The style is polished and authoritative, evoking a premium action or car culture film." src="https://lh3.googleusercontent.com/aida-public/AB6AXuD-ppD67cFcuzQ22ng2vt8CUWYeM667pqXMTc-gryrmrJj6_WRfeCwc8vzAwdQTVFjYpbTm3WH07QMm1a6IXnlmMF1vX0bC4pEIgZ_Cwhw2Qva7HDnxwFNpfNxRiBk40Jc2mPHqAnyPV_WBxtTcTznLkdS9F_kcl7NPN181TFc-gXDuZZuQrxTZMm6aX0d0UsfbCmOD09yOB58oCm2fxbC-uuS-FIxMQ-txxBc02PEuxznDFk3Ncsx_z5lNiGHhY7m7BoyS10lCCR1C"/>
+</div>
+<p class="mt-3 font-label-md text-label-md truncate">Velocity Shift</p>
+<p class="font-label-sm text-label-sm text-on-surface/50">2023 • Action</p>
+</div>
+<div class="flex-shrink-0 w-48 group cursor-pointer">
+<div class="relative aspect-[2/3] rounded-xl overflow-hidden border border-white/10 group-hover:border-secondary-container/50 group-hover:scale-105 transition-all duration-300">
+<img class="w-full h-full object-cover" data-alt="A dark and mysterious cinematic shot of an ancient stone archway deep within a foggy forest. Bioluminescent plants provide faint, ethereal blue light against the blackness. The mood is haunting and fantastical, suggesting an epic fantasy adventure. The textures are rich and the lighting is sophisticated, reflecting the high-end production value of CineStream's catalog." src="https://lh3.googleusercontent.com/aida-public/AB6AXuDs0Bn07kzetExhOVI2ZUSMS99HxwKiIr__lGBdUpqAVsZzbIYlQFRXQObzU_X_tlYLyaAcYztEKxw-83HPdT4auatXysSt55OYVxtfXfZpNNXcoGp2E_9Lw-Dz3Ube11LDKlqDSBLvlZgLupCfIoGZ5LjyFMD6GN53vqChfKOQdEcIN7ZAMkcpgSSAkx0VkSuS9jbKj_GlmNuwkCTUDq2h-cNx4zyXPIkRUJxk_4yLyyrMDr9HYH07AwjYLq10hQZkgO5fLHEf8v7d"/>
+</div>
+<p class="mt-3 font-label-md text-label-md truncate">The Silent Gate</p>
+<p class="font-label-sm text-label-sm text-on-surface/50">2024 • Fantasy</p>
+</div>
+<div class="flex-shrink-0 w-48 group cursor-pointer">
+<div class="relative aspect-[2/3] rounded-xl overflow-hidden border border-white/10 group-hover:border-secondary-container/50 group-hover:scale-105 transition-all duration-300">
+<img class="w-full h-full object-cover" data-alt="A bright, high-contrast shot of a modern architectural masterpiece in a snowy mountain range. The glass and steel structure reflects the jagged peaks and blue sky. The lighting is crisp and natural, creating a clean, sophisticated visual style. This image represents a high-quality documentary about design and architecture, fitting for CineStream's premium collection." src="https://lh3.googleusercontent.com/aida-public/AB6AXuA9u7u5k9G4PNILxbSKULcw_A7lXRzNIMvNzeNGMtsnB6tRwDHIRmEmQfPLvdu66w-aIhjtXPW0VgootF3oBTydWSg7aKrJoq9bo8pdxahFfTeEFkX3rqfoic2i-MUiFCZoFiD3J1ZbGR54Z4L-uk2oUbTBn1LegUGv0iZPvo3BSyNRJ8heqqbFVgBPmt5xzk8mIqjQx8Nbzon6Wxh8az4RrbrQZrRUKeaE-DxCGGmMeIVZMk-FStz4awOi0drsqpP6TuoJF0QEJmey"/>
+</div>
+<p class="mt-3 font-label-md text-label-md truncate">Apex Living</p>
+<p class="font-label-sm text-label-sm text-on-surface/50">2023 • Doc</p>
+</div>
+<div class="flex-shrink-0 w-48 group cursor-pointer">
+<div class="relative aspect-[2/3] rounded-xl overflow-hidden border border-white/10 group-hover:border-secondary-container/50 group-hover:scale-105 transition-all duration-300">
+<img class="w-full h-full object-cover" data-alt="A dramatic cinematic portrait of a woman in a high-fashion red dress standing on a rainy city street at night. The red dress pops against the dark, wet pavement and grey urban environment. Blurred neon lights in the background create a beautiful bokeh effect. The mood is sophisticated and intense, capturing a premium dramatic narrative style." src="https://lh3.googleusercontent.com/aida-public/AB6AXuB0-nHcURyNPR3DqcxbfhJ5aMpOv0oXjtQdnNXijX1snCeqa-2lVxPgPT2g2HxfvcBNN0rVdZa_f0FAkCw9K6pY6zkv5zJwOBbauKkf4v5Y3FWfHdVfFU1q3a-ShT8qjUbxuT0ZReeujHUhbcSVgfnEJiORdcIPkETipeBLLxz1pgzGxHtmxONNakkS17_I8vJzmvZsU0aT5EKgCpphjU2EH5-LpWbb7FIe0ArY_xJXRcOWg2ms5HQuHPDz5qZdpovR4YNLTFNBqcx0"/>
+</div>
+<p class="mt-3 font-label-md text-label-md truncate">Midnight Red</p>
+<p class="font-label-sm text-label-sm text-on-surface/50">2024 • Drama</p>
+</div>
+<div class="flex-shrink-0 w-48 group cursor-pointer">
+<div class="relative aspect-[2/3] rounded-xl overflow-hidden border border-white/10 group-hover:border-secondary-container/50 group-hover:scale-105 transition-all duration-300">
+<img class="w-full h-full object-cover" data-alt="A minimalist and haunting shot of an abandoned lighthouse on a rocky cliff under a stormy grey sky. Waves crash against the rocks with white foam. The color palette is muted, with deep greens and greys, creating a lonely and mysterious atmosphere. The visual style is crisp and evocative, fitting for a suspenseful thriller or psychological horror." src="https://lh3.googleusercontent.com/aida-public/AB6AXuBuCsbQ9NYN34GlB0IFGOmmzOUBy76uDMOITwZdD8EoTS9ZPTwwib5ZPrabaTFU1xiz-gugcfiGTBXjH0QGtED3MSj7Kxbl1xeKkk3miwyYScY2Gj6Ckh1qc8TH75Ti0GRRd3OSkR2OEsXcRdpKDak7e0ZHPbxuXA_SvvhbhFDtIs_SV1b04baPTkTf5774FqducIGCVVQJ1DceSlibSjSpXbgpVeP6w4o2DGpCGLPD94pLoIsIoKWtgHqB0dFFsYKdxL7QscoIei-7"/>
+</div>
+<p class="mt-3 font-label-md text-label-md truncate">The Beacon</p>
+<p class="font-label-sm text-label-sm text-on-surface/50">2023 • Thriller</p>
+</div>
+</div>
+</section>
+<!-- Recommended for You -->
+<section class="px-margin-desktop py-8 space-y-6">
+<h3 class="font-headline-md text-headline-md text-on-surface">Recommended for You</h3>
+<div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-6">
+<!-- Rec Item 1 -->
+<div class="group cursor-pointer">
+<div class="relative aspect-[2/3] rounded-xl overflow-hidden border border-white/10 group-hover:border-secondary-container/50 group-hover:scale-105 transition-all duration-300">
+<img class="w-full h-full object-cover" data-alt="A lush, cinematic wide shot of a dense tropical rainforest with light filtering through the dense canopy in god-rays. The greens are vibrant and rich, and the atmosphere is filled with mist. The lighting is soft yet high-contrast, creating a deep sense of discovery and nature. A perfect visual for a high-production nature documentary on CineStream." src="https://lh3.googleusercontent.com/aida-public/AB6AXuDbo0ddtPuhkv-AYKBj4OHLcjPFN8eI4DMGessCoSu1Xsk20S5p967rvQreMqoKBaMu0OMsaJynOWpTELwJivpo7-XdnkQCYoXmDlsgJewQFnghOHb51LBCCVGVqRYCh3Tc8HjQhADb1IBxg7S9It0TA6eel6sCpgkeTyfBfok-DZ6mBNF71zL7U1QwvPpe4KIpQ4WpVveKIJuEUiC4QNQ8L22IEwc3Wfotc3cETX3gDjdf6NDyiRqqi_T3Q5H7_RZXCNiPPN7DjnF1"/>
+</div>
+<p class="mt-3 font-label-md text-label-md truncate">Eden Unveiled</p>
+</div>
+<!-- Rec Item 2 -->
+<div class="group cursor-pointer">
+<div class="relative aspect-[2/3] rounded-xl overflow-hidden border border-white/10 group-hover:border-secondary-container/50 group-hover:scale-105 transition-all duration-300">
+<img class="w-full h-full object-cover" data-alt="A close-up, high-detail shot of a glowing futuristic circuit board with neon blue energy pulses flowing through it. The shallow depth of field keeps the center in sharp focus while the rest fades into a soft blur. The style is technical, crisp, and modern, representing a documentary or film about advanced technology and the future." src="https://lh3.googleusercontent.com/aida-public/AB6AXuCgMg2GGyzzSFBNNlEuwbo5s7EVlHEndOXopu2Z5pz6iX3UI8JB7A9fkKVkkgW_MdQ4MExwtvxuHDhdPoz8QzvT4LK1ygJJTM_Kld7RTtvTaH3fDwcKnkWBvxbgKlFTTyRWV3pB7Irxf4Dmf8-eCJVySzo02a1yCLhkQIT4UnBOrChKASuz-I3gQbp4LAtdaZ2AYV2Y0d4_ZHmnrrO-dVAULqMZda1imicj3e0TeNaLV_cZ_STlPdKvJtW_ybGQL8LbmxuU0_8GXG0e"/>
+</div>
+<p class="mt-3 font-label-md text-label-md truncate">Neural Link</p>
+</div>
+<!-- Rec Item 3 -->
+<div class="group cursor-pointer">
+<div class="relative aspect-[2/3] rounded-xl overflow-hidden border border-white/10 group-hover:border-secondary-container/50 group-hover:scale-105 transition-all duration-300">
+<img class="w-full h-full object-cover" data-alt="A cinematic medium shot of a musician playing a saxophone in a dimly lit jazz club. A single spotlight highlights the artist against a smoky, dark background. The lighting is moody and warm, capturing the soul and atmosphere of the performance. The style is elegant and high-end, fitting for a premium music documentary or drama on CineStream." src="https://lh3.googleusercontent.com/aida-public/AB6AXuD7TH7-wsUfmF45hU9cmqwpnIXoaQdPZBQRMt50wnpzBekssWjTzUnXz8NiciLm9CnMSqDWZzMBuQPLa0xAHm1JqAVxj4gxCfVyJCDEGW_X-HqlLraY_BzGu6Sc7AD54Snl5EnGI9-rWHlu-hsZ3RK_aDOgfDxmLRCh4h7khxF2ihlwLHymcLW9RMMmg--07JCwfozY3pP21cgJtpa-_8b7Kjfm65sPZKKsIV4uELNPPNqLuUgA-bc_kAl0V103oSM47AJC2UhmDpkc"/>
+</div>
+<p class="mt-3 font-label-md text-label-md truncate">Blue Note</p>
+</div>
+<!-- Rec Item 4 -->
+<div class="group cursor-pointer">
+<div class="relative aspect-[2/3] rounded-xl overflow-hidden border border-white/10 group-hover:border-secondary-container/50 group-hover:scale-105 transition-all duration-300">
+<img class="w-full h-full object-cover" data-alt="A wide, epic cinematic shot of a massive glacier meeting the ocean. The ice is a deep, translucent blue, and the lighting is bright and cold. The visual style is crisp and authoritative, emphasizing the scale and beauty of the natural world. Perfect for a high-budget environmental documentary series on CineStream." src="https://lh3.googleusercontent.com/aida-public/AB6AXuAohZezItXQPSJCWdjPSBTCO9NlLu6LRac-uRtiUqdGc9UKa5RqlvQMUJb2D_KugMw8d1rbUOnhCe1OfymS4uvoDnQn0xcczqnj9MOFmY2LC-a3t4_jxGwKT2hBp8sPLp1ynhCsQU5Cy2KOQSoWMXsI7qpFNenanWMbzaH3Hdcuvn5a6DWQS9X7IRB7reYOxjK8rJRwCT2nU7s27GawnDDh_lN-tv0FFidWTLi-7hXMC5qIh18Nlnf-bmoYVMsnXx8PVRF2b81FL0xR"/>
+</div>
+<p class="mt-3 font-label-md text-label-md truncate">Frozen Giant</p>
+</div>
+<!-- Rec Item 5 -->
+<div class="group cursor-pointer">
+<div class="relative aspect-[2/3] rounded-xl overflow-hidden border border-white/10 group-hover:border-secondary-container/50 group-hover:scale-105 transition-all duration-300">
+<img class="w-full h-full object-cover" data-alt="A striking futuristic wide shot of a sleek robotic assistant standing in a minimalist white lab. The robot has a clean, metallic design with subtle blue glowing accents. The lighting is high-key and modern, creating a sophisticated and clean aesthetic. This image represents a premium sci-fi series or tech documentary, consistent with CineStream's brand." src="https://lh3.googleusercontent.com/aida-public/AB6AXuBjge2O3bDfEjNNurJnUJyxK0Lju5dVrh8X9pCiUcPDp_2t6m1nSEWlgIvzx7lyoodMgoKzfWvnFaKU-_vynFIuZQCWF4edbUl1sxvHqiHCrwa2TUkBTZXddJANyrXvPjaXvM4Vx3Y1OUHjbUwDrD9xy2eSt376TnD54wbsfFros8IzIUknvRk7YH5JumtOgPWdL3iFhLNwR_y7ZRZohAmbLE8_ev8gFDnqSSUWbP8WI1oN0ZGB_wErxA16-o0mU0PGxxGkdcN1I8iP"/>
+</div>
+<p class="mt-3 font-label-md text-label-md truncate">Project X</p>
+</div>
+<!-- Rec Item 6 -->
+<div class="group cursor-pointer">
+<div class="relative aspect-[2/3] rounded-xl overflow-hidden border border-white/10 group-hover:border-secondary-container/50 group-hover:scale-105 transition-all duration-300">
+<img class="w-full h-full object-cover" data-alt="A dramatic cinematic wide shot of a medieval castle perched on a rugged cliff overlooking a stormy ocean. Lightning strikes in the distance, illuminating the dark clouds. The atmosphere is epic and dark, suggesting a grand historical drama or fantasy series. The visual quality is high-contrast and textured, echoing the cinematic hero experience." src="https://lh3.googleusercontent.com/aida-public/AB6AXuBT8t7lrJC-4bKSRJ9KvGK3L6rJ_E34dOEo5AW6PuEDK3MkGaovgj9P7uKZGr44j4nauHx7NvCRGob4Lr_O9hUzw393QragzSE4IctRia2wfB15u3xudI1n9hk0RSHQqYnrmDErlCFtS13VhiQlrachioAX7Nc4RzGSSLrrz_ZjL-34On-n7p6Rk5kGuLQvlDD5MRxGZzftzcO0w5zzDIVa1HYifmPRmDVYVCk2WK3lOC2nGXJo_axculvZuQu3hLpnl_veh-7UXdfZ"/>
+</div>
+<p class="mt-3 font-label-md text-label-md truncate">The Iron Throne</p>
+</div>
+</div>
+</section>
+</main>
+<!-- Footer -->
+<footer class="bg-surface-container-lowest border-t border-white/5 w-full py-12">
+<div class="flex flex-col md:flex-row justify-between items-center px-gutter-desktop max-w-container-max mx-auto gap-8">
+<div class="space-y-4 text-center md:text-left">
+<h2 class="font-headline-md text-primary-container text-headline-md">CineStream</h2>
+<p class="text-on-surface-variant font-body-md text-body-md max-w-xs">Premium streaming for the true cinematic enthusiast. Authorities in storytelling.</p>
+</div>
+<div class="flex flex-wrap justify-center gap-8">
+<a class="text-on-surface-variant hover:text-secondary-fixed transition-colors font-label-sm text-label-sm opacity-80 hover:opacity-100" href="#">Privacy Policy</a>
+<a class="text-on-surface-variant hover:text-secondary-fixed transition-colors font-label-sm text-label-sm opacity-80 hover:opacity-100" href="#">Terms of Service</a>
+<a class="text-on-surface-variant hover:text-secondary-fixed transition-colors font-label-sm text-label-sm opacity-80 hover:opacity-100" href="#">Help Center</a>
+<a class="text-on-surface-variant hover:text-secondary-fixed transition-colors font-label-sm text-label-sm opacity-80 hover:opacity-100" href="#">Contact Us</a>
+</div>
+<div class="flex gap-4">
+<button class="w-10 h-10 rounded-full border border-white/10 flex items-center justify-center hover:bg-white/5 transition-all">
+<span class="material-symbols-outlined text-[20px]">public</span>
+</button>
+<button class="w-10 h-10 rounded-full border border-white/10 flex items-center justify-center hover:bg-white/5 transition-all">
+<span class="material-symbols-outlined text-[20px]">share</span>
+</button>
+</div>
+</div>
+<div class="mt-12 text-center">
+<p class="text-on-surface-variant/40 font-label-sm text-label-sm">© 2024 CineStream. All rights reserved.</p>
+</div>
+</footer>
+<!-- Mobile Bottom Nav (Persistent) -->
+<nav class="md:hidden fixed bottom-0 left-0 right-0 glass-panel border-t border-white/10 flex justify-around items-center h-16 z-50 px-4">
+<button class="flex flex-col items-center gap-1 text-primary-container">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">home</span>
+<span class="text-[10px] font-label-sm">Home</span>
+</button>
+<button class="flex flex-col items-center gap-1 text-on-surface/60">
+<span class="material-symbols-outlined">explore</span>
+<span class="text-[10px] font-label-sm">Explore</span>
+</button>
+<button class="flex flex-col items-center gap-1 text-on-surface/60">
+<span class="material-symbols-outlined">video_library</span>
+<span class="text-[10px] font-label-sm">Library</span>
+</button>
+<button class="flex flex-col items-center gap-1 text-on-surface/60">
+<span class="material-symbols-outlined">person</span>
+<span class="text-[10px] font-label-sm">Profile</span>
+</button>
+</nav>
+<script>
+        // Micro-interactions for glassmorphism panels
+        document.querySelectorAll('.glass-panel').forEach(panel => {
+            panel.addEventListener('mouseenter', () => {
+                panel.style.boxShadow = '0 0 30px rgba(0, 209, 255, 0.1)';
+            });
+            panel.addEventListener('mouseleave', () => {
+                panel.style.boxShadow = 'none';
+            });
+        });
+
+        // Simple scroll handling for header transparency
+        window.addEventListener('scroll', () => {
+            const header = document.querySelector('header');
+            if (window.scrollY > 50) {
+                header.classList.add('bg-surface/90');
+                header.classList.remove('bg-surface/70');
+            } else {
+                header.classList.add('bg-surface/70');
+                header.classList.remove('bg-surface/90');
+            }
+        });
+    </script>
+</body></html>

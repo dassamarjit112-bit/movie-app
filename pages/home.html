@@ -1,0 +1,171 @@
+<!-- CineStream — Home Page -->
+<div id="home-page">
+  <!-- Navbar -->
+  <div id="navbar-mount"></div>
+
+  <!-- ── Hero Carousel ── -->
+  <section class="hero" id="hero-section">
+    <div class="hero-backdrop">
+      <img id="hero-img" src="https://images.unsplash.com/photo-1536440136628-849c177e76a1?w=1920&q=85&auto=format"
+           alt="Featured Movie" style="animation:hero-zoom 10s ease-out both">
+    </div>
+    <div class="hero-gradient"></div>
+    <div class="hero-gradient-side"></div>
+
+    <!-- Hero Content -->
+    <div class="hero-content">
+      <div id="hero-content-inner" style="max-width:640px">
+        <div style="display:flex;align-items:center;gap:12px;margin-bottom:16px;animation:fade-up 0.5s ease both">
+          <span class="badge badge-red" id="hero-badge">New Release</span>
+          <span style="display:flex;align-items:center;gap:4px;font-size:13px;color:#ffc832">
+            <span class="material-symbols-outlined icon-fill" style="font-size:16px">star</span>
+            <span id="hero-rating">4.9</span> Rating
+          </span>
+        </div>
+        <h1 class="text-display-lg" id="hero-title" style="margin-bottom:16px;animation:fade-up 0.5s ease 0.1s both;color:#fff;text-shadow:0 2px 20px rgba(0,0,0,0.5)">
+          CYBERPULSE: THE LAST ARCHIVE
+        </h1>
+        <p class="text-body-lg line-clamp-3" id="hero-desc" style="color:rgba(229,226,225,0.8);margin-bottom:28px;animation:fade-up 0.5s ease 0.2s both;max-width:520px">
+          In a world where memories are digital currency, one rogue archivist discovers a secret that could restart humanity's heartbeat.
+        </p>
+        <div style="display:flex;gap:12px;flex-wrap:wrap;animation:fade-up 0.5s ease 0.3s both">
+          <button class="btn btn-primary btn-lg pulse-red" id="hero-play-btn" onclick="Router.navigate('player', {id:'demo'})">
+            <span class="material-symbols-outlined icon-fill">play_arrow</span>
+            Watch Now
+          </button>
+          <button class="btn btn-ghost btn-lg" id="hero-info-btn" onclick="Router.navigate('detail', {id:'demo',type:'movie'})">
+            <span class="material-symbols-outlined">info</span>
+            More Info
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Carousel Dots -->
+    <div style="position:absolute;bottom:28px;right:var(--space-margin-desktop);display:flex;gap:8px;z-index:10" id="carousel-dots">
+      <button class="carousel-dot active" data-idx="0"></button>
+      <button class="carousel-dot" data-idx="1"></button>
+      <button class="carousel-dot" data-idx="2"></button>
+    </div>
+  </section>
+
+  <!-- ── Genre Quick Nav ── -->
+  <div style="padding:0 var(--space-margin-desktop);margin-top:-8px;position:relative;z-index:20">
+    <div id="genre-chips" class="scroll-row" style="padding:16px 0">
+      <button class="genre-chip active" data-genre="all">All</button>
+      <button class="genre-chip" data-genre="action">Action</button>
+      <button class="genre-chip" data-genre="scifi">Sci-Fi</button>
+      <button class="genre-chip" data-genre="thriller">Thriller</button>
+      <button class="genre-chip" data-genre="drama">Drama</button>
+      <button class="genre-chip" data-genre="horror">Horror</button>
+      <button class="genre-chip" data-genre="documentary">Documentary</button>
+      <button class="genre-chip" data-genre="fantasy">Fantasy</button>
+      <button class="genre-chip" data-genre="animation">Animation</button>
+      <button class="genre-chip" data-genre="romance">Romance</button>
+    </div>
+  </div>
+
+  <!-- ── Continue Watching ── -->
+  <section class="section">
+    <div class="section-header">
+      <h2 class="section-title">Continue Watching</h2>
+      <span class="section-link" onclick="Router.navigate('account')">View All</span>
+    </div>
+    <div class="scroll-row" id="continue-watching-row">
+      <!-- Populated by JS -->
+      <div class="skeleton video-card-item" style="width:300px;height:168px;flex-shrink:0;border-radius:8px"></div>
+      <div class="skeleton video-card-item" style="width:300px;height:168px;flex-shrink:0;border-radius:8px"></div>
+      <div class="skeleton video-card-item" style="width:300px;height:168px;flex-shrink:0;border-radius:8px"></div>
+    </div>
+  </section>
+
+  <!-- ── Trending Now ── -->
+  <section class="section">
+    <div class="section-header">
+      <h2 class="section-title">🔥 Trending Now</h2>
+      <span class="section-link" onclick="Router.navigate('movies')">See All</span>
+    </div>
+    <div class="scroll-row" id="trending-row">
+      <div class="skeleton poster-card-item" style="width:170px;height:255px;flex-shrink:0;border-radius:8px"></div>
+      <div class="skeleton poster-card-item" style="width:170px;height:255px;flex-shrink:0;border-radius:8px"></div>
+      <div class="skeleton poster-card-item" style="width:170px;height:255px;flex-shrink:0;border-radius:8px"></div>
+      <div class="skeleton poster-card-item" style="width:170px;height:255px;flex-shrink:0;border-radius:8px"></div>
+      <div class="skeleton poster-card-item" style="width:170px;height:255px;flex-shrink:0;border-radius:8px"></div>
+    </div>
+  </section>
+
+  <!-- ── New Releases ── -->
+  <section class="section">
+    <div class="section-header">
+      <h2 class="section-title">✨ New Releases</h2>
+      <span class="section-link" onclick="Router.navigate('movies')">See All</span>
+    </div>
+    <div class="scroll-row" id="new-releases-row">
+      <div class="skeleton poster-card-item" style="width:170px;height:255px;flex-shrink:0;border-radius:8px"></div>
+      <div class="skeleton poster-card-item" style="width:170px;height:255px;flex-shrink:0;border-radius:8px"></div>
+      <div class="skeleton poster-card-item" style="width:170px;height:255px;flex-shrink:0;border-radius:8px"></div>
+    </div>
+  </section>
+
+  <!-- ── Recommended ── -->
+  <section class="section">
+    <div class="section-header">
+      <h2 class="section-title">Recommended for You</h2>
+      <span class="section-link">Refresh</span>
+    </div>
+    <div class="poster-grid" id="recommended-grid"></div>
+  </section>
+
+  <!-- ── Top Rated ── -->
+  <section class="section">
+    <div class="section-header">
+      <h2 class="section-title">⭐ Top Rated All Time</h2>
+      <span class="section-link" onclick="Router.navigate('movies')">Browse</span>
+    </div>
+    <div class="scroll-row" id="top-rated-row"></div>
+  </section>
+
+  <!-- ── Subscribe Banner ── -->
+  <section style="padding:40px var(--space-margin-desktop)">
+    <div style="background:linear-gradient(135deg,rgba(229,9,20,0.15) 0%,rgba(20,209,255,0.08) 100%);border:1px solid rgba(229,9,20,0.25);border-radius:20px;padding:48px;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:24px;position:relative;overflow:hidden">
+      <div style="position:absolute;top:-60px;right:-60px;width:250px;height:250px;background:radial-gradient(circle,rgba(229,9,20,0.15),transparent 70%);border-radius:50%;pointer-events:none"></div>
+      <div>
+        <div class="badge badge-red" style="margin-bottom:12px">Premium</div>
+        <h3 style="font-family:'Montserrat',sans-serif;font-size:28px;font-weight:800;margin-bottom:8px">Upgrade to 4K Ultra HD</h3>
+        <p style="font-size:15px;color:rgba(229,226,225,0.65);max-width:480px">Watch on 4 screens simultaneously with Dolby Atmos audio. Starting at $4.99/month.</p>
+      </div>
+      <div style="display:flex;gap:12px;flex-shrink:0">
+        <button class="btn btn-primary btn-lg" onclick="Router.navigate('subscribe')">
+          <span class="material-symbols-outlined icon-fill">workspace_premium</span>
+          View Plans
+        </button>
+        <button class="btn btn-ghost" onclick="Router.navigate('giftcode')">
+          <span class="material-symbols-outlined">card_giftcard</span>
+          Gift Code
+        </button>
+      </div>
+    </div>
+  </section>
+
+  <!-- Footer -->
+  <div id="footer-mount"></div>
+  <!-- Mobile Nav -->
+  <div id="mobile-nav-mount"></div>
+
+  <style>
+    .carousel-dot {
+      width: 8px; height: 8px;
+      border-radius: 50%;
+      border: none;
+      background: rgba(255,255,255,0.3);
+      cursor: pointer;
+      transition: all 0.3s;
+      padding: 0;
+    }
+    .carousel-dot.active {
+      background: #e50914;
+      width: 24px;
+      border-radius: 4px;
+    }
+  </style>
+</div>

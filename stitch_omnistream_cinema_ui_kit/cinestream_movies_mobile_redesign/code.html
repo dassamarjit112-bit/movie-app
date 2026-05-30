@@ -1,0 +1,290 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>CINESTREAM - Movie Library</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700;800&amp;family=Be+Vietnam+Pro:wght@400;500&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            "colors": {
+                    "surface-dim": "#13131b",
+                    "background": "#13131b",
+                    "tertiary-container": "#7658ff",
+                    "surface-container-low": "#1b1b23",
+                    "on-primary": "#520071",
+                    "inverse-on-surface": "#303038",
+                    "error": "#ffb4ab",
+                    "surface-container-lowest": "#0d0d15",
+                    "on-tertiary": "#2f009c",
+                    "primary-fixed-dim": "#ecb2ff",
+                    "secondary-container": "#00eefc",
+                    "tertiary-fixed-dim": "#c9bfff",
+                    "tertiary": "#c9bfff",
+                    "surface-bright": "#393841",
+                    "on-secondary": "#00363a",
+                    "surface-variant": "#34343d",
+                    "secondary-fixed-dim": "#00dbe9",
+                    "outline-variant": "#514255",
+                    "secondary": "#d3fbff",
+                    "inverse-surface": "#e4e1ed",
+                    "secondary-fixed": "#7df4ff",
+                    "on-tertiary-fixed-variant": "#4500d8",
+                    "on-primary-fixed": "#320047",
+                    "surface-container": "#1f1f27",
+                    "on-secondary-fixed-variant": "#004f54",
+                    "on-primary-container": "#ffffff",
+                    "on-surface-variant": "#d4c0d7",
+                    "inverse-primary": "#9900cf",
+                    "on-background": "#e4e1ed",
+                    "on-secondary-fixed": "#002022",
+                    "primary": "#ecb2ff",
+                    "on-primary-fixed-variant": "#74009f",
+                    "primary-container": "#bd00ff",
+                    "surface-container-highest": "#34343d",
+                    "on-secondary-container": "#00686f",
+                    "surface-container-high": "#292932",
+                    "tertiary-fixed": "#e5deff",
+                    "on-surface": "#e4e1ed",
+                    "primary-fixed": "#f8d8ff",
+                    "outline": "#9d8ba0",
+                    "surface-tint": "#ecb2ff",
+                    "on-error-container": "#ffdad6",
+                    "error-container": "#93000a",
+                    "on-tertiary-container": "#ffffff",
+                    "surface": "#13131b",
+                    "on-tertiary-fixed": "#1b0063",
+                    "on-error": "#690005"
+            },
+            "borderRadius": {
+                    "DEFAULT": "0.25rem",
+                    "lg": "0.5rem",
+                    "xl": "0.75rem",
+                    "full": "9999px"
+            },
+            "spacing": {
+                    "section-gap": "32px",
+                    "container-padding": "24px",
+                    "stack-sm": "8px",
+                    "stack-md": "16px",
+                    "sidebar-width": "80px",
+                    "gutter": "16px"
+            },
+            "fontFamily": {
+                    "display-lg": ["Plus Jakarta Sans"],
+                    "body-lg": ["Be Vietnam Pro"],
+                    "headline-md": ["Plus Jakarta Sans"],
+                    "headline-lg": ["Plus Jakarta Sans"],
+                    "label-md": ["Plus Jakarta Sans"],
+                    "headline-lg-mobile": ["Plus Jakarta Sans"],
+                    "body-md": ["Be Vietnam Pro"]
+            },
+            "fontSize": {
+                    "display-lg": ["48px", {"lineHeight": "56px", "letterSpacing": "-0.02em", "fontWeight": "700"}],
+                    "body-lg": ["18px", {"lineHeight": "28px", "fontWeight": "400"}],
+                    "headline-md": ["24px", {"lineHeight": "32px", "fontWeight": "600"}],
+                    "headline-lg": ["32px", {"lineHeight": "40px", "fontWeight": "700"}],
+                    "label-md": ["14px", {"lineHeight": "20px", "letterSpacing": "0.05em", "fontWeight": "600"}],
+                    "headline-lg-mobile": ["28px", {"lineHeight": "36px", "fontWeight": "700"}],
+                    "body-md": ["16px", {"lineHeight": "24px", "fontWeight": "400"}]
+            }
+          },
+        },
+      }
+    </script>
+<style>
+        body {
+            background: radial-gradient(circle at top right, #320047, #13131b 60%),
+                        radial-gradient(circle at bottom left, #1b0063, #13131b 60%);
+            min-height: 100vh;
+            color: #e4e1ed;
+        }
+        .glass-card {
+            background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(40px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        .neon-glow {
+            box-shadow: 0 0 15px rgba(236, 178, 255, 0.3);
+        }
+        .hide-scrollbar::-webkit-scrollbar {
+            display: none;
+        }
+        .hide-scrollbar {
+            -ms-overflow-style: none;
+            scrollbar-width: none;
+        }
+    </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="font-body-md text-body-md overflow-x-hidden pb-32">
+<!-- Top App Bar -->
+<header class="fixed top-0 left-0 w-full z-50 flex justify-between items-center px-container-padding py-4 bg-surface-container/30 backdrop-blur-[40px] rounded-b-xl border-b border-white/10 shadow-[0_8px_32px_0_rgba(0,0,0,0.3)]">
+<div class="flex items-center gap-2">
+<span class="material-symbols-outlined text-primary">menu</span>
+</div>
+<h1 class="font-display-lg text-headline-lg-mobile tracking-tighter text-transparent bg-clip-text bg-gradient-to-r from-primary to-tertiary-container">CINESTREAM</h1>
+<div class="flex items-center gap-2">
+<span class="material-symbols-outlined text-primary">search</span>
+</div>
+</header>
+<main class="mt-24 px-container-padding">
+<!-- Featured Collections Header -->
+<section class="mb-section-gap">
+<div class="flex items-baseline justify-between mb-stack-md">
+<h2 class="font-headline-lg-mobile text-headline-lg-mobile text-primary">Featured Collections</h2>
+<span class="font-label-md text-label-md text-on-surface-variant/70">See All</span>
+</div>
+<div class="relative w-full aspect-[16/9] rounded-3xl overflow-hidden glass-card group">
+<img alt="Cinematic Galaxy" class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105" data-alt="A sprawling, high-fidelity cinematic vista of a vibrant nebula in deep space. Glowing clouds of violet, magenta, and cyan gases swirl around distant, sparkling star clusters. In the center, a silhouetted futuristic starship drifts gracefully through the cosmic dust. The lighting is dramatic and moody, with deep blacks contrasting against intense, neon-hued cosmic lighting, embodying a futuristic, premium sci-fi aesthetic." src="https://lh3.googleusercontent.com/aida-public/AB6AXuDO60jYvEYCRYxvp74FR1l04ShHvunY9kSEdMdMHlROTKhPksRso0gY2IUkUC-kMNbExNwj4ybZNicaZhsRtvRQsA69AyfgkEj9vUuT32SCK1VjisgvfxLvDD4eS6ATONRLrN8-wmPCvkmd3TD07UAKr5eu-cNr8uaUj5za3VAt9Z8XcMsiDcIDmyFVqDitFcf1-NoJCwgiU_xsXHfXq3l5a7JZRhnygQ7Yp0_8lmkfHDzZCkAJJkBFgI3c1xDDXcgdAzXNDAgss3df"/>
+<div class="absolute inset-0 bg-gradient-to-t from-background via-background/20 to-transparent"></div>
+<div class="absolute bottom-0 left-0 p-6">
+<span class="inline-block px-3 py-1 mb-2 rounded-full bg-primary/20 border border-primary/30 text-primary font-label-md text-[10px] uppercase tracking-widest">Limited Edition</span>
+<h3 class="font-headline-lg text-white mb-2">Interstellar Journeys</h3>
+<p class="text-on-surface-variant text-sm max-w-[280px]">Experience the greatest sci-fi epics in stunning 4K HDR quality.</p>
+</div>
+</div>
+</section>
+<!-- Genre Filters -->
+<section class="mb-section-gap">
+<div class="flex overflow-x-auto gap-3 hide-scrollbar py-2">
+<button class="flex-shrink-0 px-6 py-2.5 rounded-full bg-gradient-to-br from-primary to-tertiary-container text-on-primary font-label-md neon-glow">
+                    All Movies
+                </button>
+<button class="flex-shrink-0 px-6 py-2.5 rounded-full glass-card text-on-surface-variant font-label-md hover:text-primary transition-colors">
+                    Sci-Fi
+                </button>
+<button class="flex-shrink-0 px-6 py-2.5 rounded-full glass-card text-on-surface-variant font-label-md hover:text-primary transition-colors">
+                    Action
+                </button>
+<button class="flex-shrink-0 px-6 py-2.5 rounded-full glass-card text-on-surface-variant font-label-md hover:text-primary transition-colors">
+                    Mystery
+                </button>
+<button class="flex-shrink-0 px-6 py-2.5 rounded-full glass-card text-on-surface-variant font-label-md hover:text-primary transition-colors">
+                    Animation
+                </button>
+</div>
+</section>
+<!-- Movie Grid -->
+<section>
+<div class="grid grid-cols-2 gap-gutter">
+<!-- Movie Card 1 -->
+<div class="space-y-3 group cursor-pointer">
+<div class="relative aspect-[2/3] rounded-2xl overflow-hidden glass-card">
+<img alt="Cyberpunk Movie" class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110" data-alt="A portrait-oriented movie poster for a gritty cyberpunk action thriller. The central figure is a woman with glowing blue cybernetic eyes, standing in a rain-slicked neon street. Vivid magenta and cyan light reflects off the wet pavement. High-contrast lighting creates sharp shadows and bright highlights. The style is hyper-detailed digital art with a cinematic grain and professional color grading in a futuristic, tech-heavy atmosphere." src="https://lh3.googleusercontent.com/aida-public/AB6AXuBam68FRdO4gdUdRnnTB7sLcQGUJyR3LnQZXvBiomy3ND-rf-xkjyGn0Kv5846ayeKwX4_K1p-g7XkMZvTheE7Zrci3FeMRRm2mD9_hPoOR_WVPPNRLsRSpXkjAX9nAnQNDWu5Qp7nKccLJzg9MJJJj2MihUB-PZQgHKAxwJiGVCr8F4dIXJMTDSXKS8YzYNQcooItgKn85LLjDyKVAgl_TZsbOPVNkYQiPdatNXDhq6ky-iO2JZ0U3pgiqFaEVQ5Pdq1dWJQ-9CNrW"/>
+<div class="absolute top-3 right-3 glass-card px-2 py-1 rounded-lg flex items-center gap-1 backdrop-blur-xl border-white/20">
+<span class="material-symbols-outlined text-[14px] text-yellow-400" style="font-variation-settings: 'FILL' 1;">star</span>
+<span class="font-label-md text-[12px] text-white">4.8</span>
+</div>
+</div>
+<div class="px-1">
+<h4 class="font-headline-md text-body-md text-white truncate">Neon Syndicate</h4>
+<div class="flex gap-2 items-center mt-1">
+<span class="text-[10px] font-label-md text-on-surface-variant/60 uppercase">2024</span>
+<span class="w-1 h-1 rounded-full bg-on-surface-variant/30"></span>
+<span class="text-[10px] font-label-md text-on-surface-variant/60 uppercase">Action</span>
+</div>
+</div>
+</div>
+<!-- Movie Card 2 -->
+<div class="space-y-3 group cursor-pointer">
+<div class="relative aspect-[2/3] rounded-2xl overflow-hidden glass-card">
+<img alt="Cosmic Odyssey" class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110" data-alt="A stunning movie poster for an space exploration fantasy film. A lone astronaut stands on the edge of a crystal-like planetary ridge, gazing at a massive gas giant looming in the purple-tinted sky. Sparkling nebulae and distant constellations fill the background. The aesthetic is dreamlike and ethereal, with soft glowing edges and a vibrant palette of deep indigo and soft lavenders. High-end digital painting style with cinematic depth." src="https://lh3.googleusercontent.com/aida-public/AB6AXuAd8TOD3c1yPo4WLSzYarzP3Wf0B6I9AikTY4xu8-q5l8QGC4nKDnm2yKCSJ-VeesIjnUq7PHjdR2UtAPXjho3tPq85GuDqYoFV-jfJqxr76XE1xA_nsbCrlNCpIGaengSWgbM61bewDljJBgmsbCPmqyjdMV65YXRLfDIqPenbgjzdmHeVQUXPwE6aPE5cGG54h-5bZmbgUpMRZj_U2WP9OBsplE9TxwSF4iqvPOT1rZjb_evKl5rpfHbm36zZy_QwO_YkPXh3un8-"/>
+<div class="absolute top-3 right-3 glass-card px-2 py-1 rounded-lg flex items-center gap-1 backdrop-blur-xl border-white/20">
+<span class="material-symbols-outlined text-[14px] text-yellow-400" style="font-variation-settings: 'FILL' 1;">star</span>
+<span class="font-label-md text-[12px] text-white">4.5</span>
+</div>
+</div>
+<div class="px-1">
+<h4 class="font-headline-md text-body-md text-white truncate">Starlight Void</h4>
+<div class="flex gap-2 items-center mt-1">
+<span class="text-[10px] font-label-md text-on-surface-variant/60 uppercase">2023</span>
+<span class="w-1 h-1 rounded-full bg-on-surface-variant/30"></span>
+<span class="text-[10px] font-label-md text-on-surface-variant/60 uppercase">Fantasy</span>
+</div>
+</div>
+</div>
+<!-- Movie Card 3 -->
+<div class="space-y-3 group cursor-pointer">
+<div class="relative aspect-[2/3] rounded-2xl overflow-hidden glass-card">
+<img alt="Retro Future" class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110" data-alt="A dark and moody movie poster for a futuristic mystery thriller. A hooded figure stands in a foggy, dimly lit corridor of a metal facility. Red emergency lights pulse from the ceiling, casting long, eerie shadows. The lighting is low-key and suspenseful. The visual style is inspired by modern noir films, with a heavy emphasis on texture, atmospheric haze, and a dark, tech-noir color palette of deep blacks and arterial reds." src="https://lh3.googleusercontent.com/aida-public/AB6AXuDHVdaUHtBBKVy4Xu4tgDLO6p8c4TUFUEWcWgmscWi9msvMuIqreO9GBOCQTi1A-rLh_x7KSUUam2CseSF9jC5cla3FXCNb9T2kcHEIbN-XW_3YjR7yIUsjLyYAzJZDao6pvDHLXrB5tP0UBmEmz3gdox1rkyWnh5oj-QWCE0omEHQj52XvJLYAt9_GEX-zJ9Luo1f36D9ixdl44-zJCooBLODUN9MEVCm7vPYGvQ_NfHvEJtnl3COjSbBboDW0kLfHPfaD33MeMbId"/>
+<div class="absolute top-3 right-3 glass-card px-2 py-1 rounded-lg flex items-center gap-1 backdrop-blur-xl border-white/20">
+<span class="material-symbols-outlined text-[14px] text-yellow-400" style="font-variation-settings: 'FILL' 1;">star</span>
+<span class="font-label-md text-[12px] text-white">4.9</span>
+</div>
+</div>
+<div class="px-1">
+<h4 class="font-headline-md text-body-md text-white truncate">Protocol Omega</h4>
+<div class="flex gap-2 items-center mt-1">
+<span class="text-[10px] font-label-md text-on-surface-variant/60 uppercase">2024</span>
+<span class="w-1 h-1 rounded-full bg-on-surface-variant/30"></span>
+<span class="text-[10px] font-label-md text-on-surface-variant/60 uppercase">Sci-Fi</span>
+</div>
+</div>
+</div>
+<!-- Movie Card 4 -->
+<div class="space-y-3 group cursor-pointer">
+<div class="relative aspect-[2/3] rounded-2xl overflow-hidden glass-card">
+<img alt="Magic Forest" class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110" data-alt="A whimsical animation movie poster featuring a magical bioluminescent forest at night. Giant glowing flowers and sparkling fireflies illuminate the scene. A small, endearing creature with large, expressive eyes peeks from behind a glowing fern. The style is high-end 3D animation with soft, painterly textures and a warm, enchanting color palette of emerald greens and golden yellows. High-fidelity cinematic lighting creates a cozy, magical mood." src="https://lh3.googleusercontent.com/aida-public/AB6AXuAf5pFYwPnWLY2xU-yEbyjTVBNQ0nE8_xXL0MWUyadJG3T57N8Wp7sFD7Z6SIYXMMvV3Vh9mM7V4W9bhSfkNflV4NwF37QjLpvM38ZfLhpmgp8NWXZiuK-b1wivcb4Bs9mMNiPXgTodbvLzwgGLmkqfquIS2SP_LejeSBaf6JZeetLwcWeFMS88FShkpdnuJzMp-WeW7qlKkxmm4a22lwN26hSeg5008Ot1NL7CrNH0i3ky_0uBJlqILrWSmmj_AFj9X91YaOJWnDbG"/>
+<div class="absolute top-3 right-3 glass-card px-2 py-1 rounded-lg flex items-center gap-1 backdrop-blur-xl border-white/20">
+<span class="material-symbols-outlined text-[14px] text-yellow-400" style="font-variation-settings: 'FILL' 1;">star</span>
+<span class="font-label-md text-[12px] text-white">4.7</span>
+</div>
+</div>
+<div class="px-1">
+<h4 class="font-headline-md text-body-md text-white truncate">Whispering Woods</h4>
+<div class="flex gap-2 items-center mt-1">
+<span class="text-[10px] font-label-md text-on-surface-variant/60 uppercase">2023</span>
+<span class="w-1 h-1 rounded-full bg-on-surface-variant/30"></span>
+<span class="text-[10px] font-label-md text-on-surface-variant/60 uppercase">Family</span>
+</div>
+</div>
+</div>
+</div>
+</section>
+</main>
+<!-- Bottom Nav Bar -->
+<nav class="fixed bottom-6 left-1/2 -translate-x-1/2 w-full max-w-md z-50 flex justify-around items-center px-4 py-2 bg-surface-container-low/40 backdrop-blur-[40px] rounded-full border border-white/10 shadow-[0_-8px_32px_0_rgba(0,0,0,0.5)]">
+<button class="flex items-center justify-center text-on-surface-variant/70 p-3 hover:text-secondary transition-all duration-300">
+<span class="material-symbols-outlined">home</span>
+</button>
+<button class="flex items-center justify-center bg-gradient-to-br from-primary to-tertiary-container text-on-primary rounded-full p-3 shadow-[0_0_20px_rgba(236,178,255,0.4)]">
+<span class="material-symbols-outlined">explore</span>
+</button>
+<button class="flex items-center justify-center text-on-surface-variant/70 p-3 hover:text-secondary transition-all duration-300">
+<span class="material-symbols-outlined">movie_filter</span>
+</button>
+<button class="flex items-center justify-center text-on-surface-variant/70 p-3 hover:text-secondary transition-all duration-300">
+<span class="material-symbols-outlined">person</span>
+</button>
+</nav>
+<script>
+        // Subtle interaction: Icon scale effect
+        document.querySelectorAll('nav button').forEach(button => {
+            button.addEventListener('touchstart', () => {
+                button.style.transform = 'scale(0.9)';
+            });
+            button.addEventListener('touchend', () => {
+                button.style.transform = 'scale(1)';
+            });
+        });
+
+        // Atmospheric effect: Gentle pulse on neon chips
+        setInterval(() => {
+            const chip = document.querySelector('.neon-glow');
+            if (chip) {
+                chip.classList.toggle('opacity-90');
+            }
+        }, 1500);
+    </script>
+</body></html>

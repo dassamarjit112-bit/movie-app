@@ -1,0 +1,347 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Account - CineStream</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@700;800&amp;family=Inter:wght@400;500;600&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            "colors": {
+                    "secondary": "#a6e6ff",
+                    "surface-container-high": "#2a2a2a",
+                    "secondary-fixed": "#b7eaff",
+                    "surface-container-lowest": "#0e0e0e",
+                    "on-primary": "#690003",
+                    "inverse-on-surface": "#313030",
+                    "on-surface": "#e5e2e1",
+                    "on-tertiary-container": "#fbf8f7",
+                    "on-error-container": "#ffdad6",
+                    "on-primary-fixed": "#410001",
+                    "surface-dim": "#131313",
+                    "primary-fixed-dim": "#ffb4aa",
+                    "tertiary-container": "#737272",
+                    "inverse-primary": "#c0000c",
+                    "on-primary-container": "#fff7f6",
+                    "on-secondary-fixed": "#001f28",
+                    "surface-container-low": "#1c1b1b",
+                    "surface-tint": "#ffb4aa",
+                    "surface": "#131313",
+                    "surface-bright": "#3a3939",
+                    "surface-container-highest": "#353534",
+                    "secondary-fixed-dim": "#4cd6ff",
+                    "error": "#ffb4ab",
+                    "surface-container": "#201f1f",
+                    "error-container": "#93000a",
+                    "secondary-container": "#14d1ff",
+                    "primary": "#ffb4aa",
+                    "on-secondary-container": "#00566b",
+                    "on-secondary": "#003543",
+                    "inverse-surface": "#e5e2e1",
+                    "outline": "#af8782",
+                    "on-primary-fixed-variant": "#930007",
+                    "on-background": "#e5e2e1",
+                    "on-tertiary": "#313030",
+                    "tertiary-fixed": "#e5e2e1",
+                    "on-secondary-fixed-variant": "#004e60",
+                    "outline-variant": "#5e3f3b",
+                    "on-surface-variant": "#e9bcb6",
+                    "on-tertiary-fixed": "#1c1b1b",
+                    "surface-variant": "#353534",
+                    "tertiary": "#c8c6c5",
+                    "primary-container": "#e50914",
+                    "background": "#131313",
+                    "tertiary-fixed-dim": "#c8c6c5",
+                    "primary-fixed": "#ffdad5",
+                    "on-error": "#690005",
+                    "on-tertiary-fixed-variant": "#474746"
+            },
+            "borderRadius": {
+                    "DEFAULT": "0.125rem",
+                    "lg": "0.25rem",
+                    "xl": "0.5rem",
+                    "full": "0.75rem"
+            },
+            "spacing": {
+                    "container-max": "1440px",
+                    "gutter-mobile": "16px",
+                    "gutter-desktop": "24px",
+                    "margin-desktop": "64px",
+                    "unit": "8px",
+                    "margin-mobile": "20px"
+            },
+            "fontFamily": {
+                    "body-md": ["Inter"],
+                    "label-sm": ["Inter"],
+                    "headline-lg": ["Montserrat"],
+                    "body-lg": ["Inter"],
+                    "display-lg": ["Montserrat"],
+                    "label-md": ["Inter"],
+                    "display-lg-mobile": ["Montserrat"],
+                    "headline-md": ["Montserrat"]
+            },
+            "fontSize": {
+                    "body-md": ["16px", {"lineHeight": "24px", "fontWeight": "400"}],
+                    "label-sm": ["12px", {"lineHeight": "16px", "fontWeight": "500"}],
+                    "headline-lg": ["32px", {"lineHeight": "40px", "fontWeight": "700"}],
+                    "body-lg": ["18px", {"lineHeight": "28px", "fontWeight": "400"}],
+                    "display-lg": ["64px", {"lineHeight": "72px", "letterSpacing": "-0.02em", "fontWeight": "800"}],
+                    "label-md": ["14px", {"lineHeight": "20px", "letterSpacing": "0.05em", "fontWeight": "600"}],
+                    "display-lg-mobile": ["40px", {"lineHeight": "44px", "letterSpacing": "-0.01em", "fontWeight": "800"}],
+                    "headline-md": ["24px", {"lineHeight": "32px", "fontWeight": "700"}]
+            }
+          },
+        },
+      }
+    </script>
+<style>
+        .glass-panel {
+            background: rgba(42, 42, 42, 0.4);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+        }
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+    </style>
+</head>
+<body class="bg-background text-on-surface font-body-md overflow-x-hidden">
+<!-- TopNavBar -->
+<nav class="bg-surface/70 backdrop-blur-xl docked full-width top-0 sticky border-b border-white/10 shadow-2xl h-20 w-full z-50 flex justify-between items-center px-gutter-desktop">
+<div class="flex items-center gap-12">
+<span class="font-display-lg text-primary-container tracking-tighter text-[28px]">CineStream</span>
+<div class="hidden md:flex items-center gap-8">
+<a class="font-label-md text-label-md text-on-surface/70 hover:text-on-surface transition-colors" href="#">Home</a>
+<a class="font-label-md text-label-md text-on-surface/70 hover:text-on-surface transition-colors" href="#">TV Shows</a>
+<a class="font-label-md text-label-md text-on-surface/70 hover:text-on-surface transition-colors" href="#">Movies</a>
+</div>
+</div>
+<div class="flex items-center gap-6">
+<div class="hidden md:flex items-center bg-white/5 rounded-full px-4 py-2 border border-white/10">
+<span class="material-symbols-outlined text-on-surface/50 text-[20px]" data-icon="search">search</span>
+<input class="bg-transparent border-none focus:ring-0 text-label-md font-label-md w-48 ml-2" placeholder="Search titles..." type="text"/>
+</div>
+<button class="material-symbols-outlined text-on-surface/70 hover:bg-white/5 transition-all duration-300 p-2 rounded-full" data-icon="notifications">notifications</button>
+<div class="h-10 w-10 rounded-full overflow-hidden border-2 border-primary-container hover:scale-105 active:scale-95 transition-transform cursor-pointer">
+<img alt="User Profile" class="w-full h-full object-cover" data-alt="A high-quality studio portrait of a modern professional user with a friendly expression. The lighting is soft and cinematic, with a dark, moody background consistent with a premium streaming service aesthetic. The focus is sharp on the facial features, conveying a sense of personalized identity and security within a dark-mode digital environment." src="https://lh3.googleusercontent.com/aida-public/AB6AXuBThkbxs46EGphatMkbGGbh72JKW2J8JgcHdKFLFGaqLHBeZ89UHUgE6p7XNl6vvJlF2pMD-DLsGA35RAlVt-nbuaXBdeeiWAio7fP_-pfdxQYHMZf8mDVMEn5EQcvYskgSVP4GyYJhWPfLIUrgc1Lhgpx6ZBWhG9jv3L7WvVuqIv-wMBL8bZaCh174ZJ2h8RxdYmDFtJRP5bBZ_YCAJWvQnCST67m4exVvHk2JJaVu3HTbdnsnF9EQxce3bs9aW2Lu6y3DKVilctmy"/>
+</div>
+</div>
+</nav>
+<main class="max-w-container-max mx-auto px-gutter-mobile md:px-margin-desktop py-12">
+<header class="mb-12">
+<h1 class="font-display-lg text-display-lg text-on-surface mb-2">My Account</h1>
+<p class="font-body-lg text-body-lg text-on-surface-variant/80">Manage your subscription, devices, and viewing history.</p>
+</header>
+<div class="grid grid-cols-1 lg:grid-cols-12 gap-8">
+<!-- Sidebar Navigation -->
+<aside class="lg:col-span-3">
+<div class="glass-panel p-6 rounded-xl space-y-2">
+<button class="w-full flex items-center gap-4 px-4 py-3 rounded-lg text-primary-container bg-white/10 font-label-md text-label-md">
+<span class="material-symbols-outlined" data-icon="person">person</span>
+                        Profile Management
+                    </button>
+<button class="w-full flex items-center gap-4 px-4 py-3 rounded-lg text-on-surface/70 hover:bg-white/5 transition-colors font-label-md text-label-md">
+<span class="material-symbols-outlined" data-icon="payments">payments</span>
+                        Subscription &amp; Billing
+                    </button>
+<button class="w-full flex items-center gap-4 px-4 py-3 rounded-lg text-on-surface/70 hover:bg-white/5 transition-colors font-label-md text-label-md">
+<span class="material-symbols-outlined" data-icon="history">history</span>
+                        Watch History
+                    </button>
+<button class="w-full flex items-center gap-4 px-4 py-3 rounded-lg text-on-surface/70 hover:bg-white/5 transition-colors font-label-md text-label-md">
+<span class="material-symbols-outlined" data-icon="download">download</span>
+                        Downloads
+                    </button>
+<div class="pt-4 mt-4 border-t border-white/5">
+<button class="w-full flex items-center gap-4 px-4 py-3 rounded-lg text-error hover:bg-error-container/20 transition-colors font-label-md text-label-md">
+<span class="material-symbols-outlined" data-icon="logout">logout</span>
+                            Sign Out
+                        </button>
+</div>
+</div>
+</aside>
+<!-- Main Content Canvas -->
+<div class="lg:col-span-9 space-y-8">
+<!-- Profile Section -->
+<section class="glass-panel p-8 rounded-xl">
+<div class="flex flex-col md:flex-row md:items-center justify-between gap-6 mb-8">
+<div class="flex items-center gap-6">
+<div class="relative group">
+<div class="w-24 h-24 rounded-full overflow-hidden border-2 border-primary-container shadow-2xl">
+<img alt="Profile Photo" class="w-full h-full object-cover" data-alt="A professional avatar of a man with a slight smile, illuminated by soft atmospheric blue and red ambient light from a screen. The shot is high-end and clean, set against a dark, minimalist background that complements the glassmorphic UI of the streaming service dashboard." src="https://lh3.googleusercontent.com/aida-public/AB6AXuBgDctMOex_xWbgxl-M_2iyGWZIKN5pUlkF9bFOjTAoZqcud0Zt8r_YMbnKftQS_FfH7D3VsjiHgr320RengjIWld1PI9ZxTg-OapyeDdftZBkgR-vu8PKpYH8LL8GDwY7CU0I3qB2Hyug1XUP6OkgYUT_DwJDYsDTxnQUXPWTGiTmEZpOBqBMbxFytztaY0LJmqgAY1hEnlDWIuER8Hv31RCKjmur5N96GoCqluxVGSnBGA9dMN173P470DF2WpkQh3gAGsX8qaEsQ"/>
+</div>
+<button class="absolute bottom-0 right-0 bg-primary-container text-white p-1.5 rounded-full border-2 border-surface shadow-lg hover:scale-110 transition-transform">
+<span class="material-symbols-outlined text-[16px]" data-icon="edit">edit</span>
+</button>
+</div>
+<div>
+<h2 class="font-headline-md text-headline-md text-on-surface">Alex Thompson</h2>
+<p class="font-label-md text-label-md text-on-surface-variant/60">Member since October 2022</p>
+</div>
+</div>
+<button class="bg-white/5 border border-white/10 hover:bg-white/10 text-on-surface font-label-md text-label-md px-6 py-2.5 rounded-full transition-all">Edit Details</button>
+</div>
+<div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+<div class="space-y-1">
+<label class="font-label-sm text-label-sm text-on-surface-variant/50 uppercase tracking-widest">Email Address</label>
+<div class="font-body-md text-body-md py-2 border-b border-white/5">alex.thompson@example.com</div>
+</div>
+<div class="space-y-1">
+<label class="font-label-sm text-label-sm text-on-surface-variant/50 uppercase tracking-widest">Password</label>
+<div class="font-body-md text-body-md py-2 border-b border-white/5 flex justify-between items-center">
+<span>••••••••••••</span>
+<button class="text-secondary text-[12px] font-label-md">Change</button>
+</div>
+</div>
+</div>
+</section>
+<!-- Subscription Card (Asymmetric Layout) -->
+<div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+<section class="md:col-span-2 glass-panel p-8 rounded-xl bg-gradient-to-br from-surface-container-high to-surface-container-low border-none relative overflow-hidden">
+<div class="relative z-10">
+<span class="bg-primary-container/20 text-primary-container font-label-sm text-[10px] px-3 py-1 rounded-full uppercase font-bold tracking-widest mb-4 inline-block">Active Plan</span>
+<h3 class="font-headline-md text-headline-md text-on-surface mb-2">Premium Ultra 4K</h3>
+<p class="font-body-md text-body-md text-on-surface-variant/80 mb-6">4 screens at once. Ultra HD and HDR available.</p>
+<div class="flex items-end gap-2 mb-8">
+<span class="font-display-lg text-display-lg-mobile text-on-surface">$14.99</span>
+<span class="font-label-md text-label-md text-on-surface-variant/50 mb-2">/ month</span>
+</div>
+<div class="flex gap-4">
+<button class="bg-primary-container text-white font-label-md text-label-md px-8 py-3 rounded-full hover:brightness-110 transition-all shadow-lg shadow-primary-container/20">Manage Plan</button>
+<button class="bg-white/5 border border-white/10 hover:bg-white/10 text-on-surface font-label-md text-label-md px-8 py-3 rounded-full transition-all">Billing History</button>
+</div>
+</div>
+<!-- Abstract glow effect -->
+<div class="absolute -right-20 -top-20 w-64 h-64 bg-primary-container/10 blur-[100px] rounded-full"></div>
+</section>
+<section class="glass-panel p-8 rounded-xl flex flex-col justify-between">
+<div>
+<h3 class="font-label-md text-label-md text-on-surface-variant/50 uppercase tracking-widest mb-4">Payment Method</h3>
+<div class="flex items-center gap-4 mb-4">
+<div class="w-12 h-8 bg-white/10 rounded flex items-center justify-center">
+<span class="material-symbols-outlined text-secondary" data-icon="credit_card">credit_card</span>
+</div>
+<div class="font-label-md text-label-md">
+<p class="text-on-surface">Visa •••• 4242</p>
+<p class="text-on-surface-variant/50">Expires 09/26</p>
+</div>
+</div>
+</div>
+<button class="text-secondary font-label-md text-label-md hover:underline text-left">Update Method</button>
+</section>
+</div>
+<!-- Bento Grid Content (Watch History & Downloads) -->
+<div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+<!-- Recent Watch History -->
+<section class="glass-panel p-8 rounded-xl">
+<div class="flex justify-between items-center mb-6">
+<h3 class="font-headline-md text-headline-md text-on-surface">Watch History</h3>
+<button class="text-secondary font-label-md text-label-md">View All</button>
+</div>
+<div class="space-y-4">
+<div class="flex gap-4 group cursor-pointer">
+<div class="w-24 h-14 rounded-lg overflow-hidden flex-shrink-0 relative">
+<img alt="Movie" class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500" data-alt="A dramatic movie still from a dark sci-fi thriller, showing a futuristic city at night with neon blue and deep red lights reflected in rain-slicked streets. The atmosphere is cinematic and moody, perfectly representing a high-production value title in a premium streaming library." src="https://lh3.googleusercontent.com/aida-public/AB6AXuA7VsKpYz5hQkX42cG8l29-ZHTkPbfVFGTlxHnpulgPnKFouTxC0eeGplMyCfYlE3hn4ClZSrepsL2wvrR-FryrRBibPnO6sRPl0JDIYF_1EShSxkic7ew3vqkrBi9RyoJ5e3hwFZeFNkwDxB0uzD35VxzDk8jTgoVdT4nwklsb3UX8XU2idKxByuSs90fGSMdmmVKcnEixC-zf8kgVSz7jOq4cfZ9Ze7MdCfMUSKlT_chBrbAB_IF4U1mRSXP5ehsW7dA4huwqL-V3"/>
+<div class="absolute bottom-0 left-0 h-1 bg-secondary w-[85%]"></div>
+</div>
+<div class="flex flex-col justify-center">
+<p class="font-label-md text-label-md text-on-surface line-clamp-1">The Midnight Horizon</p>
+<p class="font-label-sm text-label-sm text-on-surface-variant/60">Season 2 • Ep 4</p>
+</div>
+</div>
+<div class="flex gap-4 group cursor-pointer">
+<div class="w-24 h-14 rounded-lg overflow-hidden flex-shrink-0 relative">
+<img alt="Movie" class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500" data-alt="A wide cinematic landscape shot of a snowy mountain range at sunset, with golden hour light catching the peaks and deep blue shadows in the valleys. The image is crisp and evocative, suggesting an epic adventure or nature documentary available on the CineStream platform." src="https://lh3.googleusercontent.com/aida-public/AB6AXuDLouLFN3fFr8MJFToipuWVcS5MWLguVxbZhH8B2Y_hbqUIs5PFJM2cadNF2SYIOI5QcCFk6qfLt9wmekWU8E-tq8djcLmYRpcX2c7OqDw0y-TGULLTetBcaArq_juQ_VcV_v2X5FLCbt33vIe0Y4KydZcrqpKSi0MNV2wcH-XRHygF0izBtj0MgVlIABdlPGHSSw6Dtu8SNPFNwg2PQ0vi3f0YQFyDPwKvDPtktZ4YtOG41dSmzlJLGl2Mzq5HeQ4Yj5h_CWdr8aZ8"/>
+<div class="absolute bottom-0 left-0 h-1 bg-secondary w-[40%]"></div>
+</div>
+<div class="flex flex-col justify-center">
+<p class="font-label-md text-label-md text-on-surface line-clamp-1">Echoes of the North</p>
+<p class="font-label-sm text-label-sm text-on-surface-variant/60">1h 12m left</p>
+</div>
+</div>
+</div>
+</section>
+<!-- Active Downloads -->
+<section class="glass-panel p-8 rounded-xl">
+<div class="flex justify-between items-center mb-6">
+<h3 class="font-headline-md text-headline-md text-on-surface">Downloads</h3>
+<button class="text-secondary font-label-md text-label-md">Manage</button>
+</div>
+<div class="space-y-4">
+<div class="flex items-center justify-between p-4 rounded-lg bg-white/5 border border-white/5">
+<div class="flex items-center gap-4">
+<span class="material-symbols-outlined text-secondary" data-icon="smartphone">smartphone</span>
+<div>
+<p class="font-label-md text-label-md text-on-surface">Inception (4K)</p>
+<p class="font-label-sm text-label-sm text-on-surface-variant/60">3.2 GB • Offline Access</p>
+</div>
+</div>
+<button class="material-symbols-outlined text-on-surface-variant/40 hover:text-error transition-colors" data-icon="delete">delete</button>
+</div>
+<div class="flex items-center justify-between p-4 rounded-lg bg-white/5 border border-white/5">
+<div class="flex items-center gap-4">
+<span class="material-symbols-outlined text-secondary" data-icon="tablet">tablet</span>
+<div>
+<p class="font-label-md text-label-md text-on-surface">The Last Dance</p>
+<p class="font-label-sm text-label-sm text-on-surface-variant/60">1.8 GB • 2 Episodes</p>
+</div>
+</div>
+<button class="material-symbols-outlined text-on-surface-variant/40 hover:text-error transition-colors" data-icon="delete">delete</button>
+</div>
+</div>
+</section>
+</div>
+</div>
+</div>
+</main>
+<!-- Footer -->
+<footer class="bg-surface-container-lowest border-t border-white/5 w-full py-12">
+<div class="flex flex-col md:flex-row justify-between items-center px-gutter-desktop max-w-container-max mx-auto gap-8">
+<div class="text-center md:text-left">
+<span class="font-headline-md text-primary-container block mb-2">CineStream</span>
+<p class="font-body-md text-body-md text-on-surface-variant">Your cinematic journey, personalized.</p>
+</div>
+<div class="flex flex-wrap justify-center gap-8">
+<a class="font-label-sm text-label-sm text-on-surface-variant hover:text-secondary-fixed transition-colors" href="#">Privacy Policy</a>
+<a class="font-label-sm text-label-sm text-on-surface-variant hover:text-secondary-fixed transition-colors" href="#">Terms of Service</a>
+<a class="font-label-sm text-label-sm text-on-surface-variant hover:text-secondary-fixed transition-colors" href="#">Help Center</a>
+<a class="font-label-sm text-label-sm text-on-surface-variant hover:text-secondary-fixed transition-colors" href="#">Contact Us</a>
+</div>
+<div class="font-label-sm text-label-sm text-on-surface-variant opacity-60">
+                © 2024 CineStream. All rights reserved.
+            </div>
+</div>
+</footer>
+<script>
+        // Micro-interaction for hover effects on glass panels
+        document.querySelectorAll('.glass-panel').forEach(panel => {
+            panel.addEventListener('mousemove', (e) => {
+                const rect = panel.getBoundingClientRect();
+                const x = e.clientX - rect.left;
+                const y = e.clientY - rect.top;
+                panel.style.setProperty('--mouse-x', `${x}px`);
+                panel.style.setProperty('--mouse-y', `${y}px`);
+            });
+        });
+
+        // Simplified active tab switcher for demo
+        const navButtons = document.querySelectorAll('aside button');
+        navButtons.forEach(btn => {
+            btn.addEventListener('click', () => {
+                navButtons.forEach(b => {
+                    b.classList.remove('text-primary-container', 'bg-white/10');
+                    b.classList.add('text-on-surface/70');
+                });
+                btn.classList.add('text-primary-container', 'bg-white/10');
+                btn.classList.remove('text-on-surface/70');
+            });
+        });
+    </script>
+</body></html>

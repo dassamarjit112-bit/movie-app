@@ -1,0 +1,349 @@
+/* ============================================================
+   CineStream — Responsive Breakpoints
+   Mobile-first, supports 375px → 1440px+
+   ============================================================ */
+
+/* ── Breakpoints ──
+   xs:  < 480px  (small phones)
+   sm:  ≥ 480px  (large phones)
+   md:  ≥ 768px  (tablets)
+   lg:  ≥ 1024px (small desktops)
+   xl:  ≥ 1280px (large desktops)
+   2xl: ≥ 1440px (ultra-wide)
+   ─────────────────────────────── */
+
+/* ── Navbar ── */
+@media (max-width: 767px) {
+  .navbar {
+    padding: 0 var(--space-gutter-mobile);
+    height: 60px;
+  }
+
+  .navbar-logo {
+    font-size: 22px;
+  }
+
+  .navbar-nav,
+  .search-bar {
+    display: none !important;
+  }
+
+  .mobile-nav {
+    display: flex;
+  }
+
+  /* Push content above bottom nav */
+  body {
+    padding-bottom: 64px;
+  }
+}
+
+@media (min-width: 768px) and (max-width: 1023px) {
+  .navbar {
+    padding: 0 32px;
+  }
+
+  .search-bar input {
+    width: 120px;
+  }
+}
+
+/* ── Hero ── */
+@media (max-width: 767px) {
+  .hero {
+    height: 70vh;
+    min-height: 460px;
+  }
+
+  .hero-content {
+    padding: 0 var(--space-margin-mobile) 60px;
+  }
+
+  .hero-gradient-side {
+    background: linear-gradient(
+      0deg,
+      var(--c-background) 0%,
+      rgba(14,14,14,0.6) 60%,
+      transparent 100%
+    );
+  }
+}
+
+@media (min-width: 768px) and (max-width: 1023px) {
+  .hero-content {
+    padding: 0 32px 60px;
+  }
+}
+
+/* ── Sections ── */
+@media (max-width: 767px) {
+  .section {
+    padding: 28px var(--space-margin-mobile);
+  }
+}
+
+@media (min-width: 768px) and (max-width: 1023px) {
+  .section {
+    padding: 32px 32px;
+  }
+}
+
+/* ── Poster Grid ── */
+@media (max-width: 479px) {
+  .poster-grid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 10px;
+  }
+}
+
+@media (min-width: 480px) and (max-width: 767px) {
+  .poster-grid {
+    grid-template-columns: repeat(3, 1fr);
+    gap: 12px;
+  }
+}
+
+@media (min-width: 768px) and (max-width: 1023px) {
+  .poster-grid {
+    grid-template-columns: repeat(4, 1fr);
+  }
+}
+
+@media (min-width: 1024px) {
+  .poster-grid {
+    grid-template-columns: repeat(5, 1fr);
+  }
+}
+
+@media (min-width: 1280px) {
+  .poster-grid {
+    grid-template-columns: repeat(6, 1fr);
+  }
+}
+
+/* ── Video Grid ── */
+@media (max-width: 767px) {
+  .video-grid {
+    grid-template-columns: 1fr;
+    gap: 14px;
+  }
+}
+
+@media (min-width: 768px) and (max-width: 1023px) {
+  .video-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (min-width: 1024px) {
+  .video-grid {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
+
+@media (min-width: 1280px) {
+  .video-grid {
+    grid-template-columns: repeat(4, 1fr);
+  }
+}
+
+/* ── Scroll Row Item Sizes ── */
+@media (max-width: 767px) {
+  .scroll-row .poster-card-item {
+    width: 130px;
+    flex-shrink: 0;
+  }
+
+  .scroll-row .video-card-item {
+    width: 240px;
+    flex-shrink: 0;
+  }
+}
+
+@media (min-width: 768px) {
+  .scroll-row .poster-card-item {
+    width: 170px;
+    flex-shrink: 0;
+  }
+
+  .scroll-row .video-card-item {
+    width: 300px;
+    flex-shrink: 0;
+  }
+}
+
+/* ── Auth Page ── */
+@media (max-width: 767px) {
+  .auth-card {
+    padding: 28px 24px;
+    border-radius: var(--r-lg);
+  }
+
+  .auth-layout {
+    align-items: flex-end;
+    padding-bottom: 0;
+  }
+
+  .auth-card {
+    border-bottom-left-radius: 0;
+    border-bottom-right-radius: 0;
+    max-width: 100%;
+    width: 100%;
+  }
+}
+
+/* ── Account Page ── */
+@media (max-width: 1023px) {
+  .account-layout {
+    grid-template-columns: 1fr !important;
+  }
+
+  .account-sidebar {
+    display: flex;
+    flex-direction: row;
+    overflow-x: auto;
+    gap: 8px;
+    scrollbar-width: none;
+  }
+
+  .account-sidebar::-webkit-scrollbar { display: none; }
+
+  .account-sidebar .sidebar-btn {
+    white-space: nowrap;
+    flex-shrink: 0;
+  }
+}
+
+/* ── Subscription Plans ── */
+@media (max-width: 767px) {
+  .plans-grid {
+    grid-template-columns: 1fr !important;
+    gap: 16px;
+  }
+
+  .plan-card {
+    padding: 24px;
+  }
+}
+
+@media (min-width: 768px) and (max-width: 1023px) {
+  .plans-grid {
+    grid-template-columns: repeat(2, 1fr) !important;
+  }
+}
+
+/* ── Footer ── */
+@media (max-width: 767px) {
+  .footer {
+    padding: 40px var(--space-margin-mobile) 80px;
+  }
+
+  .footer-inner {
+    flex-direction: column !important;
+    gap: 32px;
+    text-align: center;
+  }
+
+  .footer-links {
+    flex-wrap: wrap;
+    justify-content: center !important;
+  }
+}
+
+/* ── Detail Page ── */
+@media (max-width: 767px) {
+  .detail-hero {
+    height: 50vh;
+    min-height: 300px;
+  }
+
+  .detail-content {
+    padding: 0 var(--space-margin-mobile);
+  }
+}
+
+/* ── Player ── */
+@media (max-width: 767px) {
+  .player-title {
+    font-size: 14px;
+  }
+
+  .player-controls-row {
+    gap: 8px;
+  }
+
+  .quality-selector,
+  .speed-selector {
+    display: none;
+  }
+}
+
+/* ── Toast ── */
+@media (max-width: 767px) {
+  .toast-container {
+    bottom: 80px;
+    right: 12px;
+    left: 12px;
+  }
+
+  .toast {
+    min-width: auto;
+    max-width: 100%;
+  }
+}
+
+/* ── Modal ── */
+@media (max-width: 767px) {
+  .modal {
+    padding: 24px 20px;
+    border-radius: var(--r-lg);
+  }
+}
+
+/* ── Utility: Hide on mobile/desktop ── */
+@media (max-width: 767px) {
+  .hide-mobile { display: none !important; }
+}
+
+@media (min-width: 768px) {
+  .hide-desktop { display: none !important; }
+  .mobile-nav { display: none !important; }
+}
+
+/* ── Text sizing responsive ── */
+@media (max-width: 767px) {
+  .text-display-lg { font-size: 36px; letter-spacing: -0.015em; }
+  .text-headline-lg { font-size: 22px; }
+  .text-headline-md { font-size: 18px; }
+}
+
+/* ── Navbar desktop specifics ── */
+@media (min-width: 1024px) {
+  .navbar-logo { font-size: 28px; }
+}
+
+/* ── Touch targets (accessibility) ── */
+@media (hover: none) {
+  .poster-card:hover {
+    transform: none;
+  }
+
+  .poster-card:active {
+    transform: scale(0.97);
+  }
+
+  .btn:hover {
+    transform: none;
+  }
+
+  .btn:active {
+    transform: scale(0.97);
+  }
+}
+
+/* ── Large screens ── */
+@media (min-width: 1440px) {
+  .section {
+    padding: 48px var(--space-margin-desktop);
+  }
+}

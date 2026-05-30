@@ -1,0 +1,192 @@
+<!DOCTYPE html>
+<html lang="en" class="dark">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <meta name="theme-color" content="#0e0e0e">
+  <title>CineStream — Premium Cinema Streaming</title>
+  <meta name="description" content="CineStream — Stream the world's finest cinema in 4K Ultra HD. Unlimited movies, TV shows, and exclusives. Start your premium experience today.">
+  <meta property="og:title" content="CineStream — Premium Cinema Streaming">
+  <meta property="og:description" content="Stream the world's finest cinema in 4K Ultra HD with adaptive bitrate streaming.">
+  <meta property="og:type" content="website">
+
+  <!-- Preconnect for fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+
+  <!-- Design System CSS -->
+  <link rel="stylesheet" href="css/design-system.css">
+  <link rel="stylesheet" href="css/animations.css">
+  <link rel="stylesheet" href="css/responsive.css">
+
+  <style>
+    /* App shell base */
+    #app {
+      min-height: 100vh;
+    }
+
+    /* Initial page loader */
+    #initial-loader {
+      position: fixed;
+      inset: 0;
+      background: #0e0e0e;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 24px;
+      z-index: 9999;
+      transition: opacity 0.6s ease;
+    }
+
+    #initial-loader .logo-text {
+      font-family: 'Montserrat', sans-serif;
+      font-size: 42px;
+      font-weight: 900;
+      color: #e50914;
+      letter-spacing: -0.04em;
+      animation: logo-appear 0.8s cubic-bezier(0.34, 1.56, 0.64, 1) both;
+    }
+
+    #initial-loader .tagline {
+      font-size: 13px;
+      color: rgba(229,226,225,0.4);
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      animation: fade-in 1s ease 0.4s both;
+    }
+
+    #initial-loader .loader-bar {
+      width: 120px;
+      height: 2px;
+      background: rgba(255,255,255,0.08);
+      border-radius: 999px;
+      overflow: hidden;
+      animation: fade-in 0.5s ease 0.3s both;
+    }
+
+    #initial-loader .loader-bar-fill {
+      height: 100%;
+      width: 0%;
+      background: linear-gradient(90deg, #e50914, #14d1ff);
+      border-radius: 999px;
+      transition: width 2s ease;
+    }
+
+    #initial-loader.fadeout {
+      opacity: 0;
+      pointer-events: none;
+    }
+
+    /* Top loading bar */
+    #top-loading-bar {
+      position: fixed;
+      top: 0;
+      left: 0;
+      height: 2px;
+      width: 0%;
+      background: linear-gradient(90deg, #e50914, #14d1ff);
+      z-index: 9999;
+      transition: width 0.3s ease, opacity 0.3s ease;
+      opacity: 0;
+    }
+
+    /* Quality menu styling */
+    .quality-item, .speed-item {
+      padding: 8px 16px;
+      font-size: 13px;
+      cursor: pointer;
+      color: rgba(229,226,225,0.8);
+      transition: background 0.15s;
+    }
+    .quality-item:hover, .speed-item:hover {
+      background: rgba(255,255,255,0.1);
+      color: #fff;
+    }
+    .quality-item.active, .speed-item.active {
+      color: #14d1ff;
+    }
+  </style>
+</head>
+<body>
+  <!-- Page loading bar -->
+  <div id="top-loading-bar"></div>
+
+  <!-- Initial splash loader -->
+  <div id="initial-loader">
+    <div class="logo-text">CineStream</div>
+    <div class="tagline">Premium Cinema Streaming</div>
+    <div class="loader-bar">
+      <div class="loader-bar-fill" id="loader-fill"></div>
+    </div>
+  </div>
+
+  <!-- App Mount Point -->
+  <div id="app"></div>
+
+  <!-- ── External Libraries ── -->
+  <!-- Supabase JS Client -->
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
+
+  <!-- HLS.js for adaptive streaming -->
+  <script src="https://cdn.jsdelivr.net/npm/hls.js@1.5.7/dist/hls.min.js"></script>
+
+  <!-- ── App Modules ── (order matters) -->
+  <script src="js/config.js"></script>
+  <script src="js/auth.js"></script>
+  <script src="js/ui.js"></script>
+  <script src="js/subscriptions.js"></script>
+  <script src="js/ai-recommender.js"></script>
+  <script src="js/player.js"></script>
+  <script src="js/router.js"></script>
+
+  <!-- ── Page Controllers ── -->
+  <script src="pages/login.js"></script>
+  <script src="pages/home.js"></script>
+  <script src="pages/movies.js"></script>
+  <script src="pages/tvshows.js"></script>
+  <script src="pages/detail.js"></script>
+  <script src="pages/playerpage.js"></script>
+  <script src="pages/subscribe.js"></script>
+  <script src="pages/giftcode.js"></script>
+  <script src="pages/account.js"></script>
+
+  <script>
+    // ── Bootstrap Application ──
+    (async function bootstrap() {
+      // Animate loader bar
+      const fill = document.getElementById('loader-fill');
+      if (fill) {
+        setTimeout(() => fill.style.width = '70%', 100);
+        setTimeout(() => fill.style.width = '100%', 1200);
+      }
+
+      // Wait for DOM + font load
+      await document.fonts.ready;
+
+      // Handle OAuth callback (Supabase auto-detects session from URL)
+      await window.sb.auth.getSession();
+
+      // Short min display time for branding
+      await new Promise(r => setTimeout(r, 1400));
+
+      // Hide loader
+      const loader = document.getElementById('initial-loader');
+      if (loader) {
+        loader.classList.add('fadeout');
+        setTimeout(() => loader.remove(), 600);
+      }
+
+      // Initialize router
+      window.Router.init();
+
+      // Handle auth state changes globally
+      window.Auth.onAuthChange((session) => {
+        if (session) {
+          UI.updateNavbarUser();
+        }
+      });
+    })();
+  </script>
+</body>
+</html>

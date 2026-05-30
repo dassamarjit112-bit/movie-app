@@ -1,0 +1,76 @@
+<!-- CineStream — TV Shows Page -->
+<div id="tvshows-page">
+  <div id="navbar-mount"></div>
+
+  <!-- Header -->
+  <div style="padding:100px var(--space-margin-desktop) 0;background:linear-gradient(to bottom,rgba(20,209,255,0.05) 0%,transparent 100%)">
+    <div style="max-width:var(--space-container-max);margin:0 auto">
+      <div class="badge badge-blue" style="margin-bottom:12px">Series & Shows</div>
+      <h1 class="text-display-md" style="margin-bottom:8px">TV Shows</h1>
+      <p style="color:rgba(229,226,225,0.55);font-size:16px">Binge-worthy series and episodic storytelling</p>
+    </div>
+  </div>
+
+  <!-- Filter -->
+  <div style="padding:24px var(--space-margin-desktop);position:sticky;top:72px;z-index:40;background:rgba(14,14,14,0.85);backdrop-filter:blur(20px);border-bottom:1px solid rgba(255,255,255,0.05)">
+    <div style="max-width:var(--space-container-max);margin:0 auto;display:flex;gap:12px;flex-wrap:wrap;align-items:center">
+      <div style="flex:1;min-width:200px;display:flex;align-items:center;gap:8px;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.08);border-radius:8px;padding:10px 16px">
+        <span class="material-symbols-outlined" style="font-size:18px;color:rgba(229,226,225,0.4)">search</span>
+        <input id="show-search" type="text" placeholder="Search shows..." 
+               style="background:none;border:none;outline:none;color:var(--c-on-surface);font-size:14px;width:100%"
+               oninput="TVShowsPage.search(this.value)">
+      </div>
+      <select id="show-genre" class="input-field" style="width:auto;padding:10px 16px;cursor:pointer" onchange="TVShowsPage.filter()">
+        <option value="">All Genres</option>
+        <option value="Crime">Crime</option>
+        <option value="Sci-Fi">Sci-Fi</option>
+        <option value="Documentary">Documentary</option>
+        <option value="Drama">Drama</option>
+        <option value="Thriller">Thriller</option>
+      </select>
+      <select id="show-sort" class="input-field" style="width:auto;padding:10px 16px;cursor:pointer" onchange="TVShowsPage.filter()">
+        <option value="trending">Trending</option>
+        <option value="rating">Top Rated</option>
+        <option value="newest">Newest</option>
+      </select>
+      <span id="show-count" style="font-size:13px;color:rgba(229,226,225,0.4);white-space:nowrap"></span>
+    </div>
+  </div>
+
+  <!-- Featured show banner -->
+  <div style="padding:32px var(--space-margin-desktop) 0;max-width:var(--space-container-max);margin:0 auto">
+    <div style="position:relative;border-radius:16px;overflow:hidden;height:320px;cursor:pointer" onclick="Router.navigate('detail',{id:'8',type:'series'})">
+      <img src="https://images.unsplash.com/photo-1480714378408-67cf0d13bc1b?w=1400&q=80&auto=format" alt="The Concrete Jungle" 
+           style="width:100%;height:100%;object-fit:cover;filter:brightness(0.5)">
+      <div style="position:absolute;inset:0;background:linear-gradient(90deg,rgba(14,14,14,0.9) 0%,rgba(14,14,14,0.3) 100%);display:flex;align-items:center;padding:48px">
+        <div>
+          <div style="display:flex;gap:8px;margin-bottom:12px">
+            <span class="badge badge-red">Series Premiere</span>
+            <span class="badge badge-gold">⭐ 8.9</span>
+          </div>
+          <h2 style="font-family:'Montserrat',sans-serif;font-size:36px;font-weight:800;margin-bottom:10px">The Concrete Jungle</h2>
+          <p style="font-size:15px;color:rgba(229,226,225,0.7);max-width:420px;line-height:1.6;margin-bottom:20px">A gritty look at power, corruption, and survival in the city that never sleeps. Season 2 now streaming.</p>
+          <div style="display:flex;gap:10px">
+            <button class="btn btn-primary" onclick="event.stopPropagation();Router.navigate('player',{id:'8'})">
+              <span class="material-symbols-outlined icon-fill">play_arrow</span> Play S2 E4
+            </button>
+            <button class="btn btn-ghost" onclick="event.stopPropagation();Router.navigate('detail',{id:'8',type:'series'})">More Info</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Shows Grid -->
+  <div style="padding:32px var(--space-margin-desktop);max-width:var(--space-container-max);margin:0 auto">
+    <h2 class="section-title" style="margin-bottom:20px">All Shows</h2>
+    <div class="poster-grid" id="shows-grid"></div>
+    <div id="shows-no-results" style="display:none;text-align:center;padding:60px 0">
+      <span class="material-symbols-outlined" style="font-size:64px;color:rgba(229,226,225,0.15);display:block;margin-bottom:16px">tv_off</span>
+      <p style="color:rgba(229,226,225,0.4)">No shows found.</p>
+    </div>
+  </div>
+
+  <div id="footer-mount"></div>
+  <div id="mobile-nav-mount"></div>
+</div>
