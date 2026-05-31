@@ -203,8 +203,23 @@ const UI = (() => {
   // ── Search handler (stub) ──
   function handleSearch(query) {
     if (query.length < 2) return;
-    // Could route to a search results overlay
-    console.log('Searching:', query);
+    // Debounce implementation
+    if (window.searchDebounceTimer) clearTimeout(window.searchDebounceTimer);
+    window.searchDebounceTimer = setTimeout(() => {
+      // Perform local fuzzy match on DEMO_CONTENT
+      const localResults = window.DEMO_CONTENT.filter(item => item.title.toLowerCase().includes(query.toLowerCase()));
+      // Call AI search endpoint for semantic suggestions
+      fetch(`/api/ai-search?q=${encodeURIComponent(query)}`)
+        .then(res => res.json())
+        .then(data => {
+          const combined = [...new Set([...localResults, ...data.results])];
+          UI.showSearchResults(combined);
+        })
+        .catch(err => {
+          console.warn('AI search error, falling back to local results', err);
+          UI.showSearchResults(localResults);
+        });
+    }, 300);
   }
 
   // ── Format duration ──
@@ -229,7 +244,7 @@ const UI = (() => {
         <div class="poster-card" onclick="Router.navigate('detail', {id:'${item.id}', type:'${item.type||'movie'}'})" 
              title="${item.title}">
           <img src="${item.poster_url || item.poster}" alt="${item.title}" loading="lazy"
-               onerror="this.src='https://via.placeholder.com/200x300/1c1b1b/e50914?text=${encodeURIComponent(item.title)}'">
+               onerror="this.onerror=null; this.src='C:/Users/samarjit das/.gemini/antigravity-ide/brain/c4b7dfe6-bf50-435e-a588-939aa2d4d32e/placeholder_image_1780233509572.png';">
           <div class="card-overlay">
             <div style="display:flex;gap:6px;flex-wrap:wrap;margin-bottom:6px">
               ${item.genre ? `<span class="badge badge-blue">${item.genre}</span>` : ''}

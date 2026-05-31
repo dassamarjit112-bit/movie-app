@@ -12,6 +12,22 @@ const Player = (() => {
   function init(videoEl, src, options = {}) {
     if (!videoEl) return;
     destroy(); // Clean previous instance
+    videoEl.src = src; // Directly set source as fallback
+    // Show loading spinner when video starts loading
+    videoEl.addEventListener('loadstart', () => {
+      const spinner = videoEl.parentElement?.querySelector('#buffer-spinner');
+      if (spinner) spinner.classList.remove('hidden');
+    });
+    // Hide spinner when video can play
+    videoEl.addEventListener('canplay', () => {
+      const spinner = videoEl.parentElement?.querySelector('#buffer-spinner');
+      if (spinner) spinner.classList.add('hidden');
+    });
+    videoEl.addEventListener('error', (e) => {
+      console.error('Video playback error', e);
+      UI.toast('Failed to load video. Please try again later.', 'error');
+    });
+    if (options.autoplay) videoEl.play().catch(() => {});
 
     if (Hls.isSupported()) {
       hlsInstance = new Hls({
@@ -44,10 +60,6 @@ const Player = (() => {
           }
         }
       });
-    } else if (videoEl.canPlayType('application/vnd.apple.mpegurl')) {
-      // Safari native HLS support
-      videoEl.src = src;
-      if (options.autoplay) videoEl.play().catch(() => {});
     }
 
     return hlsInstance;
