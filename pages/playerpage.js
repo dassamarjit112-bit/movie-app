@@ -24,8 +24,8 @@ const PlayerPage = (() => {
       return;
     }
 
-    // Find stream in Demo Content
-    let item = window.DEMO_CONTENT.find(c => c.id === contentId);
+    // Find stream in Demo Content (allow numeric/string ID match)
+    let item = window.DEMO_CONTENT.find(c => c.id == contentId || c.id == parseInt(contentId));
     if (!item) {
       try {
         if (window.TMDB) {
@@ -62,14 +62,26 @@ const PlayerPage = (() => {
       'https://devstreaming-cdn.apple.com/videos/streaming/examples/img_bipbop_adv_example_fmp4/master.m3u8',
       'https://playertest.longtailvideo.com/adaptive/wowzaid3/playlist.m3u8',
     ];
-    const streams = (item.streams && item.streams.length) ? item.streams : FALLBACK_STREAMS;
-    const primaryStream = item.stream || streams[0];
-
-    // Initialize the player engine with fallback support
+    // Determine which streams list to use for the player (fallback if none provided)
+    const streamsToUse = (item.streams && item.streams.length) ? item.streams : FALLBACK_STREAMS;
+    // Compute a deterministic hash from the content ID (handles alphanumeric IDs)
+    const computeHash = (str) => {
+      let h = 0;
+      for (let i = 0; i < str.length; i++) {
+        h = (h << 5) - h + str.charCodeAt(i);
+        h &= h; // Convert to 32bit integer
+      }
+      return Math.abs(h);
+    };
+    const hash = computeHash(contentId);
+    const fallbackIndex = hash % FALLBACK_STREAMS.length;
+    // Choose primary stream: prefer explicit item.stream, else fallback based on hash
+    const primaryStream = item.stream || streamsToUse[fallbackIndex];
+    // Initialize the player engine with the selected streams list
     window.Player.init(videoElement, primaryStream, {
       autoplay:      true,
       qualityMenuId: 'quality-menu',
-      streams:       streams
+      streams:       streamsToUse
     });
 
     // Set up control overlay bindings

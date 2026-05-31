@@ -36,6 +36,9 @@ const TMDB = (() => {
       : (item.release_date  || '').slice(0, 4);
     const rating = item.vote_average ? item.vote_average.toFixed(1) : 'N/A';
 
+    const streamIdx = Number(item.id) % DEMO_STREAMS.length;
+    const primary = DEMO_STREAMS[streamIdx];
+    const streams = [primary, ...DEMO_STREAMS.filter(s => s !== primary)];
     return {
       id:          String(item.id),
       tmdb_id:     item.id,
@@ -48,11 +51,12 @@ const TMDB = (() => {
       poster:      item.poster_path   ? `${IMG}${item.poster_path}`   : null,
       thumbnail:   item.backdrop_path ? `${IMG_BG}${item.backdrop_path}` : (item.poster_path ? `${IMG}${item.poster_path}` : null),
       description: item.overview || 'No description available.',
-      stream:      DEMO_STREAMS[0],          // primary working HLS
-      streams:     DEMO_STREAMS,             // fallback chain
+      stream:      primary,
+      streams:     streams,
       language:    item.original_language,
       popularity:  item.popularity,
       vote_count:  item.vote_count,
+      industry:    isTV ? 'TV Serial' : 'Movie'
     };
   }
 
