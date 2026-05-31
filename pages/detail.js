@@ -9,19 +9,19 @@ const DetailPage = (() => {
     const contentId = params.id || '1';
     const contentType = params.type || 'movie';
 
-    // Find the item in demo content
+    // Find the item in demo content as a fallback, but ALWAYS try to fetch full details
+    // Full details are required because the shallow homepage objects don't have episodes/cast data.
     let item = window.DEMO_CONTENT.find(c => c.id === contentId);
-    if (!item) {
-      try {
-        if (window.TMDB) {
-          item = await TMDB.getDetails(contentId, contentType === 'series' ? 'tv' : 'movie');
-          if (item) {
-            window.registerDemoContent(item);
-          }
+    try {
+      if (window.TMDB) {
+        const fullItem = await TMDB.getDetails(contentId, contentType === 'series' ? 'tv' : 'movie');
+        if (fullItem) {
+          item = fullItem;
+          window.registerDemoContent(item);
         }
-      } catch (err) {
-        console.warn('Failed to fetch details directly from TMDB:', err);
       }
+    } catch (err) {
+      console.warn('Failed to fetch details directly from TMDB:', err);
     }
     if (!item) {
       item = window.DEMO_CONTENT[0];
@@ -161,12 +161,24 @@ const DetailPage = (() => {
 
     // Reset season options
     select.innerHTML = '';
-    const seasonsCount = item.seasons || 1;
-    for (let i = 1; i <= seasonsCount; i++) {
-      select.innerHTML += `<option value="${i}">Season ${i}</option>`;
+    
+    // Extract actual available seasons directly from the API response
+    let availableSeasons = [1];
+    if (item.episodes && Object.keys(item.episodes).length > 0) {
+      availableSeasons = Object.keys(item.episodes).map(Number).sort((a,b) => a - b);
+    } else {
+      const seasonsCount = item.seasons || 1;
+      availableSeasons = Array.from({length: seasonsCount}, (_, i) => i + 1);
     }
-    // Ensure the selector defaults to the first season
-    select.value = '1';
+    
+    for (const sNum of availableSeasons) {
+      const label = sNum === 0 ? 'Specials' : `Season ${sNum}`;
+      select.innerHTML += `<option value="${sNum}">${label}</option>`;
+    }
+    
+    // Ensure the selector defaults to Season 1 if it exists, otherwise the first available
+    const defaultSeason = availableSeasons.includes(1) ? 1 : availableSeasons[0];
+    select.value = String(defaultSeason);
 
     const renderEpisodesForSeason = (seasonNum) => {
       const episodes = item.episodes && item.episodes[seasonNum] ? item.episodes[seasonNum] : [];
@@ -196,8 +208,8 @@ const DetailPage = (() => {
       renderEpisodesForSeason(e.target.value);
     };
 
-    // Render the default season (Season 1)
-    renderEpisodesForSeason('1');
+    // Render the default season
+    renderEpisodesForSeason(String(defaultSeason));
   }
 
   async function populateRecommendations(item) {

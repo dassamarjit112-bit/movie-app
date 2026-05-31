@@ -19,12 +19,10 @@ const TMDB = (() => {
     53: 'Thriller', 10752: 'War', 37: 'Western'
   };
 
-  // ── Working public HLS test streams (fallback chain) ──
-  const DEMO_STREAMS = [
-    'https://test-streams.mux.dev/x36xhzz/x36xhzz.m3u8',           // Mux demo (reliable)
-    'https://devstreaming-cdn.apple.com/videos/streaming/examples/img_bipbop_adv_example_fmp4/master.m3u8', // Apple HLS
-    'https://playertest.longtailvideo.com/adaptive/wowzaid3/playlist.m3u8', // Longtail
-  ];
+  // ── Working public iframe streams ──
+  // We use third-party embed servers (VidSrc) that map directly to TMDB IDs.
+  // URL Format: https://vidsrc.me/embed/movie?tmdb={id}
+  // URL Format: https://vidsrc.me/embed/tv?tmdb={id}&season={s}&episode={e}
 
   // ── Convert a TMDB movie/tv object to our internal format ──
   function normalize(item, mediaType = 'movie') {
@@ -36,9 +34,18 @@ const TMDB = (() => {
       : (item.release_date  || '').slice(0, 4);
     const rating = item.vote_average ? item.vote_average.toFixed(1) : 'N/A';
 
-    const streamIdx = Number(item.id) % DEMO_STREAMS.length;
-    const primary = DEMO_STREAMS[streamIdx];
-    const streams = [primary, ...DEMO_STREAMS.filter(s => s !== primary)];
+    // Generate real streaming URLs using TMDB ID
+    const tmdbId = item.id;
+    const primary = isTV
+      ? `https://vidsrc.me/embed/tv?tmdb=${tmdbId}&season=1&episode=1`
+      : `https://vidsrc.me/embed/movie?tmdb=${tmdbId}`;
+      
+    // Provide an alternative streaming server as fallback
+    const altStream = isTV
+      ? `https://vidlink.pro/tv/${tmdbId}/1/1`
+      : `https://vidlink.pro/movie/${tmdbId}`;
+      
+    const streams = [primary, altStream];
     return {
       id:          String(item.id),
       tmdb_id:     item.id,
@@ -202,9 +209,51 @@ const TMDB = (() => {
       const url = `${BASE}/${type}/${tmdbId}?api_key=${API_KEY}&language=en-US&append_to_response=credits,videos`;
       const res = await fetch(url);
       if (!res.ok) return null;
-      const item = await res.json();
-      return normalize(item, type);
-    } catch {
+      const raw = await res.json();
+      // Normalize base fields
+      const item = normalize(raw, type);
+
+      // If TV series, fetch seasons and episodes details
+      if (type === 'tv') {
+        // Fetch full TV details with season info
+        const tvUrl = `${BASE}/tv/${tmdbId}?api_key=${API_KEY}&language=en-US&append_to_response=credits,videos`;
+        const tvRes = await fetch(tvUrl);
+        if (tvRes.ok) {
+          const tvData = await tvRes.json();
+          // Populate seasons count
+          const seasons = tvData.seasons || [];
+          item.seasons = seasons.length;
+          // Prepare episodes per season
+          const episodesMap = {};
+          // For each season, fetch episodes (limit to first few to avoid overload)
+          for (const seasonInfo of seasons) {
+            const seasonNum = seasonInfo.season_number;
+            const seasonUrl = `${BASE}/tv/${tmdbId}/season/${seasonNum}?api_key=${API_KEY}&language=en-US`;
+            const seasonRes = await fetch(seasonUrl);
+            if (!seasonRes.ok) continue;
+            const seasonData = await seasonRes.json();
+            const eps = (seasonData.episodes || []).map(ep => {
+              // Build real stream link for this specific episode
+              const primary = `https://vidsrc.me/embed/tv?tmdb=${tmdbId}&season=${seasonNum}&episode=${ep.episode_number}`;
+              const altStream = `https://vidlink.pro/tv/${tmdbId}/${seasonNum}/${ep.episode_number}`;
+              return {
+                epNum: ep.episode_number,
+                title: ep.name || `Episode ${ep.episode_number}`,
+                desc: ep.overview || '',
+                thumb: ep.still_path ? `${IMG}${ep.still_path}` : item.poster,
+                duration: ep.runtime || 45,
+                stream: primary
+              };
+            });
+            episodesMap[seasonNum] = eps;
+          }
+          item.episodes = episodesMap;
+        }
+      }
+      // Register the content for demo if needed
+      return item;
+    } catch (e) {
+      console.warn('TMDB getDetails error:', e);
       return null;
     }
   }

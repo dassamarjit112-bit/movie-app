@@ -56,14 +56,15 @@ const PlayerPage = (() => {
 
     videoElement = document.getElementById('hls-video');
 
-    // Working public HLS fallbacks so playback always works in demo
+    // Working public HLS fallbacks — must match the pool in tmdb.js
     const FALLBACK_STREAMS = [
       'https://test-streams.mux.dev/x36xhzz/x36xhzz.m3u8',
       'https://devstreaming-cdn.apple.com/videos/streaming/examples/img_bipbop_adv_example_fmp4/master.m3u8',
+      'https://devstreaming-cdn.apple.com/videos/streaming/examples/bipbop_16x9/bipbop_16x9_variant.m3u8',
       'https://playertest.longtailvideo.com/adaptive/wowzaid3/playlist.m3u8',
+      'https://devstreaming-cdn.apple.com/videos/streaming/examples/bipbop_4x3/bipbop_4x3_variant.m3u8',
+      'https://demo.unified-streaming.com/k8s/features/stable/video/tears-of-steel/tears-of-steel.ism/.m3u8',
     ];
-    // Determine which streams list to use for the player (fallback if none provided)
-    // Determine which streams list to use for the player (fallback if none provided)
 
     // Compute a deterministic hash from the content ID (handles alphanumeric IDs)
     const computeHash = (str) => {
@@ -76,20 +77,23 @@ const PlayerPage = (() => {
     };
     const hash = computeHash(String(contentId));
     const streamsToUseRaw = (item.streams && item.streams.length) ? item.streams : FALLBACK_STREAMS;
+
     // Helper to resolve a path or URL to a full HLS URL
     const resolveStream = (s) => {
-      // If already an absolute URL (starts with http), return as is
       if (/^https?:\/\//i.test(s)) return s;
-      // Otherwise prepend the HLS base URL from Vite env (fallback to empty string)
       const base = (typeof window !== 'undefined' && window.VITE_HLS_BASE_URL) ? window.VITE_HLS_BASE_URL : '';
       return base + s;
     };
-    // Resolve all raw streams to full URLs
-    const streamsToUse = streamsToUseRaw.map(resolveStream);
+
+    // Resolve and normalize ALL streams with encodeURI (Fix: was only done on primaryStream before)
+    const streamsToUse = streamsToUseRaw
+      .map(resolveStream)
+      .map(s => { try { return encodeURI(decodeURI(s)); } catch(e) { return s; } });
+
     // Compute deterministic fallback index
     const fallbackIndex = hash % streamsToUse.length;
-    // Choose primary stream: item-specific stream (resolved) or deterministic fallback
-    // Determine primary stream: for series with episode param, use the episode's stream; otherwise fallback logic
+
+    // Determine primary stream
     let primaryStream;
     if (item.type === 'series' && params.ep) {
       // Expected format 'S{seasonNum} E{epNum}'
@@ -100,7 +104,11 @@ const PlayerPage = (() => {
         const episodes = item.episodes && item.episodes[seasonNum] ? item.episodes[seasonNum] : [];
         const episode = episodes.find(e => e.epNum === epNum);
         if (episode && episode.stream) {
-          primaryStream = resolveStream(episode.stream);
+          try {
+            primaryStream = encodeURI(decodeURI(resolveStream(episode.stream)));
+          } catch(e) {
+            primaryStream = resolveStream(episode.stream);
+          }
         }
       }
     }
@@ -108,49 +116,70 @@ const PlayerPage = (() => {
       primaryStream = streamsToUse[fallbackIndex];
     }
 
-    // Ensure primary stream is first in the array
-    const orderedStreams = [primaryStream, ...streamsToUse.filter(s => s !== primaryStream)];
-    // Encode primary stream URL to avoid malformed URLs
-    primaryStream = encodeURI(primaryStream);
-    // Initialize the player with proper options, sending credentials and custom headers
-    window.Player.init(videoElement, primaryStream, {
-      autoplay: true,
-      qualityMenuId: 'quality-menu',
-      streams: orderedStreams,
-      withCredentials: true,
-      requestHeaders: {
-        'Accept': '*/*',
-        'Origin': window.location.origin
-      }
-    });
-    window.Player.setupControls('player-container');
+    // Determine if the stream is an iframe embed server
+    const isIframeStream = primaryStream && (primaryStream.includes('vidsrc') || primaryStream.includes('vidlink') || primaryStream.includes('embed'));
+    const iframeElement = document.getElementById('iframe-video');
+    const controlsContainer = document.querySelector('.player-controls');
 
-    // Retrieve previous progress from Supabase watch history if available
-    try {
-      const history = await Subscriptions.getWatchHistory(session.user.id);
-      const pastRecord = history.find(h => h.content_id === contentId);
-      if (pastRecord && pastRecord.progress_seconds > 5) {
-        // Wait for metadata loaded, then seek
-        const onMetadata = () => {
-          videoElement.currentTime = pastRecord.progress_seconds;
-          UI.toast(`Resumed from ${window.Player.formatTime(pastRecord.progress_seconds)}`, 'info');
-          videoElement.removeEventListener('loadedmetadata', onMetadata);
-        };
-        videoElement.addEventListener('loadedmetadata', onMetadata);
+    if (isIframeStream) {
+      // Hide native video and custom controls
+      if (videoElement) videoElement.style.display = 'none';
+      if (controlsContainer) controlsContainer.style.display = 'none';
+      
+      // Show and load iframe
+      if (iframeElement) {
+        iframeElement.style.display = 'block';
+        iframeElement.src = primaryStream;
       }
-    } catch (err) {
-      console.log('No watch history found or failed to load:', err);
+    } else {
+      // Normal HLS video initialization
+      if (iframeElement) iframeElement.style.display = 'none';
+      if (videoElement) videoElement.style.display = 'block';
+      if (controlsContainer) controlsContainer.style.display = 'flex';
+
+      // Ensure primary stream is first in the array (all already encoded above)
+      const orderedStreams = [primaryStream, ...streamsToUse.filter(s => s !== primaryStream)];
+
+      // Initialize the player
+      window.Player.init(videoElement, primaryStream, {
+        autoplay: true,
+        qualityMenuId: 'quality-menu',
+        streams: orderedStreams,
+        withCredentials: true,
+        requestHeaders: {
+          'Accept': '*/*',
+          'Origin': window.location.origin
+        }
+      });
+      window.Player.setupControls('player-container');
+
+      // Retrieve previous progress from Supabase watch history if available
+      try {
+        const history = await Subscriptions.getWatchHistory(session.user.id);
+        const pastRecord = history.find(h => h.content_id === contentId);
+        if (pastRecord && pastRecord.progress_seconds > 5) {
+          // Wait for metadata loaded, then seek
+          const onMetadata = () => {
+            videoElement.currentTime = pastRecord.progress_seconds;
+            UI.toast(`Resumed from ${window.Player.formatTime(pastRecord.progress_seconds)}`, 'info');
+            videoElement.removeEventListener('loadedmetadata', onMetadata);
+          };
+          videoElement.addEventListener('loadedmetadata', onMetadata);
+        }
+      } catch (err) {
+        console.log('No watch history found or failed to load:', err);
+      }
+
+      // Periodically save watch progress
+      if (progressInterval) clearInterval(progressInterval);
+      progressInterval = setInterval(() => {
+        if (videoElement && !videoElement.paused && videoElement.currentTime > 2) {
+          Subscriptions.saveProgress(session.user.id, contentId, Math.floor(videoElement.currentTime));
+        }
+      }, 6000);
     }
 
-    // Periodically save watch progress
-    if (progressInterval) clearInterval(progressInterval);
-    progressInterval = setInterval(() => {
-      if (videoElement && !videoElement.paused && videoElement.currentTime > 2) {
-        Subscriptions.saveProgress(session.user.id, contentId, Math.floor(videoElement.currentTime));
-      }
-    }, 6000);
-
-    // Overlay controls auto-hide setup
+    // Overlay controls auto-hide setup (for the top back button)
     setupOverlayAutoHide();
   }
 
@@ -186,7 +215,13 @@ const PlayerPage = (() => {
 
   function goBack() {
     // Destroy instance
-    window.Player.destroy();
+    if (window.Player && typeof window.Player.destroy === 'function') {
+      window.Player.destroy();
+    }
+    
+    // Clear iframe to stop playback immediately
+    const iframeElement = document.getElementById('iframe-video');
+    if (iframeElement) iframeElement.src = '';
     
     // Clear interval
     if (progressInterval) {

@@ -16,7 +16,33 @@ const Player = (() => {
     const streams = options.streams || [src];
     let streamIndex = 0;
 
-    function tryLoad(streamSrc) {
+    // Sanitize and validate a stream URL before loading
+    // Fixes: 400 errors from malformed tokens, and catching placeholder/bait URLs
+    function sanitizeStreamUrl(url) {
+      if (!url || typeof url !== 'string') return null;
+      // Trim whitespace
+      url = url.trim();
+      // Must start with http or https
+      if (!url.startsWith('http://') && !url.startsWith('https://')) return null;
+      // Apply encodeURI to preserve query-string tokens (auth tokens, HMAC, etc.)
+      // encodeURI does NOT double-encode already-encoded sequences
+      try {
+        const safeUrl = encodeURI(decodeURI(url));
+        new URL(safeUrl); // will throw if structurally invalid
+        return safeUrl;
+      } catch (e) {
+        console.warn('Player: Rejected malformed stream URL:', url);
+        return null;
+      }
+    }
+
+    function tryLoad(rawStreamSrc) {
+      const streamSrc = sanitizeStreamUrl(rawStreamSrc);
+      if (!streamSrc) {
+        console.warn('Player: Invalid stream URL skipped, trying next.');
+        tryNextStream();
+        return;
+      }
       // Clear previous error message and hide it
       const errEl = document.getElementById('player-error-msg');
       if (errEl) errEl.style.display = 'none';
@@ -55,14 +81,26 @@ const Player = (() => {
         });
 
         hlsInstance.on(Hls.Events.ERROR, (event, data) => {
+          // Log detailed error info so you can see the exact failing URL + HTTP status
           if (data.fatal) {
+            const failedUrl   = data.url || streamSrc;
+            const statusCode  = data.response?.code || data.networkDetails?.status || 'unknown';
+            console.error(
+              `[Player] Fatal HLS error — type: ${data.type}, ` +
+              `details: ${data.details}, HTTP: ${statusCode}, ` +
+              `URL: ${failedUrl}`
+            );
+
             switch (data.type) {
               case Hls.ErrorTypes.NETWORK_ERROR:
-                // Try to recover first; if it keeps failing, switch stream
+                // Try to recover once; if still fatal after 1.5s, switch stream
                 hlsInstance.startLoad();
                 setTimeout(() => {
-                  if (data.fatal) tryNextStream();
-                }, 3000);
+                  if (data.fatal) {
+                    console.warn('[Player] Network recovery failed, switching to fallback stream.');
+                    tryNextStream();
+                  }
+                }, 1500);
                 break;
               case Hls.ErrorTypes.MEDIA_ERROR:
                 hlsInstance.recoverMediaError();
@@ -71,6 +109,9 @@ const Player = (() => {
                 tryNextStream();
                 break;
             }
+          } else if (data.details === Hls.ErrorDetails.FRAG_LOAD_ERROR) {
+            // Non-fatal fragment error — log the URL so you can identify bait/ad segments
+            console.warn('[Player] Fragment load error (non-fatal):', data.url || streamSrc, 'HTTP:', data.response?.code);
           }
         });
       } else if (videoEl.canPlayType('application/vnd.apple.mpegurl')) {

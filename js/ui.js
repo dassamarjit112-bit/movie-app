@@ -394,7 +394,7 @@ const UI = (() => {
         <div class="poster-card" onclick="Router.navigate('detail', {id:'${item.id}', type:'${item.type||'movie'}'})" 
              title="${item.title}">
           <img src="${item.poster_url || item.poster}" alt="${item.title}" loading="lazy"
-               onerror="this.onerror=null;this.src='data:image/svg+xml;utf8,%3Csvg xmlns=\'http://www.w3.org/2000/svg\' width=\'170\' height=\'255\' viewBox=\'0 0 170 255\'%3E%3Crect width=\'170\' height=\'255\' fill=\'%231a1a1a\'/%3E%3Ctext x=\'50%25\' y=\'50%25\' dominant-baseline=\'middle\' text-anchor=\'middle\' font-size=\'36\' fill=\'%23333\'%3E🎬%3C/text%3E%3C/svg%3E'">
+               onerror="this.onerror=null;this.src='data:image/svg+xml;utf8,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 width=%22170%22 height=%22255%22 viewBox=%220 0 170 255%22%3E%3Crect width=%22170%22 height=%22255%22 fill=%22%231a1a1a%22/%3E%3Ctext x=%2250%25%22 y=%2250%25%22 dominant-baseline=%22middle%22 text-anchor=%22middle%22 font-size=%2236%22 fill=%22%23333%22%3E🎬%3C/text%3E%3C/svg%3E'">
           <div class="card-overlay">
             <div style="display:flex;gap:6px;flex-wrap:wrap;margin-bottom:6px">
               ${item.genre ? `<span class="badge badge-blue">${item.genre}</span>` : ''}
@@ -428,7 +428,7 @@ const UI = (() => {
       <div class="video-card-item" style="flex-shrink:0">
         <div class="video-card" onclick="Router.navigate('player', {id:'${item.id}'})" title="Continue: ${item.title}">
           <img src="${item.thumbnail || item.poster}" alt="${item.title}" loading="lazy"
-               onerror="this.onerror=null;this.src='data:image/svg+xml;utf8,%3Csvg xmlns=\'http://www.w3.org/2000/svg\' width=\'280\' height=\'158\' viewBox=\'0 0 280 158\'%3E%3Crect width=\'280\' height=\'158\' fill=\'%231a1a1a\'/%3E%3Ctext x=\'50%25\' y=\'50%25\' dominant-baseline=\'middle\' text-anchor=\'middle\' font-size=\'36\' fill=\'%23333\'%3E🎬%3C/text%3E%3C/svg%3E'">
+               onerror="this.onerror=null;this.src='data:image/svg+xml;utf8,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 width=%22280%22 height=%22158%22 viewBox=%220 0 280 158%22%3E%3Crect width=%22280%22 height=%22158%22 fill=%22%231a1a1a%22/%3E%3Ctext x=%2250%25%22 y=%2250%25%22 dominant-baseline=%22middle%22 text-anchor=%22middle%22 font-size=%2236%22 fill=%22%23333%22%3E🎬%3C/text%3E%3C/svg%3E'">
           <div style="position:absolute;inset:0;background:linear-gradient(to top,rgba(0,0,0,0.85) 0%,transparent 60%);display:flex;flex-direction:column;justify-content:flex-end;padding:12px">
             <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px">
               <span style="font-size:12px;font-weight:600">${item.title}${item.episode ? ' • ' + item.episode : ''}</span>

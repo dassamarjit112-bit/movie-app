@@ -142,7 +142,7 @@ const Subscriptions = (() => {
     try {
       const { data } = await window.sb
         .from('watch_history')
-        .select('*, content(*)')
+        .select('*')
         .eq('user_id', userId)
         .order('last_watched', { ascending: false })
         .limit(limit);
@@ -159,7 +159,7 @@ const Subscriptions = (() => {
         content_id: contentId,
         progress_seconds: progressSeconds,
         last_watched: new Date().toISOString()
-      });
+      }, { onConflict: 'user_id,content_id' });
     } catch { /* silent */ }
   }
 
@@ -169,7 +169,7 @@ const Subscriptions = (() => {
     try {
       const { data } = await window.sb
         .from('watchlist')
-        .select('*, content(*)')
+        .select('*')
         .eq('user_id', userId)
         .order('added_at', { ascending: false });
       return data || [];
