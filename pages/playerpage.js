@@ -63,28 +63,42 @@ const PlayerPage = (() => {
       'https://playertest.longtailvideo.com/adaptive/wowzaid3/playlist.m3u8',
     ];
     // Determine which streams list to use for the player (fallback if none provided)
+    // Determine which streams list to use for the player (fallback if none provided)
     const streamsToUse = (item.streams && item.streams.length) ? item.streams : FALLBACK_STREAMS;
     // Compute a deterministic hash from the content ID (handles alphanumeric IDs)
     const computeHash = (str) => {
       let h = 0;
       for (let i = 0; i < str.length; i++) {
-        h = (h << 5) - h + str.charCodeAt(i);
-        h &= h; // Convert to 32bit integer
+        h = ((h << 5) - h) + str.charCodeAt(i);
+        h |= 0; // Convert to 32bit integer
       }
       return Math.abs(h);
     };
-    const hash = computeHash(contentId);
-    const fallbackIndex = hash % FALLBACK_STREAMS.length;
-    // Choose primary stream: prefer explicit item.stream, else fallback based on hash
-    const primaryStream = item.stream || streamsToUse[fallbackIndex];
+    const hash = computeHash(String(contentId));
+    const streamsToUseRaw = (item.streams && item.streams.length) ? item.streams : FALLBACK_STREAMS;
+    // Helper to resolve a path or URL to a full HLS URL
+    const resolveStream = (s) => {
+      // If already an absolute URL (starts with http), return as is
+      if (/^https?:\/\//i.test(s)) return s;
+      // Otherwise prepend the HLS base URL from Vite env (fallback to empty string)
+      const base = typeof import !== 'undefined' && import.meta && import.meta.env && import.meta.env.VITE_HLS_BASE_URL ? import.meta.env.VITE_HLS_BASE_URL : '';
+      return base + s;
+    };
+    // Resolve all raw streams to full URLs
+    const streamsToUse = streamsToUseRaw.map(resolveStream);
+    // Compute deterministic fallback index
+    const fallbackIndex = hash % streamsToUse.length;
+    // Choose primary stream: item-specific stream (resolved) or deterministic fallback
+    const primaryStream = item.stream ? resolveStream(item.stream) : streamsToUse[fallbackIndex];
+    // Ensure primary stream is first in the array
+    const orderedStreams = [primaryStream, ...streamsToUse.filter(s => s !== primaryStream)];
     // Initialize the player engine with the selected streams list
+    console.log('Player init - item:', item.id, item.title, 'primaryStream:', primaryStream);
     window.Player.init(videoElement, primaryStream, {
       autoplay:      true,
       qualityMenuId: 'quality-menu',
-      streams:       streamsToUse
+      streams:       orderedStreams
     });
-
-    // Set up control overlay bindings
     window.Player.setupControls('player-container');
 
     // Retrieve previous progress from Supabase watch history if available
