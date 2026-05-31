@@ -122,9 +122,13 @@ const UI = (() => {
           <li><a data-nav-link="subscribe" class="${activeRoute==='subscribe'?'active':''}" onclick="Router.navigate('subscribe')">Plans</a></li>
         </ul>
         <div class="navbar-actions">
-          <div class="search-bar">
+          <div class="search-bar" style="position:relative;display:flex;align-items:center;gap:6px">
             <span class="material-symbols-outlined" style="font-size:18px;color:rgba(229,226,225,0.4)">search</span>
-            <input type="text" id="navbar-search" placeholder="Search titles..." oninput="UI.handleSearch(this.value)" autocomplete="off">
+            <input type="text" id="navbar-search" placeholder="Search movies, shows…"
+                   oninput="UI.handleSearch(this.value)"
+                   onkeydown="if(event.key==='Escape'){this.value='';UI.closeSearch();}"
+                   autocomplete="off">
+            <span style="font-size:9px;font-weight:800;padding:2px 6px;border-radius:4px;background:rgba(50,220,120,0.12);color:#32dc78;border:1px solid rgba(50,220,120,0.25);white-space:nowrap">AI</span>
           </div>
           <button class="btn-icon" id="notif-btn" title="Notifications" style="position:relative">
             <span class="material-symbols-outlined" style="font-size:20px">notifications</span>
@@ -135,8 +139,22 @@ const UI = (() => {
           </div>
         </div>
       </nav>
+      <script>
+        // Close AI search dropdown on outside click (run once after nav renders)
+        if (!window._searchOutsideListenerAdded) {
+          window._searchOutsideListenerAdded = true;
+          document.addEventListener('click', function(e) {
+            const dropdown = document.getElementById('ai-search-dropdown');
+            const input = document.getElementById('navbar-search');
+            if (dropdown && input && !dropdown.contains(e.target) && e.target !== input) {
+              dropdown.remove();
+            }
+          });
+        }
+      <\/script>
     `;
   }
+
 
   // ── Mobile Bottom Nav HTML ──
   function renderMobileNav(activeRoute) {
@@ -200,26 +218,158 @@ const UI = (() => {
     `;
   }
 
-  // ── Search handler (stub) ──
+  // ── AI-powered Search ──
+  let _searchTimer = null;
+  let _searchDropdown = null;
+
   function handleSearch(query) {
-    if (query.length < 2) return;
-    // Debounce implementation
-    if (window.searchDebounceTimer) clearTimeout(window.searchDebounceTimer);
-    window.searchDebounceTimer = setTimeout(() => {
-      // Perform local fuzzy match on DEMO_CONTENT
-      const localResults = window.DEMO_CONTENT.filter(item => item.title.toLowerCase().includes(query.toLowerCase()));
-      // Call AI search endpoint for semantic suggestions
-      fetch(`/api/ai-search?q=${encodeURIComponent(query)}`)
-        .then(res => res.json())
-        .then(data => {
-          const combined = [...new Set([...localResults, ...data.results])];
-          UI.showSearchResults(combined);
-        })
-        .catch(err => {
-          console.warn('AI search error, falling back to local results', err);
-          UI.showSearchResults(localResults);
+    // Close if empty
+    if (!query || query.trim().length < 1) {
+      _closeSearchDropdown();
+      return;
+    }
+
+    if (_searchTimer) clearTimeout(_searchTimer);
+    _searchTimer = setTimeout(async () => {
+      const q = query.trim();
+
+      // Show loading state in dropdown
+      _showSearchDropdown(`
+        <div style="padding:20px;text-align:center;color:rgba(229,226,225,0.5)">
+          <span class="material-symbols-outlined" style="font-size:20px;vertical-align:middle;margin-right:6px;animation:spin 1s linear infinite">autorenew</span>
+          Searching with AI…
+        </div>`);
+
+      try {
+        // 1) Local fuzzy match on already-loaded content
+        const local = (window.DEMO_CONTENT || []).filter(item => {
+          const t = (item.title || '').toLowerCase();
+          const g = (item.genre || '').toLowerCase();
+          const ql = q.toLowerCase();
+          return t.includes(ql) || g.includes(ql) || (item.industry || '').toLowerCase().includes(ql);
         });
-    }, 300);
+
+        // 2) Live TMDB search (runs in parallel)
+        let tmdbResults = [];
+        try {
+          if (window.TMDB) tmdbResults = await TMDB.search(q);
+        } catch(e) {}
+
+        // 3) Merge & deduplicate
+        const seen = new Set(local.map(i => i.id));
+        const merged = [...local];
+        for (const r of tmdbResults) {
+          if (!seen.has(r.id)) { seen.add(r.id); merged.push(r); }
+        }
+        window.registerDemoContent(tmdbResults);
+
+        // 4) AI-style relevance scoring
+        const scored = merged.map(item => {
+          let score = 0;
+          const titleLower = (item.title || '').toLowerCase();
+          const ql = q.toLowerCase();
+          if (titleLower === ql) score += 100;
+          else if (titleLower.startsWith(ql)) score += 60;
+          else if (titleLower.includes(ql)) score += 30;
+          if ((item.genre || '').toLowerCase().includes(ql)) score += 15;
+          if ((item.industry || '').toLowerCase().includes(ql)) score += 10;
+          score += Math.min(20, (item.vote_count || 0) / 500);
+          score += Math.min(10, parseFloat(item.imdb || 0));
+          const matchPct = Math.min(99, Math.round(score * 0.85 + 10));
+          return { ...item, aiMatchScore: matchPct, aiReason: score > 50 ? 'Top match' : score > 25 ? 'Strong match' : 'Possible match' };
+        }).sort((a, b) => b.aiMatchScore - a.aiMatchScore).slice(0, 12);
+
+        if (scored.length === 0) {
+          _showSearchDropdown(`
+            <div style="padding:24px;text-align:center">
+              <span class="material-symbols-outlined" style="font-size:40px;display:block;margin-bottom:8px;color:rgba(229,226,225,0.2)">search_off</span>
+              <p style="color:rgba(229,226,225,0.5);font-size:14px">No results for "<strong>${q}</strong>"</p>
+            </div>`);
+          return;
+        }
+
+        // 5) Render grouped dropdown
+        const movies  = scored.filter(i => i.type !== 'series').slice(0, 6);
+        const series  = scored.filter(i => i.type === 'series').slice(0, 4);
+
+        let html = `<div style="padding:12px 16px 6px;font-size:10px;font-weight:800;letter-spacing:.1em;text-transform:uppercase;color:rgba(229,226,225,.35)">
+            <span class="material-symbols-outlined" style="font-size:13px;vertical-align:middle;margin-right:4px">psychology</span>
+            AI Results for "${q}"
+          </div>`;
+
+        const renderRow = (item) => `
+          <div onclick="Router.navigate('detail',{id:'${item.id}',type:'${item.type||'movie'}'}); UI.closeSearch();"
+               style="display:flex;gap:12px;align-items:center;padding:10px 16px;cursor:pointer;transition:background .15s;border-radius:6px;margin:2px 8px"
+               onmouseover="this.style.background='rgba(255,255,255,.06)'" onmouseout="this.style.background='transparent'">
+            <img src="${item.poster || ''}" alt="${item.title}" loading="lazy"
+                 style="width:36px;height:52px;object-fit:cover;border-radius:4px;flex-shrink:0;background:#1a1a1a"
+                 onerror="this.style.display='none'">
+            <div style="flex:1;min-width:0">
+              <div style="font-size:13px;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${item.title}</div>
+              <div style="font-size:11px;color:rgba(229,226,225,.45);margin-top:2px">${item.year||''} ${item.genre ? '• '+item.genre : ''}</div>
+            </div>
+            <div style="flex-shrink:0;font-size:10px;font-weight:700;padding:2px 7px;border-radius:4px;background:rgba(50,220,120,.12);color:#32dc78;border:1px solid rgba(50,220,120,.25)">✨${item.aiMatchScore}%</div>
+          </div>`;
+
+        if (movies.length) {
+          html += `<div style="padding:6px 16px 4px;font-size:10px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:rgba(229,226,225,.3)">🎬 Movies</div>`;
+          html += movies.map(renderRow).join('');
+        }
+        if (series.length) {
+          html += `<div style="padding:10px 16px 4px;font-size:10px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:rgba(229,226,225,.3)">📺 TV Series</div>`;
+          html += series.map(renderRow).join('');
+        }
+
+        html += `<div style="padding:10px 16px;border-top:1px solid rgba(255,255,255,.05);margin-top:4px">
+          <button onclick="Router.navigate('movies'); UI.closeSearch();" style="width:100%;background:none;border:1px solid rgba(255,255,255,.1);border-radius:6px;padding:8px;font-size:12px;color:rgba(229,226,225,.6);cursor:pointer">
+            View all results for "${q}" →
+          </button>
+        </div>`;
+
+        _showSearchDropdown(html);
+
+      } catch (err) {
+        console.warn('Search error:', err);
+        _closeSearchDropdown();
+      }
+    }, 280);
+  }
+
+  function _showSearchDropdown(innerHtml) {
+    let dropdown = document.getElementById('ai-search-dropdown');
+    if (!dropdown) {
+      dropdown = document.createElement('div');
+      dropdown.id = 'ai-search-dropdown';
+      dropdown.style.cssText = `
+        position:fixed;top:72px;left:50%;transform:translateX(-50%);
+        width:min(580px,94vw);
+        background:rgba(18,18,18,0.97);
+        backdrop-filter:blur(24px);
+        border:1px solid rgba(255,255,255,0.1);
+        border-radius:12px;
+        box-shadow:0 24px 60px rgba(0,0,0,0.7);
+        z-index:9999;
+        max-height:80vh;
+        overflow-y:auto;
+        animation:fadeInDown .15s ease;
+      `;
+      document.body.appendChild(dropdown);
+      _searchDropdown = dropdown;
+    }
+    dropdown.innerHTML = innerHtml;
+    dropdown.style.display = 'block';
+  }
+
+  function _closeSearchDropdown() {
+    const d = document.getElementById('ai-search-dropdown');
+    if (d) d.remove();
+    _searchDropdown = null;
+  }
+
+  function closeSearch() {
+    _closeSearchDropdown();
+    // Clear search inputs
+    document.querySelectorAll('#global-search-input,#movie-search,#show-search').forEach(el => el && (el.value = ''));
   }
 
   // ── Format duration ──
@@ -244,7 +394,7 @@ const UI = (() => {
         <div class="poster-card" onclick="Router.navigate('detail', {id:'${item.id}', type:'${item.type||'movie'}'})" 
              title="${item.title}">
           <img src="${item.poster_url || item.poster}" alt="${item.title}" loading="lazy"
-               onerror="this.onerror=null; this.src='C:/Users/samarjit das/.gemini/antigravity-ide/brain/c4b7dfe6-bf50-435e-a588-939aa2d4d32e/placeholder_image_1780233509572.png';">
+               onerror="this.onerror=null;this.src='data:image/svg+xml;utf8,%3Csvg xmlns=\'http://www.w3.org/2000/svg\' width=\'170\' height=\'255\' viewBox=\'0 0 170 255\'%3E%3Crect width=\'170\' height=\'255\' fill=\'%231a1a1a\'/%3E%3Ctext x=\'50%25\' y=\'50%25\' dominant-baseline=\'middle\' text-anchor=\'middle\' font-size=\'36\' fill=\'%23333\'%3E🎬%3C/text%3E%3C/svg%3E'">
           <div class="card-overlay">
             <div style="display:flex;gap:6px;flex-wrap:wrap;margin-bottom:6px">
               ${item.genre ? `<span class="badge badge-blue">${item.genre}</span>` : ''}
@@ -277,7 +427,8 @@ const UI = (() => {
     return `
       <div class="video-card-item" style="flex-shrink:0">
         <div class="video-card" onclick="Router.navigate('player', {id:'${item.id}'})" title="Continue: ${item.title}">
-          <img src="${item.thumbnail || item.poster}" alt="${item.title}" loading="lazy">
+          <img src="${item.thumbnail || item.poster}" alt="${item.title}" loading="lazy"
+               onerror="this.onerror=null;this.src='data:image/svg+xml;utf8,%3Csvg xmlns=\'http://www.w3.org/2000/svg\' width=\'280\' height=\'158\' viewBox=\'0 0 280 158\'%3E%3Crect width=\'280\' height=\'158\' fill=\'%231a1a1a\'/%3E%3Ctext x=\'50%25\' y=\'50%25\' dominant-baseline=\'middle\' text-anchor=\'middle\' font-size=\'36\' fill=\'%23333\'%3E🎬%3C/text%3E%3C/svg%3E'">
           <div style="position:absolute;inset:0;background:linear-gradient(to top,rgba(0,0,0,0.85) 0%,transparent 60%);display:flex;flex-direction:column;justify-content:flex-end;padding:12px">
             <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px">
               <span style="font-size:12px;font-weight:600">${item.title}${item.episode ? ' • ' + item.episode : ''}</span>
@@ -335,6 +486,7 @@ const UI = (() => {
     renderMobileNav,
     renderFooter,
     handleSearch,
+    closeSearch,
     formatDuration,
     formatDate,
     posterCard,
@@ -346,3 +498,12 @@ const UI = (() => {
 })();
 
 window.UI = UI;
+
+window.registerDemoContent = function(items) {
+  if (!items) return;
+  const list = Array.isArray(items) ? items : [items];
+  if (!list.length) return;
+  const existing = window.DEMO_CONTENT || [];
+  const combined = [...existing, ...list];
+  window.DEMO_CONTENT = Object.values(Object.fromEntries(combined.map(item => [item.id, item])));
+};

@@ -12,6 +12,10 @@
       <div class="spinner" style="width:56px; height:56px; border-width:4px; border-color:var(--c-primary-container) transparent transparent transparent;"></div>
     </div>
 
+    <!-- Error Message Overlay -->
+    <div id="player-error-msg" style="display:none; position:absolute; inset:0; background:rgba(10,10,10,0.95); z-index:25; color:var(--c-error, #ff4d4d); font-size:18px; font-weight:600; padding:40px; text-align:center; box-sizing:border-box; align-content:center; justify-content:center;">
+    </div>
+
     <!-- Back Button overlay -->
     <div class="player-top-bar" style="position:absolute; top:0; left:0; right:0; padding:24px 32px; background:linear-gradient(to bottom, rgba(0,0,0,0.85) 0%, transparent 100%); z-index:30; display:flex; justify-content:space-between; align-items:center; transition:opacity 0.3s ease;">
       <button class="btn btn-icon" onclick="PlayerPage.goBack()" style="background:rgba(255,255,255,0.06); border:1px solid rgba(255,255,255,0.12); width:46px; height:46px;" title="Go Back">

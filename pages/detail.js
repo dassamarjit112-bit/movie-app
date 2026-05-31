@@ -10,7 +10,22 @@ const DetailPage = (() => {
     const contentType = params.type || 'movie';
 
     // Find the item in demo content
-    const item = window.DEMO_CONTENT.find(c => c.id === contentId) || window.DEMO_CONTENT[0];
+    let item = window.DEMO_CONTENT.find(c => c.id === contentId);
+    if (!item) {
+      try {
+        if (window.TMDB) {
+          item = await TMDB.getDetails(contentId, contentType === 'series' ? 'tv' : 'movie');
+          if (item) {
+            window.registerDemoContent(item);
+          }
+        }
+      } catch (err) {
+        console.warn('Failed to fetch details directly from TMDB:', err);
+      }
+    }
+    if (!item) {
+      item = window.DEMO_CONTENT[0];
+    }
     currentContent = item;
 
     // Render nav and footer
@@ -64,7 +79,7 @@ const DetailPage = (() => {
     const playBtn = document.getElementById('detail-play-btn');
     if (playBtn) {
       playBtn.onclick = () => {
-        Router.navigate('player', { id: item.id });
+        Router.navigate('player', { id: item.id, type: item.type });
       };
     }
 
@@ -160,7 +175,7 @@ const DetailPage = (() => {
       ];
 
       list.innerHTML = episodesMock.map(ep => `
-        <div class="glass-card" style="display:flex; gap:20px; padding:16px; border-radius:12px; align-items:center; cursor:pointer;" onclick="Router.navigate('player', {id:'${item.id}', ep:'S${seasonNum} E${ep.epNum}'})">
+        <div class="glass-card" style="display:flex; gap:20px; padding:16px; border-radius:12px; align-items:center; cursor:pointer;" onclick="Router.navigate('player', {id:'${item.id}', type:'series', ep:'S${seasonNum} E${ep.epNum}'})">
           <div style="position:relative; width:160px; aspect-ratio:16/9; border-radius:6px; overflow:hidden; flex-shrink:0;">
             <img src="${ep.thumb}" alt="Episode Thumbnail" style="width:100%; height:100%; object-fit:cover;">
             <div style="position:absolute; inset:0; background:rgba(0,0,0,0.4); display:flex; align-items:center; justify-content:center;">

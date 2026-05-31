@@ -19,32 +19,40 @@ const TMDB = (() => {
     53: 'Thriller', 10752: 'War', 37: 'Western'
   };
 
+  // ── Working public HLS test streams (fallback chain) ──
+  const DEMO_STREAMS = [
+    'https://test-streams.mux.dev/x36xhzz/x36xhzz.m3u8',           // Mux demo (reliable)
+    'https://devstreaming-cdn.apple.com/videos/streaming/examples/img_bipbop_adv_example_fmp4/master.m3u8', // Apple HLS
+    'https://playertest.longtailvideo.com/adaptive/wowzaid3/playlist.m3u8', // Longtail
+  ];
+
   // ── Convert a TMDB movie/tv object to our internal format ──
   function normalize(item, mediaType = 'movie') {
-    const isTV = mediaType === 'tv' || item.media_type === 'tv' || item.first_air_date;
+    const isTV    = mediaType === 'tv' || item.media_type === 'tv' || item.first_air_date;
     const genreId = item.genre_ids?.[0];
-    const genre = genreId ? (GENRE_MAP[genreId] || 'Drama') : 'Drama';
-    const year = isTV
+    const genre   = genreId ? (GENRE_MAP[genreId] || 'Drama') : 'Drama';
+    const year    = isTV
       ? (item.first_air_date || '').slice(0, 4)
-      : (item.release_date || '').slice(0, 4);
+      : (item.release_date  || '').slice(0, 4);
     const rating = item.vote_average ? item.vote_average.toFixed(1) : 'N/A';
 
     return {
-      id: String(item.id),
-      tmdb_id: item.id,
-      title: item.title || item.name || 'Untitled',
-      type: isTV ? 'series' : 'movie',
+      id:          String(item.id),
+      tmdb_id:     item.id,
+      title:       item.title || item.name || 'Untitled',
+      type:        isTV ? 'series' : 'movie',
       genre,
-      year: parseInt(year) || 2024,
-      duration: item.runtime || (isTV ? 45 : 110),
-      imdb: rating,
-      poster: item.poster_path ? `${IMG}${item.poster_path}` : null,
-      thumbnail: item.backdrop_path ? `${IMG_BG}${item.backdrop_path}` : (item.poster_path ? `${IMG}${item.poster_path}` : null),
+      year:        parseInt(year) || 2024,
+      duration:    item.runtime || (isTV ? 45 : 110),
+      imdb:        rating,
+      poster:      item.poster_path   ? `${IMG}${item.poster_path}`   : null,
+      thumbnail:   item.backdrop_path ? `${IMG_BG}${item.backdrop_path}` : (item.poster_path ? `${IMG}${item.poster_path}` : null),
       description: item.overview || 'No description available.',
-      stream: 'https://multiplatform-f.akamaihd.net/i/multi/will/apple/master.m3u8',
-      language: item.original_language,
-      popularity: item.popularity,
-      vote_count: item.vote_count,
+      stream:      DEMO_STREAMS[0],          // primary working HLS
+      streams:     DEMO_STREAMS,             // fallback chain
+      language:    item.original_language,
+      popularity:  item.popularity,
+      vote_count:  item.vote_count,
     };
   }
 

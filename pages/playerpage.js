@@ -25,7 +25,25 @@ const PlayerPage = (() => {
     }
 
     // Find stream in Demo Content
-    const item = window.DEMO_CONTENT.find(c => c.id === contentId) || window.DEMO_CONTENT[0];
+    let item = window.DEMO_CONTENT.find(c => c.id === contentId);
+    if (!item) {
+      try {
+        if (window.TMDB) {
+          // Determine type from params or try movie first then tv
+          const type = params.type || (params.ep ? 'tv' : 'movie');
+          item = await TMDB.getDetails(contentId, type).catch(() => null) ||
+                 await TMDB.getDetails(contentId, type === 'movie' ? 'tv' : 'movie').catch(() => null);
+          if (item) {
+            window.registerDemoContent(item);
+          }
+        }
+      } catch (err) {
+        console.warn('Failed to fetch details directly from TMDB for player:', err);
+      }
+    }
+    if (!item) {
+      item = window.DEMO_CONTENT[0];
+    }
 
     // Set page header info
     const titleEl = document.getElementById('player-title');
@@ -37,11 +55,21 @@ const PlayerPage = (() => {
     }
 
     videoElement = document.getElementById('hls-video');
-    
-    // Initialize the player engine
-    window.Player.init(videoElement, item.stream, {
-      autoplay: true,
-      qualityMenuId: 'quality-menu'
+
+    // Working public HLS fallbacks so playback always works in demo
+    const FALLBACK_STREAMS = [
+      'https://test-streams.mux.dev/x36xhzz/x36xhzz.m3u8',
+      'https://devstreaming-cdn.apple.com/videos/streaming/examples/img_bipbop_adv_example_fmp4/master.m3u8',
+      'https://playertest.longtailvideo.com/adaptive/wowzaid3/playlist.m3u8',
+    ];
+    const streams = (item.streams && item.streams.length) ? item.streams : FALLBACK_STREAMS;
+    const primaryStream = item.stream || streams[0];
+
+    // Initialize the player engine with fallback support
+    window.Player.init(videoElement, primaryStream, {
+      autoplay:      true,
+      qualityMenuId: 'quality-menu',
+      streams:       streams
     });
 
     // Set up control overlay bindings

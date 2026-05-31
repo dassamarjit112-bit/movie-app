@@ -136,6 +136,7 @@ const HomePage = (() => {
       // Trending — first priority, loads hero too
       TMDB.fetchTrending().then(items => {
         if (items.length) {
+          window.registerDemoContent(items);
           // Update hero carousel with real movies
           HERO_SLIDES = items.slice(0, 5).map(m => ({
             title: m.title.toUpperCase(),
@@ -161,33 +162,51 @@ const HomePage = (() => {
 
       // Now Playing
       TMDB.fetchNowPlaying().then(items => {
-        if (items.length) fillRow('new-releases-row', items.slice(0, 10));
+        if (items.length) {
+          window.registerDemoContent(items);
+          fillRow('new-releases-row', items.slice(0, 10));
+        }
       });
 
       // Bollywood
       TMDB.fetchBollywood().then(items => {
-        if (items.length) fillRow('bollywood-row', items.slice(0, 12));
+        if (items.length) {
+          window.registerDemoContent(items);
+          fillRow('bollywood-row', items.slice(0, 12));
+        }
       });
 
       // Hollywood
       TMDB.fetchHollywood().then(items => {
-        if (items.length) fillRow('hollywood-row', items.slice(0, 12));
+        if (items.length) {
+          window.registerDemoContent(items);
+          fillRow('hollywood-row', items.slice(0, 12));
+        }
       });
 
       // Tollywood + South
       Promise.all([TMDB.fetchTollywood(), TMDB.fetchSouthMovies()]).then(([tol, south]) => {
         const combined = [...tol, ...south].sort((a, b) => b.popularity - a.popularity);
-        if (combined.length) fillRow('tollywood-row', combined.slice(0, 12));
+        if (combined.length) {
+          window.registerDemoContent(combined);
+          fillRow('tollywood-row', combined.slice(0, 12));
+        }
       });
 
       // TV Serials
       TMDB.fetchTVSeries().then(items => {
-        if (items.length) fillRow('tvserials-row', items.slice(0, 12));
+        if (items.length) {
+          window.registerDemoContent(items);
+          fillRow('tvserials-row', items.slice(0, 12));
+        }
       });
 
       // Top Rated
       TMDB.fetchTopRated().then(items => {
-        if (items.length) fillRow('top-rated-row', items.slice(0, 10));
+        if (items.length) {
+          window.registerDemoContent(items);
+          fillRow('top-rated-row', items.slice(0, 10));
+        }
       });
 
       // AI Recommended

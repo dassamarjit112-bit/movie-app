@@ -8,60 +8,108 @@ const Player = (() => {
   let controlsTimer = null;
   let isSeeking = false;
 
-  // ── Initialize player ──
+  // ── Initialize player with fallback stream support ──
   function init(videoEl, src, options = {}) {
     if (!videoEl) return;
     destroy(); // Clean previous instance
-    videoEl.src = src; // Directly set source as fallback
-    // Show loading spinner when video starts loading
-    videoEl.addEventListener('loadstart', () => {
-      const spinner = videoEl.parentElement?.querySelector('#buffer-spinner');
-      if (spinner) spinner.classList.remove('hidden');
-    });
-    // Hide spinner when video can play
-    videoEl.addEventListener('canplay', () => {
-      const spinner = videoEl.parentElement?.querySelector('#buffer-spinner');
-      if (spinner) spinner.classList.add('hidden');
-    });
-    videoEl.addEventListener('error', (e) => {
-      console.error('Video playback error', e);
-      UI.toast('Failed to load video. Please try again later.', 'error');
-    });
-    if (options.autoplay) videoEl.play().catch(() => {});
 
-    if (Hls.isSupported()) {
-      hlsInstance = new Hls({
-        enableWorker: true,
-        lowLatencyMode: false,
-        backBufferLength: 90,
-        maxBufferLength: 30,
-        maxMaxBufferLength: 600
-      });
-      hlsInstance.loadSource(src);
-      hlsInstance.attachMedia(videoEl);
+    const streams = options.streams || [src];
+    let streamIndex = 0;
 
-      hlsInstance.on(Hls.Events.MANIFEST_PARSED, () => {
-        if (options.autoplay) videoEl.play().catch(() => {});
-        populateQualityMenu(hlsInstance, options.qualityMenuId);
-      });
+    function tryLoad(streamSrc) {
+      // Clear previous error message and hide it
+      const errEl = document.getElementById('player-error-msg');
+      if (errEl) errEl.style.display = 'none';
 
-      hlsInstance.on(Hls.Events.ERROR, (event, data) => {
-        if (data.fatal) {
-          switch (data.type) {
-            case Hls.ErrorTypes.NETWORK_ERROR:
-              hlsInstance.startLoad();
-              break;
-            case Hls.ErrorTypes.MEDIA_ERROR:
-              hlsInstance.recoverMediaError();
-              break;
-            default:
-              destroy();
-              break;
+      // Show loading spinner when video starts loading
+      const loadStartHandler = () => {
+        const spinner = document.getElementById('buffer-spinner');
+        if (spinner) spinner.classList.remove('hidden');
+      };
+      videoEl.addEventListener('loadstart', loadStartHandler);
+
+      // Hide spinner when video can play
+      const canPlayHandler = () => {
+        const spinner = document.getElementById('buffer-spinner');
+        if (spinner) spinner.classList.add('hidden');
+      };
+      videoEl.addEventListener('canplay', canPlayHandler);
+
+      if (Hls.isSupported()) {
+        if (hlsInstance) { hlsInstance.destroy(); hlsInstance = null; }
+        hlsInstance = new Hls({
+          enableWorker:       true,
+          lowLatencyMode:     false,
+          backBufferLength:   90,
+          maxBufferLength:    30,
+          maxMaxBufferLength: 600
+        });
+        hlsInstance.loadSource(streamSrc);
+        hlsInstance.attachMedia(videoEl);
+
+        hlsInstance.on(Hls.Events.MANIFEST_PARSED, () => {
+          const spinner = document.getElementById('buffer-spinner');
+          if (spinner) spinner.classList.add('hidden');
+          if (options.autoplay) videoEl.play().catch(() => {});
+          populateQualityMenu(hlsInstance, options.qualityMenuId);
+        });
+
+        hlsInstance.on(Hls.Events.ERROR, (event, data) => {
+          if (data.fatal) {
+            switch (data.type) {
+              case Hls.ErrorTypes.NETWORK_ERROR:
+                // Try to recover first; if it keeps failing, switch stream
+                hlsInstance.startLoad();
+                setTimeout(() => {
+                  if (data.fatal) tryNextStream();
+                }, 3000);
+                break;
+              case Hls.ErrorTypes.MEDIA_ERROR:
+                hlsInstance.recoverMediaError();
+                break;
+              default:
+                tryNextStream();
+                break;
+            }
           }
-        }
-      });
+        });
+      } else if (videoEl.canPlayType('application/vnd.apple.mpegurl')) {
+        // Native HLS (Safari)
+        videoEl.src = streamSrc;
+        
+        const nativeErrorHandler = (e) => {
+          console.warn('Native HLS error — trying next stream', e);
+          videoEl.removeEventListener('error', nativeErrorHandler);
+          tryNextStream();
+        };
+        videoEl.addEventListener('error', nativeErrorHandler);
+        
+        if (options.autoplay) videoEl.play().catch(() => {});
+      } else {
+        showPlayerError('Your browser does not support HLS video playback.');
+      }
     }
 
+    function tryNextStream() {
+      streamIndex++;
+      if (streamIndex < streams.length) {
+        console.log(`Switching to fallback stream ${streamIndex}:`, streams[streamIndex]);
+        if (hlsInstance) { hlsInstance.destroy(); hlsInstance = null; }
+        tryLoad(streams[streamIndex]);
+      } else {
+        showPlayerError('Unable to play this video. The stream may be unavailable.');
+      }
+    }
+
+    function showPlayerError(msg) {
+      const spinner = document.getElementById('buffer-spinner');
+      if (spinner) spinner.classList.add('hidden');
+      const errEl = document.getElementById('player-error-msg');
+      if (errEl) { errEl.textContent = msg; errEl.style.display = 'block'; }
+      UI.toast(msg, 'error');
+    }
+
+    tryLoad(streams[0]);
     return hlsInstance;
   }
 
