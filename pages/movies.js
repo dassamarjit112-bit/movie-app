@@ -222,7 +222,45 @@ const MoviesPage = (() => {
     if (backBtn) backBtn.style.display = 'none';
   }
 
-  return { init, search, filter, setIndustry, loadMore, seeAll, clearSearch };
+  function loadMore() {
+    // Increment page counter and re-render categories with more items
+    page++;
+    const container = document.getElementById('movies-categories');
+    if (!container) return;
+
+    const sections = currentIndustry === 'all' ? SECTIONS : SECTIONS.filter(s => {
+      if (currentIndustry === 'Bollywood') return s.id === 'bollywood';
+      if (currentIndustry === 'Hollywood') return s.id === 'hollywood';
+      if (currentIndustry === 'Tollywood' || currentIndustry === 'Tamil' || currentIndustry === 'Malayalam' || currentIndustry === 'Kannada') return s.id === 'south' || s.id === 'tollywood';
+      if (currentIndustry === 'TV Serial' || currentIndustry === 'Web Series') return false;
+      return true;
+    });
+
+    container.innerHTML = sections.map(section => {
+      const items = (section.data || []).filter(m => m.type !== 'series').slice(0, PAGE_SIZE * page);
+      if (!items.length) return '';
+      return `
+        <div class="category-section" style="margin-bottom:40px">
+          <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px;padding:0 var(--space-margin-desktop)">
+            <h2 class="section-title" style="display:flex;align-items:center;gap:8px;font-size:20px">
+              <span class="material-symbols-outlined" style="font-size:22px;color:var(--c-primary-container)">${section.icon}</span>
+              ${section.label}
+            </h2>
+            <button onclick="MoviesPage.seeAll('${section.id}')" class="btn btn-ghost" style="font-size:12px;padding:6px 14px;border-radius:6px">
+              See All <span class="material-symbols-outlined" style="font-size:14px;vertical-align:middle">chevron_right</span>
+            </button>
+          </div>
+          <div class="scroll-row" style="padding:0 var(--space-margin-desktop) 12px;gap:14px">
+            ${items.map((item, idx) => UI.posterCard(item, { showRank: section.id === 'toprated', rank: idx + 1 })).join('')}
+          </div>
+        </div>`;
+    }).join('');
+
+    // Show back button if hidden
+    const backBtn = document.getElementById('back-to-categories');
+    if (backBtn) backBtn.style.display = 'inline-flex';
+  }
+
 })();
 
 window.MoviesPage = MoviesPage;
