@@ -108,8 +108,8 @@ const LoginPage = (() => {
     UI.setLoading(btn, true);
 
     try {
-      const { data } = await Auth.signUpWithEmail(email, password, name);
-      if (data.session) {
+      const result = await Auth.signUpWithEmail(email, password, name);
+      if (result && result.session) {
         UI.toast('Account created! Welcome to CineStream 🎬', 'success');
         Router.navigate('home');
       } else {

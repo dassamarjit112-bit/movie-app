@@ -17,7 +17,8 @@ const Auth = (() => {
       email,
       password,
       options: {
-        data: { full_name: fullName, avatar_url: '' }
+        data: { full_name: fullName, avatar_url: '' },
+        emailRedirectTo: window.location.origin + window.location.pathname
       }
     });
     if (error) throw error;
@@ -56,8 +57,17 @@ const Auth = (() => {
 
   // ── Get Current Session ──
   async function getSession() {
-    const { data } = await window.sb.auth.getSession();
-    return data.session;
+    try {
+      const { data, error } = await window.sb.auth.getSession();
+      if (error) {
+        console.warn('Auth.getSession returned error:', error);
+        return null;
+      }
+      return data ? data.session : null;
+    } catch (e) {
+      console.warn('Auth.getSession crashed:', e);
+      return null;
+    }
   }
 
   // ── Get Current User ──
