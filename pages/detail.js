@@ -165,16 +165,16 @@ const DetailPage = (() => {
     for (let i = 1; i <= seasonsCount; i++) {
       select.innerHTML += `<option value="${i}">Season ${i}</option>`;
     }
+    // Ensure the selector defaults to the first season
+    select.value = '1';
 
     const renderEpisodesForSeason = (seasonNum) => {
-      const episodesMock = [
-        { epNum: 1, title: 'The Threshold', desc: 'An unexpected discovery forces an archivist to re-evaluate what is real and what is manufactured.', duration: 52, thumb: 'https://images.unsplash.com/photo-1451187580459-43490279c0fa?w=400&q=80&auto=format' },
-        { epNum: 2, title: 'Echo Chamber', desc: 'As the neural link expands, hidden echoes from the previous century begin to infect the network.', duration: 48, thumb: 'https://images.unsplash.com/photo-1461749280684-dccba630e2f6?w=400&q=80&auto=format' },
-        { epNum: 3, title: 'Midnight Protokol', desc: 'A race against time through the abandoned servers of Sector 7 reveals who controls the stream.', duration: 50, thumb: 'https://images.unsplash.com/photo-1526374965328-7f61d4dc18c5?w=400&q=80&auto=format' },
-        { epNum: 4, title: 'System Reset', desc: 'The division gets closer to finding the source code, but the internal security forces strike back.', duration: 55, thumb: 'https://images.unsplash.com/photo-1518770660439-4636190af475?w=400&q=80&auto=format' },
-      ];
-
-      list.innerHTML = episodesMock.map(ep => `
+      const episodes = item.episodes && item.episodes[seasonNum] ? item.episodes[seasonNum] : [];
+      if (episodes.length === 0) {
+        list.innerHTML = `<div style="color:rgba(255,255,255,0.6); padding:16px;">No episodes available for this season.</div>`;
+        return;
+      }
+      list.innerHTML = episodes.map(ep => `
         <div class="glass-card" style="display:flex; gap:20px; padding:16px; border-radius:12px; align-items:center; cursor:pointer;" onclick="Router.navigate('player', {id:'${item.id}', type:'series', ep:'S${seasonNum} E${ep.epNum}'})">
           <div style="position:relative; width:160px; aspect-ratio:16/9; border-radius:6px; overflow:hidden; flex-shrink:0;">
             <img src="${ep.thumb}" alt="Episode Thumbnail" style="width:100%; height:100%; object-fit:cover;">
@@ -189,15 +189,14 @@ const DetailPage = (() => {
             </div>
             <p style="font-size:12.5px; color:rgba(229,226,225,0.65); line-height:1.4">${ep.desc}</p>
           </div>
-        </div>
-      `).join('');
+        </div>`).join('');
     };
 
     select.onchange = (e) => {
       renderEpisodesForSeason(e.target.value);
     };
 
-    // Render Season 1 default
+    // Render the default season (Season 1)
     renderEpisodesForSeason('1');
   }
 

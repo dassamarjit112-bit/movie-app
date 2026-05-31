@@ -64,7 +64,7 @@ const PlayerPage = (() => {
     ];
     // Determine which streams list to use for the player (fallback if none provided)
     // Determine which streams list to use for the player (fallback if none provided)
-    const streamsToUse = (item.streams && item.streams.length) ? item.streams : FALLBACK_STREAMS;
+
     // Compute a deterministic hash from the content ID (handles alphanumeric IDs)
     const computeHash = (str) => {
       let h = 0;
@@ -81,7 +81,7 @@ const PlayerPage = (() => {
       // If already an absolute URL (starts with http), return as is
       if (/^https?:\/\//i.test(s)) return s;
       // Otherwise prepend the HLS base URL from Vite env (fallback to empty string)
-      const base = typeof import !== 'undefined' && import.meta && import.meta.env && import.meta.env.VITE_HLS_BASE_URL ? import.meta.env.VITE_HLS_BASE_URL : '';
+      const base = (typeof window !== 'undefined' && window.VITE_HLS_BASE_URL) ? window.VITE_HLS_BASE_URL : '';
       return base + s;
     };
     // Resolve all raw streams to full URLs
@@ -89,15 +89,39 @@ const PlayerPage = (() => {
     // Compute deterministic fallback index
     const fallbackIndex = hash % streamsToUse.length;
     // Choose primary stream: item-specific stream (resolved) or deterministic fallback
-    const primaryStream = item.stream ? resolveStream(item.stream) : streamsToUse[fallbackIndex];
+    // Determine primary stream: for series with episode param, use the episode's stream; otherwise fallback logic
+    let primaryStream;
+    if (item.type === 'series' && params.ep) {
+      // Expected format 'S{seasonNum} E{epNum}'
+      const match = params.ep.match(/S(\d+)\s*E(\d+)/i);
+      if (match) {
+        const seasonNum = parseInt(match[1]);
+        const epNum = parseInt(match[2]);
+        const episodes = item.episodes && item.episodes[seasonNum] ? item.episodes[seasonNum] : [];
+        const episode = episodes.find(e => e.epNum === epNum);
+        if (episode && episode.stream) {
+          primaryStream = resolveStream(episode.stream);
+        }
+      }
+    }
+    if (!primaryStream) {
+      primaryStream = streamsToUse[fallbackIndex];
+    }
+
     // Ensure primary stream is first in the array
     const orderedStreams = [primaryStream, ...streamsToUse.filter(s => s !== primaryStream)];
-    // Initialize the player engine with the selected streams list
-    console.log('Player init - item:', item.id, item.title, 'primaryStream:', primaryStream);
+    // Encode primary stream URL to avoid malformed URLs
+    primaryStream = encodeURI(primaryStream);
+    // Initialize the player with proper options, sending credentials and custom headers
     window.Player.init(videoElement, primaryStream, {
-      autoplay:      true,
+      autoplay: true,
       qualityMenuId: 'quality-menu',
-      streams:       orderedStreams
+      streams: orderedStreams,
+      withCredentials: true,
+      requestHeaders: {
+        'Accept': '*/*',
+        'Origin': window.location.origin
+      }
     });
     window.Player.setupControls('player-container');
 

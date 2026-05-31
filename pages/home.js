@@ -42,7 +42,18 @@ const DEMO_CONTENT = [
     thumbnail:'https://images.unsplash.com/photo-1480714378408-67cf0d13bc1b?w=800&q=80&auto=format',
     description:'A gritty look at power, corruption, and survival.',
     stream:'https://multiplatform-f.akamaihd.net/i/multi/will/apple/master.m3u8',
-    seasons:2, episodes:['S2 E4','S2 E3'] },
+    seasons:2,
+    episodes: {
+      1: [
+        { epNum:1, title:'Episode 1', desc:'The story begins.', duration:45, thumb:'https://images.unsplash.com/photo-1507120410851-1f2f6c9491a0?w=400&q=80&auto=format', stream:'https://example.com/series8/s1/e1.m3u8' },
+        { epNum:2, title:'Episode 2', desc:'The plot thickens.', duration:45, thumb:'https://images.unsplash.com/photo-1507120410851-1f2f6c9491a0?w=400&q=80&auto=format', stream:'https://example.com/series8/s1/e2.m3u8' }
+      ],
+      2: [
+        { epNum:1, title:'Episode 1', desc:'Season two starts.', duration:45, thumb:'https://images.unsplash.com/photo-1507120410851-1f2f6c9491a0?w=400&q=80&auto=format', stream:'https://example.com/series8/s2/e1.m3u8' },
+        { epNum:2, title:'Episode 2', desc:'New challenges arise.', duration:45, thumb:'https://images.unsplash.com/photo-1507120410851-1f2f6c9491a0?w=400&q=80&auto=format', stream:'https://example.com/series8/s2/e2.m3u8' }
+      ]
+    }
+  },
   { id:'9', title:'Cosmic Horizons', type:'series', genre:'Documentary', year:2023, duration:45, imdb:'9.2',
     poster:'https://images.unsplash.com/photo-1446776811953-b23d57bd21aa?w=400&q=80&auto=format',
     thumbnail:'https://images.unsplash.com/photo-1446776811953-b23d57bd21aa?w=800&q=80&auto=format',
