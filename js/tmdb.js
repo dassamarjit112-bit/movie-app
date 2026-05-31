@@ -63,7 +63,8 @@ const TMDB = (() => {
       language:    item.original_language,
       popularity:  item.popularity,
       vote_count:  item.vote_count,
-      industry:    isTV ? 'TV Serial' : 'Movie'
+      industry:    isTV ? 'TV Serial' : 'Movie',
+      release_date: isTV ? item.first_air_date : item.release_date
     };
   }
 

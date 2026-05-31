@@ -242,4 +242,6 @@ if (isUsingMock || !supabaseClientInstance) {
 
 // Export global client variables
 window.sb = supabaseClientInstance;
+// Expose global alias for legacy code
+globalThis.sb = supabaseClientInstance;
 window.isUsingMockSupabase = isUsingMock;

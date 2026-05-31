@@ -162,13 +162,14 @@ const UI = (() => {
       { route: 'home',     icon: 'home',         label: 'Home' },
       { route: 'movies',   icon: 'movie',        label: 'Movies' },
       { route: 'tvshows',  icon: 'tv',           label: 'Shows' },
+      { route: 'search',   icon: 'search',       label: 'Search' },
       { route: 'account',  icon: 'person',       label: 'Profile' }
     ];
     return `
       <nav class="mobile-nav">
         ${items.map(item => `
           <div class="mobile-nav-item ${activeRoute===item.route?'active':''}" 
-               data-route="${item.route}" onclick="Router.navigate('${item.route}')">
+               data-route="${item.route}" onclick="${item.route==='search' ? 'UI.openMobileSearch()' : `Router.navigate('${item.route}')`}">
             <span class="material-symbols-outlined ${activeRoute===item.route?'icon-fill':''}">${item.icon}</span>
             <span>${item.label}</span>
           </div>
@@ -370,6 +371,20 @@ const UI = (() => {
     _closeSearchDropdown();
     // Clear search inputs
     document.querySelectorAll('#global-search-input,#movie-search,#show-search').forEach(el => el && (el.value = ''));
+  }
+
+  // ── Open Mobile Search Modal ──
+  function openMobileSearch() {
+    UI.showModal({
+      title: 'Search',
+      content: `
+        <input type="text" id="mobile-search-input" placeholder="Search movies, shows…" style="width:100%;padding:8px;border-radius:6px;border:none;background:rgba(255,255,255,0.1);color:#fff;outline:none;" 
+               oninput="UI.handleSearch(this.value)" />
+      `,
+      confirmText: 'Close',
+      cancelText: '',
+      onConfirm: () => {},
+    });
   }
 
   // ── Format duration ──

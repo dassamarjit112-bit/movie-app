@@ -23,9 +23,14 @@
     font-size: 22px;
   }
 
-  .navbar-nav,
-  .search-bar {
+  .navbar-nav {
     display: none !important;
+  }
+
+  .search-bar {
+    display: flex !important;
+    flex: 1;
+    margin-left: 8px;
   }
 
   .mobile-nav {
@@ -35,6 +40,10 @@
   /* Push content above bottom nav */
   body {
     padding-bottom: 64px;
+  }
+
+  .account-container {
+    grid-template-columns: 1fr !important;
   }
 }
 

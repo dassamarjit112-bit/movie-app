@@ -171,8 +171,8 @@ const HomePage = (() => {
         }
       });
 
-      // Now Playing
-      TMDB.fetchNowPlaying().then(items => {
+      // Upcoming
+      TMDB.fetchUpcoming().then(items => {
         if (items.length) {
           window.registerDemoContent(items);
           fillRow('new-releases-row', items.slice(0, 10));
@@ -312,19 +312,52 @@ const HomePage = (() => {
     });
   }
 
-  // ── Continue Watching (from local watch history) ──
-  function populateContinueWatching() {
-    const row = document.getElementById('continue-watching-row');
-    if (!row) return;
-    const items = [
-      { ...DEMO_CONTENT[7], episode: 'S2 E4', timeLeft: '42m left', progress: 65, duration: 100 },
-      { ...DEMO_CONTENT[8], episode: 'E8', timeLeft: '15m left', progress: 82, duration: 100 },
-      { ...DEMO_CONTENT[9], episode: '', timeLeft: '1h 12m left', progress: 30, duration: 100 },
-      { ...DEMO_CONTENT[10], episode: '', timeLeft: '28m left', progress: 55, duration: 100 },
-    ];
-    row.innerHTML = items.map(item => UI.videoCard(item)).join('');
+// ── Continue Watching (from Supabase watch history) ──
+async function populateContinueWatching() {
+  const row = document.getElementById('continue-watching-row');
+  if (!row) return;
+  try {
+    // Fetch recent watch history entries
+    const { data: history, error } = await window.sb.from('watch_history')
+      .select('content_id, progress, last_watched, episode')
+      .order('last_watched', { ascending: false })
+      .limit(6);
+    if (error) throw error;
+    const items = await Promise.all((history || []).map(async (h) => {
+      const { data: content, error: cErr } = await window.sb.from('content')
+        .select('*')
+        .eq('id', h.content_id)
+        .single();
+      if (cErr || !content) return null;
+      const remaining = Math.max(0, Math.round(content.duration * (1 - (h.progress || 0) / 100)));
+      const timeLeft = `${Math.floor(remaining / 60)}m left`;
+      return {
+        ...content,
+        episode: h.episode || '',
+        timeLeft,
+        progress: h.progress || 0,
+        duration: content.duration || 100,
+      };
+    }));
+    const filtered = items.filter(Boolean);
+    row.innerHTML = filtered.map(item => UI.videoCard(item)).join('');
+    UI.initVideoCardHovers();
+  } catch (e) {
+    console.warn('Continue watching load failed, using demo fallback', e);
+    const fallback = (window.DEMO_CONTENT || DEMO_CONTENT)
+        .filter(item => item.type === 'movie')
+        .slice(0, 4)
+        .map(item => ({
+          ...item,
+          episode: item.episode || '',
+          timeLeft: `${Math.max(0, Math.round(item.duration * (1 - (item.progress || 0) / 100)))}m left`,
+          progress: item.progress || 0,
+          duration: item.duration || 100,
+        }));
+    row.innerHTML = fallback.map(item => UI.videoCard(item)).join('');
     UI.initVideoCardHovers();
   }
+}
 
   // ── AI Recommendations ──
   async function populateRecommended() {

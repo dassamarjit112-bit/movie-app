@@ -154,7 +154,11 @@ const MoviesPage = (() => {
 
     switch (sort) {
       case 'rating': results.sort((a, b) => parseFloat(b.imdb) - parseFloat(a.imdb)); break;
-      case 'newest': results.sort((a, b) => b.year - a.year); break;
+      case 'newest': results.sort((a, b) => {
+        const dA = a.release_date ? new Date(a.release_date).getTime() : new Date(a.year, 0).getTime();
+        const dB = b.release_date ? new Date(b.release_date).getTime() : new Date(b.year, 0).getTime();
+        return dB - dA;
+      }); break;
       case 'az':     results.sort((a, b) => a.title.localeCompare(b.title)); break;
     }
 
@@ -260,6 +264,16 @@ const MoviesPage = (() => {
     const backBtn = document.getElementById('back-to-categories');
     if (backBtn) backBtn.style.display = 'inline-flex';
   }
+
+  return {
+    init,
+    search,
+    filter,
+    setIndustry,
+    clearSearch,
+    loadMore,
+    seeAll
+  };
 
 })();
 
