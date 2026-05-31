@@ -157,35 +157,60 @@
       // Animate loader bar
       const fill = document.getElementById('loader-fill');
       if (fill) {
-        setTimeout(() => fill.style.width = '70%', 100);
-        setTimeout(() => fill.style.width = '100%', 1200);
+        setTimeout(() => fill.style.width = '75%', 100);
+        setTimeout(() => fill.style.width = '100%', 800);
       }
 
-      // Wait for DOM + font load
-      await document.fonts.ready;
-
-      // Handle OAuth callback (Supabase auto-detects session from URL)
-      await window.sb.auth.getSession();
-
-      // Short min display time for branding
-      await new Promise(r => setTimeout(r, 1400));
-
-      // Hide loader
-      const loader = document.getElementById('initial-loader');
-      if (loader) {
-        loader.classList.add('fadeout');
-        setTimeout(() => loader.remove(), 600);
-      }
-
-      // Initialize router
-      window.Router.init();
-
-      // Handle auth state changes globally
-      window.Auth.onAuthChange((session) => {
-        if (session) {
-          UI.updateNavbarUser();
+      // Safety timeout: guarantee loading screen removal after 3 seconds max
+      const removeLoader = () => {
+        const loader = document.getElementById('initial-loader');
+        if (loader) {
+          loader.classList.add('fadeout');
+          setTimeout(() => loader.remove(), 600);
         }
-      });
+      };
+      const safetyTimer = setTimeout(removeLoader, 3000);
+
+      try {
+        // Wait for DOM + font load with a fallback timeout
+        await Promise.race([
+          document.fonts.ready,
+          new Promise(r => setTimeout(r, 1000))
+        ]);
+
+        // Get session, handle rejections safely
+        if (window.sb && window.sb.auth) {
+          await window.sb.auth.getSession().catch(err => console.warn('Auth check skipped:', err));
+        }
+
+        // Short min display time for branding
+        await new Promise(r => setTimeout(r, 1000));
+        
+        // Success: remove loader
+        clearTimeout(safetyTimer);
+        removeLoader();
+
+        // Initialize router
+        if (window.Router) {
+          window.Router.init();
+        } else {
+          console.error('Router not loaded!');
+        }
+
+        // Handle auth state changes globally
+        if (window.Auth && window.Auth.onAuthChange) {
+          window.Auth.onAuthChange((session) => {
+            if (session && window.UI) {
+              UI.updateNavbarUser();
+            }
+          });
+        }
+      } catch (err) {
+        console.error('Bootstrap error occurred:', err);
+        clearTimeout(safetyTimer);
+        removeLoader();
+        if (window.Router) window.Router.init();
+      }
     })();
   </script>
 </body>
