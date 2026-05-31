@@ -76,7 +76,18 @@ const Player = (() => {
         hlsInstance.on(Hls.Events.MANIFEST_PARSED, () => {
           const spinner = document.getElementById('buffer-spinner');
           if (spinner) spinner.classList.add('hidden');
-          if (options.autoplay) videoEl.play().catch(() => {});
+          
+          videoEl.muted = false;
+          videoEl.volume = 1.0;
+          const volumeSlider = document.getElementById('volume-slider');
+          if (volumeSlider) volumeSlider.value = 100;
+          const muteBtn = document.getElementById('mute-btn');
+          const icon = muteBtn?.querySelector('.material-symbols-outlined');
+          if (icon) icon.textContent = 'volume_up';
+
+          if (options.autoplay) {
+            videoEl.play().catch(e => console.log('Autoplay blocked without mute:', e));
+          }
           populateQualityMenu(hlsInstance, options.qualityMenuId);
         });
 
@@ -117,6 +128,13 @@ const Player = (() => {
       } else if (videoEl.canPlayType('application/vnd.apple.mpegurl')) {
         // Native HLS (Safari)
         videoEl.src = streamSrc;
+        videoEl.muted = false;
+        videoEl.volume = 1.0;
+        const volumeSlider = document.getElementById('volume-slider');
+        if (volumeSlider) volumeSlider.value = 100;
+        const muteBtn = document.getElementById('mute-btn');
+        const icon = muteBtn?.querySelector('.material-symbols-outlined');
+        if (icon) icon.textContent = 'volume_up';
         
         const nativeErrorHandler = (e) => {
           console.warn('Native HLS error — trying next stream', e);
@@ -125,7 +143,9 @@ const Player = (() => {
         };
         videoEl.addEventListener('error', nativeErrorHandler);
         
-        if (options.autoplay) videoEl.play().catch(() => {});
+        if (options.autoplay) {
+          videoEl.play().catch(e => console.log('Autoplay blocked without mute:', e));
+        }
       } else {
         showPlayerError('Your browser does not support HLS video playback.');
       }
@@ -327,6 +347,11 @@ const Player = (() => {
     });
     video.addEventListener('playing', () => {
       container.querySelector('#buffer-spinner')?.classList.add('hidden');
+    });
+    video.addEventListener('timeupdate', () => {
+      if (!video.paused && video.currentTime > 0) {
+        container.querySelector('#buffer-spinner')?.classList.add('hidden');
+      }
     });
   }
 

@@ -21,9 +21,14 @@
 
     <!-- Back Button overlay -->
     <div class="player-top-bar" style="position:absolute; top:0; left:0; right:0; padding:24px 32px; background:linear-gradient(to bottom, rgba(0,0,0,0.85) 0%, transparent 100%); z-index:30; display:flex; justify-content:space-between; align-items:center; transition:opacity 0.3s ease;">
-      <button class="btn btn-icon" onclick="PlayerPage.goBack()" style="background:rgba(255,255,255,0.06); border:1px solid rgba(255,255,255,0.12); width:46px; height:46px;" title="Go Back">
-        <span class="material-symbols-outlined" style="font-size:22px">arrow_back</span>
-      </button>
+      <div style="display:flex; align-items:center; gap:16px;">
+        <button class="btn btn-icon" onclick="PlayerPage.goBack()" style="background:rgba(255,255,255,0.06); border:1px solid rgba(255,255,255,0.12); width:46px; height:46px;" title="Go Back">
+          <span class="material-symbols-outlined" style="font-size:22px">arrow_back</span>
+        </button>
+        <button id="switch-server-btn" onclick="PlayerPage.switchServer()" style="display:none; background:rgba(255,255,255,0.1); border:1px solid rgba(255,255,255,0.2); color:#fff; border-radius:6px; padding:6px 12px; font-size:13px; font-weight:600; cursor:pointer; align-items:center; gap:6px;">
+          <span class="material-symbols-outlined" style="font-size:16px; vertical-align:middle;">dns</span> Switch Server
+        </button>
+      </div>
       <div style="text-align:right">
         <span id="player-title" style="font-size:16px; font-weight:700; color:#fff; display:block;">Void Walker</span>
         <span id="player-subtitle" style="font-size:12px; color:rgba(255,255,255,0.5); font-weight:500;">Playing Movie</span>

@@ -4,6 +4,8 @@ const PlayerPage = (() => {
   let progressInterval = null;
   let currentContentId = null;
   let videoElement = null;
+  let availableStreams = [];
+  let activeStreamIndex = 0;
 
   async function init(params) {
     const contentId = params.id || '1';
@@ -121,10 +123,22 @@ const PlayerPage = (() => {
     const iframeElement = document.getElementById('iframe-video');
     const controlsContainer = document.querySelector('.player-controls');
 
+    // Ensure primary stream is first in the array (all already encoded above)
+    availableStreams = [primaryStream, ...streamsToUse.filter(s => s !== primaryStream)];
+    activeStreamIndex = 0;
+    
+    const switchBtn = document.getElementById('switch-server-btn');
+    if (switchBtn) {
+      switchBtn.style.display = availableStreams.length > 1 ? 'flex' : 'none';
+    }
+
     if (isIframeStream) {
       // Hide native video and custom controls
       if (videoElement) videoElement.style.display = 'none';
       if (controlsContainer) controlsContainer.style.display = 'none';
+      
+      const spinner = document.getElementById('buffer-spinner');
+      if (spinner) spinner.classList.add('hidden');
       
       // Show and load iframe
       if (iframeElement) {
@@ -137,14 +151,11 @@ const PlayerPage = (() => {
       if (videoElement) videoElement.style.display = 'block';
       if (controlsContainer) controlsContainer.style.display = 'flex';
 
-      // Ensure primary stream is first in the array (all already encoded above)
-      const orderedStreams = [primaryStream, ...streamsToUse.filter(s => s !== primaryStream)];
-
       // Initialize the player
       window.Player.init(videoElement, primaryStream, {
         autoplay: true,
         qualityMenuId: 'quality-menu',
-        streams: orderedStreams,
+        streams: availableStreams,
         withCredentials: true,
         requestHeaders: {
           'Accept': '*/*',
@@ -181,6 +192,25 @@ const PlayerPage = (() => {
 
     // Overlay controls auto-hide setup (for the top back button)
     setupOverlayAutoHide();
+
+    // Auto Fullscreen & Landscape for Mobile
+    if (window.innerWidth <= 768) {
+      const container = document.getElementById('player-container');
+      if (container) {
+        try {
+          if (container.requestFullscreen) {
+            container.requestFullscreen().catch(() => {});
+          } else if (container.webkitRequestFullscreen) {
+            container.webkitRequestFullscreen();
+          }
+          if (screen.orientation && screen.orientation.lock) {
+            screen.orientation.lock('landscape').catch(() => {});
+          }
+        } catch (e) {
+          console.warn('Auto fullscreen/landscape blocked by browser:', e);
+        }
+      }
+    }
   }
 
   function setupOverlayAutoHide() {
@@ -238,7 +268,56 @@ const PlayerPage = (() => {
     Router.navigate('detail', { id: currentContentId });
   }
 
-  return { init, goBack };
+  function switchServer() {
+    if (!availableStreams || availableStreams.length <= 1) {
+      UI.toast('No alternative servers available.', 'info');
+      return;
+    }
+    
+    activeStreamIndex = (activeStreamIndex + 1) % availableStreams.length;
+    const newStream = availableStreams[activeStreamIndex];
+    
+    UI.toast(`Switched to Server ${activeStreamIndex + 1}`, 'info');
+
+    // Destroy native player if active
+    if (window.Player && typeof window.Player.destroy === 'function') {
+      window.Player.destroy();
+    }
+    
+    const isIframeStream = newStream.includes('vidsrc') || newStream.includes('vidlink') || newStream.includes('embed');
+    const iframeElement = document.getElementById('iframe-video');
+    const controlsContainer = document.querySelector('.player-controls');
+    
+    if (isIframeStream) {
+      if (videoElement) videoElement.style.display = 'none';
+      if (controlsContainer) controlsContainer.style.display = 'none';
+      if (iframeElement) {
+        iframeElement.style.display = 'block';
+        iframeElement.src = newStream;
+      }
+      const spinner = document.getElementById('buffer-spinner');
+      if (spinner) spinner.classList.add('hidden');
+    } else {
+      if (iframeElement) {
+        iframeElement.style.display = 'none';
+        iframeElement.src = '';
+      }
+      if (videoElement) videoElement.style.display = 'block';
+      if (controlsContainer) controlsContainer.style.display = 'flex';
+      
+      const orderedStreams = [newStream, ...availableStreams.filter(s => s !== newStream)];
+      window.Player.init(videoElement, newStream, {
+        autoplay: true,
+        qualityMenuId: 'quality-menu',
+        streams: orderedStreams,
+        withCredentials: true,
+        requestHeaders: { 'Accept': '*/*', 'Origin': window.location.origin }
+      });
+      window.Player.setupControls('player-container');
+    }
+  }
+
+  return { init, goBack, switchServer };
 })();
 
 window.PlayerPage = PlayerPage;
