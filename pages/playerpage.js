@@ -151,6 +151,34 @@ const PlayerPage = (() => {
       if (videoElement) videoElement.style.display = 'block';
       if (controlsContainer) controlsContainer.style.display = 'flex';
 
+      // Ensure primary stream is first in the array (all already encoded above)
+      availableStreams = [primaryStream, ...streamsToUse.filter(s => s !== primaryStream)];
+      activeStreamIndex = 0;
+
+      const switchBtn = document.getElementById('switch-server-btn');
+      if (switchBtn) {
+        switchBtn.style.display = availableStreams.length > 1 ? 'flex' : 'none';
+      }
+
+      // Auto‑fallback timer – if video hasn't started playing within 12 s, try the next server
+      let fallbackTimer = setTimeout(() => {
+        // Only switch if still not playing
+        if (videoElement && videoElement.paused && !videoElement.ended) {
+          UI.toast('Stream is slow, switching server automatically…', 'info');
+          switchServer();
+        }
+      }, 12000);
+
+      // Clear fallback timer once playback starts
+      const onPlayClear = () => {
+        if (fallbackTimer) {
+          clearTimeout(fallbackTimer);
+          fallbackTimer = null;
+        }
+        videoElement.removeEventListener('play', onPlayClear);
+      };
+      videoElement.addEventListener('play', onPlayClear);
+
       // Initialize the player
       window.Player.init(videoElement, primaryStream, {
         autoplay: true,
