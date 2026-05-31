@@ -31,7 +31,31 @@ const Router = (() => {
 
   // ── Parse hash ──
   function parseHash() {
-    const hash = window.location.hash.replace('#/', '') || 'home';
+    const rawHash = window.location.hash;
+
+    // Check if it's a Supabase auth callback hash
+    if (rawHash.includes('access_token=') || rawHash.includes('recovery_token=') || rawHash.includes('type=signup') || rawHash.includes('error=')) {
+      if (rawHash.includes('error=')) {
+        const match = rawHash.match(/error_description=([^&]+)/);
+        const errMsg = match ? decodeURIComponent(match[1].replace(/\+/g, ' ')) : 'Authentication failed';
+        setTimeout(() => {
+          if (window.UI && typeof window.UI.toast === 'function') {
+            window.UI.toast(errMsg, 'error');
+          }
+          window.location.hash = '#/login';
+        }, 100);
+      } else {
+        setTimeout(() => {
+          if (window.UI && typeof window.UI.toast === 'function') {
+            window.UI.toast('Authentication successful! 🎬', 'success');
+          }
+          window.location.hash = '#/home';
+        }, 100);
+      }
+      return { route: 'home', params: {} };
+    }
+
+    const hash = rawHash.replace('#/', '') || 'home';
     const [route, queryStr] = hash.split('?');
     const params = {};
     if (queryStr) {
