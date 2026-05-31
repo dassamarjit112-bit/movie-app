@@ -1,0 +1,23 @@
+# Cron Scheduling Instructions for Aggregated Real-Time Content Scrape-Syncing
+
+To execute the background movie updater script automatically every 6 hours:
+
+1. Open your server's crontab editor:
+   crontab -e
+
+2. Append the following line (replace "/path/to/project" with the absolute directory path where your project is stored):
+   0 */6 * * * /usr/bin/python3 /path/to/project/updater.py >> /var/log/movie_updater.log 2>&1
+
+3. Save and close. The system crontab runner will automatically dispatch the updater at minute 0 of every 6th hour.
+
+4. (Optional) To execute both the database metadata sync AND the Elasticsearch index sync in sequence, configure a script run_sync.sh:
+   #!/bin/bash
+   export DATABASE_URL="your_postgresql_database_connection_string"
+   export ELASTICSEARCH_URL="your_elasticsearch_connection_url"
+   export TMDB_API_KEY="your_tmdb_api_key"
+   
+   /usr/bin/python3 /path/to/project/updater.py
+   /usr/bin/python3 /path/to/project/es_sync.py
+
+   And schedule run_sync.sh:
+   0 */6 * * * /bin/bash /path/to/project/run_sync.sh >> /var/log/movie_updater.log 2>&1

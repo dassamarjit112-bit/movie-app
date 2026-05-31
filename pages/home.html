@@ -49,19 +49,20 @@
     </div>
   </section>
 
-  <!-- ── Genre Quick Nav ── -->
+  <!-- ── Industry Quick Nav ── -->
   <div style="padding:0 var(--space-margin-desktop);margin-top:-8px;position:relative;z-index:20">
     <div id="genre-chips" class="scroll-row" style="padding:16px 0">
-      <button class="genre-chip active" data-genre="all">All</button>
-      <button class="genre-chip" data-genre="action">Action</button>
-      <button class="genre-chip" data-genre="scifi">Sci-Fi</button>
-      <button class="genre-chip" data-genre="thriller">Thriller</button>
-      <button class="genre-chip" data-genre="drama">Drama</button>
-      <button class="genre-chip" data-genre="horror">Horror</button>
-      <button class="genre-chip" data-genre="documentary">Documentary</button>
-      <button class="genre-chip" data-genre="fantasy">Fantasy</button>
-      <button class="genre-chip" data-genre="animation">Animation</button>
-      <button class="genre-chip" data-genre="romance">Romance</button>
+      <button class="genre-chip active" data-genre="all">🎬 All</button>
+      <button class="genre-chip" data-genre="bollywood">🇮🇳 Bollywood</button>
+      <button class="genre-chip" data-genre="hollywood">🌍 Hollywood</button>
+      <button class="genre-chip" data-genre="tollywood">🎭 Tollywood</button>
+      <button class="genre-chip" data-genre="south">🌴 South</button>
+      <button class="genre-chip" data-genre="action">💥 Action</button>
+      <button class="genre-chip" data-genre="drama">🎭 Drama</button>
+      <button class="genre-chip" data-genre="thriller">🔪 Thriller</button>
+      <button class="genre-chip" data-genre="comedy">😂 Comedy</button>
+      <button class="genre-chip" data-genre="horror">👻 Horror</button>
+      <button class="genre-chip" data-genre="romance">❤️ Romance</button>
     </div>
   </div>
 
@@ -72,7 +73,6 @@
       <span class="section-link" onclick="Router.navigate('account')">View All</span>
     </div>
     <div class="scroll-row" id="continue-watching-row">
-      <!-- Populated by JS -->
       <div class="skeleton video-card-item" style="width:300px;height:168px;flex-shrink:0;border-radius:8px"></div>
       <div class="skeleton video-card-item" style="width:300px;height:168px;flex-shrink:0;border-radius:8px"></div>
       <div class="skeleton video-card-item" style="width:300px;height:168px;flex-shrink:0;border-radius:8px"></div>
@@ -94,10 +94,10 @@
     </div>
   </section>
 
-  <!-- ── New Releases ── -->
+  <!-- ── Now Playing / New Releases ── -->
   <section class="section">
     <div class="section-header">
-      <h2 class="section-title">✨ New Releases</h2>
+      <h2 class="section-title">✨ Now Playing in Cinemas</h2>
       <span class="section-link" onclick="Router.navigate('movies')">See All</span>
     </div>
     <div class="scroll-row" id="new-releases-row">
@@ -107,16 +107,68 @@
     </div>
   </section>
 
-  <!-- ── Recommended ── -->
+  <!-- ── Bollywood Hits ── -->
+  <section class="section" id="bollywood-section">
+    <div class="section-header">
+      <h2 class="section-title">🇮🇳 Bollywood Hits</h2>
+      <span class="section-link" onclick="Router.navigate('movies', {industry:'Bollywood'})">See All</span>
+    </div>
+    <div class="scroll-row" id="bollywood-row">
+      <div class="skeleton poster-card-item" style="width:170px;height:255px;flex-shrink:0;border-radius:8px"></div>
+      <div class="skeleton poster-card-item" style="width:170px;height:255px;flex-shrink:0;border-radius:8px"></div>
+      <div class="skeleton poster-card-item" style="width:170px;height:255px;flex-shrink:0;border-radius:8px"></div>
+    </div>
+  </section>
+
+  <!-- ── Hollywood Blockbusters ── -->
+  <section class="section" id="hollywood-section">
+    <div class="section-header">
+      <h2 class="section-title">🌍 Hollywood Blockbusters</h2>
+      <span class="section-link" onclick="Router.navigate('movies', {industry:'Hollywood'})">See All</span>
+    </div>
+    <div class="scroll-row" id="hollywood-row">
+      <div class="skeleton poster-card-item" style="width:170px;height:255px;flex-shrink:0;border-radius:8px"></div>
+      <div class="skeleton poster-card-item" style="width:170px;height:255px;flex-shrink:0;border-radius:8px"></div>
+      <div class="skeleton poster-card-item" style="width:170px;height:255px;flex-shrink:0;border-radius:8px"></div>
+    </div>
+  </section>
+
+  <!-- ── Tollywood & South ── -->
+  <section class="section" id="tollywood-section">
+    <div class="section-header">
+      <h2 class="section-title">🎭 Tollywood & South Indian</h2>
+      <span class="section-link" onclick="Router.navigate('movies', {industry:'Tollywood'})">See All</span>
+    </div>
+    <div class="scroll-row" id="tollywood-row">
+      <div class="skeleton poster-card-item" style="width:170px;height:255px;flex-shrink:0;border-radius:8px"></div>
+      <div class="skeleton poster-card-item" style="width:170px;height:255px;flex-shrink:0;border-radius:8px"></div>
+      <div class="skeleton poster-card-item" style="width:170px;height:255px;flex-shrink:0;border-radius:8px"></div>
+    </div>
+  </section>
+
+  <!-- ── TV Serials & Web Series ── -->
+  <section class="section" id="tvserials-section">
+    <div class="section-header">
+      <h2 class="section-title">📺 TV Serials & Web Series</h2>
+      <span class="section-link" onclick="Router.navigate('tvshows')">See All</span>
+    </div>
+    <div class="scroll-row" id="tvserials-row">
+      <div class="skeleton poster-card-item" style="width:170px;height:255px;flex-shrink:0;border-radius:8px"></div>
+      <div class="skeleton poster-card-item" style="width:170px;height:255px;flex-shrink:0;border-radius:8px"></div>
+      <div class="skeleton poster-card-item" style="width:170px;height:255px;flex-shrink:0;border-radius:8px"></div>
+    </div>
+  </section>
+
+  <!-- ── Recommended for You ── -->
   <section class="section">
     <div class="section-header">
-      <h2 class="section-title">Recommended for You</h2>
+      <h2 class="section-title">✨ Recommended for You</h2>
       <span class="section-link">Refresh</span>
     </div>
     <div class="poster-grid" id="recommended-grid"></div>
   </section>
 
-  <!-- ── Top Rated ── -->
+  <!-- ── Top Rated All Time ── -->
   <section class="section">
     <div class="section-header">
       <h2 class="section-title">⭐ Top Rated All Time</h2>
