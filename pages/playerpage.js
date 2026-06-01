@@ -181,8 +181,22 @@ const PlayerPage = (() => {
         }
       }, 3000);
 
-      // Clear fallback timer once playback starts
+      // Show spinner initially (if exists)
+      const spinner = document.getElementById('buffer-spinner');
+      let loadingTimer = null;
+      if (spinner) {
+        spinner.classList.remove('hidden');
+        loadingTimer = setTimeout(() => {
+          spinner.classList.add('hidden');
+        }, 5000);
+      }
+
+      // Clear loading timer once playback starts
       const onPlayClear = () => {
+        if (loadingTimer) {
+          clearTimeout(loadingTimer);
+          loadingTimer = null;
+        }
         if (fallbackTimer) {
           clearTimeout(fallbackTimer);
           fallbackTimer = null;
@@ -231,18 +245,6 @@ const PlayerPage = (() => {
           'Origin': window.location.origin
         }
       });
-      // Ensure audio is always on
-      if (videoElement) {
-        videoElement.muted = false;
-        videoElement.volume = 1.0;
-        // Prevent muting via UI
-        videoElement.addEventListener('volumechange', () => {
-          if (videoElement.muted || videoElement.volume < 1.0) {
-            videoElement.muted = false;
-            videoElement.volume = 1.0;
-          }
-        });
-      }
       window.Player.setupControls('player-container');
       // Force landscape orientation for immersive experience
       if (screen.orientation && screen.orientation.lock) {
