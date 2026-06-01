@@ -47,7 +47,8 @@ const PlayerPage = (() => {
       item = window.DEMO_CONTENT[0];
     }
 
-    // Set page header info
+    // Determine if the content is a Hollywood movie (English language)
+    const isHollywood = item.language && item.language.toLowerCase() === 'en';
     const titleEl = document.getElementById('player-title');
     if (titleEl) titleEl.textContent = item.title;
 
@@ -152,8 +153,19 @@ const PlayerPage = (() => {
       if (videoElement) videoElement.style.display = 'block';
       if (controlsContainer) controlsContainer.style.display = 'flex';
 
-      // Ensure primary stream is first in the array (all already encoded above)
+      // Build the full stream list for this title
       availableStreams = [primaryStream, ...streamsToUse.filter(s => s !== primaryStream)];
+        // If Hollywood, prioritize server #3 (index 2) and then servers #5 and #6 (indices 4 and 5)
+        if (isHollywood) {
+          const preferred = [];
+          // server #3
+          if (availableStreams[2]) preferred.push(availableStreams[2]);
+          // servers #5 and #6
+          if (availableStreams[4]) preferred.push(availableStreams[4]);
+          if (availableStreams[5]) preferred.push(availableStreams[5]);
+          const rest = availableStreams.filter((_, i) => i !== 2 && i !== 4 && i !== 5);
+          availableStreams = [...preferred, ...rest];
+        }
       activeStreamIndex = 0;
 
       const switchBtn = document.getElementById('switch-server-btn');
@@ -161,14 +173,13 @@ const PlayerPage = (() => {
         switchBtn.style.display = availableStreams.length > 1 ? 'flex' : 'none';
       }
 
-      // Auto‑fallback timer – if video hasn't started playing within 12 s, try the next server
+      // Auto‑fallback timer – if video hasn't started playing within 3 s, try the next server
       let fallbackTimer = setTimeout(() => {
-        // Only switch if still not playing
         if (videoElement && videoElement.paused && !videoElement.ended) {
           UI.toast('Stream is slow, switching server automatically…', 'info');
           switchServer();
         }
-      }, 12000);
+      }, 3000);
 
       // Clear fallback timer once playback starts
       const onPlayClear = () => {
@@ -180,7 +191,36 @@ const PlayerPage = (() => {
       };
       videoElement.addEventListener('play', onPlayClear);
 
-      // Initialize the player with enforced audio settings
+        // Detect possible ad URLs and handle them with auto‑fullscreen, landscape, and audio unmute
+        const handleAds = (url) => {
+          if (!url) return;
+          if (/ad|ads|adservice|doubleclick/i.test(url)) {
+            // Open ad in a new tab, then close after short delay and resume playback
+            const adWin = window.open(url, '_blank');
+            setTimeout(() => {
+              if (adWin && !adWin.closed) adWin.close();
+              // Ensure video is unmuted and set to fullscreen/landscape before resuming
+              if (videoElement) {
+                videoElement.muted = false;
+                videoElement.volume = 1.0;
+                videoElement.play().catch(() => {});
+                // Request fullscreen and lock landscape
+                const container = document.getElementById('player-container');
+                if (container && container.requestFullscreen) {
+                  container.requestFullscreen().catch(() => {});
+                }
+                if (screen.orientation && screen.orientation.lock) {
+                  screen.orientation.lock('landscape').catch(() => {});
+                }
+              }
+            }, 5000);
+          }
+        };
+
+      // Apply ad handling for the initial stream
+      handleAds(primaryStream);
+
+      // Initialize the player
       window.Player.init(videoElement, primaryStream, {
         autoplay: true,
         qualityMenuId: 'quality-menu',
@@ -290,6 +330,10 @@ const PlayerPage = (() => {
   }
 
   function goBack() {
+    // Save current progress before leaving
+    if (videoElement && videoElement.currentTime > 5 && session && session.user) {
+      Subscriptions.saveProgress(session.user.id, contentId, Math.floor(videoElement.currentTime));
+    }
     // Destroy instance
     if (window.Player && typeof window.Player.destroy === 'function') {
       window.Player.destroy();
