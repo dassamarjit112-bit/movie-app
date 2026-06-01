@@ -78,7 +78,8 @@ const PlayerPage = (() => {
       return Math.abs(h);
     };
     const hash = computeHash(String(contentId));
-    const streamsToUseRaw = (item.streams && item.streams.length) ? item.streams : FALLBACK_STREAMS;
+    // Prioritize regional streams for Indian languages
+    const streamsToUseRaw = (item.streams && item.streams.length) ? TMDB.getRegionalStreams(item) : FALLBACK_STREAMS;
 
     // Helper to resolve a path or URL to a full HLS URL
     const resolveStream = (s) => {
@@ -179,7 +180,7 @@ const PlayerPage = (() => {
       };
       videoElement.addEventListener('play', onPlayClear);
 
-      // Initialize the player
+      // Initialize the player with enforced audio settings
       window.Player.init(videoElement, primaryStream, {
         autoplay: true,
         qualityMenuId: 'quality-menu',
@@ -190,7 +191,24 @@ const PlayerPage = (() => {
           'Origin': window.location.origin
         }
       });
+      // Ensure audio is always on
+      if (videoElement) {
+        videoElement.muted = false;
+        videoElement.volume = 1.0;
+        // Prevent muting via UI
+        videoElement.addEventListener('volumechange', () => {
+          if (videoElement.muted || videoElement.volume < 1.0) {
+            videoElement.muted = false;
+            videoElement.volume = 1.0;
+          }
+        });
+      }
       window.Player.setupControls('player-container');
+      // Force landscape orientation for immersive experience
+      if (screen.orientation && screen.orientation.lock) {
+        screen.orientation.lock('landscape').catch(() => {});
+      }
+
 
       // Retrieve previous progress from Supabase watch history if available
       try {

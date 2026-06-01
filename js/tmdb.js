@@ -81,6 +81,32 @@ const TMDB = (() => {
       release_date: isTV ? item.first_air_date : item.release_date
     };
   }
+  
+  // ── Get regional streams based on language ──
+  function getRegionalStreams(item) {
+    // Currently, streams are already ordered with generic embed servers.
+    // For Indian languages (hi, te, ta, kn, ml), prioritize servers known to work better in that region.
+    if (['hi','te','ta','kn','ml'].includes(item.language)) {
+      // Example: move VidSrc and VidLink to the front if present
+      const priority = ['vidsrc.me', 'vidlink.pro', 'player.autoembed.cc'];
+      const ordered = [...item.streams];
+      ordered.sort((a,b) => {
+        const aPri = priority.findIndex(p=>a.includes(p));
+        const bPri = priority.findIndex(p=>b.includes(p));
+        return aPri - bPri;
+      });
+      return ordered;
+    }
+    return item.streams;
+  }
+  
+  // ── Helper to format embed URLs ──
+  function getEmbedUrl(tmdbId, type, season = 1, episode = 1) {
+    if (type === 'tv') {
+      return `https://vidsrc.me/embed/tv?tmdb=${tmdbId}&season=${season}&episode=${episode}`;
+    }
+    return `https://vidsrc.me/embed/movie?tmdb=${tmdbId}`;
+  }
 
   // ── Generic fetch helper with error handling ──
   async function tmdbFetch(endpoint, params = {}) {
@@ -316,6 +342,7 @@ const TMDB = (() => {
     fetchUpcoming,
     search,
     getDetails,
+    getRegionalStreams,
     fetchHomeData,
     IMG,
     IMG_BG
