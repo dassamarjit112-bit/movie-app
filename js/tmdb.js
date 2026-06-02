@@ -37,7 +37,7 @@ const TMDB = (() => {
     // Generate real streaming URLs using TMDB ID
     const tmdbId = item.id;
     const streams = isTV ? [
-      `https://www.2embed.cc/embedtv/${tmdbId}&s=1&e=1`,
+      `https://www.2embed.cc/embedtv/${tmdbId}?s=1&e=1`,
       `https://vidlink.pro/tv/${tmdbId}/1/1`,
       `https://vixsrc.to/tv/${tmdbId}/1/1`
     ] : [
@@ -55,8 +55,8 @@ const TMDB = (() => {
       year:        parseInt(year) || 2024,
       duration:    item.runtime || (isTV ? 45 : 110),
       imdb:        rating,
-      poster:      item.poster_path   ? `${IMG}${item.poster_path}`   : null,
-      thumbnail:   item.backdrop_path ? `${IMG_BG}${item.backdrop_path}` : (item.poster_path ? `${IMG}${item.poster_path}` : null),
+      poster:      item.poster_path   ? `${IMG}${item.poster_path}`   : 'file:///C:/Users/samarjit%20das/.gemini/antigravity-ide/brain/da6bcdec-86f0-4c1d-bc76-d51c38a67d07/placeholder_image_1780433723573.png',
+      thumbnail:   item.backdrop_path ? `${IMG_BG}${item.backdrop_path}` : (item.poster_path ? `${IMG}${item.poster_path}` : 'file:///C:/Users/samarjit%20das/.gemini/antigravity-ide/brain/da6bcdec-86f0-4c1d-bc76-d51c38a67d07/placeholder_image_1780433723573.png'),
       description: item.overview || 'No description available.',
       stream:      primary,
       streams:     streams,
