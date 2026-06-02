@@ -29,8 +29,8 @@
 .detail-hero-overlay {
   position: absolute;
   inset: 0;
-  background: linear-gradient(to right, rgba(14,14,14,1) 0%, rgba(14,14,14,0.6) 40%, transparent 100%),
-              linear-gradient(to top, var(--c-background) 0%, rgba(14,14,14,0.2) 50%, transparent 100%);
+  background: linear-gradient(to right, #0e0e0e 0%, rgba(14,14,14,0.7) 40%, transparent 100%),
+              linear-gradient(to top, #0e0e0e 0%, #0e0e0e 5%, rgba(14,14,14,0.5) 40%, transparent 100%);
 }
 
 .detail-content {
@@ -38,7 +38,7 @@
   z-index: 10;
   max-width: var(--space-container-max);
   margin: 0 auto;
-  padding: 25vh var(--space-margin-desktop) 80px;
+  padding: 12vh var(--space-margin-desktop) 80px;
 }
 
 .detail-back-btn {
@@ -113,9 +113,9 @@
 @media (max-width: 768px) {
   .detail-hero-backdrop { height: 60vh; }
   .detail-hero-overlay {
-    background: linear-gradient(to top, var(--c-background) 0%, rgba(14,14,14,0.8) 40%, transparent 100%);
+    background: linear-gradient(to top, #0e0e0e 0%, #0e0e0e 10%, rgba(14,14,14,0.8) 50%, transparent 100%);
   }
-  .detail-content { padding: 40vh var(--space-margin-mobile) 40px; }
+  .detail-content { padding: 25vh var(--space-margin-mobile) 40px; }
   .detail-header-block { max-width: 100%; gap: 12px; align-items: center; text-align: center; }
   #detail-title { font-size: 36px !important; }
   #detail-description { font-size: 14px !important; text-align: center; }

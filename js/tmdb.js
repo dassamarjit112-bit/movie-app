@@ -5,7 +5,7 @@
    ============================================================ */
 
 const TMDB = (() => {
-  const API_KEY = 'b7bb606801e160a12504bae3568cced9';
+  const API_KEY = window.ENV?.TMDB_API_KEY && window.ENV.TMDB_API_KEY !== '%VITE_TMDB_API_KEY%' ? window.ENV.TMDB_API_KEY : 'b7bb606801e160a12504bae3568cced9';
   const BASE    = 'https://api.themoviedb.org/3';
   const IMG     = 'https://image.tmdb.org/t/p/w500';
   const IMG_BG  = 'https://image.tmdb.org/t/p/w1280';
@@ -44,8 +44,8 @@ const TMDB = (() => {
     ] : [
       `https://www.2embed.cc/embed/${tmdbId}`,
       `https://vidsrc.me/embed/movie?tmdb=${tmdbId}`,
-       `https://vidlink.pro/movie/${tmdbId}`,
-       `https://vixsrc.to/movie/${tmdbId}`
+      `https://vidlink.pro/movie/${tmdbId}`,
+      `https://vixsrc.to/movie/${tmdbId}`
     ];
     const primary = streams[0];
     return {

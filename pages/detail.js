@@ -24,7 +24,9 @@ const DetailPage = (() => {
       console.warn('Failed to fetch details directly from TMDB:', err);
     }
     if (!item) {
-      item = window.DEMO_CONTENT[0];
+      if (window.UI) UI.toast('Could not find title details.', 'error');
+      Router.navigate('home');
+      return;
     }
     currentContent = item;
 

@@ -124,6 +124,15 @@
   <!-- App Mount Point -->
   <div id="app"></div>
 
+  <!-- ── Environment Variables Injection (Replaced by Vite) ── -->
+  <script>
+    window.ENV = {
+      SUPABASE_URL: "%VITE_SUPABASE_URL%",
+      SUPABASE_ANON_KEY: "%VITE_SUPABASE_ANON_KEY%",
+      TMDB_API_KEY: "%VITE_TMDB_API_KEY%"
+    };
+  </script>
+
   <!-- ── External Libraries ── -->
   <!-- Supabase JS Client -->
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
