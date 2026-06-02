@@ -8,8 +8,16 @@ const PlayerPage = (() => {
   let activeStreamIndex = 0;
 
   async function init(params) {
-    const contentId = params.id || '1';
+    const contentId = params.id;
+    const contentType = params.type || 'movie'; // 'movie' or 'series'
     currentContentId = contentId;
+    window._playerContentType = contentType; // store for goBack()
+
+    if (!contentId) {
+      UI.toast('No content specified.', 'error');
+      Router.navigate('home');
+      return;
+    }
     
     // Check if user is subscribed first
     const session = await window.Auth.getSession();
@@ -26,129 +34,95 @@ const PlayerPage = (() => {
       return;
     }
 
-    // Find stream in Demo Content (allow numeric/string ID match)
-    let item = window.DEMO_CONTENT.find(c => c.id == contentId || c.id == parseInt(contentId));
-    if (!item) {
-      try {
-        if (window.TMDB) {
-          // Determine type from params or try movie first then tv
-          const type = params.type || (params.ep ? 'tv' : 'movie');
-          item = await TMDB.getDetails(contentId, type).catch(() => null) ||
-                 await TMDB.getDetails(contentId, type === 'movie' ? 'tv' : 'movie').catch(() => null);
-          if (item) {
-            window.registerDemoContent(item);
-          }
-        }
-      } catch (err) {
-        console.warn('Failed to fetch details directly from TMDB for player:', err);
+    // Always fetch fresh details from TMDB — never rely on demo/cached content
+    let item = null;
+    try {
+      if (window.TMDB) {
+        const tmdbType = contentType === 'series' ? 'tv' : 'movie';
+        item = await TMDB.getDetails(contentId, tmdbType);
       }
+    } catch (err) {
+      console.warn('Failed to fetch details from TMDB for player:', err);
+    }
+    // Try the other type if the first fails
+    if (!item && window.TMDB) {
+      try {
+        const altType = contentType === 'series' ? 'movie' : 'tv';
+        item = await TMDB.getDetails(contentId, altType);
+      } catch (err) {}
     }
     if (!item) {
-      item = window.DEMO_CONTENT[0];
+      UI.toast('Content not found. Please try again.', 'error');
+      Router.navigate('home');
+      return;
     }
 
-    // Determine if the content is a Hollywood movie (English language)
-    const isHollywood = item.language && item.language.toLowerCase() === 'en';
+    // Set title and subtitle
     const titleEl = document.getElementById('player-title');
-    if (titleEl) titleEl.textContent = item.title;
+    if (titleEl) titleEl.textContent = item.title || 'Loading...';
 
     const subtitleEl = document.getElementById('player-subtitle');
-    if (subtitleEl) {
-      subtitleEl.textContent = params.ep ? `Streaming ${params.ep}` : `Streaming Movie • ${item.genre}`;
-    }
 
     videoElement = document.getElementById('hls-video');
 
-    // Working public HLS fallbacks — must match the pool in tmdb.js
-    const FALLBACK_STREAMS = [
-      'https://test-streams.mux.dev/x36xhzz/x36xhzz.m3u8',
-      'https://devstreaming-cdn.apple.com/videos/streaming/examples/img_bipbop_adv_example_fmp4/master.m3u8',
-      'https://devstreaming-cdn.apple.com/videos/streaming/examples/bipbop_16x9/bipbop_16x9_variant.m3u8',
-      'https://playertest.longtailvideo.com/adaptive/wowzaid3/playlist.m3u8',
-      'https://devstreaming-cdn.apple.com/videos/streaming/examples/bipbop_4x3/bipbop_4x3_variant.m3u8',
-      'https://demo.unified-streaming.com/k8s/features/stable/video/tears-of-steel/tears-of-steel.ism/.m3u8',
-    ];
-
-    // Compute a deterministic hash from the content ID (handles alphanumeric IDs)
-    const computeHash = (str) => {
-      let h = 0;
-      for (let i = 0; i < str.length; i++) {
-        h = ((h << 5) - h) + str.charCodeAt(i);
-        h |= 0; // Convert to 32bit integer
-      }
-      return Math.abs(h);
-    };
-    const hash = computeHash(String(contentId));
-    // Prioritize regional streams for Indian languages
-    const streamsToUseRaw = (item.streams && item.streams.length) ? TMDB.getRegionalStreams(item) : FALLBACK_STREAMS;
-
-    // Helper to resolve a path or URL to a full HLS URL
-    const resolveStream = (s) => {
-      if (/^https?:\/\//i.test(s)) return s;
-      const base = (typeof window !== 'undefined' && window.VITE_HLS_BASE_URL) ? window.VITE_HLS_BASE_URL : '';
-      return base + s;
-    };
-
-    // Resolve and normalize ALL streams with encodeURI (Fix: was only done on primaryStream before)
-    const streamsToUse = streamsToUseRaw
-      .map(resolveStream)
-      .map(s => { try { return encodeURI(decodeURI(s)); } catch(e) { return s; } });
-
-    // Compute deterministic fallback index
-    const fallbackIndex = hash % streamsToUse.length;
-
-    // Determine primary stream
-    let primaryStream;
-    if (item.type === 'series' && params.ep) {
-      // Expected format 'S{seasonNum} E{epNum}'
-      const match = params.ep.match(/S(\d+)\s*E(\d+)/i);
-      if (match) {
-        const seasonNum = parseInt(match[1]);
-        const epNum = parseInt(match[2]);
-        const episodes = item.episodes && item.episodes[seasonNum] ? item.episodes[seasonNum] : [];
-        const episode = episodes.find(e => e.epNum === epNum);
-        if (episode && episode.stream) {
-          try {
-            primaryStream = encodeURI(decodeURI(resolveStream(episode.stream)));
-          } catch(e) {
-            primaryStream = resolveStream(episode.stream);
-          }
-          if (episode.streams && episode.streams.length) {
-            streamsToUseRaw = episode.streams;
-            streamsToUse = streamsToUseRaw
-              .map(resolveStream)
-              .map(s => { try { return encodeURI(decodeURI(s)); } catch(e) { return s; } });
-          }
+    // Resolve episode info from params
+    let season = 1, episode = 1;
+    if (contentType === 'series') {
+      if (params.ep) {
+        // Format: 'S1 E2'
+        const epMatch = params.ep.match(/S(\d+)\s*E(\d+)/i);
+        if (epMatch) {
+          season = parseInt(epMatch[1]);
+          episode = parseInt(epMatch[2]);
         }
+      } else {
+        season = parseInt(params.season) || 1;
+        episode = parseInt(params.episode) || 1;
       }
     }
-        if (!primaryStream) {
-        primaryStream = streamsToUse[0];
-      }
 
-    // Determine if the stream is an iframe embed server
-    const isIframeStream = primaryStream && (primaryStream.includes('vidlink') || primaryStream.includes('embed'));
+    if (subtitleEl) {
+      subtitleEl.textContent = contentType === 'series'
+        ? `Season ${season} · Episode ${episode}`
+        : `Movie · ${item.genre || ''}`;
+    }
+
+    // Fetch real embed streams via TMDB
+    let embedStreams = [];
+    try {
+      if (contentType === 'series') {
+        embedStreams = await TMDB.getRegionalStreams(contentId, season, episode);
+      } else {
+        embedStreams = await TMDB.getRegionalStreams(contentId, null, null);
+      }
+    } catch (e) {
+      console.warn('Could not fetch embed streams:', e);
+    }
+
+    if (!embedStreams || embedStreams.length === 0) {
+      UI.toast('No streams available for this title.', 'error');
+      Router.navigate('home');
+      return;
+    }
+
+    let primaryStream = embedStreams[0];
+
+    // All streams are embed iframes (2embed, vidsrc, vidlink, vixsrc)
+    const isIframeStream = true; // always use iframe for these embed servers
     const iframeElement = document.getElementById('iframe-video');
     const controlsContainer = document.querySelector('.player-controls');
 
-      // Ensure primary stream is first in the array (all already encoded above)
-      availableStreams = [primaryStream, ...streamsToUse.filter(s => s !== primaryStream)];
-      activeStreamIndex = 0;
-      // Set initial server name on switch button
-      const switchBtn = document.getElementById('switch-server-btn');
-      if (switchBtn) {
-        const getServerName = (url) => {
-          try {
-            const host = new URL(url).hostname.replace('www.', '');
-            return host;
-          } catch (e) {
-            return 'unknown';
-          }
-        };
-        const initialServer = getServerName(primaryStream);
-        switchBtn.textContent = `Server: ${initialServer}`;
-        switchBtn.style.display = availableStreams.length > 1 ? 'flex' : 'none';
-      }
+    availableStreams = embedStreams;
+    activeStreamIndex = 0;
+
+    // Render server selector buttons
+    renderServerButtons();
+
+    // Set initial server name on switch button (legacy fallback)
+    const switchBtn = document.getElementById('switch-server-btn');
+    if (switchBtn) {
+      switchBtn.style.display = 'none'; // replaced by server buttons
+    }
 
     if (isIframeStream) {
       // Hide native video and custom controls
@@ -420,67 +394,58 @@ function onPlayerReady() {
       document.exitFullscreen().catch(() => {});
     }
 
-    // Route back to detail view
-    Router.navigate('detail', { id: currentContentId });
+    // Route back to detail view — must pass type so detail page reloads correctly
+    Router.navigate('detail', { id: currentContentId, type: window._playerContentType || 'movie' });
   }
 
-  function switchServer() {
-    if (!availableStreams || availableStreams.length <= 1) {
+  function switchServer(idx) {
+    if (!availableStreams || availableStreams.length === 0) {
       UI.toast('No alternative servers available.', 'info');
       return;
     }
-    
-    activeStreamIndex = (activeStreamIndex + 1) % availableStreams.length;
-    const newStream = availableStreams[activeStreamIndex];
-        // Update switch button with new server name
-      const switchBtn = document.getElementById('switch-server-btn');
-      if (switchBtn) {
-        const getServerName = (url) => {
-          try { return new URL(url).hostname.replace('www.', ''); } catch (e) { return 'unknown'; }
-        };
-        switchBtn.textContent = `Server: ${getServerName(newStream)}`;
-      }
-      UI.toast(`Switched to Server ${activeStreamIndex + 1}`, 'info');
-
-    // Destroy native player if active
-    if (window.Player && typeof window.Player.destroy === 'function') {
-      window.Player.destroy();
-    }
-    
-    const isIframeStream = newStream.includes('vidlink') || newStream.includes('embed');
-    const iframeElement = document.getElementById('iframe-video');
-    const controlsContainer = document.querySelector('.player-controls');
-    
-    if (isIframeStream) {
-      if (videoElement) videoElement.style.display = 'none';
-      if (controlsContainer) controlsContainer.style.display = 'none';
-      if (iframeElement) {
-        iframeElement.style.display = 'block';
-        iframeElement.src = newStream;
-      }
-      const spinner = document.getElementById('buffer-spinner');
-      if (spinner) spinner.classList.add('hidden');
+    if (idx !== undefined) {
+      activeStreamIndex = idx;
     } else {
-      if (iframeElement) {
-        iframeElement.style.display = 'none';
-        iframeElement.src = '';
-      }
-      if (videoElement) videoElement.style.display = 'block';
-      if (controlsContainer) controlsContainer.style.display = 'flex';
-      
-      const orderedStreams = [newStream, ...availableStreams.filter(s => s !== newStream)];
-      window.Player.init(videoElement, newStream, {
-        autoplay: true,
-        qualityMenuId: 'quality-menu',
-        streams: orderedStreams,
-        withCredentials: true,
-        requestHeaders: { 'Accept': '*/*', 'Origin': window.location.origin }
-      });
-      window.Player.setupControls('player-container');
+      activeStreamIndex = (activeStreamIndex + 1) % availableStreams.length;
     }
+    const newStream = availableStreams[activeStreamIndex];
+    UI.toast(`Switched to Server ${activeStreamIndex + 1}`, 'info');
+
+    const iframeElement = document.getElementById('iframe-video');
+    if (iframeElement) {
+      iframeElement.src = newStream;
+    }
+
+    // Update active server button highlight
+    renderServerButtons();
   }
 
-  return { init, goBack, switchServer };
+  function renderServerButtons() {
+    const container = document.getElementById('server-buttons');
+    if (!container || !availableStreams || availableStreams.length === 0) return;
+
+    const serverNames = ['2Embed', 'VidSrc', 'VidLink', 'VixSrc'];
+    container.innerHTML = availableStreams.map((url, i) => {
+      const name = serverNames[i] || `Server ${i + 1}`;
+      const isActive = i === activeStreamIndex;
+      return `<button 
+        onclick="PlayerPage.switchServer(${i})" 
+        style="
+          padding: 6px 14px;
+          border-radius: 6px;
+          font-size: 12px;
+          font-weight: 600;
+          cursor: pointer;
+          border: 1.5px solid ${isActive ? 'var(--c-secondary-container, #14d1ff)' : 'rgba(255,255,255,0.2)'};
+          background: ${isActive ? 'rgba(20,209,255,0.18)' : 'rgba(255,255,255,0.07)'};
+          color: ${isActive ? 'var(--c-secondary-container, #14d1ff)' : '#fff'};
+          transition: all 0.2s;
+        "
+      >${i + 1}. ${name}</button>`;
+    }).join('');
+  }
+
+  return { init, goBack, switchServer, renderServerButtons };
 })();
 
 window.PlayerPage = PlayerPage;

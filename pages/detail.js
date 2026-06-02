@@ -9,9 +9,8 @@ const DetailPage = (() => {
     const contentId = params.id || '1';
     const contentType = params.type || 'movie';
 
-    // Find the item in demo content as a fallback, but ALWAYS try to fetch full details
-    // Full details are required because the shallow homepage objects don't have episodes/cast data.
-    let item = window.DEMO_CONTENT.find(c => c.id === contentId);
+    // Always fetch full details from TMDB — never rely on demo content
+    let item = null;
     try {
       if (window.TMDB) {
         const fullItem = await TMDB.getDetails(contentId, contentType === 'series' ? 'tv' : 'movie');
@@ -81,7 +80,11 @@ const DetailPage = (() => {
     const playBtn = document.getElementById('detail-play-btn');
     if (playBtn) {
       playBtn.onclick = () => {
-        Router.navigate('player', { id: item.id, type: item.type });
+        if (item.type === 'series') {
+          Router.navigate('player', { id: item.id, type: 'series', season: 1, episode: 1 });
+        } else {
+          Router.navigate('player', { id: item.id, type: 'movie' });
+        }
       };
     }
 
@@ -209,7 +212,7 @@ function setupEpisodes(item) {
         return;
       }
       list.innerHTML = episodes.map(ep => `
-        <div class="glass-card" style="display:flex; gap:20px; padding:16px; border-radius:12px; align-items:center; cursor:pointer;" onclick="Router.navigate('player', {id:'${item.id}', type:'series', ep:'S${seasonNum} E${ep.epNum}'})">
+        <div class="glass-card" style="display:flex; gap:20px; padding:16px; border-radius:12px; align-items:center; cursor:pointer;" onclick="Router.navigate('player', {id:'${item.id}', type:'series', season:${seasonNum}, episode:${ep.epNum}})">
           <div style="position:relative; width:160px; aspect-ratio:16/9; border-radius:6px; overflow:hidden; flex-shrink:0;">
             <img src="${ep.thumb}" alt="Episode Thumbnail" style="width:100%; height:100%; object-fit:cover;">
             <div style="position:absolute; inset:0; background:rgba(0,0,0,0.4); display:flex; align-items:center; justify-content:center;">

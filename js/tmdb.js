@@ -70,22 +70,32 @@ const TMDB = (() => {
     };
   }
   
-  // ── Get regional streams based on language ──
-  function getRegionalStreams(item) {
-    // Currently, streams are already ordered with generic embed servers.
-    // For Indian languages (hi, te, ta, kn, ml), prioritize servers known to work better in that region.
-    if (['hi','te','ta','kn','ml'].includes(item.language)) {
-      // Example: move VidSrc and VidLink to the front if present
-      const priority = ['vidsrc.me', 'vidlink.pro', 'player.autoembed.cc'];
-      const ordered = [...item.streams];
-      ordered.sort((a,b) => {
-        const aPri = priority.findIndex(p=>a.includes(p));
-        const bPri = priority.findIndex(p=>b.includes(p));
-        return aPri - bPri;
-      });
-      return ordered;
+  // ── Get embed stream URLs for a TMDB title ──
+  // For series: pass season and episode numbers
+  // For movies: pass null for season and episode
+  function getRegionalStreams(tmdbId, season, episode) {
+    // If called with an item object (legacy), extract the id and return its streams array
+    if (tmdbId && typeof tmdbId === 'object') {
+      return tmdbId.streams || [];
     }
-    return item.streams;
+    const id = tmdbId;
+    if (season != null && episode != null) {
+      // Series episode streams
+      return [
+        `https://www.2embed.cc/embedtv/${id}&s=${season}&e=${episode}`,
+        `https://vidsrc.me/embed/tv?tmdb=${id}&season=${season}&episode=${episode}`,
+        `https://vidlink.pro/tv/${id}/${season}/${episode}`,
+        `https://vixsrc.to/tv/${id}/${season}/${episode}`
+      ];
+    } else {
+      // Movie streams
+      return [
+        `https://www.2embed.cc/embed/${id}`,
+        `https://vidsrc.me/embed/movie?tmdb=${id}`,
+        `https://vidlink.pro/movie/${id}`,
+        `https://vixsrc.to/movie/${id}`
+      ];
+    }
   }
   
   // ── Helper to format embed URLs ──
