@@ -107,7 +107,7 @@ const PlayerPage = (() => {
 
     let primaryStream = embedStreams[0];
 
-    // All streams are embed iframes (2embed, vidsrc, vidlink, vixsrc)
+    // All streams are embed iframes (2embed, vidlink)
     const isIframeStream = true; // always use iframe for these embed servers
     const iframeElement = document.getElementById('iframe-video');
     const controlsContainer = document.querySelector('.player-controls');

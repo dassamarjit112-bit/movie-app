@@ -282,9 +282,7 @@ const TMDB = (() => {
               // Build real stream link for this specific episode
                 const epStreams = [
                   `https://www.2embed.cc/embedtv/${tmdbId}&s=${seasonNum}&e=${ep.episode_number}`,
-                  `https://vidsrc.me/embed/tv?tmdb=${tmdbId}&season=${seasonNum}&episode=${ep.episode_number}`,
-                  `https://vidlink.pro/tv/${tmdbId}/${seasonNum}/${ep.episode_number}`,
-                  `https://vixsrc.to/tv/${tmdbId}/${seasonNum}/${ep.episode_number}`
+                  `https://vidlink.pro/tv/${tmdbId}/${seasonNum}/${ep.episode_number}`
                 ];
               return {
                 epNum: ep.episode_number,
