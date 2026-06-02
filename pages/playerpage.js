@@ -113,6 +113,12 @@ const PlayerPage = (() => {
           } catch(e) {
             primaryStream = resolveStream(episode.stream);
           }
+          if (episode.streams && episode.streams.length) {
+            streamsToUseRaw = episode.streams;
+            streamsToUse = streamsToUseRaw
+              .map(resolveStream)
+              .map(s => { try { return encodeURI(decodeURI(s)); } catch(e) { return s; } });
+          }
         }
       }
     }

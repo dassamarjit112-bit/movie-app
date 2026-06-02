@@ -38,10 +38,12 @@ const TMDB = (() => {
     const tmdbId = item.id;
     const streams = isTV ? [
       `https://www.2embed.cc/embedtv/${tmdbId}?s=1&e=1`,
+      `https://vidsrc.me/embed/tv?tmdb=${tmdbId}&season=1&episode=1`,
       `https://vidlink.pro/tv/${tmdbId}/1/1`,
       `https://vixsrc.to/tv/${tmdbId}/1/1`
     ] : [
-       `https://www.2embed.cc/embed/${tmdbId}`,
+      `https://www.2embed.cc/embed/${tmdbId}`,
+      `https://vidsrc.me/embed/movie?tmdb=${tmdbId}`,
        `https://vidlink.pro/movie/${tmdbId}`,
        `https://vixsrc.to/movie/${tmdbId}`
     ];
@@ -55,8 +57,8 @@ const TMDB = (() => {
       year:        parseInt(year) || 2024,
       duration:    item.runtime || (isTV ? 45 : 110),
       imdb:        rating,
-      poster:      item.poster_path   ? `${IMG}${item.poster_path}`   : 'file:///C:/Users/samarjit%20das/.gemini/antigravity-ide/brain/da6bcdec-86f0-4c1d-bc76-d51c38a67d07/placeholder_image_1780433723573.png',
-      thumbnail:   item.backdrop_path ? `${IMG_BG}${item.backdrop_path}` : (item.poster_path ? `${IMG}${item.poster_path}` : 'file:///C:/Users/samarjit%20das/.gemini/antigravity-ide/brain/da6bcdec-86f0-4c1d-bc76-d51c38a67d07/placeholder_image_1780433723573.png'),
+      poster:      item.poster_path   ? `${IMG}${item.poster_path}`   : 'https://via.placeholder.com/500x750?text=No+Poster',
+      thumbnail:   item.backdrop_path ? `${IMG_BG}${item.backdrop_path}` : (item.poster_path ? `${IMG}${item.poster_path}` : 'https://via.placeholder.com/1280x720?text=No+Image'),
       description: item.overview || 'No description available.',
       stream:      primary,
       streams:     streams,
@@ -277,7 +279,8 @@ const TMDB = (() => {
             const eps = (seasonData.episodes || []).map(ep => {
               // Build real stream link for this specific episode
                 const epStreams = [
-                  `https://www.2embed.cc/embedtv/${tmdbId}&s=${seasonNum}&e=${ep.episode_number}`,
+                  `https://www.2embed.cc/embedtv/${tmdbId}?s=${seasonNum}&e=${ep.episode_number}`,
+                  `https://vidsrc.me/embed/tv?tmdb=${tmdbId}&season=${seasonNum}&episode=${ep.episode_number}`,
                   `https://vidlink.pro/tv/${tmdbId}/${seasonNum}/${ep.episode_number}`,
                   `https://vixsrc.to/tv/${tmdbId}/${seasonNum}/${ep.episode_number}`
                 ];

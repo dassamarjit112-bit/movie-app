@@ -324,12 +324,12 @@ async function populateContinueWatching() {
       .limit(6);
     if (error) throw error;
     const items = await Promise.all((history || []).map(async (h) => {
-      const { data: content, error: cErr } = await window.sb.from('content')
-        .select('*')
-        .eq('id', h.content_id)
-        .single();
-      if (cErr || !content) return null;
-      const remaining = Math.max(0, Math.round(content.duration * (1 - (h.progress || 0) / 100)));
+      let content = window.DEMO_CONTENT.find(c => c.id == h.content_id);
+      if (!content && window.TMDB) {
+        content = await TMDB.getDetails(h.content_id, h.episode ? 'tv' : 'movie');
+      }
+      if (!content) return null;
+      const remaining = Math.max(0, Math.round((content.duration || 100) * (1 - (h.progress || 0) / 100)));
       const timeLeft = `${Math.floor(remaining / 60)}m left`;
       return {
         ...content,

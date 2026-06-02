@@ -227,13 +227,15 @@ const AccountPage = (() => {
       empty.style.display = 'none';
 
       // Look up content structures
-      grid.innerHTML = list.map(item => {
-        // Map table content fallback to demo data if structure mismatched
-        const matchedDemo = window.DEMO_CONTENT.find(c => c.id === item.content_id);
-        const content = item.content || matchedDemo;
-        if (!content) return '';
-        return UI.posterCard(content);
-      }).join('');
+      const items = await Promise.all(list.map(async item => {
+        let content = window.DEMO_CONTENT.find(c => c.id == item.content_id);
+        if (!content && window.TMDB) {
+           content = await TMDB.getDetails(item.content_id, 'movie').catch(() => null) ||
+                     await TMDB.getDetails(item.content_id, 'tv').catch(() => null);
+        }
+        return content;
+      }));
+      grid.innerHTML = items.filter(Boolean).map(content => UI.posterCard(content)).join('');
     } else {
       grid.style.display = 'none';
       empty.style.display = 'block';
@@ -253,10 +255,13 @@ const AccountPage = (() => {
       empty.style.display = 'none';
       if (clearBtn) clearBtn.style.display = 'inline-flex';
 
-      grid.innerHTML = history.map(record => {
-        const matchedDemo = window.DEMO_CONTENT.find(c => c.id === record.content_id);
-        const content = record.content || matchedDemo;
-        if (!content) return '';
+      const items = await Promise.all(history.map(async record => {
+        let content = window.DEMO_CONTENT.find(c => c.id == record.content_id);
+        if (!content && window.TMDB) {
+           content = await TMDB.getDetails(record.content_id, 'movie').catch(() => null) ||
+                     await TMDB.getDetails(record.content_id, 'tv').catch(() => null);
+        }
+        if (!content) return null;
 
         // Mock progress formats
         const progressSeconds = record.progress_seconds || 0;
@@ -271,11 +276,14 @@ const AccountPage = (() => {
           thumbnail: content.thumbnail || content.poster,
           progress: percent,
           duration: 100,
-          timeLeft: remainingMinutes > 60 ? `${Math.floor(remainingMinutes/60)}h left` : `${remainingMinutes}m left`
+          timeLeft: remainingMinutes > 60 ? `${Math.floor(remainingMinutes/60)}h left` : `${remainingMinutes}m left`,
+          type: content.type
         };
 
-        return UI.videoCard(item);
-      }).join('');
+        return item;
+      }));
+
+      grid.innerHTML = items.filter(Boolean).map(item => UI.videoCard(item)).join('');
 
       UI.initVideoCardHovers();
 
