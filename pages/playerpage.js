@@ -125,14 +125,24 @@ const PlayerPage = (() => {
     const iframeElement = document.getElementById('iframe-video');
     const controlsContainer = document.querySelector('.player-controls');
 
-    // Ensure primary stream is first in the array (all already encoded above)
-    availableStreams = [primaryStream, ...streamsToUse.filter(s => s !== primaryStream)];
-    activeStreamIndex = 0;
-    
-    const switchBtn = document.getElementById('switch-server-btn');
-    if (switchBtn) {
-      switchBtn.style.display = availableStreams.length > 1 ? 'flex' : 'none';
-    }
+      // Ensure primary stream is first in the array (all already encoded above)
+      availableStreams = [primaryStream, ...streamsToUse.filter(s => s !== primaryStream)];
+      activeStreamIndex = 0;
+      // Set initial server name on switch button
+      const switchBtn = document.getElementById('switch-server-btn');
+      if (switchBtn) {
+        const getServerName = (url) => {
+          try {
+            const host = new URL(url).hostname.replace('www.', '');
+            return host;
+          } catch (e) {
+            return 'unknown';
+          }
+        };
+        const initialServer = getServerName(primaryStream);
+        switchBtn.textContent = `Server: ${initialServer}`;
+        switchBtn.style.display = availableStreams.length > 1 ? 'flex' : 'none';
+      }
 
     if (isIframeStream) {
       // Hide native video and custom controls
@@ -416,8 +426,15 @@ function onPlayerReady() {
     
     activeStreamIndex = (activeStreamIndex + 1) % availableStreams.length;
     const newStream = availableStreams[activeStreamIndex];
-    
-    UI.toast(`Switched to Server ${activeStreamIndex + 1}`, 'info');
+        // Update switch button with new server name
+      const switchBtn = document.getElementById('switch-server-btn');
+      if (switchBtn) {
+        const getServerName = (url) => {
+          try { return new URL(url).hostname.replace('www.', ''); } catch (e) { return 'unknown'; }
+        };
+        switchBtn.textContent = `Server: ${getServerName(newStream)}`;
+      }
+      UI.toast(`Switched to Server ${activeStreamIndex + 1}`, 'info');
 
     // Destroy native player if active
     if (window.Player && typeof window.Player.destroy === 'function') {
