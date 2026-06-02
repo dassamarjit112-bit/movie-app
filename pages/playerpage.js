@@ -235,6 +235,54 @@ const PlayerPage = (() => {
       handleAds(primaryStream);
 
       // Initialize the player
+      // Helper to enforce fullscreen and landscape orientation
+function enforceFullScreenLandscape() {
+  const container = document.getElementById('player-container');
+  if (container && container.requestFullscreen) {
+    container.requestFullscreen().catch(() => {});
+  }
+  if (screen.orientation && screen.orientation.lock) {
+    screen.orientation.lock('landscape').catch(() => {});
+  }
+  // Ensure video fills the container
+  if (videoElement) {
+    videoElement.style.width = '100%';
+    videoElement.style.height = '100%';
+    videoElement.style.objectFit = 'contain';
+  }
+}
+
+// Restore fullscreen/landscape on page show (e.g., after navigation back)
+window.addEventListener('pageshow', (event) => {
+  // If we previously entered fullscreen, reapply
+  if (sessionStorage.getItem('playerFullScreen') === 'true') {
+    enforceFullScreenLandscape();
+  }
+});
+// Also handle when the tab becomes visible again (e.g., user switches back)
+document.addEventListener('visibilitychange', () => {
+  if (document.visibilityState === 'visible' && sessionStorage.getItem('playerFullScreen') === 'true') {
+    enforceFullScreenLandscape();
+  }
+});
+
+// When entering fullscreen, store the flag
+function setFullScreenFlag() {
+  sessionStorage.setItem('playerFullScreen', 'true');
+}
+
+// Hook into player init flow – after player is ready
+function onPlayerReady() {
+  enforceFullScreenLandscape();
+  setFullScreenFlag();
+}
+
+      // If returning from another page, enforce fullscreen/landscape immediately
+      if (sessionStorage.getItem('playerFullScreen') === 'true') {
+        enforceFullScreenLandscape();
+      }
+
+      // Initialize the player with onReady callback
       window.Player.init(videoElement, primaryStream, {
         autoplay: true,
         qualityMenuId: 'quality-menu',
@@ -243,9 +291,9 @@ const PlayerPage = (() => {
         requestHeaders: {
           'Accept': '*/*',
           'Origin': window.location.origin
-        }
-      });
-      window.Player.setupControls('player-container');
+        },
+        onReady: onPlayerReady
+      }); window.Player.setupControls('player-container');
       // Force landscape orientation for immersive experience
       if (screen.orientation && screen.orientation.lock) {
         screen.orientation.lock('landscape').catch(() => {});
