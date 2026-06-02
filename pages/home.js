@@ -315,47 +315,74 @@ const HomePage = (() => {
 // ── Continue Watching (from Supabase watch history) ──
 async function populateContinueWatching() {
   const row = document.getElementById('continue-watching-row');
+  const section = document.getElementById('continue-watching-section');
   if (!row) return;
+
   try {
-    // Fetch recent watch history entries
-    const { data: history, error } = await window.sb.from('watch_history')
-      .select('content_id, progress, last_watched, episode')
+    const session = await window.Auth.getSession();
+    if (!session) {
+      if (section) section.style.display = 'none';
+      return;
+    }
+    const userId = session.user.id;
+
+    // Fetch recent watch history entries for this user
+    const { data: history, error } = await window.sb
+      .from('watch_history')
+      .select('content_id, progress_seconds, last_watched, episode, content_type')
+      .eq('user_id', userId)
       .order('last_watched', { ascending: false })
-      .limit(6);
+      .limit(8);
+
     if (error) throw error;
-    const items = await Promise.all((history || []).map(async (h) => {
-      let content = window.DEMO_CONTENT.find(c => c.id == h.content_id);
-      if (!content && window.TMDB) {
-        content = await TMDB.getDetails(h.content_id, h.episode ? 'tv' : 'movie');
+    if (!history || history.length === 0) {
+      if (section) section.style.display = 'none';
+      return;
+    }
+
+    if (section) section.style.display = 'block';
+
+    const items = await Promise.all(history.map(async (h) => {
+      let content = null;
+      if (window.TMDB) {
+        // Try stored type first, then movie, then tv
+        const preferredType = h.content_type || 'movie';
+        content = await TMDB.getDetails(h.content_id, preferredType).catch(() => null);
+        if (!content) {
+          const altType = preferredType === 'movie' ? 'tv' : 'movie';
+          content = await TMDB.getDetails(h.content_id, altType).catch(() => null);
+        }
       }
       if (!content) return null;
-      const remaining = Math.max(0, Math.round((content.duration || 100) * (1 - (h.progress || 0) / 100)));
-      const timeLeft = `${Math.floor(remaining / 60)}m left`;
+
+      const progressSec = h.progress_seconds || 0;
+      const durationSec = (content.duration || 90) * 60;
+      const percent = Math.min(100, Math.round((progressSec / durationSec) * 100));
+      const remainingMin = Math.max(1, Math.round((durationSec - progressSec) / 60));
+      const timeLeft = remainingMin >= 60
+        ? `${Math.floor(remainingMin / 60)}h ${remainingMin % 60}m left`
+        : `${remainingMin}m left`;
+
       return {
         ...content,
         episode: h.episode || '',
         timeLeft,
-        progress: h.progress || 0,
-        duration: content.duration || 100,
+        progress: percent,
+        duration: 100,
       };
     }));
+
     const filtered = items.filter(Boolean);
+    if (filtered.length === 0) {
+      if (section) section.style.display = 'none';
+      return;
+    }
+
     row.innerHTML = filtered.map(item => UI.videoCard(item)).join('');
     UI.initVideoCardHovers();
   } catch (e) {
-    console.warn('Continue watching load failed, using demo fallback', e);
-    const fallback = (window.DEMO_CONTENT || DEMO_CONTENT)
-        .filter(item => item.type === 'movie')
-        .slice(0, 4)
-        .map(item => ({
-          ...item,
-          episode: item.episode || '',
-          timeLeft: `${Math.max(0, Math.round(item.duration * (1 - (item.progress || 0) / 100)))}m left`,
-          progress: item.progress || 0,
-          duration: item.duration || 100,
-        }));
-    row.innerHTML = fallback.map(item => UI.videoCard(item)).join('');
-    UI.initVideoCardHovers();
+    console.warn('Continue watching load failed:', e);
+    if (section) section.style.display = 'none';
   }
 }
 

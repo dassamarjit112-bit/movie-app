@@ -161,13 +161,14 @@ const Subscriptions = (() => {
   }
 
   // ── Save watch progress ──
-  async function saveProgress(userId, contentId, progressSeconds) {
+  async function saveProgress(userId, contentId, progressSeconds, contentType = 'movie') {
     if (!userId || !contentId) return;
     try {
       await window.sb.from('watch_history').upsert({
         user_id: userId,
-        content_id: contentId,
+        content_id: String(contentId),
         progress_seconds: progressSeconds,
+        content_type: contentType,
         last_watched: new Date().toISOString()
       }, { onConflict: 'user_id,content_id' });
     } catch { /* silent */ }

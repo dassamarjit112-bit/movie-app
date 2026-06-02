@@ -124,24 +124,51 @@ const PlayerPage = (() => {
       switchBtn.style.display = 'none'; // replaced by server buttons
     }
 
-    if (isIframeStream) {
-      // Hide native video and custom controls
-      if (videoElement) videoElement.style.display = 'none';
-      if (controlsContainer) controlsContainer.style.display = 'none';
-      
-      const spinner = document.getElementById('buffer-spinner');
-      if (spinner) spinner.classList.add('hidden');
-      
-      // Show and load iframe
-      if (iframeElement) {
-        iframeElement.style.display = 'block';
-        iframeElement.src = primaryStream;
+    // Always use iframe for embed servers
+    if (videoElement) videoElement.style.display = 'none';
+    if (controlsContainer) controlsContainer.style.display = 'none';
+
+    const spinner = document.getElementById('buffer-spinner');
+    if (spinner) spinner.classList.add('hidden');
+
+    // Show and load iframe — ensure it fills the entire screen
+    if (iframeElement) {
+      iframeElement.style.display = 'block';
+      iframeElement.style.width = '100%';
+      iframeElement.style.height = '100%';
+      iframeElement.style.position = 'absolute';
+      iframeElement.style.inset = '0';
+      iframeElement.src = primaryStream;
+    }
+
+    // Auto fullscreen + landscape for all devices (series & movies)
+    const playerContainer = document.getElementById('player-container');
+    const tryFullscreen = () => {
+      if (playerContainer) {
+        if (playerContainer.requestFullscreen) {
+          playerContainer.requestFullscreen().catch(() => {});
+        } else if (playerContainer.webkitRequestFullscreen) {
+          playerContainer.webkitRequestFullscreen();
+        } else if (playerContainer.mozRequestFullScreen) {
+          playerContainer.mozRequestFullScreen();
+        }
+      } else if (document.documentElement.requestFullscreen) {
+        document.documentElement.requestFullscreen().catch(() => {});
       }
-    } else {
-      // Normal HLS video initialization
-      if (iframeElement) iframeElement.style.display = 'none';
-      if (videoElement) videoElement.style.display = 'block';
-      if (controlsContainer) controlsContainer.style.display = 'flex';
+      // Lock landscape orientation (works on Android Chrome/WebApp)
+      if (screen.orientation && screen.orientation.lock) {
+        screen.orientation.lock('landscape').catch(() => {});
+      } else if (screen.lockOrientation) {
+        screen.lockOrientation('landscape');
+      } else if (screen.mozLockOrientation) {
+        screen.mozLockOrientation('landscape');
+      }
+    };
+    // Delay slightly to allow iframe to initialize
+    setTimeout(tryFullscreen, 400);
+
+    // Dummy block close (keeps remaining code intact)
+    {
 
       // Build the full stream list for this title
       availableStreams = [primaryStream, ...streamsToUse.filter(s => s !== primaryStream)];
@@ -311,32 +338,13 @@ function onPlayerReady() {
       if (progressInterval) clearInterval(progressInterval);
       progressInterval = setInterval(() => {
         if (videoElement && !videoElement.paused && videoElement.currentTime > 2) {
-          Subscriptions.saveProgress(session.user.id, contentId, Math.floor(videoElement.currentTime));
+          Subscriptions.saveProgress(session.user.id, contentId, Math.floor(videoElement.currentTime), contentType);
         }
       }, 6000);
     }
 
     // Overlay controls auto-hide setup (for the top back button)
     setupOverlayAutoHide();
-
-    // Auto Fullscreen & Landscape for Mobile
-    if (window.innerWidth <= 768) {
-      const container = document.getElementById('player-container');
-      if (container) {
-        try {
-          if (container.requestFullscreen) {
-            container.requestFullscreen().catch(() => {});
-          } else if (container.webkitRequestFullscreen) {
-            container.webkitRequestFullscreen();
-          }
-          if (screen.orientation && screen.orientation.lock) {
-            screen.orientation.lock('landscape').catch(() => {});
-          }
-        } catch (e) {
-          console.warn('Auto fullscreen/landscape blocked by browser:', e);
-        }
-      }
-    }
   }
 
   function setupOverlayAutoHide() {
@@ -421,28 +429,41 @@ function onPlayerReady() {
   }
 
   function renderServerButtons() {
+    // Show a single cycling button that displays the CURRENT server name.
+    // Clicking it advances to the next server.
     const container = document.getElementById('server-buttons');
     if (!container || !availableStreams || availableStreams.length === 0) return;
 
-    const serverNames = ['2Embed', 'VidSrc', 'VidLink', 'VixSrc'];
-    container.innerHTML = availableStreams.map((url, i) => {
-      const name = serverNames[i] || `Server ${i + 1}`;
-      const isActive = i === activeStreamIndex;
-      return `<button 
-        onclick="PlayerPage.switchServer(${i})" 
+    const serverNames = ['2Embed', 'VidSrc', 'VidLink'];
+    const currentName = serverNames[activeStreamIndex] || `Server ${activeStreamIndex + 1}`;
+    const nextIndex = (activeStreamIndex + 1) % availableStreams.length;
+    const nextName  = serverNames[nextIndex] || `Server ${nextIndex + 1}`;
+
+    container.innerHTML = `
+      <button
+        id="server-cycle-btn"
+        onclick="PlayerPage.switchServer()"
+        title="Switch to ${nextName}"
         style="
+          display: flex;
+          align-items: center;
+          gap: 6px;
           padding: 6px 14px;
           border-radius: 6px;
           font-size: 12px;
           font-weight: 600;
           cursor: pointer;
-          border: 1.5px solid ${isActive ? 'var(--c-secondary-container, #14d1ff)' : 'rgba(255,255,255,0.2)'};
-          background: ${isActive ? 'rgba(20,209,255,0.18)' : 'rgba(255,255,255,0.07)'};
-          color: ${isActive ? 'var(--c-secondary-container, #14d1ff)' : '#fff'};
+          border: 1.5px solid rgba(20,209,255,0.5);
+          background: rgba(20,209,255,0.12);
+          color: #14d1ff;
           transition: all 0.2s;
+          white-space: nowrap;
         "
-      >${i + 1}. ${name}</button>`;
-    }).join('');
+      >
+        <span class="material-symbols-outlined" style="font-size:15px;">dns</span>
+        Server: ${currentName}
+        <span style="opacity:0.55; font-size:10px; margin-left:2px;">→ ${nextName}</span>
+      </button>`;
   }
 
   return { init, goBack, switchServer, renderServerButtons };

@@ -171,10 +171,10 @@ const DetailPage = (() => {
       const imgSrc = member.profile_path ? `https://image.tmdb.org/t/p/w185${member.profile_path}` : 'https://via.placeholder.com/64?text=No+Image';
       const role = member.character || member.role || '';
       return `
-        <div style="display:flex; flex-direction:column; align-items:center; text-align:center; min-width:80px">
+        <div style="display:flex; flex-direction:column; align-items:center; text-align:center; min-width:80px; flex-shrink:0;">
           <img src="${imgSrc}" alt="${member.name}" style="width:64px; height:64px; border-radius:50%; object-fit:cover; border:2px solid rgba(255,255,255,0.1)"/>
           <span style="font-size:12px; font-weight:600; margin-top:8px; display:block; white-space:nowrap; max-width:90px; overflow:hidden; text-overflow:ellipsis">${member.name}</span>
-          ${role ? `<span style="font-size:10px; color:rgba(229,226,225,0.45); margin-top:2px">${role}</span>` : ''}
+          ${role ? `<span style="font-size:10px; color:rgba(229,226,225,0.45); margin-top:2px; white-space:nowrap; max-width:90px; overflow:hidden; text-overflow:ellipsis; display:block;">${role}</span>` : ''}
         </div>`;
     }).join('');
   }
@@ -242,19 +242,43 @@ function setupEpisodes(item) {
     if (!row) return;
 
     try {
-      const session = await window.Auth.getSession();
-      const userId = session ? session.user.id : null;
-      const recommended = await AIRecommender.getMoreLikeThis(item.id, userId, 6);
-      row.innerHTML = recommended.map(rec => UI.posterCard(rec, { size: 'poster-card-item' })).join('');
-    } catch (err) {
-      console.error('Error populating AI detail recommendations:', err);
-      // Fallback
-      let matches = window.DEMO_CONTENT.filter(c => c.id !== item.id && c.genre === item.genre);
-      if (matches.length < 4) {
-        matches = window.DEMO_CONTENT.filter(c => c.id !== item.id);
+      // Fetch similar titles from TMDB
+      const tmdbType = item.type === 'series' ? 'tv' : 'movie';
+      const res = await fetch(
+        `https://api.themoviedb.org/3/${tmdbType}/${item.tmdb_id || item.id}/similar?api_key=b7bb606801e160a12504bae3568cced9&language=en-US&page=1`
+      );
+      if (!res.ok) throw new Error('TMDB similar failed');
+      const data = await res.json();
+      const similar = (data.results || []).slice(0, 8);
+
+      if (similar.length === 0) {
+        row.innerHTML = '<p style="color:rgba(255,255,255,0.4);padding:12px;">No recommendations found.</p>';
+        return;
       }
-      const recommended = matches.sort(() => Math.random() - 0.5).slice(0, 6);
-      row.innerHTML = recommended.map(rec => UI.posterCard(rec, { size: 'poster-card-item' })).join('');
+
+      row.innerHTML = similar.map(rec => {
+        const recType = rec.first_air_date ? 'series' : 'movie';
+        const poster = rec.poster_path
+          ? `https://image.tmdb.org/t/p/w500${rec.poster_path}`
+          : 'data:image/svg+xml;utf8,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 width=%22170%22 height=%22255%22%3E%3Crect width=%22170%22 height=%22255%22 fill=%22%231a1a1a%22/%3E%3Ctext x=%2250%25%22 y=%2250%25%22 dominant-baseline=%22middle%22 text-anchor=%22middle%22 font-size=%2236%22 fill=%22%23333%22%3E%F0%9F%8E%AC%3C/text%3E%3C/svg%3E';
+        const title = rec.title || rec.name || 'Unknown';
+        const year = (rec.release_date || rec.first_air_date || '').slice(0, 4);
+        return `
+          <div class="poster-card-item" style="flex-shrink:0">
+            <div class="poster-card" onclick="Router.navigate('detail',{id:'${rec.id}',type:'${recType}'})" title="${title}">
+              <img src="${poster}" alt="${title}" loading="lazy" onerror="this.onerror=null;this.src='https://via.placeholder.com/170x255?text=No+Image'">
+              <div class="card-overlay">
+                <p style="font-size:12px;font-weight:600;color:#fff;line-height:1.3">${title}</p>
+                <p style="font-size:11px;color:rgba(255,255,255,0.6);margin-top:2px">${year}</p>
+              </div>
+            </div>
+            <p style="margin-top:8px;font-size:13px;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${title}</p>
+            <p style="font-size:11px;color:rgba(229,226,225,0.45);margin-top:2px">${year}</p>
+          </div>`;
+      }).join('');
+    } catch (err) {
+      console.error('Error populating recommendations:', err);
+      row.innerHTML = '<p style="color:rgba(255,255,255,0.4);padding:12px;">Could not load recommendations.</p>';
     }
   }
 

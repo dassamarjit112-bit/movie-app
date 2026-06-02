@@ -39,13 +39,11 @@ const TMDB = (() => {
     const streams = isTV ? [
       `https://www.2embed.cc/embedtv/${tmdbId}&s=1&e=1`,
       `https://vidsrc.me/embed/tv?tmdb=${tmdbId}&season=1&episode=1`,
-      `https://vidlink.pro/tv/${tmdbId}/1/1`,
-      `https://vixsrc.to/tv/${tmdbId}/1/1`
+      `https://vidlink.pro/tv/${tmdbId}/1/1`
     ] : [
       `https://www.2embed.cc/embed/${tmdbId}`,
       `https://vidsrc.me/embed/movie?tmdb=${tmdbId}`,
-      `https://vidlink.pro/movie/${tmdbId}`,
-      `https://vixsrc.to/movie/${tmdbId}`
+      `https://vidlink.pro/movie/${tmdbId}`
     ];
     const primary = streams[0];
     return {
@@ -80,20 +78,18 @@ const TMDB = (() => {
     }
     const id = tmdbId;
     if (season != null && episode != null) {
-      // Series episode streams
+      // Series episode streams (vixsrc removed — returns 404)
       return [
         `https://www.2embed.cc/embedtv/${id}&s=${season}&e=${episode}`,
         `https://vidsrc.me/embed/tv?tmdb=${id}&season=${season}&episode=${episode}`,
-        `https://vidlink.pro/tv/${id}/${season}/${episode}`,
-        `https://vixsrc.to/tv/${id}/${season}/${episode}`
+        `https://vidlink.pro/tv/${id}/${season}/${episode}`
       ];
     } else {
-      // Movie streams
+      // Movie streams (vixsrc removed — returns 404)
       return [
         `https://www.2embed.cc/embed/${id}`,
         `https://vidsrc.me/embed/movie?tmdb=${id}`,
-        `https://vidlink.pro/movie/${id}`,
-        `https://vixsrc.to/movie/${id}`
+        `https://vidlink.pro/movie/${id}`
       ];
     }
   }

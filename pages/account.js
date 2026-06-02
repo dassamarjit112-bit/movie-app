@@ -224,21 +224,20 @@ const AccountPage = (() => {
 
     if (list && list.length > 0) {
       grid.style.display = 'grid';
-      empty.style.display = 'none';
+      if (empty) empty.style.display = 'none';
 
-      // Look up content structures
       const items = await Promise.all(list.map(async item => {
-        let content = window.DEMO_CONTENT.find(c => c.id == item.content_id);
-        if (!content && window.TMDB) {
-           content = await TMDB.getDetails(item.content_id, 'movie').catch(() => null) ||
-                     await TMDB.getDetails(item.content_id, 'tv').catch(() => null);
+        let content = null;
+        if (window.TMDB) {
+          content = await TMDB.getDetails(item.content_id, 'movie').catch(() => null) ||
+                    await TMDB.getDetails(item.content_id, 'tv').catch(() => null);
         }
         return content;
       }));
       grid.innerHTML = items.filter(Boolean).map(content => UI.posterCard(content)).join('');
     } else {
       grid.style.display = 'none';
-      empty.style.display = 'block';
+      if (empty) empty.style.display = 'block';
     }
   }
 
@@ -256,10 +255,15 @@ const AccountPage = (() => {
       if (clearBtn) clearBtn.style.display = 'inline-flex';
 
       const items = await Promise.all(history.map(async record => {
-        let content = window.DEMO_CONTENT.find(c => c.id == record.content_id);
-        if (!content && window.TMDB) {
-           content = await TMDB.getDetails(record.content_id, 'movie').catch(() => null) ||
-                     await TMDB.getDetails(record.content_id, 'tv').catch(() => null);
+        let content = null;
+        if (window.TMDB) {
+          // Use stored content_type if available, otherwise try both
+          const preferredType = record.content_type || 'movie';
+          content = await TMDB.getDetails(record.content_id, preferredType).catch(() => null);
+          if (!content) {
+            const altType = preferredType === 'movie' ? 'tv' : 'movie';
+            content = await TMDB.getDetails(record.content_id, altType).catch(() => null);
+          }
         }
         if (!content) return null;
 
