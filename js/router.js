@@ -110,8 +110,11 @@ const Router = (() => {
 
     // Already on same route (no-op unless forced)
     if (currentRoute === route && !params.force) {
-      // still run page init
-      runPageInit(route);
+      // still run page init with new params
+      runPageInit(route, params);
+      
+      // Scroll to top when navigating to same page with new params
+      window.scrollTo({ top: 0, behavior: 'instant' });
       return;
     }
 
