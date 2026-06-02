@@ -1,0 +1,104 @@
+/* detail.css – Custom page styles for the Detail page */
+
+/* Base layout */
+.detail-page {
+  min-height: 100vh;
+  position: relative;
+  overflow: hidden;
+  color: var(--c-on-surface);
+  font-family: 'Inter', sans-serif;
+}
+
+.detail-hero-backdrop {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 75vh;
+  z-index: 0;
+  overflow: hidden;
+}
+
+.detail-hero-backdrop img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  filter: brightness(0.7) blur(1px);
+}
+
+.detail-hero-overlay {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(to top, var(--c-background) 0%, rgba(14,14,14,0.4) 60%, rgba(14,14,14,0.1) 100%);
+}
+
+.detail-content {
+  position: relative;
+  z-index: 10;
+  max-width: var(--space-container-max);
+  margin: 0 auto;
+  padding: 100px var(--space-margin-desktop) 80px;
+}
+
+.detail-back-btn {
+  margin-bottom: 32px;
+  gap: 6px;
+  border-radius: var(--r-full);
+  padding: 8px 18px;
+  background: rgba(255,255,255,0.06);
+  border: 1px solid rgba(255,255,255,0.1);
+}
+
+.detail-header-block {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+  max-width: 800px;
+  margin-bottom: 48px;
+}
+
+.detail-badges .badge { margin-right: 8px; }
+
+.detail-meta {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+  color: rgba(229,226,225,0.6);
+  font-size: 14px;
+}
+
+.detail-actions { display: flex; gap: 16px; flex-wrap: wrap; }
+
+.detail-grid {
+  display: grid;
+  grid-template-columns: 2fr 1fr;
+  gap: 48px;
+  margin-top: 64px;
+  border-top: 1px solid rgba(255,255,255,0.05);
+  padding-top: 40px;
+}
+
+.detail-left, .detail-right { width: 100%; }
+
+.detail-cast .cast-row { display: flex; gap: 20px; overflow-x: auto; padding-bottom: 12px; }
+
+.detail-specs-list .detail-spec-item {
+  display: flex;
+  justify-content: space-between;
+  font-size: 14px;
+  padding: 8px 0;
+  border-bottom: 1px solid rgba(255,255,255,0.05);
+}
+
+.detail-recommendations { margin-top: 64px; }
+
+/* Mobile adjustments */
+@media (max-width: 768px) {
+  .detail-hero-backdrop { height: 50vh; }
+  .detail-content { padding: 80px var(--space-margin-mobile) 40px; }
+  .detail-header-block { gap: 16px; }
+  #detail-title { font-size: 32px !important; }
+  #detail-description { font-size: 14px !important; }
+  .detail-grid { grid-template-columns: 1fr; gap: 32px; margin-top: 32px; padding-top: 32px; }
+  .detail-actions .btn { width: 100%; justify-content: center; }
+}

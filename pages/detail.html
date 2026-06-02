@@ -1,155 +1,102 @@
 <!-- CineStream — Detail Page -->
-<div id="detail-page" style="min-height:100vh; position:relative; overflow:hidden;">
+<link rel="stylesheet" href="../css/detail.css">
+<div id="detail-page" class="detail-page">
   <div id="navbar-mount"></div>
-
   <!-- Immersive Full-Bleed Hero Backdrop -->
-  <div class="detail-hero-backdrop" style="position:absolute; top:0; left:0; width:100%; height:75vh; z-index:0; overflow:hidden;">
-    <img id="detail-backdrop-img" src="" alt="Backdrop" style="width:100%; height:100%; object-fit:cover; opacity:0.35; filter:brightness(0.7) blur(1px); transition:opacity 0.8s ease;"
-         onerror="this.onerror=null;this.src='data:image/svg+xml;utf8,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 width=%221280%22 height=%22720%22 viewBox=%220 0 1280 720%22%3E%3Crect width=%221280%22 height=%22720%22 fill=%22%23141414%22/%3E%3C/svg%3E';">
-    <!-- Double Gradient for Theatre look -->
-    <div style="position:absolute; inset:0; background:linear-gradient(to top, var(--c-background) 0%, rgba(14,14,14,0.4) 60%, rgba(14,14,14,0.1) 100%)"></div>
-    <div style="position:absolute; inset:0; background:linear-gradient(to right, var(--c-background) 0%, rgba(14,14,14,0.7) 40%, transparent 100%)"></div>
+  <div class="detail-hero-backdrop" id="detail-hero-backdrop">
+    <img id="detail-backdrop-img" src="" alt="Backdrop" class="detail-backdrop-img"/>
+    <div class="detail-hero-overlay"></div>
   </div>
 
   <!-- Detail Content Container -->
-  <div style="position:relative; z-index:10; max-width:var(--space-container-max); margin:0 auto; padding:100px var(--space-margin-desktop) 80px;">
+  <div class="detail-content">
     <!-- Back Button -->
-    <button class="btn btn-ghost btn-sm" onclick="history.back()" style="margin-bottom:32px; gap:6px; border-radius:var(--r-full); padding:8px 18px; background:rgba(255,255,255,0.06); border:1px solid rgba(255,255,255,0.1)">
+    <button class="btn btn-ghost btn-sm" onclick="history.back()" class="detail-back-btn">
       <span class="material-symbols-outlined" style="font-size:18px">arrow_back</span>
       <span>Back</span>
     </button>
 
     <!-- Main Movie Info Block -->
-    <div style="display:flex; flex-direction:column; gap:24px; max-width:800px; margin-bottom:48px;" class="detail-header-block">
-      <div style="display:flex; gap:10px; align-items:center; flex-wrap:wrap;">
+    <div class="detail-header-block">
+      <div class="detail-badges">
         <span id="detail-type-badge" class="badge badge-red">MOVIE</span>
         <span id="detail-genre-badge" class="badge badge-blue">SCI-FI</span>
         <span id="detail-rating-badge" class="badge badge-gold">⭐ 8.4 IMDb</span>
         <span id="detail-format-badge" class="badge badge-green" style="background:rgba(20,209,255,0.1); color:var(--c-secondary-container); border:1px solid var(--c-secondary-container)">4K ULTRA HD</span>
       </div>
-
-      <h1 id="detail-title" class="text-display-lg" style="margin:8px 0 4px; text-shadow:0 4px 20px rgba(0,0,0,0.5)">Void Walker</h1>
-      
-      <div style="display:flex; gap:16px; align-items:center; color:rgba(229,226,225,0.6); font-size:14px; font-weight:500;">
+      <h1 id="detail-title" class="text-display-lg">Void Walker</h1>
+      <div class="detail-meta">
         <span id="detail-year">2024</span>
         <span>•</span>
         <span id="detail-duration">2h 2m</span>
         <span>•</span>
-        <span style="border:1px solid rgba(255,255,255,0.3); border-radius:3px; padding:1px 6px; font-size:11px; font-weight:700; color:rgba(255,255,255,0.8)">PG-13</span>
+        <span class="detail-rating-badge" style="border:1px solid rgba(255,255,255,0.3);border-radius:3px;padding:1px 6px;font-size:11px;font-weight:700;color:rgba(255,255,255,0.8)">PG-13</span>
         <span>•</span>
-        <span style="color:#14d1ff; font-weight:600">Dolby Atmos</span>
+        <span style="color:#14d1ff;font-weight:600">Dolby Atmos</span>
       </div>
-
-      <p id="detail-description" class="text-body-lg" style="color:rgba(229,226,225,0.85); line-height:1.6; text-shadow:0 2px 10px rgba(0,0,0,0.3)">
-        A haunting journey through the fabric of reality where memory and machine merge into one. Follow the archivist of the final age as he uncovers the truth about the forgotten era.
-      </p>
-
-      <!-- Action Buttons -->
-      <div style="display:flex; gap:16px; flex-wrap:wrap; margin-top:16px;">
-        <button id="detail-play-btn" class="btn btn-primary btn-lg" style="border-radius:var(--r-md); font-weight:700; box-shadow:0 0 35px rgba(229,9,20,0.4)">
+      <p id="detail-description" class="text-body-lg">A haunting journey through the fabric...</p>
+      <div class="detail-actions">
+        <button id="detail-play-btn" class="btn btn-primary btn-lg">
           <span class="material-symbols-outlined icon-fill" style="font-size:24px">play_arrow</span>
           <span>PLAY NOW</span>
         </button>
-        <button id="detail-watchlist-btn" class="btn btn-ghost btn-lg" style="border-radius:var(--r-md); background:rgba(255,255,255,0.06); border:1.5px solid rgba(255,255,255,0.12)">
+        <button id="detail-watchlist-btn" class="btn btn-ghost btn-lg">
           <span class="material-symbols-outlined" id="watchlist-icon">bookmark_add</span>
           <span id="watchlist-text">Watchlist</span>
         </button>
-        <button class="btn btn-icon" style="width:52px; height:52px; background:rgba(255,255,255,0.05); border:1px solid rgba(255,255,255,0.1)" title="Share" onclick="UI.toast('Link copied to clipboard!', 'success')">
+        <button class="btn btn-icon" title="Share" onclick="UI.toast('Link copied to clipboard!', 'success')">
           <span class="material-symbols-outlined">share</span>
         </button>
-        <button class="btn btn-icon" style="width:52px; height:52px; background:rgba(255,255,255,0.05); border:1px solid rgba(255,255,255,0.1)" title="Like" onclick="UI.toast('Added to liked titles!', 'success')">
+        <button class="btn btn-icon" title="Like" onclick="UI.toast('Added to liked titles!', 'success')">
           <span class="material-symbols-outlined">thumb_up</span>
         </button>
       </div>
     </div>
 
     <!-- Secondary Info Grid -->
-    <div style="display:grid; grid-template-columns:2fr 1fr; gap:48px; margin-top:64px; border-top:1px solid rgba(255,255,255,0.05); padding-top:40px;" class="detail-grid">
+    <div class="detail-grid">
       <!-- Left: Season Selector / Cast List -->
-      <div style="display:flex; flex-direction:column; gap:40px">
-        
+      <div class="detail-left">
         <!-- TV Show Seasons & Episodes (only shown if type is series) -->
-        <div id="episodes-section" style="display:none">
-          <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:20px; flex-wrap:wrap; gap:12px">
+        <div id="episodes-section" class="detail-episodes" style="display:none">
+          <div class="detail-season-header">
             <h3 class="text-headline-md">Episodes</h3>
-            <select id="season-selector" class="input-field" style="width:auto; padding:8px 16px; border-radius:8px; cursor:pointer">
+            <select id="season-selector" class="input-field" style="width:auto;padding:8px 16px;border-radius:8px;cursor:pointer">
               <option value="1">Season 1</option>
               <option value="2">Season 2</option>
             </select>
           </div>
-          
-          <div style="display:flex; flex-direction:column; gap:16px;" id="episodes-list">
+          <div id="episodes-list" class="detail-episodes-list">
             <!-- Dynamically populated episodes -->
           </div>
         </div>
-
         <!-- Cast & Crew -->
-        <div>
-          <h3 class="text-headline-sm" style="margin-bottom:20px">Cast & Crew</h3>
-          <div style="display:flex; gap:20px; overflow-x:auto; padding-bottom:12px; scrollbar-width:none;" class="cast-row">
-            <div style="display:flex; flex-direction:column; align-items:center; text-align:center; min-width:80px">
-              <img src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=120&auto=format&fit=crop&q=80" alt="Cast" style="width:64px; height:64px; border-radius:50%; object-fit:cover; border:2px solid rgba(255,255,255,0.1)">
-              <span style="font-size:12px; font-weight:600; margin-top:8px; display:block; white-space:nowrap; max-width:90px; overflow:hidden; text-overflow:ellipsis">Marcus Vance</span>
-              <span style="font-size:10px; color:rgba(229,226,225,0.45); margin-top:2px">Lead Actor</span>
-            </div>
-            <div style="display:flex; flex-direction:column; align-items:center; text-align:center; min-width:80px">
-              <img src="https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=120&auto=format&fit=crop&q=80" alt="Cast" style="width:64px; height:64px; border-radius:50%; object-fit:cover; border:2px solid rgba(255,255,255,0.1)">
-              <span style="font-size:12px; font-weight:600; margin-top:8px; display:block; white-space:nowrap; max-width:90px; overflow:hidden; text-overflow:ellipsis">Elena Rostova</span>
-              <span style="font-size:10px; color:rgba(229,226,225,0.45); margin-top:2px">Lead Actress</span>
-            </div>
-            <div style="display:flex; flex-direction:column; align-items:center; text-align:center; min-width:80px">
-              <img src="https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=120&auto=format&fit=crop&q=80" alt="Cast" style="width:64px; height:64px; border-radius:50%; object-fit:cover; border:2px solid rgba(255,255,255,0.1)">
-              <span style="font-size:12px; font-weight:600; margin-top:8px; display:block; white-space:nowrap; max-width:90px; overflow:hidden; text-overflow:ellipsis">Dr. Ray Cole</span>
-              <span style="font-size:10px; color:rgba(229,226,225,0.45); margin-top:2px">Supporting</span>
-            </div>
-            <div style="display:flex; flex-direction:column; align-items:center; text-align:center; min-width:80px">
-              <img src="https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=120&auto=format&fit=crop&q=80" alt="Cast" style="width:64px; height:64px; border-radius:50%; object-fit:cover; border:2px solid rgba(255,255,255,0.1)">
-              <span style="font-size:12px; font-weight:600; margin-top:8px; display:block; white-space:nowrap; max-width:90px; overflow:hidden; text-overflow:ellipsis">Zara Thorne</span>
-              <span style="font-size:10px; color:rgba(229,226,225,0.45); margin-top:2px">Supporting</span>
-            </div>
-            <div style="display:flex; flex-direction:column; align-items:center; text-align:center; min-width:80px">
-              <img src="https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=120&auto=format&fit=crop&q=80" alt="Cast" style="width:64px; height:64px; border-radius:50%; object-fit:cover; border:2px solid rgba(255,255,255,0.1)">
-              <span style="font-size:12px; font-weight:600; margin-top:8px; display:block; white-space:nowrap; max-width:90px; overflow:hidden; text-overflow:ellipsis">Chris Nolan</span>
-              <span style="font-size:10px; color:rgba(229,226,225,0.45); margin-top:2px">Director</span>
-            </div>
+        <div class="detail-cast">
+          <h3 class="text-headline-sm">Cast &amp; Crew</h3>
+          <div class="cast-row">
+            <!-- Cast cards will be injected here -->
           </div>
         </div>
       </div>
 
       <!-- Right: Detailed Specs / Metadata -->
-      <div style="display:flex; flex-direction:column; gap:28px">
-        <div class="glass-card" style="padding:24px; border-radius:12px;">
-          <h4 style="font-size:14px; font-weight:700; letter-spacing:0.05em; text-transform:uppercase; color:rgba(255,255,255,0.4); margin-bottom:16px;">Production Specifications</h4>
-          
-          <div style="display:flex; flex-direction:column; gap:14px;">
-            <div style="display:flex; justify-content:space-between; font-size:13px;">
-              <span style="color:rgba(229,226,225,0.5)">Studio</span>
-              <span style="font-weight:600; color:#fff">Quantum Films</span>
-            </div>
-            <div style="display:flex; justify-content:space-between; font-size:13px; border-top:1px solid rgba(255,255,255,0.05); padding-top:10px;">
-              <span style="color:rgba(229,226,225,0.5)">Director</span>
-              <span style="font-weight:600; color:#fff">Christopher Nolan</span>
-            </div>
-            <div style="display:flex; justify-content:space-between; font-size:13px; border-top:1px solid rgba(255,255,255,0.05); padding-top:10px;">
-              <span style="color:rgba(229,226,225,0.5)">Writers</span>
-              <span style="font-weight:600; color:#fff">Jonathan Nolan, Lisa Joy</span>
-            </div>
-            <div style="display:flex; justify-content:space-between; font-size:13px; border-top:1px solid rgba(255,255,255,0.05); padding-top:10px;">
-              <span style="color:rgba(229,226,225,0.5)">Audio Codec</span>
-              <span style="font-weight:600; color:var(--c-secondary-container)">E-AC3 (Dolby Digital Plus)</span>
-            </div>
-            <div style="display:flex; justify-content:space-between; font-size:13px; border-top:1px solid rgba(255,255,255,0.05); padding-top:10px;">
-              <span style="color:rgba(229,226,225,0.5)">HDR Profile</span>
-              <span style="font-weight:600; color:#ffc832">HDR10 / Dolby Vision</span>
-            </div>
+      <div class="detail-right">
+        <div class="glass-card" style="padding:24px;border-radius:12px;">
+          <h4 class="text-label-md" style="font-size:14px;font-weight:700;letter-spacing:0.05em;text-transform:uppercase;color:rgba(255,255,255,0.4);margin-bottom:16px;">Production Specifications</h4>
+          <div class="detail-specs-list">
+            <div class="detail-spec-item"><span class="spec-label">Studio</span><span class="spec-value">Quantum Films</span></div>
+            <div class="detail-spec-item"><span class="spec-label">Director</span><span class="spec-value">Christopher Nolan</span></div>
+            <div class="detail-spec-item"><span class="spec-label">Writers</span><span class="spec-value">Jonathan Nolan, Lisa Joy</span></div>
+            <div class="detail-spec-item"><span class="spec-label">Audio Codec</span><span class="spec-value" style="color:var(--c-secondary-container)">E-AC3 (Dolby Digital Plus)</span></div>
+            <div class="detail-spec-item"><span class="spec-label">HDR Profile</span><span class="spec-value" style="color:#ffc832">HDR10 / Dolby Vision</span></div>
           </div>
         </div>
       </div>
     </div>
 
-    <!-- Recommendations ("More Like This") -->
-    <div style="margin-top:64px;">
-      <h3 class="text-headline-md" style="margin-bottom:24px">More Like This</h3>
+    <!-- Recommendations -->
+    <div class="detail-recommendations">
+      <h3 class="text-headline-md" style="margin-bottom:24px;">More Like This</h3>
       <div class="scroll-row" id="detail-recommendations-row">
         <!-- Dynamically populated posters -->
       </div>
@@ -158,32 +105,4 @@
 
   <div id="footer-mount"></div>
   <div id="mobile-nav-mount"></div>
-
-  <style>
-    @media (max-width: 768px) {
-      .detail-hero-backdrop {
-        height: 50vh !important;
-      }
-      .detail-header-block {
-        gap: 16px !important;
-      }
-      #detail-title {
-        font-size: 32px !important;
-        line-height: 1.2 !important;
-      }
-      #detail-description {
-        font-size: 14px !important;
-      }
-      .detail-grid {
-        grid-template-columns: 1fr !important;
-        gap: 32px !important;
-        margin-top: 32px !important;
-        padding-top: 32px !important;
-      }
-      #detail-play-btn, #detail-watchlist-btn {
-        width: 100% !important;
-        justify-content: center;
-      }
-    }
-  </style>
 </div>

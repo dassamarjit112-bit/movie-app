@@ -179,34 +179,34 @@
     setTimeout(() => { toast.classList.remove('visible'); toast.classList.add('hidden'); }, 3000);
   }
 
-function switchAppOrientation(mode) {
-  if (window.median) {
-    if (mode === "landscape") {
-      window.location.href = "median://screen/setOrientation?orientation=landscape";
-      window.location.href = "median://screen/fullscreen";
-    } else {
-      window.location.href = "median://screen/setOrientation?orientation=portrait";
-      window.location.href = "median://screen/normal";
-    }
-  } else if (window.gonative) {
-    if (mode === "landscape") {
-      window.location.href = "gonative://screen/setOrientation?orientation=landscape";
-      window.location.href = "gonative://screen/fullscreen";
-    } else {
-      window.location.href = "gonative://screen/setOrientation?orientation=portrait";
-      window.location.href = "gonative://screen/normal";
-    }
+function lockLandscape() {
+  // Lock screen orientation to landscape if supported
+  if (screen.orientation && screen.orientation.lock) {
+    screen.orientation.lock('landscape').catch(() => {
+      console.warn('Screen orientation lock failed or not supported');
+    });
+  }
+  // Request fullscreen for the whole document
+  if (!document.fullscreenElement) {
+    document.documentElement.requestFullscreen().catch(() => {
+      console.warn('Fullscreen request failed');
+    });
   }
 }
 
-  document.addEventListener('DOMContentLoaded', () => {
-    const playBtn = document.getElementById('play-btn');
-    if (playBtn) {
-      playBtn.addEventListener('click', () => { switchAppOrientation('landscape'); });
-    }
-    const fullscreenBtn = document.getElementById('fullscreen-btn');
-    if (fullscreenBtn) {
-      fullscreenBtn.addEventListener('click', () => { switchAppOrientation('portrait'); });
-    }
-  });
+// Updated event listeners to enforce landscape fullscreen on play and fullscreen actions
+document.addEventListener('DOMContentLoaded', () => {
+  const playBtn = document.getElementById('play-btn');
+  if (playBtn) {
+    playBtn.addEventListener('click', () => {
+      lockLandscape();
+    });
+  }
+  const fullscreenBtn = document.getElementById('fullscreen-btn');
+  if (fullscreenBtn) {
+    fullscreenBtn.addEventListener('click', () => {
+      lockLandscape();
+    });
+  }
+});
 </script>

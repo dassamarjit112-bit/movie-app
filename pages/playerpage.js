@@ -121,7 +121,7 @@ const PlayerPage = (() => {
       }
 
     // Determine if the stream is an iframe embed server
-    const isIframeStream = primaryStream && (primaryStream.includes('vidsrc') || primaryStream.includes('vidlink') || primaryStream.includes('embed'));
+    const isIframeStream = primaryStream && (primaryStream.includes('vidlink') || primaryStream.includes('embed'));
     const iframeElement = document.getElementById('iframe-video');
     const controlsContainer = document.querySelector('.player-controls');
 
@@ -441,7 +441,7 @@ function onPlayerReady() {
       window.Player.destroy();
     }
     
-    const isIframeStream = newStream.includes('vidsrc') || newStream.includes('vidlink') || newStream.includes('embed');
+    const isIframeStream = newStream.includes('vidlink') || newStream.includes('embed');
     const iframeElement = document.getElementById('iframe-video');
     const controlsContainer = document.querySelector('.player-controls');
     
