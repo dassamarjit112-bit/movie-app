@@ -88,21 +88,31 @@ const Subscriptions = (() => {
       throw new Error('Invalid gift code. Please check and try again.');
     }
 
-    if (giftCode.is_used) {
-      throw new Error('This gift code has already been redeemed.');
+    if (giftCode.usage_count >= giftCode.max_uses) {
+      throw new Error('This gift code has reached its maximum usage limit.');
     }
 
     if (giftCode.expires_at && new Date(giftCode.expires_at) < new Date()) {
       throw new Error('This gift code has expired.');
     }
 
-    // Mark code as used
+    // Check if user already used this code
+    const { data: existingSub } = await window.sb
+      .from('subscriptions')
+      .select('id')
+      .eq('user_id', userId)
+      .eq('gift_code_used', normalizedCode)
+      .single();
+
+    if (existingSub) {
+      throw new Error('You have already redeemed this gift code.');
+    }
+
+    // Increment usage count
     const { error: updateError } = await window.sb
       .from('gift_codes')
       .update({
-        is_used: true,
-        used_by: userId,
-        used_at: new Date().toISOString()
+        usage_count: (giftCode.usage_count || 0) + 1
       })
       .eq('id', giftCode.id);
 
