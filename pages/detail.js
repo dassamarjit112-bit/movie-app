@@ -99,6 +99,8 @@ const DetailPage = (() => {
 
     // More like this row
     populateRecommendations(item);
+    // Render Cast & Crew after other sections
+    renderCastCrew(item);
   }
 
   async function setupWatchlistButton(contentId) {
@@ -154,7 +156,25 @@ const DetailPage = (() => {
     }
   }
 
-  function setupEpisodes(item) {
+  function renderCastCrew(item) {
+    const castContainer = document.querySelector('.cast-row');
+    if (!castContainer) return;
+    const cast = item.cast || [];
+    // Limit to first 12 cast members for performance
+    const displayed = cast.slice(0, 12);
+    castContainer.innerHTML = displayed.map(member => {
+      const imgSrc = member.profile_path ? `https://image.tmdb.org/t/p/w185${member.profile_path}` : 'https://via.placeholder.com/64?text=No+Image';
+      const role = member.character || member.role || '';
+      return `
+        <div style="display:flex; flex-direction:column; align-items:center; text-align:center; min-width:80px">
+          <img src="${imgSrc}" alt="${member.name}" style="width:64px; height:64px; border-radius:50%; object-fit:cover; border:2px solid rgba(255,255,255,0.1)"/>
+          <span style="font-size:12px; font-weight:600; margin-top:8px; display:block; white-space:nowrap; max-width:90px; overflow:hidden; text-overflow:ellipsis">${member.name}</span>
+          ${role ? `<span style="font-size:10px; color:rgba(229,226,225,0.45); margin-top:2px">${role}</span>` : ''}
+        </div>`;
+    }).join('');
+  }
+
+function setupEpisodes(item) {
     const select = document.getElementById('season-selector');
     const list = document.getElementById('episodes-list');
     if (!select || !list) return;

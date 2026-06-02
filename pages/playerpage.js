@@ -116,9 +116,9 @@ const PlayerPage = (() => {
         }
       }
     }
-    if (!primaryStream) {
-      primaryStream = streamsToUse[fallbackIndex];
-    }
+        if (!primaryStream) {
+        primaryStream = streamsToUse[0];
+      }
 
     // Determine if the stream is an iframe embed server
     const isIframeStream = primaryStream && (primaryStream.includes('vidsrc') || primaryStream.includes('vidlink') || primaryStream.includes('embed'));

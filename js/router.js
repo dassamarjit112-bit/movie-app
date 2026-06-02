@@ -15,6 +15,8 @@ const Router = (() => {
     'subscribe':   { page: 'pages/subscribe.html',  auth: true  },
     'giftcode':    { page: 'pages/giftcode.html',   auth: true  },
     'account':     { page: 'pages/account.html',    auth: true  },
+    'search':      { page: 'pages/search.html',    auth: true  },
+    'anime':       { page: 'pages/anime.html',     auth: true  },
   };
 
   const appEl = document.getElementById('app');
@@ -149,9 +151,10 @@ const Router = (() => {
       case 'movies':      window.MoviesPage?.init(); break;
       case 'tvshows':     window.TVShowsPage?.init(); break;
       case 'detail':      window.DetailPage?.init(params); break;
+      case 'search':      window.SearchPage?.init(params); break;
       case 'player':      window.PlayerPage?.init(params); break;
       case 'subscribe':   window.SubscribePage?.init(); break;
-      case 'giftcode':    window.GiftCodePage?.init(); break;
+      case 'anime':       window.AnimePage?.init(); break;
       case 'account':     window.AccountPage?.init(); break;
     }
   }

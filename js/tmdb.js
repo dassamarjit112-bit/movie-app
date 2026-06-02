@@ -37,27 +37,13 @@ const TMDB = (() => {
     // Generate real streaming URLs using TMDB ID
     const tmdbId = item.id;
     const streams = isTV ? [
-      `https://vidsrc.me/embed/tv?tmdb=${tmdbId}&season=1&episode=1`,
-      `https://vidlink.pro/tv/${tmdbId}/1/1`,
-      `https://player.autoembed.cc/embed/tv/${tmdbId}/1/1`,
-      `https://vidsrc.pro/embed/tv/${tmdbId}/1/1`,
-      `https://vidsrc.in/embed/tv?tmdb=${tmdbId}&season=1&episode=1`,
-      `https://vidsrc.to/embed/tv/${tmdbId}/1/1`,
-      `https://multiembed.mov/?video_id=${tmdbId}&tmdb=1&s=1&e=1`,
       `https://www.2embed.cc/embedtv/${tmdbId}&s=1&e=1`,
-      `https://moviesapi.club/tv/${tmdbId}-1-1`,
-      `https://embed.smashystream.com/playere.php?tmdb=${tmdbId}`
+      `https://vidlink.pro/tv/${tmdbId}/1/1`,
+      `https://vixsrc.to/tv/${tmdbId}/1/1`
     ] : [
-      `https://vidsrc.me/embed/movie?tmdb=${tmdbId}`,
-      `https://vidlink.pro/movie/${tmdbId}`,
-      `https://player.autoembed.cc/embed/movie/${tmdbId}`,
-      `https://vidsrc.pro/embed/movie/${tmdbId}`,
-      `https://vidsrc.in/embed/movie?tmdb=${tmdbId}`,
-      `https://vidsrc.to/embed/movie/${tmdbId}`,
-      `https://multiembed.mov/?video_id=${tmdbId}&tmdb=1`,
-      `https://www.2embed.cc/embed/${tmdbId}`,
-      `https://moviesapi.club/movie/${tmdbId}`,
-      `https://embed.smashystream.com/playere.php?tmdb=${tmdbId}`
+       `https://www.2embed.cc/embed/${tmdbId}`,
+       `https://vidlink.pro/movie/${tmdbId}`,
+       `https://vixsrc.to/movie/${tmdbId}`
     ];
     const primary = streams[0];
     return {
@@ -103,9 +89,9 @@ const TMDB = (() => {
   // ── Helper to format embed URLs ──
   function getEmbedUrl(tmdbId, type, season = 1, episode = 1) {
     if (type === 'tv') {
-      return `https://vidsrc.me/embed/tv?tmdb=${tmdbId}&season=${season}&episode=${episode}`;
+      return `https://vidlink.pro/tv?tmdb=${tmdbId}&season=${season}&episode=${episode}`;
     }
-    return `https://vidsrc.me/embed/movie?tmdb=${tmdbId}`;
+    return `https://www.2embed.cc/embed/${tmdbId}`;
   }
 
   // ── Generic fetch helper with error handling ──
@@ -253,6 +239,21 @@ const TMDB = (() => {
       const raw = await res.json();
       // Normalize base fields
       const item = normalize(raw, type);
+      // Attach cast and crew from TMDB credits if available
+      if (raw.credits) {
+        item.cast = (raw.credits.cast || []).map(c => ({
+          id: c.id,
+          name: c.name,
+          character: c.character,
+          profile_path: c.profile_path ? `${IMG}${c.profile_path}` : null
+        }));
+        item.crew = (raw.credits.crew || []).map(c => ({
+          id: c.id,
+          name: c.name,
+          job: c.job,
+          profile_path: c.profile_path ? `${IMG}${c.profile_path}` : null
+        }));
+      }
 
       // If TV series, fetch seasons and episodes details
       if (type === 'tv') {
@@ -275,18 +276,11 @@ const TMDB = (() => {
             const seasonData = await seasonRes.json();
             const eps = (seasonData.episodes || []).map(ep => {
               // Build real stream link for this specific episode
-              const epStreams = [
-                `https://vidsrc.me/embed/tv?tmdb=${tmdbId}&season=${seasonNum}&episode=${ep.episode_number}`,
-                `https://vidlink.pro/tv/${tmdbId}/${seasonNum}/${ep.episode_number}`,
-                `https://player.autoembed.cc/embed/tv/${tmdbId}/${seasonNum}/${ep.episode_number}`,
-                `https://vidsrc.pro/embed/tv/${tmdbId}/${seasonNum}/${ep.episode_number}`,
-                `https://vidsrc.in/embed/tv?tmdb=${tmdbId}&season=${seasonNum}&episode=${ep.episode_number}`,
-                `https://vidsrc.to/embed/tv/${tmdbId}/${seasonNum}/${ep.episode_number}`,
-                `https://multiembed.mov/?video_id=${tmdbId}&tmdb=1&s=${seasonNum}&e=${ep.episode_number}`,
-                `https://www.2embed.cc/embedtv/${tmdbId}&s=${seasonNum}&e=${ep.episode_number}`,
-                `https://moviesapi.club/tv/${tmdbId}-${seasonNum}-${ep.episode_number}`,
-                `https://embed.smashystream.com/playere.php?tmdb=${tmdbId}`
-              ];
+                const epStreams = [
+                  `https://www.2embed.cc/embedtv/${tmdbId}&s=${seasonNum}&e=${ep.episode_number}`,
+                  `https://vidlink.pro/tv/${tmdbId}/${seasonNum}/${ep.episode_number}`,
+                  `https://vixsrc.to/tv/${tmdbId}/${seasonNum}/${ep.episode_number}`
+                ];
               return {
                 epNum: ep.episode_number,
                 title: ep.name || `Episode ${ep.episode_number}`,

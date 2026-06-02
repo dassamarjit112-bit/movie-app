@@ -126,7 +126,7 @@ const UI = (() => {
             <span class="material-symbols-outlined" style="font-size:18px;color:rgba(229,226,225,0.4)">search</span>
             <input type="text" id="navbar-search" placeholder="Search movies, shows…"
                    oninput="UI.handleSearch(this.value)"
-                   onkeydown="if(event.key==='Escape'){this.value='';UI.closeSearch();}"
+                   onkeydown="if(event.key==='Enter'){event.preventDefault(); UI.submitSearch(this.value);} else if(event.key==='Escape'){this.value='';UI.closeSearch();}"
                    autocomplete="off">
             <span style="font-size:9px;font-weight:800;padding:2px 6px;border-radius:4px;background:rgba(50,220,120,0.12);color:#32dc78;border:1px solid rgba(50,220,120,0.25);white-space:nowrap">AI</span>
           </div>
