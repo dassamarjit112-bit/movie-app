@@ -37,7 +37,7 @@ const TMDB = (() => {
     // Generate real streaming URLs using TMDB ID
     const tmdbId = item.id;
     const streams = isTV ? [
-      `https://www.2embed.cc/embedtv/${tmdbId}?s=1&e=1`,
+      `https://www.2embed.cc/embedtv/${tmdbId}&s=1&e=1`,
       `https://vidsrc.me/embed/tv?tmdb=${tmdbId}&season=1&episode=1`,
       `https://vidlink.pro/tv/${tmdbId}/1/1`,
       `https://vixsrc.to/tv/${tmdbId}/1/1`
@@ -279,7 +279,7 @@ const TMDB = (() => {
             const eps = (seasonData.episodes || []).map(ep => {
               // Build real stream link for this specific episode
                 const epStreams = [
-                  `https://www.2embed.cc/embedtv/${tmdbId}?s=${seasonNum}&e=${ep.episode_number}`,
+                  `https://www.2embed.cc/embedtv/${tmdbId}&s=${seasonNum}&e=${ep.episode_number}`,
                   `https://vidsrc.me/embed/tv?tmdb=${tmdbId}&season=${seasonNum}&episode=${ep.episode_number}`,
                   `https://vidlink.pro/tv/${tmdbId}/${seasonNum}/${ep.episode_number}`,
                   `https://vixsrc.to/tv/${tmdbId}/${seasonNum}/${ep.episode_number}`
