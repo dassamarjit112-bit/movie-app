@@ -22,6 +22,7 @@ const Router = (() => {
   const appEl = document.getElementById('app');
   const loadingBar = document.getElementById('top-loading-bar');
   let currentRoute = null;
+  let currentQuery = null;
 
   // ── Navigate to a route ──
   function navigate(route, params = {}) {
@@ -108,17 +109,14 @@ const Router = (() => {
       }
     }
 
-    // Already on same route (no-op unless forced)
-    if (currentRoute === route && !params.force) {
-      // still run page init with new params
-      runPageInit(route, params);
-      
-      // Scroll to top when navigating to same page with new params
-      window.scrollTo({ top: 0, behavior: 'instant' });
+    // Already on exact same route and params (no-op unless forced)
+    const queryString = new URLSearchParams(params).toString();
+    if (currentRoute === route && currentQuery === queryString && !params.force) {
       return;
     }
 
     currentRoute = route;
+    currentQuery = queryString;
     const html = await loadPage(routeConfig.page);
 
     // Inject HTML
