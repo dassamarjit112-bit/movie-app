@@ -12,7 +12,7 @@
     "nextdev": "next dev",
     "nextbuild": "next build",
     "nextstart": "next start",
-    "vercel-build": "npm run build && npm run nextbuild && if not exist public mkdir public && xcopy dist\\* public\\ /E /I /Y"
+    "vercel-build": "npm run build && npm run nextbuild"
   },
   "keywords": [
     "ott",
