@@ -1,10 +1,9 @@
-import { NextApiRequest, NextApiResponse } from 'next';
 import scraper from '../../utils/scraper';
 
 /**
  * GET /api/stream
  * Query parameters:
- *   - mediaId (string, required) – TMDB ID of the movie or TV show
+ *   - mediaId (string, required) - TMDB ID of the movie or TV show
  *   - type ("movie" | "tv", required)
  *   - season (number, optional, for TV)
  *   - episode (number, optional, for TV)
@@ -18,27 +17,33 @@ export default async function handler(req, res) {
   const { mediaId, type, season, episode } = req.query;
 
   if (!mediaId || !type) {
-    return res.status(400).json({ success: false, error: 'Missing required parameters: mediaId, type' });
+    return res
+      .status(400)
+      .json({ success: false, error: 'Missing required parameters: mediaId, type' });
   }
 
   try {
     const streamSources = await scraper.resolveStreams({
       id: String(mediaId),
-      type: type as 'movie' | 'tv',
+      type: String(type),
       season: season ? Number(season) : undefined,
       episode: episode ? Number(episode) : undefined,
     });
 
-    const activeStreams = streamSources.filter((s: any) => s.isPlayable);
+    const activeStreams = streamSources.filter(function (s) {
+      return s.isPlayable;
+    });
 
     res.status(200).json({
       success: true,
-      streams: activeStreams.map((s: any) => ({
-        provider: s.providerName,
-        url: s.streamUrl,
-        quality: s.quality,
-        subtitles: s.subtitles || [],
-      })),
+      streams: activeStreams.map(function (s) {
+        return {
+          provider: s.providerName,
+          url: s.streamUrl,
+          quality: s.quality,
+          subtitles: s.subtitles || [],
+        };
+      }),
     });
   } catch (error) {
     console.error('CinePro scraping error:', error);
