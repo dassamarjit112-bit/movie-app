@@ -23,16 +23,8 @@ const Auth = (() => {
     });
     if (error) throw error;
 
-    // Create profile record
-    if (data.user) {
-      await window.sb.from('profiles').upsert({
-        id: data.user.id,
-        full_name: fullName,
-        email: email,
-        avatar_url: '',
-        created_at: new Date().toISOString()
-      });
-    }
+    // The profile record is automatically created on the backend via the Postgres trigger
+    // (on_auth_user_created) defined in 01_init.sql. We do not need to manually upsert it here!
     return data;
   }
 
