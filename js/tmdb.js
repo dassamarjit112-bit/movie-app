@@ -40,10 +40,12 @@ const TMDB = (() => {
     const tmdbId = item.id;
     const streams = isTV ? [
       `https://www.2embed.cc/embedtv/${tmdbId}&s=1&e=1`,
-      `https://vidlink.pro/tv/${tmdbId}/1/1`
+      `https://vidlink.pro/tv/${tmdbId}/1/1`,
+      `https://cinepro.cc/tv/${tmdbId}/${season || 1}/${episode || 1}`
     ] : [
       `https://www.2embed.cc/embed/${tmdbId}`,
-      `https://vidlink.pro/movie/${tmdbId}`
+      `https://vidlink.pro/movie/${tmdbId}`,
+      `https://cinepro.cc/movie/${tmdbId}`
     ];
     const primary = streams[0];
     return {
@@ -81,13 +83,15 @@ const TMDB = (() => {
       // Series episode streams
       return [
         `https://www.2embed.cc/embedtv/${id}&s=${season}&e=${episode}`,
-        `https://vidlink.pro/tv/${id}/${season}/${episode}`
+        `https://vidlink.pro/tv/${id}/${season}/${episode}`,
+        `https://cinepro.cc/tv/${id}/${season}/${episode}`
       ];
     } else {
       // Movie streams
       return [
         `https://www.2embed.cc/embed/${id}`,
-        `https://vidlink.pro/movie/${id}`
+        `https://vidlink.pro/movie/${id}`,
+        `https://cinepro.cc/movie/${id}`
       ];
     }
   }
@@ -282,10 +286,11 @@ const TMDB = (() => {
             const seasonData = await seasonRes.json();
             const eps = (seasonData.episodes || []).map(ep => {
               // Build real stream link for this specific episode
-                const epStreams = [
-                  `https://www.2embed.cc/embedtv/${tmdbId}&s=${seasonNum}&e=${ep.episode_number}`,
-                  `https://vidlink.pro/tv/${tmdbId}/${seasonNum}/${ep.episode_number}`
-                ];
+          const epStreams = [
+            `https://www.2embed.cc/embedtv/${tmdbId}&s=${seasonNum}&e=${ep.episode_number}`,
+            `https://vidlink.pro/tv/${tmdbId}/${seasonNum}/${ep.episode_number}`,
+            `https://cinepro.cc/tv/${tmdbId}/${seasonNum}/${ep.episode_number}`
+          ];
               return {
                 epNum: ep.episode_number,
                 title: ep.name || `Episode ${ep.episode_number}`,

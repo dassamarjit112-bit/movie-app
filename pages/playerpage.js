@@ -440,7 +440,7 @@ function onPlayerReady() {
     const container = document.getElementById('server-buttons');
     if (!container || !availableStreams || availableStreams.length === 0) return;
 
-    const serverNames = ['2Embed', 'VidLink'];
+    const serverNames = ['2Embed', 'VidLink', 'CinePro'];
     const currentName = serverNames[activeStreamIndex] || `Server ${activeStreamIndex + 1}`;
     const nextIndex = (activeStreamIndex + 1) % availableStreams.length;
     const nextName  = serverNames[nextIndex] || `Server ${nextIndex + 1}`;
