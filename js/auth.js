@@ -38,47 +38,28 @@ const Auth = (() => {
 
   // ── Google OAuth ──
   async function signInWithGoogle() {
-    const redirectTo = window.location.origin + window.location.pathname;
+    // Check if running inside the Median native app wrapper
+    const isNativeApp = typeof window.median !== 'undefined' || 
+                        (typeof window.gonative !== 'undefined') ||
+                        navigator.userAgent.includes('gonative') ||
+                        navigator.userAgent.includes('median');
 
-    // Detect Median.co Android WebApp environment
-    const isMedian = typeof window.median !== 'undefined' || 
-                     (typeof window.gonative !== 'undefined') ||
-                     navigator.userAgent.includes('gonative') ||
-                     navigator.userAgent.includes('median');
+    // Use web production URL for standard browsers, or custom scheme for the app wrapper
+    const redirectUrl = isNativeApp 
+      ? "com.sdcinestream://login-callback/" 
+      : "https://sdcinestream.qzz.io/auth/callback";
 
-    if (isMedian) {
-      // Get the OAuth URL from Supabase WITHOUT redirecting (skipBrowserRedirect = true)
-      const { data, error } = await window.sb.auth.signInWithOAuth({
-        provider: 'google',
-        options: {
-          redirectTo,
-          skipBrowserRedirect: true  // prevents Supabase from opening external browser
-        }
-      });
-      if (error) throw error;
-
-      // Open the URL in Median's in-app browser which handles OAuth correctly
-      if (data?.url) {
-        if (window.median && window.median.openExternalUrl) {
-          // Median v4+ API
-          window.median.openExternalUrl({ url: data.url });
-        } else if (window.gonative && window.gonative.webview && window.gonative.webview.loadUrl) {
-          // Older GoNative/Median API
-          window.gonative.webview.loadUrl({ url: data.url });
-        } else {
-          // Fallback: open in the same webview
-          window.location.href = data.url;
-        }
-      }
-      return data;
-    }
-
-    // Standard browser / desktop flow
     const { data, error } = await window.sb.auth.signInWithOAuth({
       provider: 'google',
-      options: { redirectTo }
+      options: {
+        redirectTo: redirectUrl,
+      },
     });
-    if (error) throw error;
+
+    if (error) {
+      console.error("Login Error:", error.message);
+      throw error;
+    }
     return data;
   }
 

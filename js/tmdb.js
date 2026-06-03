@@ -5,7 +5,9 @@
    ============================================================ */
 
 const TMDB = (() => {
-  const API_KEY = window.ENV?.TMDB_API_KEY && window.ENV.TMDB_API_KEY !== '%VITE_TMDB_API_KEY%' ? window.ENV.TMDB_API_KEY : 'b7bb606801e160a12504bae3568cced9';
+  // Supports Vercel Next.js Bundler (process.env) or Vanilla HTML Injection (window.ENV)
+  const processKey = typeof process !== 'undefined' && process.env ? process.env.NEXT_PUBLIC_TMDB_API_KEY : null;
+  const API_KEY = processKey || (window.ENV?.TMDB_API_KEY && window.ENV.TMDB_API_KEY !== '%VITE_TMDB_API_KEY%' ? window.ENV.TMDB_API_KEY : 'b7bb606801e160a12504bae3568cced9');
   const BASE    = 'https://api.themoviedb.org/3';
   const IMG     = 'https://image.tmdb.org/t/p/w500';
   const IMG_BG  = 'https://image.tmdb.org/t/p/w1280';
