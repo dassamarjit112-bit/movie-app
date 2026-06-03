@@ -318,11 +318,12 @@ function onPlayerReady() {
 
 
       // Retrieve previous progress from Supabase watch history if available
+      let pastRecord = null;
       try {
         const history = await Subscriptions.getWatchHistory(session.user.id);
-        const pastRecord = history.find(h => h.content_id === contentId);
-        if (pastRecord && pastRecord.progress_seconds > 5) {
-          // Wait for metadata loaded, then seek
+        pastRecord = history.find(h => h.content_id === contentId);
+        if (pastRecord && pastRecord.progress_seconds > 5 && !isIframeStream) {
+          // Wait for metadata loaded, then seek (only for native video)
           const onMetadata = () => {
             videoElement.currentTime = pastRecord.progress_seconds;
             UI.toast(`Resumed from ${window.Player.formatTime(pastRecord.progress_seconds)}`, 'info');
@@ -336,9 +337,18 @@ function onPlayerReady() {
 
       // Periodically save watch progress
       if (progressInterval) clearInterval(progressInterval);
+      
+      // Since iframe embeds block reading currentTime, we track time spent on page.
+      let currentProgress = pastRecord ? pastRecord.progress_seconds : 0;
+      // Immediately save a minimum progress of 10s so it appears in continue watching
+      if (currentProgress < 10) currentProgress = 10;
+      Subscriptions.saveProgress(session.user.id, contentId, currentProgress, contentType);
+
       progressInterval = setInterval(() => {
-        if (videoElement && !videoElement.paused && videoElement.currentTime > 2) {
-          Subscriptions.saveProgress(session.user.id, contentId, Math.floor(videoElement.currentTime), contentType);
+        // Only increment if document is active to avoid background tracking
+        if (document.visibilityState === 'visible') {
+          currentProgress += 6;
+          Subscriptions.saveProgress(session.user.id, contentId, currentProgress, contentType);
         }
       }, 6000);
     }
@@ -378,10 +388,6 @@ function onPlayerReady() {
   }
 
   function goBack() {
-    // Save current progress before leaving
-    if (videoElement && videoElement.currentTime > 5 && session && session.user) {
-      Subscriptions.saveProgress(session.user.id, contentId, Math.floor(videoElement.currentTime));
-    }
     // Destroy instance
     if (window.Player && typeof window.Player.destroy === 'function') {
       window.Player.destroy();
