@@ -9,10 +9,7 @@
     "preview": "vite preview",
     "start": "vite preview",
     "backend": "node server/index.js",
-    "nextdev": "next dev",
-    "nextbuild": "next build",
-    "nextstart": "next start",
-    "vercel-build": "npm run build && npm run nextbuild"
+    "vercel-build": "npm run build"
   },
   "keywords": [
     "ott",
@@ -26,10 +23,7 @@
   "license": "MIT",
   "dependencies": {
     "express": "^4.18.2",
-    "dotenv": "^16.4.5",
-    "next": "^14.0.0",
-    "react": "^18.2.0",
-    "react-dom": "^18.2.0"
+    "dotenv": "^16.4.5"
   },
   "devDependencies": {
     "vite": "^5.0.0"

@@ -1,4 +1,6 @@
-import scraper from '../../utils/scraper';
+// pages/api/stream.js
+// Vercel serverless function – handled directly by @vercel/node (no Next.js needed)
+const scraper = require('../../utils/scraper');
 
 /**
  * GET /api/stream
@@ -8,7 +10,7 @@ import scraper from '../../utils/scraper';
  *   - season (number, optional, for TV)
  *   - episode (number, optional, for TV)
  */
-export default async function handler(req, res) {
+module.exports = async function handler(req, res) {
   if (req.method !== 'GET') {
     res.setHeader('Allow', 'GET');
     return res.status(405).json({ success: false, error: 'Method Not Allowed' });
@@ -49,4 +51,4 @@ export default async function handler(req, res) {
     console.error('CinePro scraping error:', error);
     res.status(500).json({ success: false, error: 'Failed to fetch media streams' });
   }
-}
+};
