@@ -1,17 +1,11 @@
 require('dotenv').config();
 const express = require('express');
 const cors = require('cors');
-const { CineProScraper } = require('@cinepro/core');
+const scraper = require('../utils/scraper');
 
 const app = express();
 app.use(cors());
 app.use(express.json());
-
-// Initialise scraper with TMDB API key from environment variables
-const scraper = new CineProScraper({
-  tmdbApiKey: process.env.TMDB_API_KEY,
-  timeout: 10000 // 10 seconds timeout
-});
 
 /**
  * GET /api/stream
