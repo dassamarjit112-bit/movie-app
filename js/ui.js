@@ -256,29 +256,37 @@ const UI = (() => {
           if (window.TMDB) tmdbResults = await TMDB.search(q);
         } catch(e) {}
 
-        // 3) Merge & deduplicate
-        const seen = new Set(local.map(i => i.id));
-        const merged = [...local];
-        for (const r of tmdbResults) {
-          if (!seen.has(r.id)) { seen.add(r.id); merged.push(r); }
+        // 3) Prefer TMDB results because their search engine is much more powerful
+        let merged = [];
+        if (tmdbResults && tmdbResults.length > 0) {
+          merged = tmdbResults;
+          // Mix in any local exact matches if they are somehow missing
+          const seen = new Set(merged.map(i => i.id));
+          for (const l of local) {
+            if (!seen.has(l.id) && (l.title || '').toLowerCase() === q.toLowerCase()) {
+              merged.unshift(l);
+              seen.add(l.id);
+            }
+          }
+        } else {
+          merged = local;
         }
-        window.registerDemoContent(tmdbResults);
+        window.registerDemoContent(merged);
 
-        // 4) AI-style relevance scoring
-        const scored = merged.map(item => {
-          let score = 0;
+        // 4) Keep the AI UI look but preserve TMDB's accurate relevance ranking
+        const scored = merged.slice(0, 15).map((item, index) => {
+          let matchPct = Math.max(75, 99 - (index * 2));
           const titleLower = (item.title || '').toLowerCase();
           const ql = q.toLowerCase();
-          if (titleLower === ql) score += 100;
-          else if (titleLower.startsWith(ql)) score += 60;
-          else if (titleLower.includes(ql)) score += 30;
-          if ((item.genre || '').toLowerCase().includes(ql)) score += 15;
-          if ((item.industry || '').toLowerCase().includes(ql)) score += 10;
-          score += Math.min(20, (item.vote_count || 0) / 500);
-          score += Math.min(10, parseFloat(item.imdb || 0));
-          const matchPct = Math.min(99, Math.round(score * 0.85 + 10));
-          return { ...item, aiMatchScore: matchPct, aiReason: score > 50 ? 'Top match' : score > 25 ? 'Strong match' : 'Possible match' };
-        }).sort((a, b) => b.aiMatchScore - a.aiMatchScore).slice(0, 12);
+          if (titleLower === ql) matchPct = 99;
+          else if (titleLower.startsWith(ql)) matchPct = Math.max(matchPct, 95);
+          
+          return { 
+            ...item, 
+            aiMatchScore: matchPct, 
+            aiReason: matchPct >= 95 ? 'Top match' : (matchPct >= 85 ? 'Strong match' : 'Possible match') 
+          };
+        });
 
         if (scored.length === 0) {
           _showSearchDropdown(`

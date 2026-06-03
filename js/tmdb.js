@@ -239,8 +239,17 @@ const TMDB = (() => {
   // ── Get Movie Details by TMDB ID ──
   async function getDetails(tmdbId, type = 'movie') {
     try {
-      const url = `${BASE}/${type}/${tmdbId}?api_key=${API_KEY}&language=en-US&append_to_response=credits,videos`;
-      const res = await fetch(url);
+      let url = `${BASE}/${type}/${tmdbId}?api_key=${API_KEY}&language=en-US&append_to_response=credits,videos`;
+      let res = await fetch(url);
+      
+      // Fallback: If not found, try the opposite type (sometimes type mismatch occurs)
+      if (!res.ok) {
+        const fallbackType = type === 'movie' ? 'tv' : 'movie';
+        url = `${BASE}/${fallbackType}/${tmdbId}?api_key=${API_KEY}&language=en-US&append_to_response=credits,videos`;
+        res = await fetch(url);
+        if (res.ok) type = fallbackType;
+      }
+      
       if (!res.ok) return null;
       const raw = await res.json();
       // Normalize base fields

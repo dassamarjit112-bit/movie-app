@@ -19,22 +19,22 @@
     <!-- Main Movie Info Block -->
     <div class="detail-header-block">
       <div class="detail-badges">
-        <span id="detail-type-badge" class="badge badge-red">MOVIE</span>
-        <span id="detail-genre-badge" class="badge badge-blue">SCI-FI</span>
-        <span id="detail-rating-badge" class="badge badge-gold">⭐ 8.4 IMDb</span>
-        <span id="detail-format-badge" class="badge badge-green" style="background:rgba(20,209,255,0.1); color:var(--c-secondary-container); border:1px solid var(--c-secondary-container)">4K ULTRA HD</span>
+        <span id="detail-type-badge" class="badge badge-red"></span>
+        <span id="detail-genre-badge" class="badge badge-blue"></span>
+        <span id="detail-rating-badge" class="badge badge-gold"></span>
+        <span id="detail-format-badge" class="badge badge-green" style="background:rgba(20,209,255,0.1); color:var(--c-secondary-container); border:1px solid var(--c-secondary-container); display:none;">4K ULTRA HD</span>
       </div>
-      <h1 id="detail-title" class="text-display-lg">Void Walker</h1>
+      <h1 id="detail-title" class="text-display-lg">Loading...</h1>
       <div class="detail-meta">
-        <span id="detail-year">2024</span>
+        <span id="detail-year"></span>
         <span>•</span>
-        <span id="detail-duration">2h 2m</span>
+        <span id="detail-duration"></span>
         <span>•</span>
-        <span class="detail-rating-badge" style="border:1px solid rgba(255,255,255,0.3);border-radius:3px;padding:1px 6px;font-size:11px;font-weight:700;color:rgba(255,255,255,0.8)">PG-13</span>
+        <span class="detail-rating-badge" style="border:1px solid rgba(255,255,255,0.3);border-radius:3px;padding:1px 6px;font-size:11px;font-weight:700;color:rgba(255,255,255,0.8); display:none;">PG-13</span>
         <span>•</span>
-        <span style="color:#14d1ff;font-weight:600">Dolby Atmos</span>
+        <span style="color:#14d1ff;font-weight:600; display:none;">Dolby Atmos</span>
       </div>
-      <p id="detail-description" class="text-body-lg">A haunting journey through the fabric...</p>
+      <p id="detail-description" class="text-body-lg"></p>
       <div class="detail-actions">
         <button id="detail-play-btn" class="btn btn-primary btn-lg">
           <span class="material-symbols-outlined icon-fill" style="font-size:24px">play_arrow</span>
@@ -62,8 +62,7 @@
           <div class="detail-season-header">
             <h3 class="text-headline-md">Episodes</h3>
             <select id="season-selector" class="input-field" style="width:auto;padding:8px 16px;border-radius:8px;cursor:pointer">
-              <option value="1">Season 1</option>
-              <option value="2">Season 2</option>
+              <option value="1">Loading Seasons...</option>
             </select>
           </div>
           <div id="episodes-list" class="detail-episodes-list">
@@ -84,11 +83,8 @@
         <div class="glass-card" style="padding:24px;border-radius:12px;">
           <h4 class="text-label-md" style="font-size:14px;font-weight:700;letter-spacing:0.05em;text-transform:uppercase;color:rgba(255,255,255,0.4);margin-bottom:16px;">Production Specifications</h4>
           <div class="detail-specs-list">
-            <div class="detail-spec-item"><span class="spec-label">Studio</span><span class="spec-value">Quantum Films</span></div>
-            <div class="detail-spec-item"><span class="spec-label">Director</span><span class="spec-value">Christopher Nolan</span></div>
-            <div class="detail-spec-item"><span class="spec-label">Writers</span><span class="spec-value">Jonathan Nolan, Lisa Joy</span></div>
-            <div class="detail-spec-item"><span class="spec-label">Audio Codec</span><span class="spec-value" style="color:var(--c-secondary-container)">E-AC3 (Dolby Digital Plus)</span></div>
-            <div class="detail-spec-item"><span class="spec-label">HDR Profile</span><span class="spec-value" style="color:#ffc832">HDR10 / Dolby Vision</span></div>
+            <div class="detail-spec-item"><span class="spec-label">Audio Codec</span><span class="spec-value" style="color:var(--c-secondary-container)">AAC / E-AC3</span></div>
+            <div class="detail-spec-item"><span class="spec-label">Quality</span><span class="spec-value" style="color:#ffc832">HD / 4K</span></div>
           </div>
         </div>
       </div>
