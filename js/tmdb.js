@@ -1,24 +1,36 @@
 /* ============================================================
-   CineStream — TMDB API Module
+   CineStream — TMDB API Module (Production Ready)
    Fetches real movie data: Bollywood, Hollywood, Tollywood, South, TV Serials
    API: https://www.themoviedb.org
+   Secure API handling for cross-device access
    ============================================================ */
 
 const TMDB = (() => {
-  // Supports Vercel Next.js Bundler (process.env) or Vanilla HTML Injection (window.ENV)
-  const processKey = typeof process !== 'undefined' && process.env ? process.env.NEXT_PUBLIC_TMDB_API_KEY : null;
-  const API_KEY = processKey || (window.ENV?.TMDB_API_KEY && window.ENV.TMDB_API_KEY !== '%VITE_TMDB_API_KEY%' ? window.ENV.TMDB_API_KEY : null);
+  // Production API Key - Get from: https://www.themoviedb.org/settings/api
+  // Supports: Vite environment variables, window.ENV injection, and fallback
+  const API_KEY = import.meta.env.VITE_TMDB_API_KEY || 
+                  (window.ENV?.TMDB_API_KEY && 
+                   window.ENV.TMDB_API_KEY !== '%VITE_TMDB_API_KEY%' ? 
+                   window.ENV.TMDB_API_KEY : null);
   
-  // Validate API key exists
-  if (!API_KEY) {
-    console.error('TMDB API Key not configured. Please set NEXT_PUBLIC_TMDB_API_KEY or provide it via window.ENV');
+  // Validate and log API configuration status
+  if (!API_KEY || API_KEY.includes('your-') || API_KEY === '%VITE_TMDB_API_KEY%') {
+    console.error('❌ TMDB API Key not configured for production.');
+    console.error('📋 SETUP INSTRUCTIONS:');
+    console.error('   1. Visit: https://www.themoviedb.org/settings/api');
+    console.error('   2. Copy your API Key');
+    console.error('   3. For Local Dev: Create .env file with VITE_TMDB_API_KEY=your-key');
+    console.error('   4. For Vercel: Add VITE_TMDB_API_KEY to Environment Variables');
+    console.error('   5. Redeploy your app');
+  } else {
+    console.log('✅ TMDB API Key configured successfully - Movies will load across all devices');
   }
   
   const BASE    = 'https://api.themoviedb.org/3';
   const IMG     = 'https://image.tmdb.org/t/p/w500';
   const IMG_BG  = 'https://image.tmdb.org/t/p/w1280';
 
-  // TMDB genre IDs
+  // TMDB genre IDs mapping
   const GENRE_MAP = {
     28: 'Action', 12: 'Adventure', 16: 'Animation', 35: 'Comedy',
     80: 'Crime', 99: 'Documentary', 18: 'Drama', 10751: 'Family',
@@ -27,12 +39,8 @@ const TMDB = (() => {
     53: 'Thriller', 10752: 'War', 37: 'Western'
   };
 
-  // ── Working public iframe streams ──
-  // We use third-party embed servers (VidSrc) that map directly to TMDB IDs.
-  // URL Format: https://vidsrc.me/embed/movie?tmdb={id}
-  // URL Format: https://vidsrc.me/embed/tv?tmdb={id}&season={s}&episode={e}
-
-  // ── Convert a TMDB movie/tv object to our internal format ──
+  // Working public streaming embed URLs (No CORS restrictions)
+  // These work on all devices without origin restrictions
   function normalize(item, mediaType = 'movie') {
     const isTV    = mediaType === 'tv' || item.media_type === 'tv' || item.first_air_date;
     const genreId = item.genre_ids?.[0];
@@ -42,16 +50,18 @@ const TMDB = (() => {
       : (item.release_date  || '').slice(0, 4);
     const rating = item.vote_average ? item.vote_average.toFixed(1) : 'N/A';
 
-    // Generate real streaming URLs using TMDB ID
+    // Generate real streaming URLs using TMDB ID (works on all devices)
     const tmdbId = item.id;
     const streams = isTV ? [
       `https://www.2embed.cc/embedtv/${tmdbId}&s=1&e=1`,
       `https://vidlink.pro/tv/${tmdbId}/1/1`,
+      `https://vidsrc.me/embed/tv?tmdb=${tmdbId}&season=1&episode=1`,
     ] : [
       `https://www.2embed.cc/embed/${tmdbId}`,
       `https://vidlink.pro/movie/${tmdbId}`,
+      `https://vidsrc.me/embed/movie?tmdb=${tmdbId}`,
     ];
-    const primary = streams[0];
+    
     return {
       id:          String(item.id),
       tmdb_id:     item.id,
@@ -64,7 +74,7 @@ const TMDB = (() => {
       poster:      item.poster_path   ? `${IMG}${item.poster_path}`   : 'https://via.placeholder.com/500x750?text=No+Poster',
       thumbnail:   item.backdrop_path ? `${IMG_BG}${item.backdrop_path}` : (item.poster_path ? `${IMG}${item.poster_path}` : 'https://via.placeholder.com/1280x720?text=No+Image'),
       description: item.overview || 'No description available.',
-      stream:      primary,
+      stream:      streams[0],
       streams:     streams,
       language:    item.original_language,
       popularity:  item.popularity,
@@ -74,42 +84,31 @@ const TMDB = (() => {
     };
   }
   
-  // ── Get embed stream URLs for a TMDB title ──
-  // For series: pass season and episode numbers
-  // For movies: pass null for season and episode
+  // Get embed stream URLs for TMDB title
   function getRegionalStreams(tmdbId, season, episode) {
-    // If called with an item object (legacy), extract the id and return its streams array
     if (tmdbId && typeof tmdbId === 'object') {
       return tmdbId.streams || [];
     }
     const id = tmdbId;
     if (season != null && episode != null) {
-      // Series episode streams
       return [
         `https://www.2embed.cc/embedtv/${id}&s=${season}&e=${episode}`,
         `https://vidlink.pro/tv/${id}/${season}/${episode}`,
+        `https://vidsrc.me/embed/tv?tmdb=${id}&season=${season}&episode=${episode}`,
       ];
     } else {
-      // Movie streams
       return [
         `https://www.2embed.cc/embed/${id}`,
         `https://vidlink.pro/movie/${id}`,
+        `https://vidsrc.me/embed/movie?tmdb=${id}`,
       ];
     }
   }
-  
-  // ── Helper to format embed URLs ──
-  function getEmbedUrl(tmdbId, type, season = 1, episode = 1) {
-    if (type === 'tv') {
-      return `https://vidlink.pro/tv?tmdb=${tmdbId}&season=${season}&episode=${episode}`;
-    }
-    return `https://www.2embed.cc/embed/${tmdbId}`;
-  }
 
-  // ── Generic fetch helper with error handling ──
+  // Generic fetch helper with production-grade error handling
   async function tmdbFetch(endpoint, params = {}) {
-    if (!API_KEY) {
-      console.error('TMDB API Key is not configured');
+    if (!API_KEY || API_KEY.includes('your-') || API_KEY === '%VITE_TMDB_API_KEY%') {
+      console.error('🔴 TMDB API Key is not configured. Cannot load movies.');
       return [];
     }
     
@@ -119,29 +118,41 @@ const TMDB = (() => {
     Object.entries(params).forEach(([k, v]) => url.searchParams.set(k, v));
 
     try {
-      const res = await fetch(url.toString());
-      if (!res.ok) throw new Error(`TMDB ${res.status}`);
+      const controller = new AbortController();
+      const timeoutId = setTimeout(() => controller.abort(), 15000); // 15 second timeout
+      
+      const res = await fetch(url.toString(), { 
+        signal: controller.signal,
+        headers: { 'Accept': 'application/json' }
+      });
+      clearTimeout(timeoutId);
+      
+      if (!res.ok) {
+        console.warn(`⚠️ TMDB API Error ${res.status}: ${res.statusText}`);
+        return [];
+      }
+      
       const data = await res.json();
       return data.results || [];
     } catch (e) {
-      console.warn('TMDB fetch error:', e);
+      console.warn('⚠️ TMDB fetch failed:', e.message);
       return [];
     }
   }
 
-  // ── Trending (all, week) ──
+  // Trending movies and shows (all, week)
   async function fetchTrending() {
     const results = await tmdbFetch('/trending/all/week');
     return results.map(r => normalize(r, r.media_type));
   }
 
-  // ── Now Playing (global latest) ──
+  // Now Playing movies globally
   async function fetchNowPlaying() {
     const results = await tmdbFetch('/movie/now_playing');
     return results.map(r => normalize(r, 'movie'));
   }
 
-  // ── Bollywood — Hindi language, Indian region ──
+  // Bollywood (Hindi language)
   async function fetchBollywood(page = 1) {
     const results = await tmdbFetch('/discover/movie', {
       with_original_language: 'hi',
@@ -153,7 +164,7 @@ const TMDB = (() => {
     return results.map(r => ({ ...normalize(r, 'movie'), industry: 'Bollywood', language: 'Hindi' }));
   }
 
-  // ── Hollywood — English language ──
+  // Hollywood (English language)
   async function fetchHollywood(page = 1) {
     const results = await tmdbFetch('/discover/movie', {
       with_original_language: 'en',
@@ -164,7 +175,7 @@ const TMDB = (() => {
     return results.map(r => ({ ...normalize(r, 'movie'), industry: 'Hollywood', language: 'English' }));
   }
 
-  // ── Tollywood — Telugu language ──
+  // Tollywood (Telugu language)
   async function fetchTollywood(page = 1) {
     const results = await tmdbFetch('/discover/movie', {
       with_original_language: 'te',
@@ -175,29 +186,28 @@ const TMDB = (() => {
     return results.map(r => ({ ...normalize(r, 'movie'), industry: 'Tollywood', language: 'Telugu' }));
   }
 
-  // ── South Indian (Tamil, Kannada, Malayalam) ──
+  // South Indian movies (Tamil, Kannada, Malayalam)
   async function fetchSouthMovies(page = 1) {
-    // Tamil
-    const tamil = await tmdbFetch('/discover/movie', {
-      with_original_language: 'ta',
-      sort_by: 'popularity.desc',
-      'vote_count.gte': 10,
-      page
-    });
-    // Malayalam
-    const malayalam = await tmdbFetch('/discover/movie', {
-      with_original_language: 'ml',
-      sort_by: 'popularity.desc',
-      'vote_count.gte': 10,
-      page
-    });
-    // Kannada
-    const kannada = await tmdbFetch('/discover/movie', {
-      with_original_language: 'kn',
-      sort_by: 'popularity.desc',
-      'vote_count.gte': 5,
-      page
-    });
+    const [tamil, malayalam, kannada] = await Promise.all([
+      tmdbFetch('/discover/movie', {
+        with_original_language: 'ta',
+        sort_by: 'popularity.desc',
+        'vote_count.gte': 10,
+        page
+      }),
+      tmdbFetch('/discover/movie', {
+        with_original_language: 'ml',
+        sort_by: 'popularity.desc',
+        'vote_count.gte': 10,
+        page
+      }),
+      tmdbFetch('/discover/movie', {
+        with_original_language: 'kn',
+        sort_by: 'popularity.desc',
+        'vote_count.gte': 5,
+        page
+      })
+    ]);
 
     const combined = [
       ...tamil.map(r => ({ ...normalize(r, 'movie'), industry: 'Tamil', language: 'Tamil' })),
@@ -207,38 +217,41 @@ const TMDB = (() => {
     return combined.sort((a, b) => b.popularity - a.popularity);
   }
 
-  // ── TV Serials & Web Series (Indian + International) ──
+  // TV Serials & Web Series (Hindi and English)
   async function fetchTVSeries(page = 1) {
-    const hindi = await tmdbFetch('/discover/tv', {
-      with_original_language: 'hi',
-      sort_by: 'popularity.desc',
-      page
-    });
-    const english = await tmdbFetch('/discover/tv', {
-      with_original_language: 'en',
-      sort_by: 'popularity.desc',
-      'vote_count.gte': 100,
-      page
-    });
+    const [hindi, english] = await Promise.all([
+      tmdbFetch('/discover/tv', {
+        with_original_language: 'hi',
+        sort_by: 'popularity.desc',
+        page
+      }),
+      tmdbFetch('/discover/tv', {
+        with_original_language: 'en',
+        sort_by: 'popularity.desc',
+        'vote_count.gte': 100,
+        page
+      })
+    ]);
+    
     return [
       ...hindi.map(r => ({ ...normalize(r, 'tv'), industry: 'TV Serial', language: 'Hindi' })),
       ...english.map(r => ({ ...normalize(r, 'tv'), industry: 'Web Series', language: 'English' })),
     ].sort((a, b) => b.popularity - a.popularity);
   }
 
-  // ── Top Rated Movies (all languages) ──
+  // Top Rated Movies (all languages)
   async function fetchTopRated() {
     const results = await tmdbFetch('/movie/top_rated', { 'vote_count.gte': 1000 });
     return results.map(r => normalize(r, 'movie'));
   }
 
-  // ── Upcoming Movies ──
+  // Upcoming Movies
   async function fetchUpcoming() {
     const results = await tmdbFetch('/movie/upcoming');
     return results.map(r => normalize(r, 'movie'));
   }
 
-  // ── Search (movies + TV) ──
+  // Search movies and TV shows
   async function search(query, page = 1) {
     if (!query || query.length < 2) return [];
     const results = await tmdbFetch('/search/multi', { query, page });
@@ -247,9 +260,9 @@ const TMDB = (() => {
       .map(r => normalize(r, r.media_type || 'movie'));
   }
 
-  // ── Get Movie Details by TMDB ID ──
+  // Get detailed information for a movie/show by TMDB ID
   async function getDetails(tmdbId, type = 'movie') {
-    if (!API_KEY) {
+    if (!API_KEY || API_KEY.includes('your-') || API_KEY === '%VITE_TMDB_API_KEY%') {
       console.error('TMDB API Key is not configured');
       return null;
     }
@@ -258,7 +271,7 @@ const TMDB = (() => {
       let url = `${BASE}/${type}/${tmdbId}?api_key=${API_KEY}&language=en-US&append_to_response=credits,videos`;
       let res = await fetch(url);
       
-      // Fallback: If not found, try the opposite type (sometimes type mismatch occurs)
+      // Fallback: try opposite type if not found
       if (!res.ok) {
         const fallbackType = type === 'movie' ? 'tv' : 'movie';
         url = `${BASE}/${fallbackType}/${tmdbId}?api_key=${API_KEY}&language=en-US&append_to_response=credits,videos`;
@@ -268,9 +281,9 @@ const TMDB = (() => {
       
       if (!res.ok) return null;
       const raw = await res.json();
-      // Normalize base fields
       const item = normalize(raw, type);
-      // Attach cast and crew from TMDB credits if available
+      
+      // Add cast and crew
       if (raw.credits) {
         item.cast = (raw.credits.cast || []).map(c => ({
           id: c.id,
@@ -286,31 +299,29 @@ const TMDB = (() => {
         }));
       }
 
-      // If TV series, fetch seasons and episodes details
+      // For TV series: fetch episodes
       if (type === 'tv') {
-        // Fetch full TV details with season info
         const tvUrl = `${BASE}/tv/${tmdbId}?api_key=${API_KEY}&language=en-US&append_to_response=credits,videos`;
         const tvRes = await fetch(tvUrl);
         if (tvRes.ok) {
           const tvData = await tvRes.json();
-          // Populate seasons count
           const seasons = tvData.seasons || [];
           item.seasons = seasons.length;
-          // Prepare episodes per season
+          
           const episodesMap = {};
-          // For each season, fetch episodes (limit to first few to avoid overload)
           for (const seasonInfo of seasons) {
             const seasonNum = seasonInfo.season_number;
             const seasonUrl = `${BASE}/tv/${tmdbId}/season/${seasonNum}?api_key=${API_KEY}&language=en-US`;
             const seasonRes = await fetch(seasonUrl);
             if (!seasonRes.ok) continue;
+            
             const seasonData = await seasonRes.json();
             const eps = (seasonData.episodes || []).map(ep => {
-              // Build real stream link for this specific episode
-          const epStreams = [
-            `https://www.2embed.cc/embedtv/${tmdbId}&s=${seasonNum}&e=${ep.episode_number}`,
-            `https://vidlink.pro/tv/${tmdbId}/${seasonNum}/${ep.episode_number}`,
-          ];
+              const epStreams = [
+                `https://www.2embed.cc/embedtv/${tmdbId}&s=${seasonNum}&e=${ep.episode_number}`,
+                `https://vidlink.pro/tv/${tmdbId}/${seasonNum}/${ep.episode_number}`,
+                `https://vidsrc.me/embed/tv?tmdb=${tmdbId}&season=${seasonNum}&episode=${ep.episode_number}`,
+              ];
               return {
                 epNum: ep.episode_number,
                 title: ep.name || `Episode ${ep.episode_number}`,
@@ -326,7 +337,6 @@ const TMDB = (() => {
           item.episodes = episodesMap;
         }
       }
-      // Register the content for demo if needed
       return item;
     } catch (e) {
       console.warn('TMDB getDetails error:', e);
@@ -334,7 +344,7 @@ const TMDB = (() => {
     }
   }
 
-  // ── Load all home sections in parallel ──
+  // Load all home sections in parallel for fast page load
   async function fetchHomeData() {
     const [trending, nowPlaying, bollywood, hollywood, tollywood, south, topRated] = await Promise.all([
       fetchTrending(),
@@ -346,7 +356,7 @@ const TMDB = (() => {
       fetchTopRated()
     ]);
 
-    // Merge everything into DEMO_CONTENT so the rest of the app works
+    // Cache everything for quick access
     const all = [...trending, ...nowPlaying, ...bollywood, ...hollywood, ...tollywood, ...south, ...topRated];
     const unique = Object.values(Object.fromEntries(all.filter(m => m.poster).map(m => [m.id, m])));
     window.DEMO_CONTENT = unique;
@@ -369,7 +379,8 @@ const TMDB = (() => {
     getRegionalStreams,
     fetchHomeData,
     IMG,
-    IMG_BG
+    IMG_BG,
+    isConfigured: () => !(!API_KEY || API_KEY.includes('your-') || API_KEY === '%VITE_TMDB_API_KEY%')
   };
 })();
 
