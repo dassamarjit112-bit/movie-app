@@ -6,8 +6,8 @@
 // ============================================================
 
 // Your actual Supabase Project credentials loaded from Vite ENV
-const SUPABASE_URL = window.ENV?.SUPABASE_URL && window.ENV.SUPABASE_URL !== '%VITE_SUPABASE_URL%' ? window.ENV.SUPABASE_URL : 'https://atrfvqtypzzmxvygyfzo.supabase.co';
-const SUPABASE_ANON_KEY = window.ENV?.SUPABASE_ANON_KEY && window.ENV.SUPABASE_ANON_KEY !== '%VITE_SUPABASE_ANON_KEY%' ? window.ENV.SUPABASE_ANON_KEY : 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImF0cmZ2cXR5cHp6bXh2eWd5ZnpvIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODAxNjA2MzIsImV4cCI6MjA5NTczNjYzMn0.VcX9OhEx1xQV24ejzfs9td_InGb7uo2Nwsy3gae_tAU';
+const SUPABASE_URL = window.ENV?.SUPABASE_URL && window.ENV.SUPABASE_URL !== '%VITE_SUPABASE_URL%' ? window.ENV.SUPABASE_URL : '';
+const SUPABASE_ANON_KEY = window.ENV?.SUPABASE_ANON_KEY && window.ENV.SUPABASE_ANON_KEY !== '%VITE_SUPABASE_ANON_KEY%' ? window.ENV.SUPABASE_ANON_KEY : '';
 
 let supabaseClientInstance = null;
 let isUsingMock = false;
@@ -32,7 +32,7 @@ if (isSDKLoaded && isRealConfigured) {
     isUsingMock = true;
   }
 } else {
-  console.warn('CineStream: Supabase SDK not loaded or default credentials remain. Enabling mock database.');
+  console.warn('CineStream: Supabase SDK not loaded or credentials not configured. Enabling mock database.');
   isUsingMock = true;
 }
 
