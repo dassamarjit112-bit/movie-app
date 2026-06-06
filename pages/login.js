@@ -1,5 +1,7 @@
 /* CineStream — Login Page Controller */
 const LoginPage = (() => {
+  let registrationEmail = ''; // Store email for OTP verification
+
   function init() {
     // Check if already logged in
     Auth.getSession().then(session => {
@@ -108,27 +110,52 @@ const LoginPage = (() => {
     UI.setLoading(btn, true);
 
     try {
-      const result = await Auth.signUpWithEmail(email, password, name);
-      if (result && result.session) {
-        UI.toast('Account created! Welcome to CineStream 🎬', 'success');
-        Router.navigate('home');
-      } else {
-        // Email confirmation required
-        btn.disabled = false;
-        btn.innerHTML = 'Create Account';
-        showError('reg-error', '');
-        document.getElementById('form-register').innerHTML = `
-          <div style="text-align:center;padding:20px 0">
-            <span class="material-symbols-outlined icon-fill success-icon-anim" style="font-size:64px;color:#32dc78;display:block;margin:0 auto 16px">mark_email_read</span>
-            <h3 style="font-family:'Montserrat',sans-serif;font-size:20px;font-weight:700;margin-bottom:8px">Check your email</h3>
-            <p style="font-size:14px;color:rgba(229,226,225,0.6);line-height:1.6">We sent a confirmation link to <strong style="color:var(--c-secondary-container)">${email}</strong>. Click it to activate your account.</p>
-            <button onclick="LoginPage.switchTab('login')" class="btn btn-ghost btn-sm" style="margin-top:24px">Back to Sign In</button>
-          </div>
-        `;
-      }
+      // Use OTP-based signup instead
+      const result = await Auth.signUpWithOTP(email, name);
+      
+      registrationEmail = email;
+      btn.disabled = false;
+      btn.innerHTML = 'Create Account';
+      showError('reg-error', '');
+      
+      // Show OTP verification page
+      document.getElementById('form-register').innerHTML = `
+        <div style="text-align:center;padding:20px 0">
+          <span class="material-symbols-outlined icon-fill success-icon-anim" style="font-size:64px;color:#14d1ff;display:block;margin:0 auto 16px">mail</span>
+          <h3 style="font-family:'Montserrat',sans-serif;font-size:20px;font-weight:700;margin-bottom:8px">Enter OTP Code</h3>
+          <p style="font-size:14px;color:rgba(229,226,225,0.6);line-height:1.6">We sent a verification code to <strong style="color:var(--c-secondary-container)">${email}</strong>. Enter it below.</p>
+          <input type="text" id="otp-code" placeholder="000000" maxlength="6" style="width:100%;padding:12px;margin:20px 0;border:1px solid rgba(255,255,255,0.2);border-radius:8px;background:rgba(255,255,255,0.05);color:white;text-align:center;font-size:20px;letter-spacing:8px;font-family:monospace;">
+          <button onclick="LoginPage.verifyOTP()" class="btn btn-primary" style="width:100%;margin-top:16px">Verify Code</button>
+          <button onclick="LoginPage.switchTab('login')" class="btn btn-ghost btn-sm" style="margin-top:16px">Back to Sign In</button>
+        </div>
+      `;
+      
+      // Auto-focus on OTP input
+      setTimeout(() => document.getElementById('otp-code')?.focus(), 100);
     } catch (err) {
       showError('reg-error', err.message || 'Registration failed. Please try again.');
       UI.setLoading(btn, false);
+    }
+  }
+
+  async function verifyOTP() {
+    const code = document.getElementById('otp-code')?.value?.trim();
+    
+    if (!code || code.length !== 6) {
+      UI.toast('Please enter a valid 6-digit code', 'warning');
+      return;
+    }
+    
+    const btn = document.querySelector('[onclick="LoginPage.verifyOTP()"]');
+    if (btn) UI.setLoading(btn, true);
+    
+    try {
+      const result = await Auth.verifyOTP(registrationEmail, code);
+      UI.toast('Email verified! Welcome to CineStream 🎬', 'success');
+      Router.navigate('home');
+    } catch (err) {
+      UI.toast(err.message || 'Invalid OTP code. Please try again.', 'error');
+      if (btn) UI.setLoading(btn, false);
     }
   }
 
@@ -162,7 +189,7 @@ const LoginPage = (() => {
     }
   }
 
-  return { init, switchTab, togglePassword, signIn, register, signInWithGoogle, showForgotPassword, sendReset };
+  return { init, switchTab, togglePassword, signIn, register, verifyOTP, signInWithGoogle, showForgotPassword, sendReset };
 })();
 
 window.LoginPage = LoginPage;
