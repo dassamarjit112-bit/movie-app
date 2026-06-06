@@ -7,7 +7,13 @@
 const TMDB = (() => {
   // Supports Vercel Next.js Bundler (process.env) or Vanilla HTML Injection (window.ENV)
   const processKey = typeof process !== 'undefined' && process.env ? process.env.NEXT_PUBLIC_TMDB_API_KEY : null;
-  const API_KEY = processKey || (window.ENV?.TMDB_API_KEY && window.ENV.TMDB_API_KEY !== '%VITE_TMDB_API_KEY%' ? window.ENV.TMDB_API_KEY : 'b7bb606801e160a12504bae3568cced9');
+  const API_KEY = processKey || (window.ENV?.TMDB_API_KEY && window.ENV.TMDB_API_KEY !== '%VITE_TMDB_API_KEY%' ? window.ENV.TMDB_API_KEY : null);
+  
+  // Validate API key exists
+  if (!API_KEY) {
+    console.error('TMDB API Key not configured. Please set NEXT_PUBLIC_TMDB_API_KEY or provide it via window.ENV');
+  }
+  
   const BASE    = 'https://api.themoviedb.org/3';
   const IMG     = 'https://image.tmdb.org/t/p/w500';
   const IMG_BG  = 'https://image.tmdb.org/t/p/w1280';
@@ -102,6 +108,11 @@ const TMDB = (() => {
 
   // ── Generic fetch helper with error handling ──
   async function tmdbFetch(endpoint, params = {}) {
+    if (!API_KEY) {
+      console.error('TMDB API Key is not configured');
+      return [];
+    }
+    
     const url = new URL(`${BASE}${endpoint}`);
     url.searchParams.set('api_key', API_KEY);
     url.searchParams.set('language', 'en-US');
@@ -238,6 +249,11 @@ const TMDB = (() => {
 
   // ── Get Movie Details by TMDB ID ──
   async function getDetails(tmdbId, type = 'movie') {
+    if (!API_KEY) {
+      console.error('TMDB API Key is not configured');
+      return null;
+    }
+    
     try {
       let url = `${BASE}/${type}/${tmdbId}?api_key=${API_KEY}&language=en-US&append_to_response=credits,videos`;
       let res = await fetch(url);
