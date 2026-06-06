@@ -1,6 +1,6 @@
 /* ============================================================
    CineStream — Authentication Module
-   Handles: Email/Password, Google OAuth, Session, Password Reset
+   Handles: Email/Password, Google OAuth, Session, Password Reset, OTP, Password Management
    ============================================================ */
 
 const Auth = (() => {
@@ -11,7 +11,7 @@ const Auth = (() => {
     return data;
   }
 
-  // ── Sign Up with Email/Password ──
+  // ── Sign Up with Email/Password (OTP-based) ──
   async function signUpWithEmail(email, password, fullName) {
     const { data, error } = await window.sb.auth.signUp({
       email,
@@ -26,6 +26,57 @@ const Auth = (() => {
     // The profile record is automatically created on the backend via the Postgres trigger
     // (on_auth_user_created) defined in 01_init.sql. We do not need to manually upsert it here!
     return data;
+  }
+
+  // ── Sign Up with OTP (Email-based OTP verification) ──
+  async function signUpWithOTP(email, fullName) {
+    const { data, error } = await window.sb.auth.signInWithOtp({
+      email,
+      options: {
+        shouldCreateUser: true,
+        data: { full_name: fullName, avatar_url: '' },
+        emailRedirectTo: window.location.origin + window.location.pathname
+      }
+    });
+    if (error) throw error;
+    return data;
+  }
+
+  // ── Verify OTP ──
+  async function verifyOTP(email, token) {
+    const { data, error } = await window.sb.auth.verifyOtp({
+      email,
+      token,
+      type: 'email'
+    });
+    if (error) throw error;
+    return data;
+  }
+
+  // ── Set Password (for OAuth users or first-time password setup) ──
+  async function setPassword(password) {
+    const { data, error } = await window.sb.auth.updateUser({ password });
+    if (error) throw error;
+    return data;
+  }
+
+  // ── Update Password ──
+  async function updatePassword(newPassword) {
+    const { data, error } = await window.sb.auth.updateUser({ password: newPassword });
+    if (error) throw error;
+    return data;
+  }
+
+  // ── Check if user has password set ──
+  async function hasPassword() {
+    try {
+      const { data: { user }, error } = await window.sb.auth.getUser();
+      if (error || !user) return false;
+      // Check if user was created via OAuth (no password) vs email signup (has password)
+      return !!(user.user_metadata?.provider_type === 'email' || user.identities?.some(i => i.provider === 'email'));
+    } catch (e) {
+      return false;
+    }
   }
 
   // ── Google OAuth ──
@@ -131,6 +182,11 @@ const Auth = (() => {
   return {
     signInWithEmail,
     signUpWithEmail,
+    signUpWithOTP,
+    verifyOTP,
+    setPassword,
+    updatePassword,
+    hasPassword,
     signInWithGoogle,
     signOut,
     getSession,
