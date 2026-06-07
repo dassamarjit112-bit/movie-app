@@ -310,7 +310,7 @@ const UI = (() => {
           <div onclick="Router.navigate('detail',{id:'${item.id}',type:'${item.type||'movie'}'}); UI.closeSearch();"
                style="display:flex;gap:12px;align-items:center;padding:10px 16px;cursor:pointer;transition:background .15s;border-radius:6px;margin:2px 8px"
                onmouseover="this.style.background='rgba(255,255,255,.06)'" onmouseout="this.style.background='transparent'">
-            <img src="${item.poster || ''}" alt="${item.title}" loading="lazy"
+            <img src="${getSecurePosterUrl(item.poster || '')}" alt="${item.title}" loading="lazy"
                  style="width:36px;height:52px;object-fit:cover;border-radius:4px;flex-shrink:0;background:#1a1a1a"
                  onerror="this.style.display='none'">
             <div style="flex:1;min-width:0">
@@ -408,6 +408,12 @@ const UI = (() => {
     return new Date(dateStr).toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' });
   }
 
+  // ── Secure Poster URL Helper ──
+  function getSecurePosterUrl(rawUrl) {
+    if (!rawUrl) return "";
+    return String(rawUrl).replace("http://", "https://");
+  }
+
   // ── Build a poster card ──
   function posterCard(item, options = {}) {
     const { showRank = false, rank = 0, size = '' } = options;
@@ -416,7 +422,7 @@ const UI = (() => {
       <div class="poster-card-item ${size}" style="flex-shrink:0">
         <div class="poster-card" onclick="Router.navigate('detail', {id:'${item.id}', type:'${item.type||'movie'}'})" 
              title="${item.title}">
-          <img src="${item.poster_url || item.poster}" alt="${item.title}" loading="lazy"
+          <img src="${getSecurePosterUrl(item.poster_url || item.poster)}" alt="${item.title}" loading="lazy"
                onerror="this.onerror=null;this.src='data:image/svg+xml;utf8,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 width=%22170%22 height=%22255%22 viewBox=%220 0 170 255%22%3E%3Crect width=%22170%22 height=%22255%22 fill=%22%231a1a1a%22/%3E%3Ctext x=%2250%25%22 y=%2250%25%22 dominant-baseline=%22middle%22 text-anchor=%22middle%22 font-size=%2236%22 fill=%22%23333%22%3E🎬%3C/text%3E%3C/svg%3E'">
           <div class="card-overlay">
             <div style="display:flex;gap:6px;flex-wrap:wrap;margin-bottom:6px">
@@ -450,7 +456,7 @@ const UI = (() => {
     return `
       <div class="video-card-item" style="flex-shrink:0">
         <div class="video-card" onclick="Router.navigate('player', {id:'${item.id}'})" title="Continue: ${item.title}">
-          <img src="${item.thumbnail || item.poster}" alt="${item.title}" loading="lazy"
+          <img src="${getSecurePosterUrl(item.thumbnail || item.poster)}" alt="${item.title}" loading="lazy"
                onerror="this.onerror=null;this.src='data:image/svg+xml;utf8,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 width=%22280%22 height=%22158%22 viewBox=%220 0 280 158%22%3E%3Crect width=%22280%22 height=%22158%22 fill=%22%231a1a1a%22/%3E%3Ctext x=%2250%25%22 y=%2250%25%22 dominant-baseline=%22middle%22 text-anchor=%22middle%22 font-size=%2236%22 fill=%22%23333%22%3E🎬%3C/text%3E%3C/svg%3E'">
           <div style="position:absolute;inset:0;background:linear-gradient(to top,rgba(0,0,0,0.85) 0%,transparent 60%);display:flex;flex-direction:column;justify-content:flex-end;padding:12px">
             <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px">
@@ -512,6 +518,7 @@ const UI = (() => {
     closeSearch,
     formatDuration,
     formatDate,
+    getSecurePosterUrl,
     posterCard,
     videoCard,
     initVideoCardHovers,

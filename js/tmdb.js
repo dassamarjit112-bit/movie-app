@@ -41,9 +41,9 @@ const TMDB = (() => {
     console.log(`✅ TMDB API Keys (${API_KEYS.length}) configured successfully - Movies will load across all devices`);
   }
   
-  const BASE    = 'https://api.themoviedb.org/3';
-  const IMG     = 'https://image.tmdb.org/t/p/w500';
-  const IMG_BG  = 'https://image.tmdb.org/t/p/w1280';
+  const BASE    = '/tmdb-api';
+  const IMG     = '/tmdb-img-500';
+  const IMG_BG  = '/tmdb-img-1280';
 
   // TMDB genre IDs mapping
   const GENRE_MAP = {

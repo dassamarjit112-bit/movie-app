@@ -266,7 +266,7 @@ function setupEpisodes(item) {
         return `
           <div class="poster-card-item" style="flex-shrink:0">
             <div class="poster-card" onclick="Router.navigate('detail',{id:'${rec.id}',type:'${recType}'})" title="${title}">
-              <img src="${poster}" alt="${title}" loading="lazy" onerror="this.onerror=null;this.src='https://via.placeholder.com/170x255?text=No+Image'">
+              <img src="${UI.getSecurePosterUrl ? UI.getSecurePosterUrl(poster) : poster.replace('http://', 'https://')}" alt="${title}" loading="lazy" onerror="this.onerror=null;this.src='https://via.placeholder.com/170x255?text=No+Image'">
               <div class="card-overlay">
                 <p style="font-size:12px;font-weight:600;color:#fff;line-height:1.3">${title}</p>
                 <p style="font-size:11px;color:rgba(255,255,255,0.6);margin-top:2px">${year}</p>

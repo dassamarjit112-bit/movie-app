@@ -77,19 +77,19 @@ const APIManager = (() => {
   // ========== TMDB API ==========
   const TMDB = {
     async search(query, page = 1) {
-      const url = `https://api.themoviedb.org/3/search/multi?api_key=${API_KEYS.tmdb}&query=${encodeURIComponent(query)}&page=${page}`;
+      const url = `/tmdb-api/search/multi?api_key=${API_KEYS.tmdb}&query=${encodeURIComponent(query)}&page=${page}`;
       const data = await fetchWithTimeout(url);
       return (data.results || []).map(r => this.normalize(r));
     },
 
     async getTrending() {
-      const url = `https://api.themoviedb.org/3/trending/all/week?api_key=${API_KEYS.tmdb}`;
+      const url = `/tmdb-api/trending/all/week?api_key=${API_KEYS.tmdb}`;
       const data = await fetchWithTimeout(url);
       return (data.results || []).map(r => this.normalize(r));
     },
 
     async getDetails(id, type = 'movie') {
-      const url = `https://api.themoviedb.org/3/${type}/${id}?api_key=${API_KEYS.tmdb}&append_to_response=credits,videos`;
+      const url = `/tmdb-api/${type}/${id}?api_key=${API_KEYS.tmdb}&append_to_response=credits,videos`;
       const data = await fetchWithTimeout(url);
       return this.normalize(data, type);
     },
@@ -101,8 +101,8 @@ const APIManager = (() => {
         title: item.title || item.name || 'Untitled',
         type: isTV ? 'series' : 'movie',
         year: isTV ? (item.first_air_date || '').slice(0, 4) : (item.release_date || '').slice(0, 4),
-        poster: item.poster_path ? `https://image.tmdb.org/t/p/w500${item.poster_path}` : null,
-        backdrop: item.backdrop_path ? `https://image.tmdb.org/t/p/w1280${item.backdrop_path}` : null,
+        poster: item.poster_path ? `/tmdb-img-500${item.poster_path}` : null,
+        backdrop: item.backdrop_path ? `/tmdb-img-1280${item.backdrop_path}` : null,
         description: item.overview || '',
         rating: item.vote_average ? item.vote_average.toFixed(1) : 'N/A',
         source: 'tmdb',
