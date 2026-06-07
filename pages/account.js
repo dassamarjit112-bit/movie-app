@@ -76,6 +76,8 @@ const AccountPage = (() => {
     const avatarImg = document.getElementById('profile-avatar-img');
     const changeBtn = document.getElementById('change-avatar-btn');
     const saveBtn = document.getElementById('save-profile-btn');
+    const passwordInput = document.getElementById('profile-password-input');
+    const updatePasswordBtn = document.getElementById('update-password-btn');
 
     if (!emailInput || !nameInput || !avatarImg) return;
 
@@ -122,6 +124,28 @@ const AccountPage = (() => {
         UI.setLoading(saveBtn, false);
       }
     };
+
+    // Update Password
+    if (updatePasswordBtn && passwordInput) {
+      updatePasswordBtn.onclick = async () => {
+        const newPassword = passwordInput.value.trim();
+        if (!newPassword || newPassword.length < 6) {
+          UI.toast('Password must be at least 6 characters long.', 'warning');
+          return;
+        }
+
+        UI.setLoading(updatePasswordBtn, true);
+        try {
+          await window.Auth.updatePassword(newPassword);
+          UI.toast('Password updated successfully!', 'success');
+          passwordInput.value = '';
+        } catch (err) {
+          UI.toast(err.message || 'Failed to update password. Please try again.', 'error');
+        } finally {
+          UI.setLoading(updatePasswordBtn, false);
+        }
+      };
+    }
   }
 
   async function loadSubscriptionDetails(userId) {
