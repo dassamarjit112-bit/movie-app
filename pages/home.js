@@ -141,79 +141,99 @@ const HomePage = (() => {
     loadTMDBSections();
   }
 
-  let apiErrorShown = false;
-
-  function showApiErrorPopup() {
-    if (apiErrorShown) return;
-    apiErrorShown = true;
-    if (window.UI && window.UI.showModal) {
-      window.UI.showModal({
-        title: 'Connection Issue',
-        content: 'We are having trouble connecting to the movie database. The API keys might be exhausted, or your browser might be blocking the connection. Please try again later.',
-        confirmText: 'Okay',
-        cancelText: '',
-        dangerous: true
-      });
-    } else {
-      alert('We are having trouble connecting to the movie database. Please try again later.');
-    }
-  }
-
   // ── Load all TMDB sections in parallel ──
   async function loadTMDBSections() {
-    const loadSection = async (fetchPromise, rowId, sliceCount, withRank = false, isHero = false) => {
-      try {
-        const items = await fetchPromise;
-        if (items && items.length > 0) {
+    try {
+      // Trending — first priority, loads hero too
+      TMDB.fetchTrending().then(items => {
+        if (items.length) {
           window.registerDemoContent(items);
-          if (isHero) {
-            // Update hero carousel with real movies
-            HERO_SLIDES = items.slice(0, 5).map(m => ({
-              title: m.title.toUpperCase(),
-              desc: m.description,
-              img: m.thumbnail || m.poster,
-              badge: m.type === 'series' ? 'Series' : 'Trending',
-              rating: m.imdb,
-              id: m.id,
-              type: m.type
-            }));
-            renderHeroSlide(currentSlide);
-            // Update carousel dot count
-            const dotsEl = document.getElementById('carousel-dots');
-            if (dotsEl) {
-              dotsEl.innerHTML = HERO_SLIDES.map((_, i) =>
-                `<button class="carousel-dot${i === 0 ? ' active' : ''}" data-idx="${i}"></button>`
-              ).join('');
-              setupCarouselDots();
-            }
+          // Update hero carousel with real movies
+          HERO_SLIDES = items.slice(0, 5).map(m => ({
+            title: m.title.toUpperCase(),
+            desc: m.description,
+            img: m.thumbnail || m.poster,
+            badge: m.type === 'series' ? 'Series' : 'Trending',
+            rating: m.imdb,
+            id: m.id,
+            type: m.type
+          }));
+          renderHeroSlide(currentSlide);
+          // Update carousel dot count
+          const dotsEl = document.getElementById('carousel-dots');
+          if (dotsEl) {
+            dotsEl.innerHTML = HERO_SLIDES.map((_, i) =>
+              `<button class="carousel-dot${i === 0 ? ' active' : ''}" data-idx="${i}"></button>`
+            ).join('');
+            setupCarouselDots();
           }
-          fillRow(rowId, items.slice(0, sliceCount), withRank);
-        } else {
-          fillRow(rowId, [], withRank);
-          showApiErrorPopup();
+          fillRow('trending-row', items.slice(0, 12), true);
         }
-      } catch (err) {
-        console.warn(`Fallback triggered for ${rowId}:`, err);
-        fillRow(rowId, [], withRank);
-        showApiErrorPopup();
-      }
-    };
+      });
 
-    // Load all sections gracefully without demo content
-    loadSection(TMDB.fetchTrending(), 'trending-row', 12, true, true);
-    loadSection(TMDB.fetchUpcoming(), 'new-releases-row', 10);
-    loadSection(TMDB.fetchBollywood(), 'bollywood-row', 12);
-    loadSection(TMDB.fetchHollywood(), 'hollywood-row', 12);
-    
-    const southPromise = Promise.all([TMDB.fetchTollywood(), TMDB.fetchSouthMovies()])
-      .then(([tol, south]) => [...tol, ...south].sort((a, b) => b.popularity - a.popularity));
-    loadSection(southPromise, 'tollywood-row', 12);
-    
-    loadSection(TMDB.fetchTVSeries(), 'tvserials-row', 12);
-    loadSection(TMDB.fetchTopRated(), 'top-rated-row', 10);
+      // Upcoming
+      TMDB.fetchUpcoming().then(items => {
+        if (items.length) {
+          window.registerDemoContent(items);
+          fillRow('new-releases-row', items.slice(0, 10));
+        }
+      });
 
-    // AI Recommended
-    populateRecommended();
+      // Bollywood
+      TMDB.fetchBollywood().then(items => {
+        if (items.length) {
+          window.registerDemoContent(items);
+          fillRow('bollywood-row', items.slice(0, 12));
+        }
+      });
+
+      // Hollywood
+      TMDB.fetchHollywood().then(items => {
+        if (items.length) {
+          window.registerDemoContent(items);
+          fillRow('hollywood-row', items.slice(0, 12));
+        }
+      });
+
+      // Tollywood + South
+      Promise.all([TMDB.fetchTollywood(), TMDB.fetchSouthMovies()]).then(([tol, south]) => {
+        const combined = [...tol, ...south].sort((a, b) => b.popularity - a.popularity);
+        if (combined.length) {
+          window.registerDemoContent(combined);
+          fillRow('tollywood-row', combined.slice(0, 12));
+        }
+      });
+
+      // TV Serials
+      TMDB.fetchTVSeries().then(items => {
+        if (items.length) {
+          window.registerDemoContent(items);
+          fillRow('tvserials-row', items.slice(0, 12));
+        }
+      });
+
+      // Top Rated
+      TMDB.fetchTopRated().then(items => {
+        if (items.length) {
+          window.registerDemoContent(items);
+          fillRow('top-rated-row', items.slice(0, 10));
+        }
+      });
+
+      // AI Recommended
+      populateRecommended();
+
+    } catch (err) {
+      console.warn('TMDB load error, using fallback:', err);
+      // Use demo content as fallback
+      fillRow('trending-row', DEMO_CONTENT.slice(0, 8), true);
+      fillRow('new-releases-row', [...DEMO_CONTENT].sort(() => Math.random() - 0.5).slice(0, 6));
+      fillRow('bollywood-row', DEMO_CONTENT.slice(0, 6));
+      fillRow('hollywood-row', DEMO_CONTENT.slice(0, 6));
+      fillRow('tollywood-row', DEMO_CONTENT.slice(0, 6));
+      fillRow('tvserials-row', DEMO_CONTENT.filter(c => c.type === 'series'));
+      fillRow('top-rated-row', [...DEMO_CONTENT].sort((a, b) => parseFloat(b.imdb) - parseFloat(a.imdb)).slice(0, 8));
+    }
   }
 
   // ── Fill a scroll row with poster cards ──

@@ -144,10 +144,6 @@ const TMDB = (() => {
           console.log(`🔄 Retrying with next API key (index ${currentKeyIndex})...`);
           return tmdbFetch(endpoint, params, retryCount + 1);
         }
-        if (res.status === 429 || res.status === 401 || res.status === 403 || res.status >= 500) {
-           if (window.UI && retryCount >= API_KEYS.length - 1) window.UI.toast('API Error: TMDB failed. Using fallback APIs...', 'error');
-           throw new Error('TMDB API exhausted or server error');
-        }
         return [];
       }
       
@@ -160,155 +156,128 @@ const TMDB = (() => {
         console.log(`🔄 Retrying with next API key (index ${currentKeyIndex}) after network failure...`);
         return tmdbFetch(endpoint, params, retryCount + 1);
       }
-      if (window.UI && retryCount >= API_KEYS.length - 1) window.UI.toast('API Error: TMDB failed. Using fallback APIs...', 'error');
-      throw e;
+      return [];
     }
   }
 
   // Trending movies and shows (all, week)
   async function fetchTrending() {
-    try {
-      const results = await tmdbFetch('/trending/all/week');
-      return results.map(r => normalize(r, r.media_type));
-    } catch (e) {
-      if (window.APIManager) return APIManager.getTrending();
-      return [];
-    }
+    const results = await tmdbFetch('/trending/all/week');
+    return results.map(r => normalize(r, r.media_type));
   }
 
   // Now Playing movies globally
   async function fetchNowPlaying() {
-    try {
-      const results = await tmdbFetch('/movie/now_playing');
-      return results.map(r => normalize(r, 'movie'));
-    } catch (e) { return []; }
+    const results = await tmdbFetch('/movie/now_playing');
+    return results.map(r => normalize(r, 'movie'));
   }
 
   // Bollywood (Hindi language)
   async function fetchBollywood(page = 1) {
-    try {
-      const results = await tmdbFetch('/discover/movie', {
-        with_original_language: 'hi',
-        sort_by: 'release_date.desc',
-        'release_date.lte': new Date().toISOString().slice(0, 10),
-        'vote_count.gte': 20,
-        page
-      });
-      return results.map(r => ({ ...normalize(r, 'movie'), industry: 'Bollywood', language: 'Hindi' }));
-    } catch (e) { return []; }
+    const results = await tmdbFetch('/discover/movie', {
+      with_original_language: 'hi',
+      sort_by: 'release_date.desc',
+      'release_date.lte': new Date().toISOString().slice(0, 10),
+      'vote_count.gte': 20,
+      page
+    });
+    return results.map(r => ({ ...normalize(r, 'movie'), industry: 'Bollywood', language: 'Hindi' }));
   }
 
   // Hollywood (English language)
   async function fetchHollywood(page = 1) {
-    try {
-      const results = await tmdbFetch('/discover/movie', {
-        with_original_language: 'en',
-        sort_by: 'popularity.desc',
-        'vote_count.gte': 200,
-        page
-      });
-      return results.map(r => ({ ...normalize(r, 'movie'), industry: 'Hollywood', language: 'English' }));
-    } catch (e) { return []; }
+    const results = await tmdbFetch('/discover/movie', {
+      with_original_language: 'en',
+      sort_by: 'popularity.desc',
+      'vote_count.gte': 200,
+      page
+    });
+    return results.map(r => ({ ...normalize(r, 'movie'), industry: 'Hollywood', language: 'English' }));
   }
 
   // Tollywood (Telugu language)
   async function fetchTollywood(page = 1) {
-    try {
-      const results = await tmdbFetch('/discover/movie', {
-        with_original_language: 'te',
-        sort_by: 'release_date.desc',
-        'vote_count.gte': 10,
-        page
-      });
-      return results.map(r => ({ ...normalize(r, 'movie'), industry: 'Tollywood', language: 'Telugu' }));
-    } catch (e) { return []; }
+    const results = await tmdbFetch('/discover/movie', {
+      with_original_language: 'te',
+      sort_by: 'release_date.desc',
+      'vote_count.gte': 10,
+      page
+    });
+    return results.map(r => ({ ...normalize(r, 'movie'), industry: 'Tollywood', language: 'Telugu' }));
   }
 
   // South Indian movies (Tamil, Kannada, Malayalam)
   async function fetchSouthMovies(page = 1) {
-    try {
-      const [tamil, malayalam, kannada] = await Promise.all([
-        tmdbFetch('/discover/movie', {
-          with_original_language: 'ta',
-          sort_by: 'popularity.desc',
-          'vote_count.gte': 10,
-          page
-        }),
-        tmdbFetch('/discover/movie', {
-          with_original_language: 'ml',
-          sort_by: 'popularity.desc',
-          'vote_count.gte': 10,
-          page
-        }),
-        tmdbFetch('/discover/movie', {
-          with_original_language: 'kn',
-          sort_by: 'popularity.desc',
-          'vote_count.gte': 5,
-          page
-        })
-      ]);
+    const [tamil, malayalam, kannada] = await Promise.all([
+      tmdbFetch('/discover/movie', {
+        with_original_language: 'ta',
+        sort_by: 'popularity.desc',
+        'vote_count.gte': 10,
+        page
+      }),
+      tmdbFetch('/discover/movie', {
+        with_original_language: 'ml',
+        sort_by: 'popularity.desc',
+        'vote_count.gte': 10,
+        page
+      }),
+      tmdbFetch('/discover/movie', {
+        with_original_language: 'kn',
+        sort_by: 'popularity.desc',
+        'vote_count.gte': 5,
+        page
+      })
+    ]);
 
-      const combined = [
-        ...tamil.map(r => ({ ...normalize(r, 'movie'), industry: 'Tamil', language: 'Tamil' })),
-        ...malayalam.map(r => ({ ...normalize(r, 'movie'), industry: 'Malayalam', language: 'Malayalam' })),
-        ...kannada.map(r => ({ ...normalize(r, 'movie'), industry: 'Kannada', language: 'Kannada' })),
-      ];
-      return combined.sort((a, b) => b.popularity - a.popularity);
-    } catch (e) { return []; }
+    const combined = [
+      ...tamil.map(r => ({ ...normalize(r, 'movie'), industry: 'Tamil', language: 'Tamil' })),
+      ...malayalam.map(r => ({ ...normalize(r, 'movie'), industry: 'Malayalam', language: 'Malayalam' })),
+      ...kannada.map(r => ({ ...normalize(r, 'movie'), industry: 'Kannada', language: 'Kannada' })),
+    ];
+    return combined.sort((a, b) => b.popularity - a.popularity);
   }
 
   // TV Serials & Web Series (Hindi and English)
   async function fetchTVSeries(page = 1) {
-    try {
-      const [hindi, english] = await Promise.all([
-        tmdbFetch('/discover/tv', {
-          with_original_language: 'hi',
-          sort_by: 'popularity.desc',
-          page
-        }),
-        tmdbFetch('/discover/tv', {
-          with_original_language: 'en',
-          sort_by: 'popularity.desc',
-          'vote_count.gte': 100,
-          page
-        })
-      ]);
-      
-      return [
-        ...hindi.map(r => ({ ...normalize(r, 'tv'), industry: 'TV Serial', language: 'Hindi' })),
-        ...english.map(r => ({ ...normalize(r, 'tv'), industry: 'Web Series', language: 'English' })),
-      ].sort((a, b) => b.popularity - a.popularity);
-    } catch (e) { return []; }
+    const [hindi, english] = await Promise.all([
+      tmdbFetch('/discover/tv', {
+        with_original_language: 'hi',
+        sort_by: 'popularity.desc',
+        page
+      }),
+      tmdbFetch('/discover/tv', {
+        with_original_language: 'en',
+        sort_by: 'popularity.desc',
+        'vote_count.gte': 100,
+        page
+      })
+    ]);
+    
+    return [
+      ...hindi.map(r => ({ ...normalize(r, 'tv'), industry: 'TV Serial', language: 'Hindi' })),
+      ...english.map(r => ({ ...normalize(r, 'tv'), industry: 'Web Series', language: 'English' })),
+    ].sort((a, b) => b.popularity - a.popularity);
   }
 
   // Top Rated Movies (all languages)
   async function fetchTopRated() {
-    try {
-      const results = await tmdbFetch('/movie/top_rated', { 'vote_count.gte': 1000 });
-      return results.map(r => normalize(r, 'movie'));
-    } catch (e) { return []; }
+    const results = await tmdbFetch('/movie/top_rated', { 'vote_count.gte': 1000 });
+    return results.map(r => normalize(r, 'movie'));
   }
 
   // Upcoming Movies
   async function fetchUpcoming() {
-    try {
-      const results = await tmdbFetch('/movie/upcoming');
-      return results.map(r => normalize(r, 'movie'));
-    } catch (e) { return []; }
+    const results = await tmdbFetch('/movie/upcoming');
+    return results.map(r => normalize(r, 'movie'));
   }
 
   // Search movies and TV shows
   async function search(query, page = 1) {
     if (!query || query.length < 2) return [];
-    try {
-      const results = await tmdbFetch('/search/multi', { query, page });
-      return results
-        .filter(r => r.media_type !== 'person' && (r.poster_path || r.backdrop_path))
-        .map(r => normalize(r, r.media_type || 'movie'));
-    } catch (e) {
-      if (window.APIManager) return APIManager.search(query, page);
-      return [];
-    }
+    const results = await tmdbFetch('/search/multi', { query, page });
+    return results
+      .filter(r => r.media_type !== 'person' && (r.poster_path || r.backdrop_path))
+      .map(r => normalize(r, r.media_type || 'movie'));
   }
 
   // Get detailed information for a movie/show by TMDB ID
@@ -337,7 +306,7 @@ const TMDB = (() => {
         if (res.ok) type = fallbackType;
       }
       
-      if (!res.ok) throw new Error('Not found or exhausted keys');
+      if (!res.ok) return null;
       const raw = await res.json();
       const item = normalize(raw, type);
       
@@ -399,15 +368,6 @@ const TMDB = (() => {
       return item;
     } catch (e) {
       console.warn('TMDB getDetails error:', e);
-      if (retryCount < API_KEYS.length - 1) {
-        currentKeyIndex = (currentKeyIndex + 1) % API_KEYS.length;
-        console.log(`🔄 Retrying getDetails with next API key (index ${currentKeyIndex}) after network failure...`);
-        return getDetails(tmdbId, type, retryCount + 1);
-      }
-      if (window.UI && retryCount >= API_KEYS.length - 1) window.UI.toast('API Error: TMDB failed. Using fallback APIs...', 'error');
-      if (window.APIManager) {
-        return APIManager.getDetails(tmdbId, type);
-      }
       return null;
     }
   }
@@ -448,7 +408,6 @@ const TMDB = (() => {
     fetchHomeData,
     IMG,
     IMG_BG,
-    getApiKey,
     isConfigured: () => API_KEYS.length > 0 && !API_KEYS[0].includes('your-') && !API_KEYS[0].includes('%VITE_')
   };
 })();
