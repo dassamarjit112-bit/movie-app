@@ -8,22 +8,27 @@
 const TMDB = (() => {
   // Production API Key - Get from: https://www.themoviedb.org/settings/api
   // Supports: Vite environment variables, window.ENV injection, and fallback
-  const API_KEY = import.meta.env.VITE_TMDB_API_KEY || 
-                  (window.ENV?.TMDB_API_KEY && 
-                   window.ENV.TMDB_API_KEY !== '%VITE_TMDB_API_KEY%' ? 
-                   window.ENV.TMDB_API_KEY : null);
+  const RAW_API_KEYS = import.meta.env.VITE_TMDB_API_KEYS || 
+                  (window.ENV?.TMDB_API_KEYS && 
+                   window.ENV.TMDB_API_KEYS !== '%VITE_TMDB_API_KEYS%' ? 
+                   window.ENV.TMDB_API_KEYS : 
+                   (import.meta.env.VITE_TMDB_API_KEY || window.ENV?.TMDB_API_KEY || null));
+                   
+  const API_KEYS = RAW_API_KEYS ? RAW_API_KEYS.split(',').map(k => k.trim()).filter(Boolean) : [];
+  let currentKeyIndex = 0;
+  const getApiKey = () => API_KEYS[currentKeyIndex];
   
   // Validate and log API configuration status
-  if (!API_KEY || API_KEY.includes('your-') || API_KEY === '%VITE_TMDB_API_KEY%') {
+  if (API_KEYS.length === 0 || API_KEYS[0].includes('your-') || API_KEYS[0] === '%VITE_TMDB_API_KEYS%') {
     console.error('❌ TMDB API Key not configured for production.');
     console.error('📋 SETUP INSTRUCTIONS:');
     console.error('   1. Visit: https://www.themoviedb.org/settings/api');
     console.error('   2. Copy your API Key');
-    console.error('   3. For Local Dev: Create .env file with VITE_TMDB_API_KEY=your-key');
-    console.error('   4. For Vercel: Add VITE_TMDB_API_KEY to Environment Variables');
+    console.error('   3. For Local Dev: Create .env file with VITE_TMDB_API_KEYS=your-key1,your-key2');
+    console.error('   4. For Vercel: Add VITE_TMDB_API_KEYS to Environment Variables');
     console.error('   5. Redeploy your app');
   } else {
-    console.log('✅ TMDB API Key configured successfully - Movies will load across all devices');
+    console.log(`✅ TMDB API Keys (${API_KEYS.length}) configured successfully - Movies will load across all devices`);
   }
   
   const BASE    = 'https://api.themoviedb.org/3';
@@ -55,11 +60,13 @@ const TMDB = (() => {
     const streams = isTV ? [
       `https://www.2embed.cc/embedtv/${tmdbId}&s=1&e=1`,
       `https://vidlink.pro/tv/${tmdbId}/1/1`,
-      `https://vidsrc.me/embed/tv?tmdb=${tmdbId}&season=1&episode=1`,
+      `https://autoembed.co/tv/tmdb/${tmdbId}-1-1`,
+      `https://multiembed.mov/?video_id=${tmdbId}&tmdb=1&s=1&e=1`,
     ] : [
       `https://www.2embed.cc/embed/${tmdbId}`,
       `https://vidlink.pro/movie/${tmdbId}`,
-      `https://vidsrc.me/embed/movie?tmdb=${tmdbId}`,
+      `https://autoembed.co/movie/tmdb/${tmdbId}`,
+      `https://multiembed.mov/?video_id=${tmdbId}&tmdb=1`,
     ];
     
     return {
@@ -94,26 +101,29 @@ const TMDB = (() => {
       return [
         `https://www.2embed.cc/embedtv/${id}&s=${season}&e=${episode}`,
         `https://vidlink.pro/tv/${id}/${season}/${episode}`,
-        `https://vidsrc.me/embed/tv?tmdb=${id}&season=${season}&episode=${episode}`,
+        `https://autoembed.co/tv/tmdb/${id}-${season}-${episode}`,
+        `https://multiembed.mov/?video_id=${id}&tmdb=1&s=${season}&e=${episode}`,
       ];
     } else {
       return [
         `https://www.2embed.cc/embed/${id}`,
         `https://vidlink.pro/movie/${id}`,
-        `https://vidsrc.me/embed/movie?tmdb=${id}`,
+        `https://autoembed.co/movie/tmdb/${id}`,
+        `https://multiembed.mov/?video_id=${id}&tmdb=1`,
       ];
     }
   }
 
   // Generic fetch helper with production-grade error handling
-  async function tmdbFetch(endpoint, params = {}) {
-    if (!API_KEY || API_KEY.includes('your-') || API_KEY === '%VITE_TMDB_API_KEY%') {
+  async function tmdbFetch(endpoint, params = {}, retryCount = 0) {
+    const key = getApiKey();
+    if (!key || key.includes('your-') || key.includes('%VITE_')) {
       console.error('🔴 TMDB API Key is not configured. Cannot load movies.');
       return [];
     }
     
     const url = new URL(`${BASE}${endpoint}`);
-    url.searchParams.set('api_key', API_KEY);
+    url.searchParams.set('api_key', key);
     url.searchParams.set('language', 'en-US');
     Object.entries(params).forEach(([k, v]) => url.searchParams.set(k, v));
 
@@ -128,7 +138,16 @@ const TMDB = (() => {
       clearTimeout(timeoutId);
       
       if (!res.ok) {
-        console.warn(`⚠️ TMDB API Error ${res.status}: ${res.statusText}`);
+        console.warn(`⚠️ TMDB API Error ${res.status}: ${res.statusText} using key index ${currentKeyIndex}`);
+        if ((res.status === 429 || res.status === 401 || res.status === 403) && retryCount < API_KEYS.length - 1) {
+          currentKeyIndex = (currentKeyIndex + 1) % API_KEYS.length;
+          console.log(`🔄 Retrying with next API key (index ${currentKeyIndex})...`);
+          return tmdbFetch(endpoint, params, retryCount + 1);
+        }
+        if (res.status === 429 || res.status === 401 || res.status === 403 || res.status >= 500) {
+           if (window.UI && retryCount >= API_KEYS.length - 1) window.UI.toast('API Error: TMDB failed. Using fallback APIs...', 'error');
+           throw new Error('TMDB API exhausted or server error');
+        }
         return [];
       }
       
@@ -136,150 +155,189 @@ const TMDB = (() => {
       return data.results || [];
     } catch (e) {
       console.warn('⚠️ TMDB fetch failed:', e.message);
-      return [];
+      if (retryCount < API_KEYS.length - 1) {
+        currentKeyIndex = (currentKeyIndex + 1) % API_KEYS.length;
+        console.log(`🔄 Retrying with next API key (index ${currentKeyIndex}) after network failure...`);
+        return tmdbFetch(endpoint, params, retryCount + 1);
+      }
+      if (window.UI && retryCount >= API_KEYS.length - 1) window.UI.toast('API Error: TMDB failed. Using fallback APIs...', 'error');
+      throw e;
     }
   }
 
   // Trending movies and shows (all, week)
   async function fetchTrending() {
-    const results = await tmdbFetch('/trending/all/week');
-    return results.map(r => normalize(r, r.media_type));
+    try {
+      const results = await tmdbFetch('/trending/all/week');
+      return results.map(r => normalize(r, r.media_type));
+    } catch (e) {
+      if (window.APIManager) return APIManager.getTrending();
+      return [];
+    }
   }
 
   // Now Playing movies globally
   async function fetchNowPlaying() {
-    const results = await tmdbFetch('/movie/now_playing');
-    return results.map(r => normalize(r, 'movie'));
+    try {
+      const results = await tmdbFetch('/movie/now_playing');
+      return results.map(r => normalize(r, 'movie'));
+    } catch (e) { return []; }
   }
 
   // Bollywood (Hindi language)
   async function fetchBollywood(page = 1) {
-    const results = await tmdbFetch('/discover/movie', {
-      with_original_language: 'hi',
-      sort_by: 'release_date.desc',
-      'release_date.lte': new Date().toISOString().slice(0, 10),
-      'vote_count.gte': 20,
-      page
-    });
-    return results.map(r => ({ ...normalize(r, 'movie'), industry: 'Bollywood', language: 'Hindi' }));
+    try {
+      const results = await tmdbFetch('/discover/movie', {
+        with_original_language: 'hi',
+        sort_by: 'release_date.desc',
+        'release_date.lte': new Date().toISOString().slice(0, 10),
+        'vote_count.gte': 20,
+        page
+      });
+      return results.map(r => ({ ...normalize(r, 'movie'), industry: 'Bollywood', language: 'Hindi' }));
+    } catch (e) { return []; }
   }
 
   // Hollywood (English language)
   async function fetchHollywood(page = 1) {
-    const results = await tmdbFetch('/discover/movie', {
-      with_original_language: 'en',
-      sort_by: 'popularity.desc',
-      'vote_count.gte': 200,
-      page
-    });
-    return results.map(r => ({ ...normalize(r, 'movie'), industry: 'Hollywood', language: 'English' }));
+    try {
+      const results = await tmdbFetch('/discover/movie', {
+        with_original_language: 'en',
+        sort_by: 'popularity.desc',
+        'vote_count.gte': 200,
+        page
+      });
+      return results.map(r => ({ ...normalize(r, 'movie'), industry: 'Hollywood', language: 'English' }));
+    } catch (e) { return []; }
   }
 
   // Tollywood (Telugu language)
   async function fetchTollywood(page = 1) {
-    const results = await tmdbFetch('/discover/movie', {
-      with_original_language: 'te',
-      sort_by: 'release_date.desc',
-      'vote_count.gte': 10,
-      page
-    });
-    return results.map(r => ({ ...normalize(r, 'movie'), industry: 'Tollywood', language: 'Telugu' }));
+    try {
+      const results = await tmdbFetch('/discover/movie', {
+        with_original_language: 'te',
+        sort_by: 'release_date.desc',
+        'vote_count.gte': 10,
+        page
+      });
+      return results.map(r => ({ ...normalize(r, 'movie'), industry: 'Tollywood', language: 'Telugu' }));
+    } catch (e) { return []; }
   }
 
   // South Indian movies (Tamil, Kannada, Malayalam)
   async function fetchSouthMovies(page = 1) {
-    const [tamil, malayalam, kannada] = await Promise.all([
-      tmdbFetch('/discover/movie', {
-        with_original_language: 'ta',
-        sort_by: 'popularity.desc',
-        'vote_count.gte': 10,
-        page
-      }),
-      tmdbFetch('/discover/movie', {
-        with_original_language: 'ml',
-        sort_by: 'popularity.desc',
-        'vote_count.gte': 10,
-        page
-      }),
-      tmdbFetch('/discover/movie', {
-        with_original_language: 'kn',
-        sort_by: 'popularity.desc',
-        'vote_count.gte': 5,
-        page
-      })
-    ]);
+    try {
+      const [tamil, malayalam, kannada] = await Promise.all([
+        tmdbFetch('/discover/movie', {
+          with_original_language: 'ta',
+          sort_by: 'popularity.desc',
+          'vote_count.gte': 10,
+          page
+        }),
+        tmdbFetch('/discover/movie', {
+          with_original_language: 'ml',
+          sort_by: 'popularity.desc',
+          'vote_count.gte': 10,
+          page
+        }),
+        tmdbFetch('/discover/movie', {
+          with_original_language: 'kn',
+          sort_by: 'popularity.desc',
+          'vote_count.gte': 5,
+          page
+        })
+      ]);
 
-    const combined = [
-      ...tamil.map(r => ({ ...normalize(r, 'movie'), industry: 'Tamil', language: 'Tamil' })),
-      ...malayalam.map(r => ({ ...normalize(r, 'movie'), industry: 'Malayalam', language: 'Malayalam' })),
-      ...kannada.map(r => ({ ...normalize(r, 'movie'), industry: 'Kannada', language: 'Kannada' })),
-    ];
-    return combined.sort((a, b) => b.popularity - a.popularity);
+      const combined = [
+        ...tamil.map(r => ({ ...normalize(r, 'movie'), industry: 'Tamil', language: 'Tamil' })),
+        ...malayalam.map(r => ({ ...normalize(r, 'movie'), industry: 'Malayalam', language: 'Malayalam' })),
+        ...kannada.map(r => ({ ...normalize(r, 'movie'), industry: 'Kannada', language: 'Kannada' })),
+      ];
+      return combined.sort((a, b) => b.popularity - a.popularity);
+    } catch (e) { return []; }
   }
 
   // TV Serials & Web Series (Hindi and English)
   async function fetchTVSeries(page = 1) {
-    const [hindi, english] = await Promise.all([
-      tmdbFetch('/discover/tv', {
-        with_original_language: 'hi',
-        sort_by: 'popularity.desc',
-        page
-      }),
-      tmdbFetch('/discover/tv', {
-        with_original_language: 'en',
-        sort_by: 'popularity.desc',
-        'vote_count.gte': 100,
-        page
-      })
-    ]);
-    
-    return [
-      ...hindi.map(r => ({ ...normalize(r, 'tv'), industry: 'TV Serial', language: 'Hindi' })),
-      ...english.map(r => ({ ...normalize(r, 'tv'), industry: 'Web Series', language: 'English' })),
-    ].sort((a, b) => b.popularity - a.popularity);
+    try {
+      const [hindi, english] = await Promise.all([
+        tmdbFetch('/discover/tv', {
+          with_original_language: 'hi',
+          sort_by: 'popularity.desc',
+          page
+        }),
+        tmdbFetch('/discover/tv', {
+          with_original_language: 'en',
+          sort_by: 'popularity.desc',
+          'vote_count.gte': 100,
+          page
+        })
+      ]);
+      
+      return [
+        ...hindi.map(r => ({ ...normalize(r, 'tv'), industry: 'TV Serial', language: 'Hindi' })),
+        ...english.map(r => ({ ...normalize(r, 'tv'), industry: 'Web Series', language: 'English' })),
+      ].sort((a, b) => b.popularity - a.popularity);
+    } catch (e) { return []; }
   }
 
   // Top Rated Movies (all languages)
   async function fetchTopRated() {
-    const results = await tmdbFetch('/movie/top_rated', { 'vote_count.gte': 1000 });
-    return results.map(r => normalize(r, 'movie'));
+    try {
+      const results = await tmdbFetch('/movie/top_rated', { 'vote_count.gte': 1000 });
+      return results.map(r => normalize(r, 'movie'));
+    } catch (e) { return []; }
   }
 
   // Upcoming Movies
   async function fetchUpcoming() {
-    const results = await tmdbFetch('/movie/upcoming');
-    return results.map(r => normalize(r, 'movie'));
+    try {
+      const results = await tmdbFetch('/movie/upcoming');
+      return results.map(r => normalize(r, 'movie'));
+    } catch (e) { return []; }
   }
 
   // Search movies and TV shows
   async function search(query, page = 1) {
     if (!query || query.length < 2) return [];
-    const results = await tmdbFetch('/search/multi', { query, page });
-    return results
-      .filter(r => r.media_type !== 'person' && (r.poster_path || r.backdrop_path))
-      .map(r => normalize(r, r.media_type || 'movie'));
+    try {
+      const results = await tmdbFetch('/search/multi', { query, page });
+      return results
+        .filter(r => r.media_type !== 'person' && (r.poster_path || r.backdrop_path))
+        .map(r => normalize(r, r.media_type || 'movie'));
+    } catch (e) {
+      if (window.APIManager) return APIManager.search(query, page);
+      return [];
+    }
   }
 
   // Get detailed information for a movie/show by TMDB ID
-  async function getDetails(tmdbId, type = 'movie') {
-    if (!API_KEY || API_KEY.includes('your-') || API_KEY === '%VITE_TMDB_API_KEY%') {
+  async function getDetails(tmdbId, type = 'movie', retryCount = 0) {
+    const key = getApiKey();
+    if (!key || key.includes('your-') || key.includes('%VITE_')) {
       console.error('TMDB API Key is not configured');
       return null;
     }
     
     try {
-      let url = `${BASE}/${type}/${tmdbId}?api_key=${API_KEY}&language=en-US&append_to_response=credits,videos`;
+      let url = `${BASE}/${type}/${tmdbId}?api_key=${key}&language=en-US&append_to_response=credits,videos`;
       let res = await fetch(url);
       
+      if (!res.ok && (res.status === 429 || res.status === 401 || res.status === 403) && retryCount < API_KEYS.length - 1) {
+        currentKeyIndex = (currentKeyIndex + 1) % API_KEYS.length;
+        console.log(`🔄 Retrying getDetails with next API key (index ${currentKeyIndex})...`);
+        return getDetails(tmdbId, type, retryCount + 1);
+      }
+
       // Fallback: try opposite type if not found
-      if (!res.ok) {
+      if (!res.ok && res.status !== 429 && res.status !== 401 && res.status !== 403) {
         const fallbackType = type === 'movie' ? 'tv' : 'movie';
-        url = `${BASE}/${fallbackType}/${tmdbId}?api_key=${API_KEY}&language=en-US&append_to_response=credits,videos`;
+        url = `${BASE}/${fallbackType}/${tmdbId}?api_key=${key}&language=en-US&append_to_response=credits,videos`;
         res = await fetch(url);
         if (res.ok) type = fallbackType;
       }
       
-      if (!res.ok) return null;
+      if (!res.ok) throw new Error('Not found or exhausted keys');
       const raw = await res.json();
       const item = normalize(raw, type);
       
@@ -311,7 +369,7 @@ const TMDB = (() => {
           const episodesMap = {};
           for (const seasonInfo of seasons) {
             const seasonNum = seasonInfo.season_number;
-            const seasonUrl = `${BASE}/tv/${tmdbId}/season/${seasonNum}?api_key=${API_KEY}&language=en-US`;
+            const seasonUrl = `${BASE}/tv/${tmdbId}/season/${seasonNum}?api_key=${key}&language=en-US`;
             const seasonRes = await fetch(seasonUrl);
             if (!seasonRes.ok) continue;
             
@@ -320,7 +378,8 @@ const TMDB = (() => {
               const epStreams = [
                 `https://www.2embed.cc/embedtv/${tmdbId}&s=${seasonNum}&e=${ep.episode_number}`,
                 `https://vidlink.pro/tv/${tmdbId}/${seasonNum}/${ep.episode_number}`,
-                `https://vidsrc.me/embed/tv?tmdb=${tmdbId}&season=${seasonNum}&episode=${ep.episode_number}`,
+                `https://autoembed.co/tv/tmdb/${tmdbId}-${seasonNum}-${ep.episode_number}`,
+                `https://multiembed.mov/?video_id=${tmdbId}&tmdb=1&s=${seasonNum}&e=${ep.episode_number}`,
               ];
               return {
                 epNum: ep.episode_number,
@@ -340,6 +399,15 @@ const TMDB = (() => {
       return item;
     } catch (e) {
       console.warn('TMDB getDetails error:', e);
+      if (retryCount < API_KEYS.length - 1) {
+        currentKeyIndex = (currentKeyIndex + 1) % API_KEYS.length;
+        console.log(`🔄 Retrying getDetails with next API key (index ${currentKeyIndex}) after network failure...`);
+        return getDetails(tmdbId, type, retryCount + 1);
+      }
+      if (window.UI && retryCount >= API_KEYS.length - 1) window.UI.toast('API Error: TMDB failed. Using fallback APIs...', 'error');
+      if (window.APIManager) {
+        return APIManager.getDetails(tmdbId, type);
+      }
       return null;
     }
   }
@@ -380,7 +448,8 @@ const TMDB = (() => {
     fetchHomeData,
     IMG,
     IMG_BG,
-    isConfigured: () => !(!API_KEY || API_KEY.includes('your-') || API_KEY === '%VITE_TMDB_API_KEY%')
+    getApiKey,
+    isConfigured: () => API_KEYS.length > 0 && !API_KEYS[0].includes('your-') && !API_KEYS[0].includes('%VITE_')
   };
 })();
 

@@ -244,8 +244,9 @@ function setupEpisodes(item) {
     try {
       // Fetch similar titles from TMDB
       const tmdbType = item.type === 'series' ? 'tv' : 'movie';
+      const apiKey = window.TMDB ? window.TMDB.getApiKey() : 'b7bb606801e160a12504bae3568cced9';
       const res = await fetch(
-        `https://api.themoviedb.org/3/${tmdbType}/${item.tmdb_id || item.id}/similar?api_key=b7bb606801e160a12504bae3568cced9&language=en-US&page=1`
+        `https://api.themoviedb.org/3/${tmdbType}/${item.tmdb_id || item.id}/similar?api_key=${apiKey}&language=en-US&page=1`
       );
       if (!res.ok) throw new Error('TMDB similar failed');
       const data = await res.json();
