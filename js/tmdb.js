@@ -128,7 +128,7 @@ const TMDB = (() => {
       return [];
     }
     
-    const url = new URL(`${BASE}${endpoint}`);
+    const url = new URL(`${BASE}${endpoint}`, window.location.origin);
     url.searchParams.set('api_key', key);
     url.searchParams.set('language', 'en-US');
     Object.entries(params).forEach(([k, v]) => url.searchParams.set(k, v));
