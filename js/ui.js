@@ -339,6 +339,14 @@ const UI = (() => {
 
       } catch (err) {
         console.warn('Search error:', err);
+        // Show diagnostic info for search failures
+        let msg = '❌ Search Failed';
+        if (!navigator.onLine) msg = '📡 No Internet — Search unavailable';
+        else if (err.message?.includes('401') || err.message?.includes('403')) msg = '🔐 Search Failed: Invalid TMDB API Key';
+        else if (err.message?.includes('429')) msg = '🚦 Search Rate Limited — Try again in a moment';
+        else if (err.name === 'AbortError' || err.message?.includes('timeout')) msg = '⏱️ Search Timed Out — Slow connection?';
+        else if (err.message?.includes('Failed to fetch')) msg = '🌐 Search Failed: Cannot reach TMDB servers';
+        UI.toast(msg, 'error', 5000);
         _closeSearchDropdown();
       }
     }, 280);

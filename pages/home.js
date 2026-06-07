@@ -141,12 +141,113 @@ const HomePage = (() => {
     loadTMDBSections();
   }
 
+  // ── Diagnostic Error Helper ──
+  function showDiagnosticError(context, err) {
+    const key = window.TMDB?.isConfigured?.() ?? false;
+    let title = '⚠️ Content Not Loading';
+    let details = '';
+    let hint = '';
+
+    if (!key) {
+      title = '🔑 TMDB API Key Missing';
+      details = 'The TMDB API key is not configured. Movies and shows cannot load without it.';
+      hint = 'Fix: Set VITE_TMDB_API_KEYS in your .env file or Vercel environment variables.';
+    } else if (!navigator.onLine) {
+      title = '📡 No Internet Connection';
+      details = 'Your device is offline. Please check your Wi-Fi or mobile data.';
+      hint = 'Fix: Connect to the internet and refresh the page.';
+    } else if (err && (err.message?.includes('401') || err.message?.includes('403'))) {
+      title = '🔐 TMDB API Key Invalid or Expired';
+      details = 'The TMDB API key was rejected (401/403). It may be invalid or rate-limited.';
+      hint = 'Fix: Get a new API key from themoviedb.org and update your .env file.';
+    } else if (err && err.message?.includes('429')) {
+      title = '🚦 Too Many Requests (Rate Limited)';
+      details = 'TMDB has temporarily blocked requests from this key. Too many calls were made.';
+      hint = 'Fix: Wait a few minutes, or add more API keys to VITE_TMDB_API_KEYS.';
+    } else if (err && (err.name === 'AbortError' || err.message?.includes('timeout'))) {
+      title = '⏱️ Request Timeout';
+      details = `Content loading timed out on: ${context}. Your internet may be slow or TMDB is unreachable.`;
+      hint = 'Fix: Check your connection speed. Try switching networks (mobile data vs Wi-Fi).';
+    } else if (err && err.message?.includes('CORS')) {
+      title = '🚫 CORS / Browser Security Block';
+      details = 'Your browser blocked the request to TMDB (CORS policy). This can happen in some restricted browsers.';
+      hint = 'Fix: Try a different browser (Chrome/Firefox). Disable aggressive adblockers or VPN.';
+    } else if (err && err.message?.includes('Failed to fetch')) {
+      title = '🌐 Network Request Failed';
+      details = `Could not reach TMDB servers from: ${context}. This may be a DNS issue, VPN, or firewall.`;
+      hint = 'Fix: Disable VPN, try mobile data, or check if api.themoviedb.org is accessible in your region.';
+    } else {
+      title = '❌ Failed to Load Content';
+      details = `Section: ${context}. ${err ? 'Error: ' + err.message : 'Unknown error occurred.'}`;
+      hint = 'Fix: Refresh the page. If the issue persists, check the browser console (F12) for details.';
+    }
+
+    // Show a persistent error banner at the top
+    let banner = document.getElementById('cinestream-error-banner');
+    if (!banner) {
+      banner = document.createElement('div');
+      banner.id = 'cinestream-error-banner';
+      banner.style.cssText = `
+        position: fixed; top: 72px; left: 50%; transform: translateX(-50%);
+        width: min(600px, 95vw); z-index: 9998;
+        background: rgba(25, 10, 10, 0.97);
+        border: 1.5px solid rgba(255, 100, 100, 0.45);
+        border-radius: 12px;
+        padding: 16px 20px;
+        box-shadow: 0 8px 40px rgba(0,0,0,0.8);
+        backdrop-filter: blur(16px);
+        animation: fadeInDown 0.3s ease;
+        font-family: inherit;
+      `;
+      document.body.appendChild(banner);
+    }
+
+    banner.innerHTML = `
+      <div style="display:flex;align-items:flex-start;gap:12px">
+        <span class="material-symbols-outlined" style="color:#ff6b6b;font-size:22px;flex-shrink:0;margin-top:2px">error</span>
+        <div style="flex:1">
+          <div style="font-size:14px;font-weight:700;color:#ff9090;margin-bottom:4px">${title}</div>
+          <div style="font-size:12px;color:rgba(229,226,225,0.75);line-height:1.5;margin-bottom:6px">${details}</div>
+          <div style="font-size:11px;color:rgba(20,209,255,0.85);background:rgba(20,209,255,0.08);border:1px solid rgba(20,209,255,0.2);border-radius:6px;padding:6px 10px;line-height:1.5">
+            💡 <strong>How to fix:</strong> ${hint}
+          </div>
+        </div>
+        <button onclick="document.getElementById('cinestream-error-banner')?.remove()" 
+                style="background:none;border:none;cursor:pointer;color:rgba(229,226,225,0.35);padding:0;flex-shrink:0">
+          <span class="material-symbols-outlined" style="font-size:18px">close</span>
+        </button>
+      </div>
+      <div style="display:flex;gap:8px;margin-top:10px;flex-wrap:wrap">
+        <button onclick="location.reload()" style="font-size:11px;padding:5px 12px;border-radius:6px;border:1px solid rgba(229,226,225,0.2);background:rgba(255,255,255,0.06);color:rgba(229,226,225,0.8);cursor:pointer">🔄 Refresh Page</button>
+        <button onclick="console.log('TMDB Config:', window.TMDB?.isConfigured(), 'Online:', navigator.onLine, 'Keys:', typeof import !== 'undefined' ? 'check .env' : 'N/A'); alert('Details logged to browser console (F12 → Console tab).')" style="font-size:11px;padding:5px 12px;border-radius:6px;border:1px solid rgba(20,209,255,0.2);background:rgba(20,209,255,0.06);color:rgba(20,209,255,0.8);cursor:pointer">🔍 Show Debug Info</button>
+      </div>
+    `;
+
+    // Also show a short toast
+    UI.toast(title, 'error', 6000);
+  }
+
+  // Expose globally for Movies/TV pages to use
+  window._showDiagnosticError = showDiagnosticError;
+
   // ── Load all TMDB sections in parallel ──
   async function loadTMDBSections() {
+    // Run initial connectivity + API key check
+    if (!navigator.onLine) {
+      showDiagnosticError('Home Page', { message: 'offline' });
+    } else if (window.TMDB && !window.TMDB.isConfigured()) {
+      showDiagnosticError('Home Page', { message: 'API key not configured' });
+    }
+
+    let anyLoaded = false;
+
     try {
       // Trending — first priority, loads hero too
       TMDB.fetchTrending().then(items => {
         if (items.length) {
+          anyLoaded = true;
+          // Dismiss error banner on success
+          document.getElementById('cinestream-error-banner')?.remove();
           window.registerDemoContent(items);
           // Update hero carousel with real movies
           HERO_SLIDES = items.slice(0, 5).map(m => ({
@@ -168,8 +269,10 @@ const HomePage = (() => {
             setupCarouselDots();
           }
           fillRow('trending-row', items.slice(0, 12), true);
+        } else {
+          showDiagnosticError('Trending Section', { message: 'TMDB returned 0 results' });
         }
-      });
+      }).catch(err => showDiagnosticError('Trending Section', err));
 
       // Upcoming
       TMDB.fetchUpcoming().then(items => {
@@ -177,7 +280,7 @@ const HomePage = (() => {
           window.registerDemoContent(items);
           fillRow('new-releases-row', items.slice(0, 10));
         }
-      });
+      }).catch(err => showDiagnosticError('New Releases Section', err));
 
       // Bollywood
       TMDB.fetchBollywood().then(items => {
@@ -185,7 +288,7 @@ const HomePage = (() => {
           window.registerDemoContent(items);
           fillRow('bollywood-row', items.slice(0, 12));
         }
-      });
+      }).catch(err => showDiagnosticError('Bollywood Section', err));
 
       // Hollywood
       TMDB.fetchHollywood().then(items => {
@@ -193,7 +296,7 @@ const HomePage = (() => {
           window.registerDemoContent(items);
           fillRow('hollywood-row', items.slice(0, 12));
         }
-      });
+      }).catch(err => showDiagnosticError('Hollywood Section', err));
 
       // Tollywood + South
       Promise.all([TMDB.fetchTollywood(), TMDB.fetchSouthMovies()]).then(([tol, south]) => {
@@ -202,7 +305,7 @@ const HomePage = (() => {
           window.registerDemoContent(combined);
           fillRow('tollywood-row', combined.slice(0, 12));
         }
-      });
+      }).catch(err => showDiagnosticError('South/Tollywood Section', err));
 
       // TV Serials
       TMDB.fetchTVSeries().then(items => {
@@ -210,7 +313,7 @@ const HomePage = (() => {
           window.registerDemoContent(items);
           fillRow('tvserials-row', items.slice(0, 12));
         }
-      });
+      }).catch(err => showDiagnosticError('TV Serials Section', err));
 
       // Top Rated
       TMDB.fetchTopRated().then(items => {
@@ -218,13 +321,25 @@ const HomePage = (() => {
           window.registerDemoContent(items);
           fillRow('top-rated-row', items.slice(0, 10));
         }
-      });
+      }).catch(err => showDiagnosticError('Top Rated Section', err));
 
       // AI Recommended
       populateRecommended();
 
+      // After 10s, if nothing loaded, show a final error
+      setTimeout(() => {
+        const rows = ['trending-row','new-releases-row','bollywood-row','hollywood-row','tollywood-row','tvserials-row','top-rated-row'];
+        const allEmpty = rows.every(id => {
+          const el = document.getElementById(id);
+          return !el || !el.innerHTML.trim();
+        });
+        if (allEmpty && !document.getElementById('cinestream-error-banner')) {
+          showDiagnosticError('Home Page (all sections)', { message: 'All sections empty after 10 seconds' });
+        }
+      }, 10000);
+
     } catch (err) {
-      console.warn('TMDB load error, using fallback:', err);
+      showDiagnosticError('Home Page', err);
       // Use demo content as fallback
       fillRow('trending-row', DEMO_CONTENT.slice(0, 8), true);
       fillRow('new-releases-row', [...DEMO_CONTENT].sort(() => Math.random() - 0.5).slice(0, 6));

@@ -36,14 +36,30 @@ const TVShowsPage = (() => {
     document.getElementById('shows-loading').style.display = 'block';
     document.getElementById('shows-categories').style.display = 'none';
 
+    if (!navigator.onLine) {
+      window._showDiagnosticError?.('TV Shows Page', { message: 'offline' });
+    } else if (window.TMDB && !window.TMDB.isConfigured()) {
+      window._showDiagnosticError?.('TV Shows Page', { message: 'API key not configured' });
+    }
+
     try {
-      const results = await Promise.all(SECTIONS.map(s => s.fn().catch(() => [])));
+      const results = await Promise.all(SECTIONS.map(s => s.fn().catch((err) => {
+        window._showDiagnosticError?.(`TV Shows – ${s.label}`, err);
+        return [];
+      })));
       SECTIONS.forEach((s, i) => { s.data = results[i]; });
       const all = results.flat();
       const unique = Object.values(Object.fromEntries(all.filter(m => m.poster).map(m => [m.id, m])));
       allShows = unique;
       window.DEMO_CONTENT = [...(window.DEMO_CONTENT || []), ...unique].filter((v, i, a) => a.findIndex(x => x.id === v.id) === i);
+
+      if (allShows.length === 0) {
+        window._showDiagnosticError?.('TV Shows Page', { message: 'TMDB returned 0 shows for all categories' });
+      } else {
+        document.getElementById('cinestream-error-banner')?.remove();
+      }
     } catch(e) {
+      window._showDiagnosticError?.('TV Shows Page', e);
       allShows = (window.DEMO_CONTENT || []).filter(c => c.type === 'series');
     }
 
