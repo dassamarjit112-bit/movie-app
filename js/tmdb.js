@@ -297,34 +297,43 @@ const TMDB = (() => {
 
   // Get detailed information for a movie/show by TMDB ID
   async function getDetails(tmdbId, type = 'movie', retryCount = 0) {
-    if (!getApiKey() || getApiKey().includes('your-') || getApiKey().includes('%VITE_')) {
+    const key = getApiKey();
+    if (!key || key.includes('your-') || key.includes('%VITE_')) {
       console.error('TMDB API Key is not configured');
       return null;
     }
     
     try {
-      // Use tmdbFetch for consistent proxy routing
-      let raw = await tmdbFetch(`/${type}/${tmdbId}`, { append_to_response: 'credits,videos' });
+      let url = `${BASE}/${type}/${tmdbId}?api_key=${key}&language=en-US&append_to_response=credits,videos`;
+      let res = await fetch(url);
       
+      if (!res.ok && (res.status === 429 || res.status === 401 || res.status === 403) && retryCount < API_KEYS.length - 1) {
+        currentKeyIndex = (currentKeyIndex + 1) % API_KEYS.length;
+        console.log(`🔄 Retrying getDetails with next API key (index ${currentKeyIndex})...`);
+        return getDetails(tmdbId, type, retryCount + 1);
+      }
+
       // Fallback: try opposite type if not found
-      if (!raw || (Array.isArray(raw) && raw.length === 0)) {
+      if (!res.ok && res.status !== 429 && res.status !== 401 && res.status !== 403) {
         const fallbackType = type === 'movie' ? 'tv' : 'movie';
-        raw = await tmdbFetch(`/${fallbackType}/${tmdbId}`, { append_to_response: 'credits,videos' });
-        if (raw && raw.id) type = fallbackType;
+        url = `${BASE}/${fallbackType}/${tmdbId}?api_key=${key}&language=en-US&append_to_response=credits,videos`;
+        res = await fetch(url);
+        if (res.ok) type = fallbackType;
       }
       
-      if (!raw || !raw.id) return null;
+      if (!res.ok) return null;
+      const raw = await res.json();
       const item = normalize(raw, type);
       
-      // Add cast and crew — profile_path already proxied via IMG constant
+      // Add cast and crew
       if (raw.credits) {
-        item.cast = (raw.credits.cast || []).slice(0, 20).map(c => ({
+        item.cast = (raw.credits.cast || []).map(c => ({
           id: c.id,
           name: c.name,
           character: c.character,
           profile_path: c.profile_path ? `${IMG}${c.profile_path}` : null
         }));
-        item.crew = (raw.credits.crew || []).slice(0, 10).map(c => ({
+        item.crew = (raw.credits.crew || []).map(c => ({
           id: c.id,
           name: c.name,
           job: c.job,
@@ -342,27 +351,28 @@ const TMDB = (() => {
           const episodesMap = {};
           for (const seasonInfo of seasons) {
             const seasonNum = seasonInfo.season_number;
-            try {
-              const seasonData = await tmdbFetch(`/tv/${tmdbId}/season/${seasonNum}`);
-              if (!seasonData || !seasonData.episodes) continue;
-              const eps = (seasonData.episodes || []).map(ep => {
-                const epStreams = [
-                  `https://www.2embed.cc/embedtv/${tmdbId}&s=${seasonNum}&e=${ep.episode_number}`,
-                  `https://vidlink.pro/tv/${tmdbId}/${seasonNum}/${ep.episode_number}`,
-                  `https://autoembed.co/tv/tmdb/${tmdbId}-${seasonNum}-${ep.episode_number}`,
-                ];
-                return {
-                  epNum: ep.episode_number,
-                  title: ep.name || `Episode ${ep.episode_number}`,
-                  desc: ep.overview || '',
-                  thumb: ep.still_path ? `${IMG}${ep.still_path}` : item.poster,
-                  duration: ep.runtime || 45,
-                  stream: epStreams[0],
-                  streams: epStreams
-                };
-              });
-              episodesMap[seasonNum] = eps;
-            } catch(e) { continue; }
+            const seasonUrl = `${BASE}/tv/${tmdbId}/season/${seasonNum}?api_key=${key}&language=en-US`;
+            const seasonRes = await fetch(seasonUrl);
+            if (!seasonRes.ok) continue;
+            
+            const seasonData = await seasonRes.json();
+            const eps = (seasonData.episodes || []).map(ep => {
+              const epStreams = [
+                `https://www.2embed.cc/embedtv/${tmdbId}&s=${seasonNum}&e=${ep.episode_number}`,
+                `https://vidlink.pro/tv/${tmdbId}/${seasonNum}/${ep.episode_number}`,
+                `https://autoembed.co/tv/tmdb/${tmdbId}-${seasonNum}-${ep.episode_number}`,
+              ];
+              return {
+                epNum: ep.episode_number,
+                title: ep.name || `Episode ${ep.episode_number}`,
+                desc: ep.overview || '',
+                thumb: ep.still_path ? `${IMG}${ep.still_path}` : item.poster,
+                duration: ep.runtime || 45,
+                stream: epStreams[0],
+                streams: epStreams
+              };
+            });
+            episodesMap[seasonNum] = eps;
           }
           item.episodes = episodesMap;
         }
