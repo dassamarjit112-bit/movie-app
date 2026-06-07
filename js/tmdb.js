@@ -61,12 +61,10 @@ const TMDB = (() => {
       `https://www.2embed.cc/embedtv/${tmdbId}&s=1&e=1`,
       `https://vidlink.pro/tv/${tmdbId}/1/1`,
       `https://autoembed.co/tv/tmdb/${tmdbId}-1-1`,
-      `https://multiembed.mov/?video_id=${tmdbId}&tmdb=1&s=1&e=1`,
     ] : [
       `https://www.2embed.cc/embed/${tmdbId}`,
       `https://vidlink.pro/movie/${tmdbId}`,
       `https://autoembed.co/movie/tmdb/${tmdbId}`,
-      `https://multiembed.mov/?video_id=${tmdbId}&tmdb=1`,
     ];
     
     return {
@@ -102,14 +100,12 @@ const TMDB = (() => {
         `https://www.2embed.cc/embedtv/${id}&s=${season}&e=${episode}`,
         `https://vidlink.pro/tv/${id}/${season}/${episode}`,
         `https://autoembed.co/tv/tmdb/${id}-${season}-${episode}`,
-        `https://multiembed.mov/?video_id=${id}&tmdb=1&s=${season}&e=${episode}`,
       ];
     } else {
       return [
         `https://www.2embed.cc/embed/${id}`,
         `https://vidlink.pro/movie/${id}`,
         `https://autoembed.co/movie/tmdb/${id}`,
-        `https://multiembed.mov/?video_id=${id}&tmdb=1`,
       ];
     }
   }
@@ -348,7 +344,6 @@ const TMDB = (() => {
                 `https://www.2embed.cc/embedtv/${tmdbId}&s=${seasonNum}&e=${ep.episode_number}`,
                 `https://vidlink.pro/tv/${tmdbId}/${seasonNum}/${ep.episode_number}`,
                 `https://autoembed.co/tv/tmdb/${tmdbId}-${seasonNum}-${ep.episode_number}`,
-                `https://multiembed.mov/?video_id=${tmdbId}&tmdb=1&s=${seasonNum}&e=${ep.episode_number}`,
               ];
               return {
                 epNum: ep.episode_number,
