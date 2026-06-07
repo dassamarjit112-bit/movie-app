@@ -23,14 +23,6 @@
     },
     { "src": "/(.*)", "dest": "/dist/$1" }
   ],
-  "functions": {
-    "pages/api/scrape.js": {
-      "maxDuration": 30
-    },
-    "pages/api/stream.js": {
-      "maxDuration": 30
-    }
-  },
   "buildCommand": "npm run vercel-build",
   "headers": [
     {

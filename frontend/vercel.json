@@ -2,6 +2,5 @@
   "version": 2,
   "name": "cinestream-ott-frontend",
   "cleanUrls": true,
-  "framework": "nextjs",
   "regions": ["iad1"]
 }
