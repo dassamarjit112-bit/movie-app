@@ -167,7 +167,7 @@ const DetailPage = (() => {
     const cast = item.cast || [];
     const displayed = cast.slice(0, 12);
     castContainer.innerHTML = displayed.map(member => {
-      const imgSrc = member.profile_path ? `/tmdb-img-500${member.profile_path}` : 'https://via.placeholder.com/64?text=No+Image';
+      const imgSrc = member.profile_path ? member.profile_path : 'https://via.placeholder.com/64?text=No+Image';
       const role = member.character || member.role || '';
       return `
         <div style="display:flex; flex-direction:column; align-items:center; text-align:center; min-width:80px; flex-shrink:0;">
