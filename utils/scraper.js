@@ -5,7 +5,8 @@ require('dotenv').config();
 let CineProScraper;
 try {
   // Try to load the real package if it exists
-  ({ CineProScraper } = require('@cinepro/core'));
+  const pkg = '@cinepro/core';
+  ({ CineProScraper } = require(pkg));
   console.info('[scraper] Loaded real @cinepro/core');
 } catch (e) {
   // Fallback to mock implementation bundled with the repo
