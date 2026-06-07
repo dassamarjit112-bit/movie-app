@@ -90,7 +90,7 @@ const Auth = (() => {
     // Use web production URL for standard browsers, or custom scheme for the app wrapper
     const redirectUrl = isNativeApp 
       ? "com.sdcinestream://login-callback/" 
-      : "https://sdcinestream.qzz.io/auth/callback";
+      : "https://sdcinestream.qzz.io";
 
     const { data, error } = await window.sb.auth.signInWithOAuth({
       provider: 'google',
