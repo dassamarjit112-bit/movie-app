@@ -3,6 +3,17 @@ import fs from 'fs';
 import path from 'path';
 
 export default defineConfig({
+  server: {
+    proxy: {
+      // In local dev, forward /api/* to the Express backend on port 4000
+      // This mirrors the Vercel routing: /api/(.*) → pages/api/$1.js
+      '/api': {
+        target: 'http://localhost:4000',
+        changeOrigin: true,
+        secure: false
+      }
+    }
+  },
   plugins: [
     {
       name: 'copy-static-assets',

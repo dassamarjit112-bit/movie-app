@@ -17,6 +17,7 @@ const Router = (() => {
     'account':     { page: 'pages/account.html',    auth: true  },
     'search':      { page: 'pages/search.html',    auth: true  },
     'anime':       { page: 'pages/anime.html',     auth: true  },
+    'scraper':     { page: 'pages/scraper.html',   auth: true  },
   };
 
   const appEl = document.getElementById('app');
@@ -157,6 +158,7 @@ const Router = (() => {
       case 'subscribe':   window.SubscribePage?.init(); break;
       case 'anime':       window.AnimePage?.init(); break;
       case 'account':     window.AccountPage?.init(); break;
+      case 'scraper':     window.ScraperPage?.init(); break;
     }
   }
 

@@ -1,0 +1,210 @@
+<!-- CineStream — Zero-API Scraper Search Page -->
+<div id="scraper-page" style="min-height:100vh; padding-bottom:100px; position:relative;">
+  <div id="navbar-mount"></div>
+
+  <!-- Hero Header -->
+  <div style="padding:100px var(--space-margin-desktop) 0; background:linear-gradient(135deg, rgba(20,209,255,0.05) 0%, rgba(229,9,20,0.05) 100%);">
+    <div style="max-width:var(--space-container-max); margin:0 auto; text-align:center;">
+      <div style="display:inline-flex; align-items:center; gap:10px; background:rgba(229,9,20,0.12); border:1px solid rgba(229,9,20,0.25); border-radius:100px; padding:6px 18px; margin-bottom:20px;">
+        <span class="material-symbols-outlined" style="font-size:16px; color:var(--c-primary-container)">wifi_off</span>
+        <span style="font-size:13px; font-weight:600; color:rgba(229,226,225,0.75); letter-spacing:0.04em;">ZERO-API FALLBACK MODE</span>
+      </div>
+      <h1 class="text-display-md" style="margin-bottom:12px;">Find Movies Without API Key</h1>
+      <p style="color:rgba(229,226,225,0.55); font-size:16px; max-width:560px; margin:0 auto;">
+        When the TMDB API is unavailable or rate-limited, use this scraper to find movies and TV shows directly from public web data — no API key required.
+      </p>
+    </div>
+  </div>
+
+  <!-- Search Bar Section -->
+  <div style="max-width:700px; margin:48px auto 0; padding:0 var(--space-margin-desktop);">
+    <div style="display:flex; gap:12px; align-items:stretch;">
+      <div style="position:relative; flex:1;">
+        <span class="material-symbols-outlined" style="position:absolute; left:16px; top:50%; transform:translateY(-50%); color:rgba(229,226,225,0.4); font-size:22px; pointer-events:none;">search</span>
+        <input
+          type="text"
+          id="scraper-search-input"
+          class="input-field"
+          placeholder="Search any movie or TV show..."
+          style="padding-left:52px; border-radius:12px; font-size:16px; height:56px;"
+          autocomplete="off"
+        >
+      </div>
+      <div style="display:flex; gap:8px;">
+        <select id="scraper-type-select" class="input-field" style="border-radius:12px; height:56px; padding:0 16px; min-width:110px; font-weight:600;">
+          <option value="movie">🎬 Movie</option>
+          <option value="tv">📺 TV Show</option>
+        </select>
+        <button id="scraper-search-btn" class="btn btn-primary" style="border-radius:12px; height:56px; padding:0 28px; font-size:15px; white-space:nowrap;">
+          <span class="material-symbols-outlined" style="font-size:20px;">travel_explore</span>
+          <span>Search</span>
+        </button>
+      </div>
+    </div>
+
+    <!-- Status / Error Message -->
+    <div id="scraper-status" style="display:none; margin-top:16px; padding:14px 20px; border-radius:10px; font-size:14px; font-weight:500;"></div>
+  </div>
+
+  <!-- Loading State -->
+  <div id="scraper-loading" style="display:none; text-align:center; padding:80px 0;">
+    <div style="width:52px; height:52px; border:3px solid rgba(229,9,20,0.2); border-top-color:var(--c-primary-container); border-radius:50%; animation:spin 0.9s linear infinite; margin:0 auto 20px;"></div>
+    <p style="color:rgba(229,226,225,0.55); font-size:14px;">Searching public databases...</p>
+    <p style="color:rgba(229,226,225,0.3); font-size:12px; margin-top:4px;">This may take a few seconds</p>
+  </div>
+
+  <!-- Results Section -->
+  <div id="scraper-result" style="display:none; max-width:var(--space-container-max); margin:48px auto 0; padding:0 var(--space-margin-desktop);">
+    
+    <!-- Result Card -->
+    <div class="glass-card" style="border-radius:20px; overflow:hidden; border:1px solid rgba(255,255,255,0.07);">
+      <div style="display:flex; gap:0; flex-wrap:wrap;" class="scraper-result-inner">
+
+        <!-- Poster -->
+        <div id="scraper-poster-wrap" style="width:280px; min-height:420px; flex-shrink:0; background:rgba(255,255,255,0.03); position:relative; overflow:hidden;">
+          <img id="scraper-poster" src="" alt="Poster" style="width:100%; height:100%; object-fit:cover; display:block;">
+          <div style="position:absolute; inset:0; background:linear-gradient(to right, transparent 70%, rgba(15,12,20,0.6)); pointer-events:none;"></div>
+        </div>
+
+        <!-- Details -->
+        <div style="flex:1; min-width:280px; padding:40px;">
+          <div style="display:flex; align-items:center; gap:10px; margin-bottom:12px; flex-wrap:wrap;">
+            <span id="scraper-type-badge" style="font-size:11px; font-weight:700; letter-spacing:0.07em; text-transform:uppercase; padding:4px 12px; border-radius:100px; background:rgba(229,9,20,0.2); color:var(--c-primary-container); border:1px solid rgba(229,9,20,0.3);">Movie</span>
+            <span id="scraper-year-badge" style="font-size:12px; color:rgba(229,226,225,0.45);"></span>
+            <span style="font-size:12px; color:rgba(20,209,255,0.6); background:rgba(20,209,255,0.08); padding:3px 10px; border-radius:100px;">🔍 Scraped</span>
+          </div>
+
+          <h2 id="scraper-title" class="text-headline-md" style="margin-bottom:16px; line-height:1.2;"></h2>
+
+          <p id="scraper-desc" style="color:rgba(229,226,225,0.65); font-size:14.5px; line-height:1.7; margin-bottom:28px; max-height:130px; overflow:hidden;"></p>
+
+          <!-- Cast -->
+          <div id="scraper-cast-wrap" style="margin-bottom:28px; display:none;">
+            <p style="font-size:11px; font-weight:700; letter-spacing:0.08em; color:rgba(229,226,225,0.35); text-transform:uppercase; margin-bottom:10px;">Top Cast</p>
+            <div id="scraper-cast" style="display:flex; flex-wrap:wrap; gap:8px;"></div>
+          </div>
+
+          <!-- Action Buttons -->
+          <div style="display:flex; gap:12px; flex-wrap:wrap;">
+            <button id="scraper-play-btn" class="btn btn-primary" style="border-radius:10px; gap:10px;">
+              <span class="material-symbols-outlined">play_circle</span>
+              <span>Play Now</span>
+            </button>
+            <button id="scraper-detail-btn" class="btn btn-ghost" style="border-radius:10px; gap:8px;">
+              <span class="material-symbols-outlined">info</span>
+              <span>More Info</span>
+            </button>
+            <a id="scraper-source-link" href="#" target="_blank" rel="noopener noreferrer" class="btn btn-ghost btn-sm" style="border-radius:10px; gap:6px; align-self:center; margin-left:auto;">
+              <span class="material-symbols-outlined" style="font-size:16px;">open_in_new</span>
+              <span>View on TMDB</span>
+            </a>
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- Stream Servers -->
+    <div style="margin-top:28px;">
+      <p style="font-size:12px; font-weight:700; letter-spacing:0.07em; color:rgba(229,226,225,0.3); text-transform:uppercase; margin-bottom:12px;">Available Stream Servers</p>
+      <div id="scraper-streams" style="display:flex; flex-wrap:wrap; gap:10px;"></div>
+    </div>
+
+  </div>
+
+  <!-- Empty / No Result State -->
+  <div id="scraper-empty" style="display:none; text-align:center; padding:80px 0;">
+    <span class="material-symbols-outlined" style="font-size:72px; color:rgba(229,226,225,0.1); display:block; margin-bottom:16px;">travel_explore</span>
+    <h3 class="text-headline-sm" style="margin-bottom:8px;">No Results Found</h3>
+    <p style="color:rgba(229,226,225,0.45); font-size:14px; max-width:380px; margin:0 auto;">Could not locate a public page for this title. Try a different search term or switch between Movie and TV Show.</p>
+  </div>
+
+  <!-- How It Works -->
+  <div style="max-width:var(--space-container-max); margin:64px auto 0; padding:0 var(--space-margin-desktop);">
+    <div style="display:grid; grid-template-columns:repeat(auto-fit, minmax(220px, 1fr)); gap:20px;">
+      <div class="glass-card" style="padding:24px; border-radius:14px; border:1px solid rgba(255,255,255,0.05);">
+        <span class="material-symbols-outlined" style="font-size:32px; color:rgba(20,209,255,0.7); margin-bottom:12px; display:block;">language</span>
+        <h4 style="font-size:14px; font-weight:700; color:#fff; margin-bottom:6px;">DuckDuckGo Search</h4>
+        <p style="font-size:13px; color:rgba(229,226,225,0.5); line-height:1.6;">Finds the correct TMDB page URL by searching the public web — no account needed.</p>
+      </div>
+      <div class="glass-card" style="padding:24px; border-radius:14px; border:1px solid rgba(255,255,255,0.05);">
+        <span class="material-symbols-outlined" style="font-size:32px; color:rgba(229,9,20,0.8); margin-bottom:12px; display:block;">code</span>
+        <h4 style="font-size:14px; font-weight:700; color:#fff; margin-bottom:6px;">HTML Page Parser</h4>
+        <p style="font-size:13px; color:rgba(229,226,225,0.5); line-height:1.6;">Cheerio reads the public TMDB web page and extracts titles, posters, cast and descriptions.</p>
+      </div>
+      <div class="glass-card" style="padding:24px; border-radius:14px; border:1px solid rgba(255,255,255,0.05);">
+        <span class="material-symbols-outlined" style="font-size:32px; color:rgba(255,193,7,0.7); margin-bottom:12px; display:block;">stream</span>
+        <h4 style="font-size:14px; font-weight:700; color:#fff; margin-bottom:6px;">Instant Streaming</h4>
+        <p style="font-size:13px; color:rgba(229,226,225,0.5); line-height:1.6;">The scraped TMDB ID is piped into free streaming embeds so you can play instantly.</p>
+      </div>
+      <div class="glass-card" style="padding:24px; border-radius:14px; border:1px solid rgba(255,255,255,0.05);">
+        <span class="material-symbols-outlined" style="font-size:32px; color:rgba(76,175,80,0.7); margin-bottom:12px; display:block;">key_off</span>
+        <h4 style="font-size:14px; font-weight:700; color:#fff; margin-bottom:6px;">No API Key Required</h4>
+        <p style="font-size:13px; color:rgba(229,226,225,0.5); line-height:1.6;">Works entirely from public HTML pages. Perfect when your API key is expired or rate-limited.</p>
+      </div>
+    </div>
+  </div>
+
+  <div id="footer-mount"></div>
+  <div id="mobile-nav-mount"></div>
+</div>
+
+<style>
+  @keyframes spin {
+    to { transform: rotate(360deg); }
+  }
+
+  #scraper-search-input:focus {
+    border-color: rgba(20, 209, 255, 0.4) !important;
+    box-shadow: 0 0 0 3px rgba(20, 209, 255, 0.08);
+  }
+
+  .scraper-stream-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 10px 18px;
+    border-radius: 10px;
+    font-size: 13px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s;
+    border: 1.5px solid rgba(255,255,255,0.1);
+    background: rgba(255,255,255,0.04);
+    color: rgba(229,226,225,0.75);
+  }
+  .scraper-stream-btn:hover {
+    background: rgba(255,255,255,0.09);
+    border-color: rgba(255,255,255,0.2);
+    color: #fff;
+    transform: translateY(-1px);
+  }
+  .scraper-stream-btn.active {
+    background: rgba(229,9,20,0.15);
+    border-color: rgba(229,9,20,0.4);
+    color: var(--c-primary-container);
+  }
+
+  .cast-chip {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 6px 12px;
+    border-radius: 100px;
+    background: rgba(255,255,255,0.05);
+    border: 1px solid rgba(255,255,255,0.08);
+    font-size: 12.5px;
+    color: rgba(229,226,225,0.75);
+    font-weight: 500;
+  }
+
+  @media (max-width: 768px) {
+    .scraper-result-inner {
+      flex-direction: column !important;
+    }
+    #scraper-poster-wrap {
+      width: 100% !important;
+      min-height: 260px !important;
+    }
+  }
+</style>

@@ -27,6 +27,16 @@ const TMDB = (() => {
     console.error('   3. For Local Dev: Create .env file with VITE_TMDB_API_KEYS=your-key1,your-key2');
     console.error('   4. For Vercel: Add VITE_TMDB_API_KEYS to Environment Variables');
     console.error('   5. Redeploy your app');
+    // Show scraper fallback suggestion after page loads
+    setTimeout(() => {
+      if (window.UI?.toast) {
+        window.UI.toast(
+          '⚠️ TMDB API unavailable — <a href="#/scraper" style="color:#14d1ff;text-decoration:underline;font-weight:600;">use the Scraper fallback</a> to find movies.',
+          'warning',
+          6000
+        );
+      }
+    }, 1500);
   } else {
     console.log(`✅ TMDB API Keys (${API_KEYS.length}) configured successfully - Movies will load across all devices`);
   }
@@ -151,6 +161,15 @@ const TMDB = (() => {
         currentKeyIndex = (currentKeyIndex + 1) % API_KEYS.length;
         console.log(`🔄 Retrying with next API key (index ${currentKeyIndex}) after network failure...`);
         return tmdbFetch(endpoint, params, retryCount + 1);
+      }
+      // All keys exhausted — suggest the scraper fallback
+      console.warn('🔴 All TMDB API keys exhausted or network is offline. Use #/scraper for zero-API fallback.');
+      if (window.UI?.toast) {
+        window.UI.toast(
+          '🌐 API/network error — <a href="#/scraper" style="color:#14d1ff;text-decoration:underline;font-weight:600;">Try Scraper Search</a> instead.',
+          'error',
+          5000
+        );
       }
       return [];
     }
