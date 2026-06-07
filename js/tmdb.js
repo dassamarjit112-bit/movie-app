@@ -343,10 +343,8 @@ const TMDB = (() => {
 
       // For TV series: fetch episodes
       if (type === 'tv') {
-        const tvUrl = `${BASE}/tv/${tmdbId}?api_key=${API_KEY}&language=en-US&append_to_response=credits,videos`;
-        const tvRes = await fetch(tvUrl);
-        if (tvRes.ok) {
-          const tvData = await tvRes.json();
+        const tvData = await tmdbFetch(`/tv/${tmdbId}`, { append_to_response: 'credits,videos' });
+        if (tvData) {
           const seasons = tvData.seasons || [];
           item.seasons = seasons.length;
           

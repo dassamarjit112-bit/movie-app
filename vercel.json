@@ -21,10 +21,12 @@
         "Access-Control-Allow-Headers": "Content-Type, Authorization"
       }
     },
-    { "src": "/tmdb-api/(.*)", "dest": "https://api.themoviedb.org/3/$1" },
-    { "src": "/tmdb-img-500/(.*)", "dest": "https://image.tmdb.org/t/p/w500/$1" },
-    { "src": "/tmdb-img-1280/(.*)", "dest": "https://image.tmdb.org/t/p/w1280/$1" },
     { "src": "/(.*)", "dest": "/dist/$1" }
+  ],
+  "rewrites": [
+    { "source": "/tmdb-api/(.*)", "destination": "https://api.themoviedb.org/3/$1" },
+    { "source": "/tmdb-img-500/(.*)", "destination": "https://image.tmdb.org/t/p/w500/$1" },
+    { "source": "/tmdb-img-1280/(.*)", "destination": "https://image.tmdb.org/t/p/w1280/$1" }
   ],
   "buildCommand": "npm run vercel-build",
   "headers": [

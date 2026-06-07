@@ -165,10 +165,9 @@ const DetailPage = (() => {
     const castContainer = document.querySelector('.cast-row');
     if (!castContainer) return;
     const cast = item.cast || [];
-    // Limit to first 12 cast members for performance
     const displayed = cast.slice(0, 12);
     castContainer.innerHTML = displayed.map(member => {
-      const imgSrc = member.profile_path ? `https://image.tmdb.org/t/p/w185${member.profile_path}` : 'https://via.placeholder.com/64?text=No+Image';
+      const imgSrc = member.profile_path ? `/tmdb-img-500${member.profile_path}` : 'https://via.placeholder.com/64?text=No+Image';
       const role = member.character || member.role || '';
       return `
         <div style="display:flex; flex-direction:column; align-items:center; text-align:center; min-width:80px; flex-shrink:0;">
@@ -242,10 +241,11 @@ function setupEpisodes(item) {
     if (!row) return;
 
     try {
-      // Fetch similar titles from TMDB
+      // Fetch similar titles from TMDB via proxy
       const tmdbType = item.type === 'series' ? 'tv' : 'movie';
+      const apiKey = window.ENV?.TMDB_API_KEY || window.ENV?.TMDB_API_KEYS || 'b7bb606801e160a12504bae3568cced9';
       const res = await fetch(
-        `https://api.themoviedb.org/3/${tmdbType}/${item.tmdb_id || item.id}/similar?api_key=b7bb606801e160a12504bae3568cced9&language=en-US&page=1`
+        `/tmdb-api/${tmdbType}/${item.tmdb_id || item.id}/similar?api_key=${apiKey.split(',')[0]}&language=en-US&page=1`
       );
       if (!res.ok) throw new Error('TMDB similar failed');
       const data = await res.json();
@@ -259,7 +259,7 @@ function setupEpisodes(item) {
       row.innerHTML = similar.map(rec => {
         const recType = rec.first_air_date ? 'series' : 'movie';
         const poster = rec.poster_path
-          ? `https://image.tmdb.org/t/p/w500${rec.poster_path}`
+          ? `/tmdb-img-500${rec.poster_path}`
           : 'data:image/svg+xml;utf8,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 width=%22170%22 height=%22255%22%3E%3Crect width=%22170%22 height=%22255%22 fill=%22%231a1a1a%22/%3E%3Ctext x=%2250%25%22 y=%2250%25%22 dominant-baseline=%22middle%22 text-anchor=%22middle%22 font-size=%2236%22 fill=%22%23333%22%3E%F0%9F%8E%AC%3C/text%3E%3C/svg%3E';
         const title = rec.title || rec.name || 'Unknown';
         const year = (rec.release_date || rec.first_air_date || '').slice(0, 4);
