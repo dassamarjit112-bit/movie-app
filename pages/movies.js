@@ -53,17 +53,8 @@ const MoviesPage = (() => {
     document.getElementById('movies-grid-wrapper').style.display = 'none';
 
     // Load all sections in parallel from TMDB
-    if (!navigator.onLine) {
-      window._showDiagnosticError?.('Movies Page', { message: 'offline' });
-    } else if (window.TMDB && !window.TMDB.isConfigured()) {
-      window._showDiagnosticError?.('Movies Page', { message: 'API key not configured' });
-    }
-
     try {
-      const results = await Promise.all(SECTIONS.map(s => s.fn().catch((err) => {
-        window._showDiagnosticError?.(`Movies – ${s.label}`, err);
-        return [];
-      })));
+      const results = await Promise.all(SECTIONS.map(s => s.fn().catch(() => [])));
       SECTIONS.forEach((s, i) => { s.data = results[i]; });
 
       // Populate master list (movies only)
@@ -71,15 +62,8 @@ const MoviesPage = (() => {
       const unique = Object.values(Object.fromEntries(all.filter(m => m.poster).map(m => [m.id, m])));
       allMovies = unique;
       window.DEMO_CONTENT = [...(window.DEMO_CONTENT || []), ...unique].filter((v, i, a) => a.findIndex(x => x.id === v.id) === i);
-
-      if (allMovies.length === 0) {
-        window._showDiagnosticError?.('Movies Page', { message: 'TMDB returned 0 movies for all categories' });
-      } else {
-        // Dismiss any existing error banner on success
-        document.getElementById('cinestream-error-banner')?.remove();
-      }
     } catch(e) {
-      window._showDiagnosticError?.('Movies Page', e);
+      console.warn('TMDB fetch failed:', e);
       allMovies = (window.DEMO_CONTENT || []).filter(c => c.type !== 'series');
     }
 

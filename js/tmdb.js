@@ -140,7 +140,7 @@ const TMDB = (() => {
           console.log(`🔄 Retrying with next API key (index ${currentKeyIndex})...`);
           return tmdbFetch(endpoint, params, retryCount + 1);
         }
-        throw new Error(`${res.status} ${res.statusText}`);
+        return [];
       }
       
       const data = await res.json();
@@ -152,7 +152,7 @@ const TMDB = (() => {
         console.log(`🔄 Retrying with next API key (index ${currentKeyIndex}) after network failure...`);
         return tmdbFetch(endpoint, params, retryCount + 1);
       }
-      throw e;
+      return [];
     }
   }
 
