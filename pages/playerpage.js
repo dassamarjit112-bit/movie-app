@@ -120,8 +120,9 @@ const PlayerPage = (() => {
 
     // Set initial server name on switch button (legacy fallback)
     const switchBtn = document.getElementById('switch-server-btn');
+    // Reuse existing switchBtn defined earlier
     if (switchBtn) {
-      switchBtn.style.display = 'none'; // replaced by server buttons
+      switchBtn.style.display = availableStreams.length > 1 ? 'flex' : 'none';
     }
 
     // Always use iframe for embed servers
@@ -169,7 +170,7 @@ const PlayerPage = (() => {
 
       activeStreamIndex = 0;
 
-      const switchBtn = document.getElementById('switch-server-btn');
+      // Reuse existing switchBtn defined earlier
       if (switchBtn) {
         switchBtn.style.display = availableStreams.length > 1 ? 'flex' : 'none';
       }
