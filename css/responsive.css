@@ -39,11 +39,22 @@
 
   /* Push content above bottom nav */
   body {
-    padding-bottom: 64px;
+    padding-bottom: 80px; /* Increased to comfortably clear 64px nav */
   }
 
   .account-container {
     grid-template-columns: 1fr !important;
+  }
+  
+  /* Sports Page Specific Fixes */
+  .sp-search-box {
+    max-width: 100% !important;
+    width: 100%;
+    margin-top: 8px;
+  }
+  .sp-tabs-wrap {
+    flex-direction: column;
+    align-items: stretch !important;
   }
 }
 

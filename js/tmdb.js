@@ -100,23 +100,40 @@ const TMDB = (() => {
   }
   
   // Get embed stream URLs for TMDB title
-  function getRegionalStreams(tmdbId, season, episode) {
-    if (tmdbId && typeof tmdbId === 'object') {
-      return tmdbId.streams || [];
+  function getRegionalStreams(itemOrId, season, episode) {
+    if (itemOrId && typeof itemOrId === 'object' && itemOrId.streams && season == null && episode == null) {
+      return itemOrId.streams;
     }
-    const id = tmdbId;
+    
+    // Support both direct ID or full item object
+    const id = (typeof itemOrId === 'object') ? itemOrId.tmdb_id || itemOrId.id : itemOrId;
+    const imdbId = (typeof itemOrId === 'object') ? itemOrId.imdb_id : null;
+
     if (season != null && episode != null) {
-      return [
+      const tvStreams = [
         `https://www.2embed.cc/embedtv/${id}&s=${season}&e=${episode}`,
         `https://vidlink.pro/tv/${id}/${season}/${episode}`,
         `https://autoembed.co/tv/tmdb/${id}-${season}-${episode}`,
       ];
+      // streamimdb also supports TV sometimes but the prompt specifically says /embed/movie/
+      return tvStreams;
     } else {
-      return [
-        `https://www.2embed.cc/embed/${id}`,
-        `https://vidlink.pro/movie/${id}`,
-        `https://autoembed.co/movie/tmdb/${id}`,
+      const movieStreams = [
+        `https://www.2embed.cc/embed/${id}`
       ];
+      
+      // Inject new IMDB server as second option if imdb_id is available
+      if (imdbId) {
+        movieStreams.push(`https://streamimdb.ru/embed/movie/${imdbId}`);
+      }
+      
+      // Add the rest
+      movieStreams.push(
+        `https://vidlink.pro/movie/${id}`,
+        `https://autoembed.co/movie/tmdb/${id}`
+      );
+      
+      return movieStreams;
     }
   }
 
@@ -304,7 +321,7 @@ const TMDB = (() => {
     }
     
     try {
-      let url = `${BASE}/${type}/${tmdbId}?api_key=${key}&language=en-US&append_to_response=credits,videos`;
+      let url = `${BASE}/${type}/${tmdbId}?api_key=${key}&language=en-US&append_to_response=credits,videos,external_ids`;
       let res = await fetch(url);
       
       if (!res.ok && (res.status === 429 || res.status === 401 || res.status === 403) && retryCount < API_KEYS.length - 1) {
@@ -316,7 +333,7 @@ const TMDB = (() => {
       // Fallback: try opposite type if not found
       if (!res.ok && res.status !== 429 && res.status !== 401 && res.status !== 403) {
         const fallbackType = type === 'movie' ? 'tv' : 'movie';
-        url = `${BASE}/${fallbackType}/${tmdbId}?api_key=${key}&language=en-US&append_to_response=credits,videos`;
+        url = `${BASE}/${fallbackType}/${tmdbId}?api_key=${key}&language=en-US&append_to_response=credits,videos,external_ids`;
         res = await fetch(url);
         if (res.ok) type = fallbackType;
       }
@@ -324,6 +341,7 @@ const TMDB = (() => {
       if (!res.ok) return null;
       const raw = await res.json();
       const item = normalize(raw, type);
+      item.imdb_id = raw.external_ids ? raw.external_ids.imdb_id : null;
       
       // Add cast and crew
       if (raw.credits) {

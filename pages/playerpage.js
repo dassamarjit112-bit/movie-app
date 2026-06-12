@@ -91,9 +91,9 @@ const PlayerPage = (() => {
     let embedStreams = [];
     try {
       if (contentType === 'series') {
-        embedStreams = await TMDB.getRegionalStreams(contentId, season, episode);
+        embedStreams = await TMDB.getRegionalStreams(item, season, episode);
       } else {
-        embedStreams = await TMDB.getRegionalStreams(contentId, null, null);
+        embedStreams = await TMDB.getRegionalStreams(item, null, null);
       }
     } catch (e) {
       console.warn('Could not fetch embed streams:', e);

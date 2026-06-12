@@ -137,6 +137,30 @@ const SportsStreamPage = (() => {
       // Hide loading overlay after giving player time to start loading
       setTimeout(() => {
         if (loadingEl) loadingEl.style.display = 'none';
+        
+        // Auto fullscreen + landscape for immersive sports viewing
+        const tryFullscreen = () => {
+          const container = document.getElementById('sports-stream-page');
+          if (container) {
+            if (container.requestFullscreen) {
+              container.requestFullscreen().catch(() => {});
+            } else if (container.webkitRequestFullscreen) {
+              container.webkitRequestFullscreen();
+            } else if (container.mozRequestFullScreen) {
+              container.mozRequestFullScreen();
+            }
+          }
+          // Lock landscape orientation (works on Android Chrome/WebApp)
+          if (screen.orientation && screen.orientation.lock) {
+            screen.orientation.lock('landscape').catch(() => {});
+          } else if (screen.lockOrientation) {
+            screen.lockOrientation('landscape');
+          } else if (screen.mozLockOrientation) {
+            screen.mozLockOrientation('landscape');
+          }
+        };
+        tryFullscreen();
+
       }, 2500);
     }, 300);
   }
