@@ -139,6 +139,54 @@ const HomePage = (() => {
 
     // Load TMDB data async, fill sections as they arrive
     loadTMDBSections();
+    
+    // Load live sports recommendations
+    loadLiveSports();
+  }
+
+  async function loadLiveSports() {
+    const section = document.getElementById('live-sports-section');
+    const row = document.getElementById('home-sports-row');
+    if (!section || !row || !window.SportsAPI) return;
+
+    try {
+      const matches = await window.SportsAPI.getLiveMatches();
+      if (matches && matches.length > 0) {
+        section.style.display = 'block';
+        row.innerHTML = matches.map(match => `
+          <div class="match-card poster-card-item" style="flex-shrink:0; width:280px; margin-right:16px; cursor:pointer;" onclick="Router.navigate('sports-stream', {id: '${match.matchId}'})">
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom: 12px;">
+              <span style="font-size:10px; font-weight:700; color:rgba(229,226,225,0.5); text-transform:uppercase; letter-spacing:0.05em; background:rgba(255,255,255,0.05); padding:4px 8px; border-radius:6px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; max-width:120px;">
+                ${match.tournament}
+              </span>
+              <span style="font-size:10px; font-weight:800; color:#e50914; letter-spacing:0.1em; animation:pulse-live 2s infinite">
+                ● ${match.status}
+              </span>
+            </div>
+            
+            <div style="display:flex; justify-content:space-between; align-items:center;">
+              <div style="display:flex; flex-direction:column; align-items:center; flex:1; gap:6px;">
+                <img src="${match.homeLogo}" alt="${match.homeTeam}" style="width:32px; height:32px; border-radius:50%; object-fit:cover; background:#222;" />
+                <span style="font-size:11px; font-weight:700; text-align:center; color:#fff; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; max-width:80px;">${match.homeTeam}</span>
+              </div>
+              
+              <div style="flex:1; display:flex; justify-content:center;">
+                <span style="font-family:monospace; font-size:14px; font-weight:900; background:rgba(255,255,255,0.1); padding:4px 8px; border-radius:6px; color:#fff;">${match.score}</span>
+              </div>
+              
+              <div style="display:flex; flex-direction:column; align-items:center; flex:1; gap:6px;">
+                <img src="${match.awayLogo}" alt="${match.awayTeam}" style="width:32px; height:32px; border-radius:50%; object-fit:cover; background:#222;" />
+                <span style="font-size:11px; font-weight:700; text-align:center; color:#fff; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; max-width:80px;">${match.awayTeam}</span>
+              </div>
+            </div>
+          </div>
+        `).join('');
+      } else {
+        section.style.display = 'none';
+      }
+    } catch (err) {
+      console.warn("Failed to load live sports on home page:", err);
+    }
   }
 
   // ── Load all TMDB sections in parallel ──

@@ -18,6 +18,8 @@ const Router = (() => {
     'search':      { page: 'pages/search.html',    auth: true  },
     'anime':       { page: 'pages/anime.html',     auth: true  },
     'scraper':     { page: 'pages/scraper.html',   auth: true  },
+    'sports':      { page: 'pages/sports.html',    auth: true  },
+    'sports-stream': { page: 'pages/sports-stream.html', auth: true },
   };
 
   const appEl = document.getElementById('app');
@@ -159,6 +161,8 @@ const Router = (() => {
       case 'anime':       window.AnimePage?.init(); break;
       case 'account':     window.AccountPage?.init(); break;
       case 'scraper':     window.ScraperPage?.init(); break;
+      case 'sports':      window.SportsPage?.init(); break;
+      case 'sports-stream': window.SportsStreamPage?.init(params); break;
     }
   }
 

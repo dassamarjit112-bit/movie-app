@@ -1,0 +1,82 @@
+<div id="sports-page">
+  <!-- Animation Overlay Container -->
+  <div id="sports-anim-container"></div>
+
+  <!-- Navbar -->
+  <div id="navbar-mount"></div>
+
+  <!-- Hero Section -->
+  <section class="hero" style="min-height:40vh; display:flex; align-items:center; justify-content:center; position:relative; overflow:hidden;">
+    <div class="hero-backdrop" style="background: linear-gradient(135deg, #090a0f, #121520);"></div>
+    <div style="position:relative; z-index:10; text-align:center; padding: 40px var(--space-margin-desktop);">
+      <h1 class="text-display-lg" style="color:#fff; text-shadow:0 2px 20px rgba(0,0,0,0.5);">LIVE SPORTS ARENA</h1>
+      <p class="text-body-lg" style="color:rgba(229,226,225,0.8); max-width:600px; margin: 16px auto;">Experience the thrill of live matches in stunning 60fps low-latency 4K.</p>
+    </div>
+  </section>
+
+  <!-- Live & Popular Matches Dashboard -->
+  <section class="section" style="padding-top: 0;">
+    <div class="section-header" style="border-bottom: 1px solid rgba(255,255,255,0.05); padding-bottom: 16px;">
+      <div style="display:flex; align-items:center; gap: 8px;">
+        <span style="width:10px; height:10px; background:#e50914; border-radius:50%; animation:pulse-live 1.5s infinite"></span>
+        <h2 class="text-headline-sm" style="margin:0;">Live & Popular Matches</h2>
+      </div>
+    </div>
+    
+    <div id="live-matches-grid" style="display:grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 24px; padding-top: 24px;">
+      <!-- Skeletons while loading -->
+      <div class="skeleton" style="height: 160px; border-radius: 16px;"></div>
+      <div class="skeleton" style="height: 160px; border-radius: 16px;"></div>
+      <div class="skeleton" style="height: 160px; border-radius: 16px;"></div>
+    </div>
+  </section>
+
+  <!-- Footer -->
+  <div id="footer-mount"></div>
+  <!-- Mobile Nav -->
+  <div id="mobile-nav-mount"></div>
+
+  <style>
+    @keyframes pulse-live {
+      0% { box-shadow: 0 0 0 0 rgba(229, 9, 20, 0.7); }
+      70% { box-shadow: 0 0 0 10px rgba(229, 9, 20, 0); }
+      100% { box-shadow: 0 0 0 0 rgba(229, 9, 20, 0); }
+    }
+    
+    .match-card {
+      background: #121520;
+      border: 1px solid rgba(255,255,255,0.05);
+      border-radius: 16px;
+      padding: 20px;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+    }
+    
+    .match-card:hover {
+      border-color: rgba(229, 9, 20, 0.3);
+      transform: translateY(-4px);
+      box-shadow: 0 15px 40px rgba(229, 9, 20, 0.15);
+    }
+    
+    .team-logo {
+      width: 48px;
+      height: 48px;
+      object-fit: contain;
+      border-radius: 50%;
+      background: rgba(255,255,255,0.05);
+      padding: 4px;
+    }
+    
+    .score-display {
+      font-size: 24px;
+      font-weight: 900;
+      font-family: monospace;
+      background: rgba(0,0,0,0.4);
+      padding: 6px 16px;
+      border-radius: 12px;
+      border: 1px solid rgba(255,255,255,0.05);
+      letter-spacing: -1px;
+    }
+  </style>
+</div>

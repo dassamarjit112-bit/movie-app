@@ -261,3 +261,63 @@
 .plan-card.featured:hover {
   animation: none;
 }
+
+/* ── Sports Dashboard Animations ── */
+@keyframes football-goal {
+  0% { transform: scale(0) rotate(-180deg) translate(-200px, 100px); opacity: 0; }
+  30% { transform: scale(1.5) rotate(0deg) translate(0, 0); opacity: 1; }
+  70% { transform: scale(1.5) rotate(0deg) translate(0, 0); opacity: 1; }
+  100% { transform: scale(3) rotate(180deg) translate(200px, -100px); opacity: 0; }
+}
+
+@keyframes cricket-boundary {
+  0% { transform: scale(0) translateY(100vh); opacity: 0; }
+  20% { transform: scale(2) translateY(-20vh); opacity: 1; }
+  80% { transform: scale(2) translateY(-20vh); opacity: 1; }
+  100% { transform: scale(5) translateY(-100vh); opacity: 0; }
+}
+
+@keyframes text-burst {
+  0% { transform: scale(0.5); opacity: 0; }
+  20% { transform: scale(1.2); opacity: 1; text-shadow: 0 0 20px #e50914, 0 0 40px #e50914; color: #fff;}
+  80% { transform: scale(1); opacity: 1; text-shadow: 0 0 30px #e50914, 0 0 60px #e50914; color: #fff;}
+  100% { transform: scale(1.5); opacity: 0; }
+}
+
+.anim-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 10000;
+  pointer-events: none;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  background: rgba(0, 0, 0, 0.7);
+  backdrop-filter: blur(8px);
+  opacity: 0;
+  transition: opacity 0.3s ease;
+}
+
+.anim-overlay.active {
+  opacity: 1;
+}
+
+.anim-ball-football {
+  font-size: 120px;
+  animation: football-goal 3s cubic-bezier(0.25, 1, 0.5, 1) forwards;
+}
+
+.anim-ball-cricket {
+  font-size: 120px;
+  animation: cricket-boundary 3s cubic-bezier(0.25, 1, 0.5, 1) forwards;
+}
+
+.anim-text {
+  font-family: 'Montserrat', sans-serif;
+  font-weight: 900;
+  font-size: 90px;
+  text-transform: uppercase;
+  margin-top: 20px;
+  animation: text-burst 3s cubic-bezier(0.25, 1, 0.5, 1) forwards;
+}

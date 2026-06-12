@@ -65,6 +65,21 @@
       <button class="genre-chip" data-genre="romance">❤️ Romance</button>
     </div>
   </div>
+
+  <!-- ── Live Sports Recommendations ── -->
+  <section class="section" id="live-sports-section" style="display:none; padding-bottom:12px;">
+    <div class="section-header">
+      <h2 class="section-title" style="display:flex; align-items:center;">
+        <span style="display:inline-block; width:10px; height:10px; background:#e50914; border-radius:50%; margin-right:8px; animation:pulse-live 1.5s infinite"></span>
+        Live Sports Now
+      </h2>
+      <span class="section-link" onclick="Router.navigate('sports')">Dashboard</span>
+    </div>
+    <div class="scroll-row" id="home-sports-row" style="padding-bottom:12px;">
+      <!-- Matches injected here via JS -->
+    </div>
+  </section>
+
   <!-- ── Trending Now ── -->
   <section class="section">
     <div class="section-header">

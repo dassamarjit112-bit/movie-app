@@ -136,7 +136,9 @@
     window.ENV = {
       SUPABASE_URL: "%VITE_SUPABASE_URL%",
       SUPABASE_ANON_KEY: "%VITE_SUPABASE_ANON_KEY%",
-      TMDB_API_KEY: "%VITE_TMDB_API_KEY%"
+      TMDB_API_KEY: "%VITE_TMDB_API_KEY%",
+      SPORTS_API_KEY: "%VITE_SPORTS_API_KEY%",
+      CRICKET_API_KEY: "%VITE_CRICKET_API_KEY%"
     };
   </script>
 
@@ -147,6 +149,9 @@
   <!-- HLS.js for adaptive streaming -->
   <script src="https://cdn.jsdelivr.net/npm/hls.js@1.5.7/dist/hls.min.js"></script>
 
+  <!-- Shaka Player for high-quality sports streaming -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/shaka-player/4.3.5/shaka-player.compiled.js"></script>
+
   <!-- ── App Modules ── (order matters) -->
   <script type="module" src="js/config.js"></script>
   <script type="module" src="js/auth.js"></script>
@@ -156,6 +161,8 @@
   <script type="module" src="js/tmdb.js"></script>
   <script type="module" src="js/player.js"></script>
   <script type="module" src="js/router.js"></script>
+  <script type="module" src="js/sports-api.js"></script>
+  <script type="module" src="js/sportsScraper.js"></script>
 
   <!-- ── Page Controllers ── -->
   <script type="module" src="pages/login.js"></script>
@@ -168,6 +175,8 @@
   <script type="module" src="pages/giftcode.js"></script>
   <script type="module" src="pages/account.js"></script>
   <script type="module" src="pages/scraper.js"></script>
+  <script type="module" src="pages/sports.js"></script>
+  <script type="module" src="pages/sports-stream.js"></script>
 
   <script>
     // ── Bootstrap Application ──
