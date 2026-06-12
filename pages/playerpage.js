@@ -129,9 +129,6 @@ const PlayerPage = (() => {
     if (videoElement) videoElement.style.display = 'none';
     if (controlsContainer) controlsContainer.style.display = 'none';
 
-    const spinner = document.getElementById('buffer-spinner');
-    if (spinner) spinner.classList.add('hidden');
-
     // Show and load iframe — ensure it fills the entire screen
     if (iframeElement) {
       iframeElement.style.display = 'block';
