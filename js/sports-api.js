@@ -12,16 +12,17 @@ const SportsAPI = (() => {
 
     // 1. Fetch Football Matches (ESPN Public API - Multiple Leagues)
     const footballEndpoints = [
-      'eng.1', // Premier League
-      'esp.1', // La Liga
-      'uefa.champions', // Champions League
-      'fifa.world' // FIFA World Cup
+      'https://site.api.espn.com/apis/site/v2/sports/soccer/eng.1/scoreboard',
+      'https://site.api.espn.com/apis/site/v2/sports/soccer/esp.1/scoreboard',
+      'https://site.api.espn.com/apis/site/v2/sports/soccer/uefa.champions/scoreboard',
+      'https://site.api.espn.com/apis/site/v2/sports/soccer/fifa.world/scoreboard',
+      'https://site.api.espn.com/apis/site/v2/sports/soccer/uefa.euro/scoreboard'
     ];
 
-    const footballPromises = footballEndpoints.map(league => 
-      fetch(`https://site.api.espn.com/apis/site/v2/sports/soccer/${league}/scoreboard`)
+    const footballPromises = footballEndpoints.map(url => 
+      fetch(url)
         .then(res => res.json())
-        .catch(err => { console.warn(`Failed to fetch football data for ${league}:`, err); return null; })
+        .catch(err => { console.warn(`Failed to fetch football data:`, err); return null; })
     );
 
     // 2. Fetch Cricket Matches (ESPN Public API - International/IPL)

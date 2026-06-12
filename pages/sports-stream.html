@@ -8,8 +8,38 @@
     </button>
   </div>
 
+  <style>
+    /* Cinematic Mobile Player */
+    .sp-player-wrapper {
+      width: 100%;
+      max-width: 1280px;
+      padding: 0 24px;
+      position: relative;
+    }
+    .sp-player-inner {
+      aspect-ratio: 16/9;
+      background: #0a0a0f;
+      border-radius: 16px;
+      overflow: hidden;
+      box-shadow: 0 32px 80px rgba(0,0,0,0.9);
+      position: relative;
+      border: 1px solid rgba(255,255,255,0.06);
+    }
+    @media (max-width: 768px) {
+      .sp-player-wrapper {
+        padding: 0;
+        margin-top: 10px;
+      }
+      .sp-player-inner {
+        border-radius: 0;
+        border-left: none;
+        border-right: none;
+      }
+    }
+  </style>
+
   <!-- Main Video Area -->
-  <div style="flex:1; display:flex; flex-direction:column; align-items:center; justify-content:center; padding-top:80px;">
+  <div style="flex:1; display:flex; flex-direction:column; align-items:center; justify-content:center; padding-top:60px;">
 
     <!-- Match Header -->
     <div id="stream-match-header" style="width:100%; max-width:1280px; padding:0 24px 16px; display:flex; align-items:center; justify-content:space-between; flex-wrap:wrap; gap:12px;">
@@ -31,18 +61,18 @@
     </div>
 
     <!-- Video Iframe Container -->
-    <div style="width:100%; max-width:1280px; padding:0 24px; position:relative;">
-      <div style="aspect-ratio:16/9; background:#0a0a0f; border-radius:16px; overflow:hidden; box-shadow:0 32px 80px rgba(0,0,0,0.9); position:relative; border:1px solid rgba(255,255,255,0.06);">
+    <div class="sp-player-wrapper">
+      <div class="sp-player-inner">
         <!-- Iframe mode -->
         <iframe id="live-embed-frame"
-          style="width:100%; height:100%; border:none; display:block;"
+          style="width:100%; height:100%; border:none; display:block; position:absolute; inset:0;"
           allowfullscreen
-          sandbox="allow-scripts allow-same-origin allow-forms allow-pointer-lock allow-top-navigation-by-user-activation"
-          allow="autoplay; encrypted-media; fullscreen">
+          sandbox="allow-scripts allow-same-origin allow-forms allow-pointer-lock allow-top-navigation-by-user-activation allow-popups"
+          allow="autoplay; encrypted-media; fullscreen; picture-in-picture">
         </iframe>
         
         <!-- Native HLS Video mode -->
-        <div id="native-video-container" style="display:none; width:100%; height:100%;" data-vjs-player>
+        <div id="native-video-container" style="display:none; width:100%; height:100%; position:absolute; inset:0;" data-vjs-player>
           <video id="native-video-player" class="video-js vjs-default-skin vjs-16-9" playsinline controls preload="auto" style="width:100%; height:100%;"></video>
         </div>
 

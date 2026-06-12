@@ -167,22 +167,6 @@ const PlayerPage = (() => {
     // Delay slightly to allow iframe to initialize
     setTimeout(tryFullscreen, 400);
 
-    // Dummy block close (keeps remaining code intact)
-    {
-
-      // Build the full stream list for this title
-      availableStreams = [primaryStream, ...streamsToUse.filter(s => s !== primaryStream)];
-        // If Hollywood, prioritize server #3 (index 2) and then servers #5 and #6 (indices 4 and 5)
-        if (isHollywood) {
-          const preferred = [];
-          // server #3
-          if (availableStreams[2]) preferred.push(availableStreams[2]);
-          // servers #5 and #6
-          if (availableStreams[4]) preferred.push(availableStreams[4]);
-          if (availableStreams[5]) preferred.push(availableStreams[5]);
-          const rest = availableStreams.filter((_, i) => i !== 2 && i !== 4 && i !== 5);
-          availableStreams = [...preferred, ...rest];
-        }
       activeStreamIndex = 0;
 
       const switchBtn = document.getElementById('switch-server-btn');
@@ -351,7 +335,7 @@ function onPlayerReady() {
           Subscriptions.saveProgress(session.user.id, contentId, currentProgress, contentType);
         }
       }, 6000);
-    }
+    
 
     // Overlay controls auto-hide setup (for the top back button)
     setupOverlayAutoHide();
@@ -440,7 +424,10 @@ function onPlayerReady() {
     const container = document.getElementById('server-buttons');
     if (!container || !availableStreams || availableStreams.length === 0) return;
 
-    const serverNames = ['2Embed', 'VidLink', 'AutoEmbed'];
+    let serverNames = ['2Embed', 'VidLink', 'AutoEmbed'];
+    if (availableStreams.some(s => s.includes('streamimdb'))) {
+      serverNames = ['2Embed', 'StreamIMDB', 'VidLink', 'AutoEmbed'];
+    }
     const currentName = serverNames[activeStreamIndex] || `Server ${activeStreamIndex + 1}`;
     const nextIndex = (activeStreamIndex + 1) % availableStreams.length;
     const nextName  = serverNames[nextIndex] || `Server ${nextIndex + 1}`;

@@ -632,7 +632,7 @@ input, textarea, select {
 
 /* ── Mobile Bottom Nav ── */
 .mobile-nav {
-  display: none;
+  display: flex;
   position: fixed;
   bottom: 0;
   left: 0;
@@ -646,6 +646,12 @@ input, textarea, select {
   align-items: center;
   justify-content: space-around;
   padding: 0 8px;
+}
+/* Hide mobile nav on larger screens */
+@media screen and (min-width: 768px) {
+  .mobile-nav {
+    display: none;
+  }
 }
 
 .mobile-nav-item {
