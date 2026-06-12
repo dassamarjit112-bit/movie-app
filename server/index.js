@@ -190,6 +190,45 @@ app.get('/api/scrape', async (req, res) => {
   }
 });
 
+/**
+ * GET /api/sports/fancode
+ * Scrapes and formats the community FanCode JSON stream index
+ */
+const FANCODE_MIRROR_JSON = "https://raw.githubusercontent.com/kajju027/Fancode-Events-Json/main/fancode.json";
+
+app.get('/api/sports/fancode', async (req, res) => {
+  try {
+    const response = await axios.get(FANCODE_MIRROR_JSON, { timeout: 10000 });
+    const liveMatches = response.data.matches || response.data || [];
+    
+    if (!Array.isArray(liveMatches)) {
+      throw new Error("Invalid response format from FanCode mirror");
+    }
+
+    // Format data cleanly to sync with existing UI architecture
+    const formattedFixtures = liveMatches.map((match, i) => ({
+      matchId: match.match_id || `fc-${i}`,
+      title: match.match_name || 'FanCode Event',
+      tournament: match.event_name || 'Premium Sports',
+      sportType: (match.event_category || 'cricket').toLowerCase(),
+      homeTeam: match.team_1_name || 'Team 1',
+      awayTeam: match.team_2_name || 'Team 2',
+      homeLogo: match.team_1_flag || '',
+      awayLogo: match.team_2_flag || '',
+      banner: match.banner || '',
+      streamUrl: match.stream_link || '',
+      status: 'LIVE',
+      score: 'LIVE',
+      isFancode: true
+    }));
+
+    return res.json({ success: true, matches: formattedFixtures });
+  } catch (error) {
+    console.error("FanCode routing node failure:", error.message);
+    return res.status(500).json({ error: "FanCode server cluster unreachable" });
+  }
+});
+
 const PORT = process.env.PORT || 4000;
 app.listen(PORT, () => {
   console.log(`CinePro backend listening on http://localhost:${PORT}`);

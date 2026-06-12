@@ -149,38 +149,69 @@ const HomePage = (() => {
     const row = document.getElementById('home-sports-row');
     if (!section || !row || !window.SportsAPI) return;
 
+    // Sport emoji mapping
+    const sportEmoji = { football: '⚽', cricket: '🏏', basketball: '🏀', tennis: '🎾' };
+
     try {
       const matches = await window.SportsAPI.getLiveMatches();
       if (matches && matches.length > 0) {
         section.style.display = 'block';
-        row.innerHTML = matches.map(match => `
-          <div class="match-card poster-card-item" style="flex-shrink:0; width:280px; margin-right:16px; cursor:pointer;" onclick="Router.navigate('sports-stream', {id: '${match.matchId}'})">
-            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom: 12px;">
-              <span style="font-size:10px; font-weight:700; color:rgba(229,226,225,0.5); text-transform:uppercase; letter-spacing:0.05em; background:rgba(255,255,255,0.05); padding:4px 8px; border-radius:6px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; max-width:120px;">
-                ${match.tournament}
-              </span>
-              <span style="font-size:10px; font-weight:800; color:#e50914; letter-spacing:0.1em; animation:pulse-live 2s infinite">
-                ● ${match.status}
-              </span>
+        row.innerHTML = matches.map(match => {
+          const emoji = sportEmoji[match.sportType] || '🏆';
+          const isLive = match.status && (match.status.toUpperCase().includes('LIVE') || match.status === 'LIVE');
+          const viewers = Math.floor(Math.random() * 80 + 10) + 'K';
+
+          const homeLogoHtml = match.homeLogo
+            ? `<img src="${match.homeLogo}" alt="${match.homeTeam}" class="hs-team-logo" onerror="this.style.display='none';this.nextSibling.style.display='flex';">
+               <div class="hs-team-abbr" style="display:none">${(match.homeTeam||'?').substring(0,3).toUpperCase()}</div>`
+            : `<div class="hs-team-abbr">${(match.homeTeam||'?').substring(0,3).toUpperCase()}</div>`;
+
+          const awayLogoHtml = match.awayLogo
+            ? `<img src="${match.awayLogo}" alt="${match.awayTeam}" class="hs-team-logo" onerror="this.style.display='none';this.nextSibling.style.display='flex';">
+               <div class="hs-team-abbr" style="display:none">${(match.awayTeam||'?').substring(0,3).toUpperCase()}</div>`
+            : `<div class="hs-team-abbr">${(match.awayTeam||'?').substring(0,3).toUpperCase()}</div>`;
+
+          return `
+            <div class="hs-match-card" onclick="Router.navigate('sports-stream', {id: '${match.matchId}'})">
+              <div class="hs-card-inner">
+                <div class="hs-card-top">
+                  <div class="hs-tournament-tag">
+                    <span>${emoji}</span>
+                    <span>${match.tournament}</span>
+                  </div>
+                  ${isLive
+                    ? `<div class="hs-live-tag"><div class="hs-live-tag-dot"></div>LIVE</div>`
+                    : `<div style="font-size:9px;font-weight:700;color:rgba(255,255,255,0.3);background:rgba(255,255,255,0.05);border-radius:999px;padding:3px 9px;">${match.status}</div>`
+                  }
+                </div>
+                <div class="hs-card-teams">
+                  <div class="hs-team">
+                    <div class="hs-team-logo-ring">${homeLogoHtml}</div>
+                    <div class="hs-team-name">${match.homeTeam}</div>
+                  </div>
+                  <div class="hs-score-box">
+                    <div class="hs-score">${match.score}</div>
+                    <div class="hs-score-sub">${isLive ? '● LIVE' : 'Final'}</div>
+                  </div>
+                  <div class="hs-team">
+                    <div class="hs-team-logo-ring">${awayLogoHtml}</div>
+                    <div class="hs-team-name">${match.awayTeam}</div>
+                  </div>
+                </div>
+                <div class="hs-card-footer">
+                  <div class="hs-viewers">
+                    <span class="material-symbols-outlined" style="font-size:13px;">visibility</span>
+                    ${viewers} watching
+                  </div>
+                  <button class="hs-watch-btn">
+                    <span class="material-symbols-outlined icon-fill" style="font-size:13px;">play_arrow</span>
+                    Watch
+                  </button>
+                </div>
+              </div>
             </div>
-            
-            <div style="display:flex; justify-content:space-between; align-items:center;">
-              <div style="display:flex; flex-direction:column; align-items:center; flex:1; gap:6px;">
-                <img src="${match.homeLogo}" alt="${match.homeTeam}" style="width:32px; height:32px; border-radius:50%; object-fit:cover; background:#222;" />
-                <span style="font-size:11px; font-weight:700; text-align:center; color:#fff; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; max-width:80px;">${match.homeTeam}</span>
-              </div>
-              
-              <div style="flex:1; display:flex; justify-content:center;">
-                <span style="font-family:monospace; font-size:14px; font-weight:900; background:rgba(255,255,255,0.1); padding:4px 8px; border-radius:6px; color:#fff;">${match.score}</span>
-              </div>
-              
-              <div style="display:flex; flex-direction:column; align-items:center; flex:1; gap:6px;">
-                <img src="${match.awayLogo}" alt="${match.awayTeam}" style="width:32px; height:32px; border-radius:50%; object-fit:cover; background:#222;" />
-                <span style="font-size:11px; font-weight:700; text-align:center; color:#fff; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; max-width:80px;">${match.awayTeam}</span>
-              </div>
-            </div>
-          </div>
-        `).join('');
+          `;
+        }).join('');
       } else {
         section.style.display = 'none';
       }

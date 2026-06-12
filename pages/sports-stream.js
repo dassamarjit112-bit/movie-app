@@ -8,6 +8,7 @@ const SportsStreamPage = (() => {
   let pollInterval = null;
   let currentMatchId = null;
   let activeServerId = 'vidsrc';
+  let videojsPlayer = null;
 
   async function init(params) {
     const matchId = params && params.id;
@@ -17,19 +18,24 @@ const SportsStreamPage = (() => {
     }
     currentMatchId = matchId;
 
-    // Build server selector buttons
-    renderServerButtons();
-
-    // Load match details for the header overlay
+    // Load match details for the header overlay and check if it's a FanCode match
+    let isFancodeMatch = false;
     if (window.SportsAPI) {
       const matchDetails = await window.SportsAPI.getMatchDetails(matchId);
       if (matchDetails) {
         updateHeader(matchDetails);
+        if (matchDetails.isFancode && matchDetails.streamUrl) {
+          isFancodeMatch = true;
+          activeServerId = 'fancode';
+        }
       }
     }
 
-    // Load stream with default server
-    loadStream('vidsrc');
+    // Build server selector buttons
+    renderServerButtons();
+
+    // Load stream with default or matched server
+    loadStream(activeServerId);
 
     // Poll to keep score updated every 15s
     pollInterval = setInterval(async () => {
@@ -67,22 +73,68 @@ const SportsStreamPage = (() => {
     loadStream(serverId);
   }
 
-  function loadStream(serverId) {
+  async function loadStream(serverId) {
     const iframe = document.getElementById('live-embed-frame');
+    const nativeContainer = document.getElementById('native-video-container');
     const loadingEl = document.getElementById('stream-loading');
 
-    if (!iframe || !window.SportsScraper) return;
+    if (!iframe || !nativeContainer || !window.SportsScraper) return;
 
     // Show loading spinner
     if (loadingEl) loadingEl.style.display = 'flex';
 
-    const streamUrl = window.SportsScraper.getStreamUrl(currentMatchId, serverId);
+    let streamType = 'iframe';
+    let streamUrl = '';
 
-    // Inject stream
-    iframe.src = '';
+    if (serverId === 'fancode') {
+      streamType = 'native_hls';
+      const matchDetails = window.SportsAPI ? await window.SportsAPI.getMatchDetails(currentMatchId) : null;
+      if (matchDetails && matchDetails.streamUrl) {
+        streamUrl = matchDetails.streamUrl;
+      } else {
+        // Fallback if no valid Fancode URL
+        streamType = 'iframe';
+        streamUrl = window.SportsScraper.getStreamUrl(currentMatchId, 'vidsrc');
+      }
+    } else {
+      streamType = 'iframe';
+      streamUrl = window.SportsScraper.getStreamUrl(currentMatchId, serverId);
+    }
+
     setTimeout(() => {
-      iframe.src = streamUrl;
-      // Hide loading overlay after giving iframe time to start loading
+      if (streamType === 'iframe') {
+        // Switch to iframe
+        nativeContainer.style.display = 'none';
+        if (videojsPlayer) {
+          videojsPlayer.pause();
+        }
+        
+        iframe.style.display = 'block';
+        iframe.src = streamUrl;
+      } else {
+        // Switch to native HLS with video.js
+        iframe.style.display = 'none';
+        iframe.src = '';
+        nativeContainer.style.display = 'block';
+        
+        if (window.videojs) {
+          if (!videojsPlayer) {
+            videojsPlayer = window.videojs('native-video-player', {
+              controls: true,
+              autoplay: true,
+              fluid: true,
+              preload: 'auto',
+              html5: { vhs: { overrideNative: true } }
+            });
+          }
+          videojsPlayer.src({ src: streamUrl, type: 'application/x-mpegURL' });
+          videojsPlayer.play().catch(e => console.warn('Video.js play error:', e));
+        } else {
+          console.error("Video.js is not loaded.");
+        }
+      }
+
+      // Hide loading overlay after giving player time to start loading
       setTimeout(() => {
         if (loadingEl) loadingEl.style.display = 'none';
       }, 2500);

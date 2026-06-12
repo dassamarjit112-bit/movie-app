@@ -67,15 +67,19 @@
   </div>
 
   <!-- ── Live Sports Recommendations ── -->
-  <section class="section" id="live-sports-section" style="display:none; padding-bottom:12px;">
-    <div class="section-header">
-      <h2 class="section-title" style="display:flex; align-items:center;">
-        <span style="display:inline-block; width:10px; height:10px; background:#e50914; border-radius:50%; margin-right:8px; animation:pulse-live 1.5s infinite"></span>
-        Live Sports Now
-      </h2>
-      <span class="section-link" onclick="Router.navigate('sports')">Dashboard</span>
+  <section class="hs-section" id="live-sports-section" style="display:none;">
+    <div class="hs-header">
+      <div class="hs-title-wrap">
+        <span class="hs-live-dot"></span>
+        <h2 class="hs-title">Live Sports</h2>
+        <span class="hs-live-label">NOW</span>
+      </div>
+      <span class="hs-view-all" onclick="Router.navigate('sports')">
+        View All
+        <span class="material-symbols-outlined" style="font-size:16px;vertical-align:middle;">arrow_forward</span>
+      </span>
     </div>
-    <div class="scroll-row" id="home-sports-row" style="padding-bottom:12px;">
+    <div class="hs-sports-row scroll-row" id="home-sports-row">
       <!-- Matches injected here via JS -->
     </div>
   </section>
@@ -219,6 +223,153 @@
       background: #e50914;
       width: 24px;
       border-radius: 4px;
+    }
+
+    /* ═══════════════════════════════════
+       Home Sports Section — FanCode style
+       ═══════════════════════════════════ */
+    .hs-section {
+      padding: 32px 64px 24px;
+      max-width: 1440px; margin: 0 auto;
+    }
+    @media(max-width:768px) { .hs-section { padding: 24px 20px 16px; } }
+
+    .hs-header {
+      display: flex; align-items: center; justify-content: space-between;
+      margin-bottom: 20px;
+    }
+    .hs-title-wrap { display: flex; align-items: center; gap: 10px; }
+    .hs-title {
+      font-family: 'Montserrat', sans-serif;
+      font-size: 20px; font-weight: 800; color: #fff;
+    }
+    .hs-live-label {
+      font-size: 9px; font-weight: 900; letter-spacing: 0.12em;
+      background: rgba(255,58,58,0.15); border: 1px solid rgba(255,58,58,0.35);
+      color: #ff5555; border-radius: 999px; padding: 3px 8px;
+      animation: hs-badge-pulse 2s ease-in-out infinite;
+    }
+    @keyframes hs-badge-pulse { 0%,100%{opacity:1} 50%{opacity:0.65} }
+
+    .hs-live-dot {
+      display: inline-block; width: 9px; height: 9px;
+      background: #ff3a3a; border-radius: 50%; flex-shrink: 0;
+      box-shadow: 0 0 0 0 rgba(255,58,58,0.7);
+      animation: hs-dot-pulse 1.5s ease-in-out infinite;
+    }
+    @keyframes hs-dot-pulse {
+      0% { box-shadow: 0 0 0 0 rgba(255,58,58,0.7); }
+      70% { box-shadow: 0 0 0 10px rgba(255,58,58,0); }
+      100% { box-shadow: 0 0 0 0 rgba(255,58,58,0); }
+    }
+
+    .hs-view-all {
+      display: flex; align-items: center; gap: 4px;
+      font-size: 13px; font-weight: 700; color: #00d084;
+      cursor: pointer; transition: all 0.2s;
+    }
+    .hs-view-all:hover { color: #00a866; text-decoration: underline; }
+
+    .hs-sports-row { padding-bottom: 12px; gap: 16px; }
+
+    /* ── Home Sport Match Card ── */
+    .hs-match-card {
+      position: relative;
+      flex-shrink: 0; width: 280px;
+      background: linear-gradient(135deg, #0f1824, #0a1018);
+      border: 1px solid rgba(255,255,255,0.08);
+      border-radius: 18px; overflow: hidden;
+      cursor: pointer; transition: all 0.3s ease;
+    }
+    .hs-match-card:hover {
+      transform: translateY(-6px) scale(1.02);
+      border-color: rgba(0,208,132,0.35);
+      box-shadow: 0 20px 60px rgba(0,0,0,0.6), 0 0 0 1px rgba(0,208,132,0.1);
+    }
+    .hs-match-card::before {
+      content: '';
+      position: absolute; top: 0; left: 0; right: 0; height: 2px;
+      background: linear-gradient(90deg, #00d084, #14d1ff);
+      opacity: 0; transition: opacity 0.3s;
+    }
+    .hs-match-card:hover::before { opacity: 1; }
+
+    .hs-card-inner { padding: 18px; }
+    .hs-card-top {
+      display: flex; justify-content: space-between; align-items: center;
+      margin-bottom: 16px;
+    }
+    .hs-tournament-tag {
+      display: flex; align-items: center; gap: 5px;
+      font-size: 10px; font-weight: 700; text-transform: uppercase;
+      letter-spacing: 0.07em; color: rgba(255,255,255,0.4);
+      background: rgba(255,255,255,0.04); border-radius: 6px; padding: 3px 8px;
+      white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 130px;
+    }
+    .hs-live-tag {
+      display: flex; align-items: center; gap: 5px;
+      font-size: 9px; font-weight: 900; letter-spacing: 0.1em;
+      background: rgba(255,58,58,0.12); border: 1px solid rgba(255,58,58,0.3);
+      color: #ff5555; border-radius: 999px; padding: 3px 9px;
+      text-transform: uppercase; flex-shrink: 0;
+    }
+    .hs-live-tag-dot {
+      width: 5px; height: 5px; border-radius: 50%; background: #ff3a3a;
+      animation: hs-dot-pulse 1.5s infinite;
+    }
+
+    .hs-card-teams {
+      display: flex; align-items: center; gap: 8px; margin-bottom: 14px;
+    }
+    .hs-team { flex: 1; display: flex; flex-direction: column; align-items: center; gap: 6px; }
+    .hs-team-logo-ring {
+      width: 44px; height: 44px; border-radius: 50%;
+      border: 2px solid rgba(255,255,255,0.08);
+      background: rgba(255,255,255,0.04);
+      display: flex; align-items: center; justify-content: center;
+      overflow: hidden; transition: border-color 0.3s;
+    }
+    .hs-match-card:hover .hs-team-logo-ring { border-color: rgba(0,208,132,0.25); }
+    .hs-team-logo { width: 30px; height: 30px; object-fit: contain; }
+    .hs-team-abbr {
+      font-family: 'Montserrat', sans-serif; font-size: 13px;
+      font-weight: 900; color: rgba(255,255,255,0.6);
+    }
+    .hs-team-name {
+      font-size: 11px; font-weight: 700; text-align: center; color: #fff;
+      white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 80px;
+    }
+
+    .hs-score-box {
+      display: flex; flex-direction: column; align-items: center; gap: 4px; flex-shrink: 0;
+    }
+    .hs-score {
+      font-family: 'Montserrat', sans-serif; font-size: 22px; font-weight: 900;
+      color: #fff; letter-spacing: -1px;
+      background: rgba(0,208,132,0.08); border: 1px solid rgba(0,208,132,0.15);
+      border-radius: 8px; padding: 5px 10px;
+      min-width: 72px; text-align: center;
+    }
+    .hs-score-sub { font-size: 9px; color: rgba(255,255,255,0.25); text-transform: uppercase; letter-spacing: 0.08em; font-weight: 700; }
+
+    .hs-card-footer {
+      display: flex; align-items: center; justify-content: space-between;
+      border-top: 1px solid rgba(255,255,255,0.05); padding-top: 12px;
+    }
+    .hs-viewers {
+      display: flex; align-items: center; gap: 4px;
+      font-size: 11px; color: rgba(255,255,255,0.3); font-weight: 600;
+    }
+    .hs-watch-btn {
+      background: linear-gradient(135deg, rgba(0,208,132,0.18), rgba(20,209,255,0.1));
+      border: 1px solid rgba(0,208,132,0.3); border-radius: 8px;
+      padding: 6px 14px; font-size: 11px; font-weight: 700;
+      color: #00d084; cursor: pointer; display: flex; align-items: center; gap: 5px;
+      transition: all 0.25s;
+    }
+    .hs-watch-btn:hover {
+      background: rgba(0,208,132,0.25);
+      box-shadow: 0 4px 16px rgba(0,208,132,0.25);
     }
   </style>
 </div>

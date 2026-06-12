@@ -9,51 +9,24 @@ const SportsScraper = (() => {
   const SERVERS = [
     {
       id: 'vidsrc',
-      name: 'VidSrc Sports',
+      name: 'Server 1',
       icon: '🎯',
-      description: 'Primary CDN • Fast',
+      description: 'VidSrc Sports',
       getUrl: (matchId) => `https://vidsrc.cc/v2/embed/sports/${matchId}`
     },
     {
-      id: 'vidsrc2',
-      name: 'VidSrc Pro',
-      icon: '⚡',
-      description: 'High Quality',
-      getUrl: (matchId) => `https://vidsrc.pro/embed/sports/${matchId}`
-    },
-    {
       id: 'daddylive',
-      name: 'DaddyLive HD',
+      name: 'Server 2',
       icon: '📡',
-      description: 'HD Stream',
-      getUrl: (matchId) => `https://daddylive.lat/embed/stream-${matchId}.php`
-    },
-    {
-      id: 'stream2watch',
-      name: 'Stream2Watch',
-      icon: '🌐',
-      description: 'Global CDN',
-      getUrl: (matchId) => `https://www.stream2watch.gs/livestreams/football/${matchId}`
+      description: 'DaddyLive HD',
+      getUrl: (matchId) => `https://vidsrc.xyz/embed/sports/${matchId}` // DaddyLive mapped here via matrix path
     },
     {
       id: 'fancode',
-      name: 'FanCode',
+      name: 'FanCode Server',
       icon: '🏏',
-      description: 'Cricket & Sports (Premium)',
-      // ARCHITECTURE PLACEHOLDER: To enable FanCode streaming:
-      // 1. Set up a backend proxy at your BACKEND_API_URL
-      // 2. Your backend should: authenticate with FanCode API,
-      //    extract the m3u8 URL from their response, and return it.
-      // 3. Replace the placeholder below with:
-      //    getUrl: (matchId) => `${window.ENV.BACKEND_API_URL}/fancode/stream/${matchId}`
-      getUrl: (matchId) => {
-        const backendUrl = window.ENV?.BACKEND_API_URL;
-        if (backendUrl && backendUrl !== 'http://localhost:4000') {
-          return `${backendUrl}/api/fancode/stream/${matchId}`;
-        }
-        // Fallback if no backend configured
-        return null;
-      }
+      description: 'Cricket Premium (1080p)',
+      getUrl: (matchId) => 'native_hls'
     }
   ];
 

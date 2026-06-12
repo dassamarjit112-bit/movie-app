@@ -69,6 +69,25 @@ const SportsAPI = (() => {
       console.error("Failed to fetch cricket data:", err);
     }
 
+    // 2.5 Fetch FanCode Matches from our new Backend Proxy
+    try {
+      const response = await fetch('/api/sports/fancode');
+      const data = await response.json();
+      if (data.success && data.matches) {
+        // Merge FanCode matches
+        data.matches.forEach(fcMatch => {
+          matches.push({
+            ...fcMatch,
+            // Fallbacks for score tracking
+            rawScoreHome: 0,
+            rawScoreAway: 0
+          });
+        });
+      }
+    } catch (err) {
+      console.error("Failed to fetch FanCode data:", err);
+    }
+
     // 3. Fallback / Simulation (If there are no live matches, provide a simulated match so the UI can be tested)
     if (matches.length === 0) {
       matches.push(...getSimulationMatches());

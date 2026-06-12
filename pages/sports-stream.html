@@ -33,13 +33,21 @@
     <!-- Video Iframe Container -->
     <div style="width:100%; max-width:1280px; padding:0 24px; position:relative;">
       <div style="aspect-ratio:16/9; background:#0a0a0f; border-radius:16px; overflow:hidden; box-shadow:0 32px 80px rgba(0,0,0,0.9); position:relative; border:1px solid rgba(255,255,255,0.06);">
+        <!-- Iframe mode -->
         <iframe id="live-embed-frame"
           style="width:100%; height:100%; border:none; display:block;"
           allowfullscreen
+          sandbox="allow-scripts allow-same-origin allow-forms allow-pointer-lock allow-top-navigation-by-user-activation"
           allow="autoplay; encrypted-media; fullscreen">
         </iframe>
+        
+        <!-- Native HLS Video mode -->
+        <div id="native-video-container" style="display:none; width:100%; height:100%;" data-vjs-player>
+          <video id="native-video-player" class="video-js vjs-default-skin vjs-16-9" playsinline controls preload="auto" style="width:100%; height:100%;"></video>
+        </div>
+
         <!-- Loading state -->
-        <div id="stream-loading" style="position:absolute; inset:0; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:16px; background:#0a0a0f;">
+        <div id="stream-loading" style="position:absolute; inset:0; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:16px; background:#0a0a0f; z-index: 10;">
           <div style="width:64px; height:64px; border-radius:50%; border:3px solid rgba(255,255,255,0.08); border-top-color:#e50914; animation:spin 1s linear infinite;"></div>
           <span style="font-size:14px; color:rgba(255,255,255,0.4);">Connecting to stream…</span>
         </div>

@@ -1,33 +1,182 @@
-<div id="sports-page">
+<div id="sports-page" class="sp-root">
   <!-- Animation Overlay Container -->
   <div id="sports-anim-container"></div>
 
   <!-- Navbar -->
   <div id="navbar-mount"></div>
 
-  <!-- Hero Section -->
-  <section class="hero" style="min-height:40vh; display:flex; align-items:center; justify-content:center; position:relative; overflow:hidden;">
-    <div class="hero-backdrop" style="background: linear-gradient(135deg, #090a0f, #121520);"></div>
-    <div style="position:relative; z-index:10; text-align:center; padding: 40px var(--space-margin-desktop);">
-      <h1 class="text-display-lg" style="color:#fff; text-shadow:0 2px 20px rgba(0,0,0,0.5);">LIVE SPORTS ARENA</h1>
-      <p class="text-body-lg" style="color:rgba(229,226,225,0.8); max-width:600px; margin: 16px auto;">Experience the thrill of live matches in stunning 60fps low-latency 4K.</p>
+  <!-- ── Sports Hero Banner ── -->
+  <section class="sp-hero">
+    <div class="sp-hero-bg">
+      <div class="sp-hero-orb sp-hero-orb-1"></div>
+      <div class="sp-hero-orb sp-hero-orb-2"></div>
+      <div class="sp-hero-orb sp-hero-orb-3"></div>
+      <div class="sp-hero-grid"></div>
+    </div>
+    <div class="sp-hero-content">
+      <div class="sp-hero-badge">
+        <span class="sp-live-dot"></span>
+        <span>LIVE NOW</span>
+      </div>
+      <h1 class="sp-hero-title">
+        <span class="sp-hero-title-accent">LIVE</span> SPORTS
+      </h1>
+      <p class="sp-hero-subtitle">Stream every match. Feel every moment. In stunning 4K 60fps.</p>
+      <div class="sp-hero-stats">
+        <div class="sp-stat">
+          <span class="sp-stat-num" id="sp-live-count">--</span>
+          <span class="sp-stat-label">Live Now</span>
+        </div>
+        <div class="sp-stat-divider"></div>
+        <div class="sp-stat">
+          <span class="sp-stat-num" id="sp-today-count">--</span>
+          <span class="sp-stat-label">Today's Matches</span>
+        </div>
+        <div class="sp-stat-divider"></div>
+        <div class="sp-stat">
+          <span class="sp-stat-num">4K</span>
+          <span class="sp-stat-label">Ultra HD</span>
+        </div>
+      </div>
+    </div>
+    <div class="sp-hero-featured" id="sp-hero-featured">
+      <!-- Featured match injected by JS -->
     </div>
   </section>
 
-  <!-- Live & Popular Matches Dashboard -->
-  <section class="section" style="padding-top: 0;">
-    <div class="section-header" style="border-bottom: 1px solid rgba(255,255,255,0.05); padding-bottom: 16px;">
-      <div style="display:flex; align-items:center; gap: 8px;">
-        <span style="width:10px; height:10px; background:#e50914; border-radius:50%; animation:pulse-live 1.5s infinite"></span>
-        <h2 class="text-headline-sm" style="margin:0;">Live & Popular Matches</h2>
+  <!-- ── Sport Type Filter Tabs & Search ── -->
+  <div class="sp-tabs-wrap" style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:16px;">
+    <div style="position:relative; flex:1; display:flex; min-width:0;">
+      <div class="sp-tabs" id="sp-sport-tabs" style="flex:1;">
+        <button class="sp-tab active" data-sport="all">
+          <span class="sp-tab-icon">🏆</span>
+          <span>All Sports</span>
+        </button>
+        <button class="sp-tab" data-sport="cricket">
+          <span class="sp-tab-icon">🏏</span>
+          <span>Cricket</span>
+        </button>
+        <button class="sp-tab" data-sport="football">
+          <span class="sp-tab-icon">⚽</span>
+          <span>Football</span>
+        </button>
+        <button class="sp-tab" data-sport="basketball">
+          <span class="sp-tab-icon">🏀</span>
+          <span>Basketball</span>
+        </button>
+        <button class="sp-tab" data-sport="tennis">
+          <span class="sp-tab-icon">🎾</span>
+          <span>Tennis</span>
+        </button>
+        <button class="sp-tab" data-sport="kabaddi">
+          <span class="sp-tab-icon">🤼</span>
+          <span>Kabaddi</span>
+        </button>
       </div>
+      <div class="sp-tabs-fade"></div>
     </div>
     
-    <div id="live-matches-grid" style="display:grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 24px; padding-top: 24px;">
-      <!-- Skeletons while loading -->
-      <div class="skeleton" style="height: 160px; border-radius: 16px;"></div>
-      <div class="skeleton" style="height: 160px; border-radius: 16px;"></div>
-      <div class="skeleton" style="height: 160px; border-radius: 16px;"></div>
+    <div class="sp-search-box">
+      <span class="material-symbols-outlined sp-search-icon">search</span>
+      <input type="text" id="sp-search-input" placeholder="Search matches, teams, tournaments..." autocomplete="off" />
+    </div>
+  </div>
+
+  <!-- ── Live Matches Section ── -->
+  <section class="sp-section">
+    <div class="sp-section-hd">
+      <div class="sp-section-title-wrap">
+        <span class="sp-live-dot"></span>
+        <h2 class="sp-section-title">Live Matches</h2>
+      </div>
+      <button class="sp-see-all" onclick="document.getElementById('live-matches-grid').scrollIntoView({behavior:'smooth'})">View All</button>
+    </div>
+
+    <div class="sp-live-grid" id="live-matches-grid">
+      <!-- Skeleton loaders -->
+      <div class="sp-match-skeleton"></div>
+      <div class="sp-match-skeleton"></div>
+      <div class="sp-match-skeleton"></div>
+    </div>
+  </section>
+
+  <!-- ── Upcoming Matches Section ── -->
+  <section class="sp-section">
+    <div class="sp-section-hd">
+      <div class="sp-section-title-wrap">
+        <span class="sp-calendar-icon material-symbols-outlined">calendar_today</span>
+        <h2 class="sp-section-title">Upcoming</h2>
+      </div>
+    </div>
+    <div class="sp-upcoming-list" id="sp-upcoming-list">
+      <!-- Injected by JS -->
+    </div>
+  </section>
+
+  <!-- ── Tournament Spotlight ── -->
+  <section class="sp-section">
+    <div class="sp-section-hd">
+      <div class="sp-section-title-wrap">
+        <span class="sp-trophy-icon">🏆</span>
+        <h2 class="sp-section-title">Tournament Spotlight</h2>
+      </div>
+    </div>
+    <div class="sp-tournaments-row" id="sp-tournaments-row">
+      <div class="sp-tournament-card" data-sport="cricket">
+        <div class="sp-tourn-bg" style="background:linear-gradient(135deg,#1a3a2a,#0d2a1a)"></div>
+        <div class="sp-tourn-emoji">🏏</div>
+        <div class="sp-tourn-info">
+          <div class="sp-tourn-name">IPL 2025</div>
+          <div class="sp-tourn-matches">8 matches today</div>
+          <div class="sp-tourn-badge">LIVE</div>
+        </div>
+      </div>
+      <div class="sp-tournament-card" data-sport="football">
+        <div class="sp-tourn-bg" style="background:linear-gradient(135deg,#1a2a3a,#0d1a2a)"></div>
+        <div class="sp-tourn-emoji">⚽</div>
+        <div class="sp-tourn-info">
+          <div class="sp-tourn-name">Premier League</div>
+          <div class="sp-tourn-matches">5 matches today</div>
+          <div class="sp-tourn-badge">TODAY</div>
+        </div>
+      </div>
+      <div class="sp-tournament-card" data-sport="basketball">
+        <div class="sp-tourn-bg" style="background:linear-gradient(135deg,#2a1a1a,#1a0d0d)"></div>
+        <div class="sp-tourn-emoji">🏀</div>
+        <div class="sp-tourn-info">
+          <div class="sp-tourn-name">NBA Finals</div>
+          <div class="sp-tourn-matches">2 games tonight</div>
+          <div class="sp-tourn-badge sp-badge-blue">UPCOMING</div>
+        </div>
+      </div>
+      <div class="sp-tournament-card" data-sport="tennis">
+        <div class="sp-tourn-bg" style="background:linear-gradient(135deg,#1a2a1a,#0d1a0d)"></div>
+        <div class="sp-tourn-emoji">🎾</div>
+        <div class="sp-tourn-info">
+          <div class="sp-tourn-name">French Open</div>
+          <div class="sp-tourn-matches">12 matches today</div>
+          <div class="sp-tourn-badge">LIVE</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ── Subscribe CTA ── -->
+  <section class="sp-section">
+    <div class="sp-cta-banner">
+      <div class="sp-cta-glow"></div>
+      <div class="sp-cta-content">
+        <div class="sp-cta-badge">Premium</div>
+        <h3 class="sp-cta-title">Watch Every Ball. Every Goal. Live.</h3>
+        <p class="sp-cta-desc">Stream 10,000+ live sports events yearly with 4K quality and no ads.</p>
+        <button class="sp-cta-btn" onclick="Router.navigate('subscribe')">
+          <span class="material-symbols-outlined icon-fill">workspace_premium</span>
+          Get Premium Access
+        </button>
+      </div>
+      <div class="sp-cta-sports-icons">
+        <span>🏏</span><span>⚽</span><span>🏀</span><span>🎾</span><span>🏐</span><span>🤼</span>
+      </div>
     </div>
   </section>
 
@@ -37,46 +186,538 @@
   <div id="mobile-nav-mount"></div>
 
   <style>
+    /* ═══════════════════════════════════════
+       SPORTS PAGE — FanCode-Inspired Premium
+       ═══════════════════════════════════════ */
+
+    .sp-root {
+      --sp-green: #00d084;
+      --sp-blue: #14d1ff;
+      --sp-red: #ff3a3a;
+      --sp-orange: #ff7a00;
+      --sp-purple: #a855f7;
+      --sp-gold: #ffd700;
+      --sp-bg: #080b12;
+      --sp-card: #0f1420;
+      --sp-card-border: rgba(255,255,255,0.07);
+      --sp-card-hover: rgba(255,255,255,0.1);
+      background: var(--sp-bg);
+      min-height: 100vh;
+    }
+
+    /* ── Hero ── */
+    .sp-hero {
+      position: relative;
+      min-height: 440px;
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      align-items: center;
+      padding: 100px 64px 48px;
+      overflow: hidden;
+      gap: 40px;
+    }
+    @media(max-width:768px) {
+      .sp-hero { grid-template-columns: 1fr; padding: 90px 20px 32px; }
+    }
+
+    .sp-hero-bg {
+      position: absolute; inset: 0; z-index: 0;
+      background: radial-gradient(ellipse at 20% 50%, rgba(0,208,132,0.08) 0%, transparent 60%),
+                  radial-gradient(ellipse at 80% 30%, rgba(20,209,255,0.06) 0%, transparent 60%),
+                  #080b12;
+    }
+    .sp-hero-orb {
+      position: absolute;
+      border-radius: 50%;
+      filter: blur(80px);
+      opacity: 0.5;
+      animation: sp-orb-float 8s ease-in-out infinite;
+    }
+    .sp-hero-orb-1 { width:400px; height:400px; top:-100px; left:-50px; background:radial-gradient(circle, rgba(0,208,132,0.15), transparent 70%); }
+    .sp-hero-orb-2 { width:300px; height:300px; top:50px; right:100px; background:radial-gradient(circle, rgba(20,209,255,0.12), transparent 70%); animation-delay: -3s; }
+    .sp-hero-orb-3 { width:200px; height:200px; bottom:-50px; left:40%; background:radial-gradient(circle, rgba(168,85,247,0.1), transparent 70%); animation-delay: -5s; }
+    @keyframes sp-orb-float {
+      0%,100% { transform: translateY(0) scale(1); }
+      50% { transform: translateY(-20px) scale(1.05); }
+    }
+
+    .sp-hero-grid {
+      position: absolute; inset: 0;
+      background-image: linear-gradient(rgba(255,255,255,0.02) 1px, transparent 1px),
+                        linear-gradient(90deg, rgba(255,255,255,0.02) 1px, transparent 1px);
+      background-size: 40px 40px;
+      mask-image: radial-gradient(ellipse at center, rgba(0,0,0,0.6), transparent 80%);
+    }
+
+    .sp-hero-content { position: relative; z-index: 2; }
+    .sp-hero-featured { position: relative; z-index: 2; }
+
+    .sp-hero-badge {
+      display: inline-flex; align-items: center; gap: 8px;
+      background: rgba(0,208,132,0.15); border: 1px solid rgba(0,208,132,0.4);
+      border-radius: 999px; padding: 6px 16px;
+      font-size: 11px; font-weight: 800; letter-spacing: 0.12em;
+      color: var(--sp-green); text-transform: uppercase;
+      margin-bottom: 20px;
+    }
+    .sp-hero-title {
+      font-family: 'Montserrat', sans-serif;
+      font-size: clamp(48px, 7vw, 84px);
+      font-weight: 900; letter-spacing: -0.03em;
+      line-height: 0.95; color: #fff;
+      margin-bottom: 20px;
+    }
+    .sp-hero-title-accent {
+      background: linear-gradient(135deg, var(--sp-green), var(--sp-blue));
+      -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+    .sp-hero-subtitle {
+      font-size: 16px; color: rgba(255,255,255,0.55);
+      margin-bottom: 32px; max-width: 420px; line-height: 1.6;
+    }
+    .sp-hero-stats {
+      display: flex; align-items: center; gap: 24px;
+    }
+    .sp-stat { display: flex; flex-direction: column; gap: 2px; }
+    .sp-stat-num {
+      font-family: 'Montserrat', sans-serif;
+      font-size: 28px; font-weight: 900; color: #fff;
+    }
+    .sp-stat-label { font-size: 11px; color: rgba(255,255,255,0.4); font-weight: 600; text-transform: uppercase; letter-spacing: 0.06em; }
+    .sp-stat-divider { width: 1px; height: 40px; background: rgba(255,255,255,0.1); }
+
+    /* ── Hero Featured Match Card ── */
+    .sp-hero-match {
+      background: rgba(255,255,255,0.03);
+      border: 1px solid rgba(255,255,255,0.1);
+      border-radius: 20px;
+      padding: 28px;
+      backdrop-filter: blur(20px);
+      position: relative;
+      overflow: hidden;
+    }
+    .sp-hero-match::before {
+      content: '';
+      position: absolute; inset: 0;
+      background: linear-gradient(135deg, rgba(0,208,132,0.05), transparent 60%);
+      pointer-events: none;
+    }
+    .sp-hero-match-top {
+      display: flex; justify-content: space-between; align-items: center;
+      margin-bottom: 24px;
+    }
+    .sp-hero-match-tournament {
+      font-size: 11px; font-weight: 700; text-transform: uppercase;
+      letter-spacing: 0.1em; color: rgba(255,255,255,0.4);
+      background: rgba(255,255,255,0.05); border-radius: 6px; padding: 4px 10px;
+    }
+    .sp-hero-live-badge {
+      display: flex; align-items: center; gap: 6px;
+      background: rgba(255,58,58,0.15); border: 1px solid rgba(255,58,58,0.4);
+      border-radius: 999px; padding: 4px 12px;
+      font-size: 11px; font-weight: 800; color: var(--sp-red);
+      letter-spacing: 0.1em; text-transform: uppercase;
+    }
+    .sp-hero-teams {
+      display: flex; align-items: center; gap: 16px; margin-bottom: 20px;
+    }
+    .sp-hero-team { flex: 1; display: flex; flex-direction: column; align-items: center; gap: 10px; }
+    .sp-hero-team-logo {
+      width: 64px; height: 64px; border-radius: 50%;
+      object-fit: contain; background: rgba(255,255,255,0.05);
+      padding: 6px; border: 2px solid rgba(255,255,255,0.1);
+    }
+    .sp-hero-team-name { font-weight: 700; font-size: 14px; text-align: center; color: #fff; }
+    .sp-hero-vs {
+      display: flex; flex-direction: column; align-items: center; gap: 8px; flex-shrink: 0;
+    }
+    .sp-hero-score {
+      font-family: 'Montserrat', sans-serif;
+      font-size: 36px; font-weight: 900; color: #fff;
+      background: rgba(0,208,132,0.1); border: 1px solid rgba(0,208,132,0.2);
+      border-radius: 12px; padding: 8px 20px; letter-spacing: -2px;
+      min-width: 100px; text-align: center;
+    }
+    .sp-hero-vs-text { font-size: 11px; color: rgba(255,255,255,0.3); font-weight: 700; text-transform: uppercase; }
+    .sp-hero-match-footer {
+      display: flex; align-items: center; justify-content: space-between;
+    }
+    .sp-hero-watch-btn {
+      background: linear-gradient(135deg, var(--sp-green), #00a866);
+      color: #fff; border: none; border-radius: 10px;
+      padding: 12px 28px; font-size: 14px; font-weight: 700;
+      cursor: pointer; display: flex; align-items: center; gap: 8px;
+      transition: all 0.3s; box-shadow: 0 4px 24px rgba(0,208,132,0.35);
+    }
+    .sp-hero-watch-btn:hover {
+      transform: translateY(-2px); box-shadow: 0 8px 32px rgba(0,208,132,0.5);
+    }
+    .sp-hero-viewers {
+      display: flex; align-items: center; gap: 6px;
+      font-size: 12px; color: rgba(255,255,255,0.4);
+    }
+
+    /* ── Live Dot ── */
+    .sp-live-dot {
+      display: inline-block; width: 9px; height: 9px;
+      background: var(--sp-red); border-radius: 50%;
+      box-shadow: 0 0 0 0 rgba(255,58,58,0.7);
+      animation: sp-pulse 1.5s ease-in-out infinite;
+      flex-shrink: 0;
+    }
+    @keyframes sp-pulse {
+      0% { box-shadow: 0 0 0 0 rgba(255,58,58,0.7); }
+      70% { box-shadow: 0 0 0 10px rgba(255,58,58,0); }
+      100% { box-shadow: 0 0 0 0 rgba(255,58,58,0); }
+    }
+
+    /* ── Sport Tabs & Search ── */
+    .sp-tabs-wrap {
+      position: relative;
+      padding: 0 64px;
+      margin-bottom: 4px;
+    }
+    @media(max-width:768px) { .sp-tabs-wrap { padding: 0 20px; } }
+    .sp-tabs {
+      display: flex; gap: 8px; overflow-x: auto;
+      scrollbar-width: none; padding: 16px 0;
+    }
+    .sp-tabs::-webkit-scrollbar { display: none; }
+    .sp-tabs-fade {
+      position: absolute; top: 0; right: 0; bottom: 0; width: 60px;
+      background: linear-gradient(to right, transparent, var(--sp-bg));
+      pointer-events: none;
+    }
+
+    .sp-search-box {
+      display: flex; align-items: center; gap: 8px;
+      background: rgba(255,255,255,0.05);
+      border: 1px solid rgba(255,255,255,0.1);
+      border-radius: 999px;
+      padding: 8px 16px;
+      width: 100%; max-width: 320px;
+      transition: all 0.3s;
+    }
+    .sp-search-box:focus-within {
+      background: rgba(255,255,255,0.08);
+      border-color: var(--sp-green);
+      box-shadow: 0 0 15px rgba(0,208,132,0.15);
+    }
+    .sp-search-box input {
+      background: transparent; border: none; outline: none;
+      color: #fff; font-family: inherit; font-size: 13px; width: 100%;
+    }
+    .sp-search-box input::placeholder { color: rgba(255,255,255,0.3); }
+
+    .sp-tab {
+      display: inline-flex; align-items: center; gap: 8px;
+      padding: 10px 20px; border-radius: 12px;
+      border: 1px solid rgba(255,255,255,0.08);
+      background: rgba(255,255,255,0.03);
+      font-size: 13px; font-weight: 600; color: rgba(255,255,255,0.5);
+      cursor: pointer; white-space: nowrap;
+      transition: all 0.25s ease; flex-shrink: 0;
+    }
+    .sp-tab:hover {
+      border-color: rgba(255,255,255,0.15);
+      color: rgba(255,255,255,0.8);
+      background: rgba(255,255,255,0.06);
+    }
+    .sp-tab.active {
+      background: rgba(0,208,132,0.12);
+      border-color: rgba(0,208,132,0.35);
+      color: var(--sp-green);
+    }
+    .sp-tab-icon { font-size: 18px; }
+
+    /* ── Section ── */
+    .sp-section {
+      padding: 32px 64px;
+      max-width: 1440px; margin: 0 auto;
+    }
+    @media(max-width:768px) { .sp-section { padding: 24px 20px; } }
+
+    .sp-section-hd {
+      display: flex; align-items: center; justify-content: space-between;
+      margin-bottom: 24px;
+    }
+    .sp-section-title-wrap { display: flex; align-items: center; gap: 10px; }
+    .sp-section-title {
+      font-family: 'Montserrat', sans-serif;
+      font-size: 20px; font-weight: 800; color: #fff;
+    }
+    .sp-calendar-icon { font-size: 20px; color: var(--sp-blue); }
+    .sp-trophy-icon { font-size: 22px; }
+    .sp-see-all {
+      font-size: 13px; font-weight: 600; color: var(--sp-green);
+      background: none; border: none; cursor: pointer;
+      transition: color 0.2s;
+    }
+    .sp-see-all:hover { color: #00a866; text-decoration: underline; }
+
+    /* ── Live Match Grid ── */
+    .sp-live-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+      gap: 20px;
+    }
+
+    /* ── Match Card ── */
+    .sp-match-card {
+      position: relative;
+      background: var(--sp-card);
+      border: 1px solid var(--sp-card-border);
+      border-radius: 18px;
+      overflow: hidden;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      group: true;
+    }
+    .sp-match-card:hover {
+      border-color: rgba(0,208,132,0.3);
+      transform: translateY(-4px);
+      box-shadow: 0 20px 60px rgba(0,0,0,0.6), 0 0 0 1px rgba(0,208,132,0.1);
+    }
+    .sp-match-card::before {
+      content: '';
+      position: absolute; top: 0; left: 0; right: 0; height: 2px;
+      background: linear-gradient(90deg, var(--sp-green), var(--sp-blue));
+      opacity: 0;
+      transition: opacity 0.3s;
+    }
+    .sp-match-card:hover::before { opacity: 1; }
+
+    .sp-match-card-inner { padding: 20px; }
+
+    .sp-match-header {
+      display: flex; justify-content: space-between; align-items: center;
+      margin-bottom: 20px;
+    }
+    .sp-match-tournament {
+      display: flex; align-items: center; gap: 6px;
+      font-size: 11px; font-weight: 700; text-transform: uppercase;
+      letter-spacing: 0.08em; color: rgba(255,255,255,0.4);
+    }
+    .sp-match-sport-badge {
+      font-size: 14px;
+    }
+    .sp-status-live {
+      display: flex; align-items: center; gap: 6px;
+      font-size: 10px; font-weight: 800; color: var(--sp-red);
+      letter-spacing: 0.1em; text-transform: uppercase;
+      background: rgba(255,58,58,0.1); border: 1px solid rgba(255,58,58,0.25);
+      border-radius: 999px; padding: 3px 10px;
+    }
+    .sp-status-live .sp-live-dot { width: 6px; height: 6px; }
+    .sp-status-ft {
+      font-size: 10px; font-weight: 700; color: rgba(255,255,255,0.35);
+      background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.08);
+      border-radius: 999px; padding: 3px 10px;
+    }
+
+    .sp-match-teams {
+      display: flex; align-items: center; gap: 12px; margin-bottom: 16px;
+    }
+    .sp-team {
+      flex: 1; display: flex; flex-direction: column; align-items: center; gap: 8px;
+    }
+    .sp-team-logo-wrap {
+      width: 52px; height: 52px; border-radius: 50%;
+      background: rgba(255,255,255,0.05); border: 2px solid rgba(255,255,255,0.08);
+      display: flex; align-items: center; justify-content: center;
+      overflow: hidden; transition: border-color 0.3s;
+    }
+    .sp-match-card:hover .sp-team-logo-wrap { border-color: rgba(0,208,132,0.25); }
+    .sp-team-logo {
+      width: 36px; height: 36px; object-fit: contain;
+    }
+    .sp-team-abbr {
+      width: 100%; height: 100%; display: flex; align-items: center; justify-content: center;
+      font-family: 'Montserrat', sans-serif; font-size: 14px; font-weight: 900;
+      color: rgba(255,255,255,0.7);
+    }
+    .sp-team-name {
+      font-size: 12px; font-weight: 700; text-align: center; color: #fff;
+      white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 90px;
+    }
+
+    .sp-score-center {
+      display: flex; flex-direction: column; align-items: center; gap: 6px; flex-shrink: 0;
+    }
+    .sp-score {
+      font-family: 'Montserrat', sans-serif; font-size: 28px; font-weight: 900;
+      color: #fff; letter-spacing: -1px;
+      background: rgba(255,255,255,0.05); border-radius: 10px;
+      padding: 6px 14px; border: 1px solid rgba(255,255,255,0.08);
+      min-width: 90px; text-align: center;
+    }
+    .sp-score-label { font-size: 10px; color: rgba(255,255,255,0.3); text-transform: uppercase; letter-spacing: 0.08em; font-weight: 600; }
+
+    .sp-match-footer {
+      display: flex; align-items: center; justify-content: space-between;
+      border-top: 1px solid rgba(255,255,255,0.05); padding-top: 14px;
+    }
+    .sp-match-viewers {
+      display: flex; align-items: center; gap: 5px;
+      font-size: 11px; color: rgba(255,255,255,0.35); font-weight: 600;
+    }
+    .sp-match-watch-btn {
+      background: linear-gradient(135deg, rgba(0,208,132,0.15), rgba(20,209,255,0.1));
+      border: 1px solid rgba(0,208,132,0.3);
+      color: var(--sp-green); border-radius: 8px;
+      padding: 7px 16px; font-size: 12px; font-weight: 700;
+      cursor: pointer; transition: all 0.25s;
+      display: flex; align-items: center; gap: 6px;
+    }
+    .sp-match-watch-btn:hover {
+      background: rgba(0,208,132,0.2);
+      box-shadow: 0 4px 16px rgba(0,208,132,0.25);
+      transform: scale(1.05);
+    }
+
+    /* ── Skeleton ── */
+    .sp-match-skeleton {
+      height: 200px; border-radius: 18px;
+      background: linear-gradient(90deg, #0f1420 25%, #1a2030 50%, #0f1420 75%);
+      background-size: 200% 100%;
+      animation: sp-shimmer 1.5s infinite;
+    }
+    @keyframes sp-shimmer {
+      0% { background-position: 200% 0; }
+      100% { background-position: -200% 0; }
+    }
+
+    /* ── Upcoming List ── */
+    .sp-upcoming-list { display: flex; flex-direction: column; gap: 12px; }
+    .sp-upcoming-item {
+      display: flex; align-items: center; gap: 16px;
+      background: var(--sp-card); border: 1px solid var(--sp-card-border);
+      border-radius: 14px; padding: 16px 20px;
+      cursor: pointer; transition: all 0.25s;
+    }
+    .sp-upcoming-item:hover {
+      border-color: rgba(20,209,255,0.25);
+      background: rgba(20,209,255,0.03);
+    }
+    .sp-upcoming-sport { font-size: 22px; flex-shrink: 0; }
+    .sp-upcoming-info { flex: 1; }
+    .sp-upcoming-teams { font-size: 14px; font-weight: 700; color: #fff; margin-bottom: 4px; }
+    .sp-upcoming-sub {
+      display: flex; align-items: center; gap: 10px;
+      font-size: 12px; color: rgba(255,255,255,0.4);
+    }
+    .sp-upcoming-dot { width: 3px; height: 3px; border-radius: 50%; background: rgba(255,255,255,0.25); }
+    .sp-upcoming-time {
+      font-family: 'Montserrat', sans-serif; font-weight: 800;
+      font-size: 13px; color: var(--sp-blue); flex-shrink: 0;
+    }
+    .sp-upcoming-remind {
+      background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.08);
+      border-radius: 8px; padding: 6px 12px; font-size: 12px; font-weight: 600;
+      color: rgba(255,255,255,0.5); cursor: pointer; transition: all 0.2s; flex-shrink: 0;
+    }
+    .sp-upcoming-remind:hover {
+      background: rgba(20,209,255,0.1); border-color: rgba(20,209,255,0.3);
+      color: var(--sp-blue);
+    }
+
+    /* ── Tournament Cards ── */
+    .sp-tournaments-row {
+      display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+      gap: 16px;
+    }
+    .sp-tournament-card {
+      position: relative; border-radius: 16px; overflow: hidden;
+      cursor: pointer; transition: all 0.3s; aspect-ratio: 4/3;
+      border: 1px solid rgba(255,255,255,0.07);
+      display: flex; align-items: center; justify-content: center;
+    }
+    .sp-tournament-card:hover { transform: scale(1.03); box-shadow: 0 20px 50px rgba(0,0,0,0.6); }
+    .sp-tourn-bg { position: absolute; inset: 0; }
+    .sp-tourn-emoji { position: relative; z-index: 2; font-size: 52px; opacity: 0.9; }
+    .sp-tourn-info {
+      position: absolute; bottom: 0; left: 0; right: 0; z-index: 3;
+      padding: 16px; background: linear-gradient(to top, rgba(0,0,0,0.8), transparent);
+    }
+    .sp-tourn-name { font-family: 'Montserrat', sans-serif; font-size: 14px; font-weight: 800; color: #fff; }
+    .sp-tourn-matches { font-size: 11px; color: rgba(255,255,255,0.5); margin-top: 2px; }
+    .sp-tourn-badge {
+      display: inline-block; margin-top: 6px;
+      font-size: 9px; font-weight: 800; text-transform: uppercase; letter-spacing: 0.1em;
+      background: rgba(255,58,58,0.2); border: 1px solid rgba(255,58,58,0.4);
+      color: #ff6b6b; border-radius: 999px; padding: 2px 8px;
+    }
+    .sp-badge-blue { background: rgba(20,209,255,0.15); border-color: rgba(20,209,255,0.3); color: var(--sp-blue); }
+
+    /* ── CTA Banner ── */
+    .sp-cta-banner {
+      position: relative; border-radius: 24px; overflow: hidden;
+      background: linear-gradient(135deg, #0a1628, #071220);
+      border: 1px solid rgba(0,208,132,0.2);
+      padding: 48px; display: flex; align-items: center; gap: 40px;
+      flex-wrap: wrap;
+    }
+    .sp-cta-glow {
+      position: absolute; top: -80px; right: -80px; width: 300px; height: 300px;
+      background: radial-gradient(circle, rgba(0,208,132,0.12), transparent 70%);
+      pointer-events: none;
+    }
+    .sp-cta-content { position: relative; z-index: 2; flex: 1; min-width: 260px; }
+    .sp-cta-badge {
+      display: inline-block; padding: 4px 14px; border-radius: 999px;
+      background: rgba(0,208,132,0.12); border: 1px solid rgba(0,208,132,0.3);
+      font-size: 11px; font-weight: 800; color: var(--sp-green); letter-spacing: 0.08em;
+      text-transform: uppercase; margin-bottom: 16px;
+    }
+    .sp-cta-title {
+      font-family: 'Montserrat', sans-serif; font-size: clamp(22px,3vw,32px);
+      font-weight: 900; color: #fff; margin-bottom: 10px;
+    }
+    .sp-cta-desc { font-size: 15px; color: rgba(255,255,255,0.5); margin-bottom: 24px; max-width: 440px; }
+    .sp-cta-btn {
+      display: inline-flex; align-items: center; gap: 10px;
+      background: linear-gradient(135deg, var(--sp-green), #00a866);
+      color: #fff; border: none; border-radius: 12px;
+      padding: 14px 32px; font-size: 15px; font-weight: 700;
+      cursor: pointer; transition: all 0.3s;
+      box-shadow: 0 4px 24px rgba(0,208,132,0.35);
+    }
+    .sp-cta-btn:hover { transform: translateY(-2px); box-shadow: 0 8px 40px rgba(0,208,132,0.5); }
+    .sp-cta-sports-icons {
+      position: relative; z-index: 2;
+      display: flex; gap: 8px; flex-wrap: wrap; justify-content: center;
+    }
+    .sp-cta-sports-icons span {
+      font-size: 36px; display: inline-block;
+      animation: sp-icon-bounce 2s ease-in-out infinite;
+      opacity: 0.85;
+    }
+    .sp-cta-sports-icons span:nth-child(1) { animation-delay: 0s; }
+    .sp-cta-sports-icons span:nth-child(2) { animation-delay: 0.2s; }
+    .sp-cta-sports-icons span:nth-child(3) { animation-delay: 0.4s; }
+    .sp-cta-sports-icons span:nth-child(4) { animation-delay: 0.6s; }
+    .sp-cta-sports-icons span:nth-child(5) { animation-delay: 0.8s; }
+    .sp-cta-sports-icons span:nth-child(6) { animation-delay: 1s; }
+    @keyframes sp-icon-bounce {
+      0%,100% { transform: translateY(0); }
+      50% { transform: translateY(-8px); }
+    }
+
+    /* ── No Match State ── */
+    .sp-no-matches {
+      grid-column: 1/-1; text-align: center; padding: 60px 20px;
+      color: rgba(255,255,255,0.3);
+    }
+    .sp-no-matches-icon { font-size: 64px; margin-bottom: 16px; opacity: 0.5; }
+    .sp-no-matches-text { font-size: 16px; font-weight: 600; margin-bottom: 8px; color: rgba(255,255,255,0.5); }
+    .sp-no-matches-sub { font-size: 13px; }
+
+    /* ── Pulse animation for LIVE ── */
     @keyframes pulse-live {
       0% { box-shadow: 0 0 0 0 rgba(229, 9, 20, 0.7); }
       70% { box-shadow: 0 0 0 10px rgba(229, 9, 20, 0); }
       100% { box-shadow: 0 0 0 0 rgba(229, 9, 20, 0); }
-    }
-    
-    .match-card {
-      background: #121520;
-      border: 1px solid rgba(255,255,255,0.05);
-      border-radius: 16px;
-      padding: 20px;
-      cursor: pointer;
-      transition: all 0.3s ease;
-      box-shadow: 0 10px 30px rgba(0,0,0,0.5);
-    }
-    
-    .match-card:hover {
-      border-color: rgba(229, 9, 20, 0.3);
-      transform: translateY(-4px);
-      box-shadow: 0 15px 40px rgba(229, 9, 20, 0.15);
-    }
-    
-    .team-logo {
-      width: 48px;
-      height: 48px;
-      object-fit: contain;
-      border-radius: 50%;
-      background: rgba(255,255,255,0.05);
-      padding: 4px;
-    }
-    
-    .score-display {
-      font-size: 24px;
-      font-weight: 900;
-      font-family: monospace;
-      background: rgba(0,0,0,0.4);
-      padding: 6px 16px;
-      border-radius: 12px;
-      border: 1px solid rgba(255,255,255,0.05);
-      letter-spacing: -1px;
     }
   </style>
 </div>
