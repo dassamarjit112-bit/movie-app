@@ -111,11 +111,19 @@ const TMDB = (() => {
 
     if (season != null && episode != null) {
       const tvStreams = [
-        `https://www.2embed.cc/embedtv/${id}&s=${season}&e=${episode}`,
-        `https://vidlink.pro/tv/${id}/${season}/${episode}`,
-        `https://autoembed.co/tv/tmdb/${id}-${season}-${episode}`,
+        `https://www.2embed.cc/embedtv/${id}&s=${season}&e=${episode}`
       ];
-      // streamimdb also supports TV sometimes but the prompt specifically says /embed/movie/
+      
+      // Inject new IMDB server as second option for series if imdb_id is available
+      if (imdbId) {
+        tvStreams.push(`https://streamimdb.ru/embed/tv/${imdbId}/${season}/${episode}`);
+      }
+      
+      tvStreams.push(
+        `https://vidlink.pro/tv/${id}/${season}/${episode}`,
+        `https://autoembed.co/tv/tmdb/${id}-${season}-${episode}`
+      );
+      
       return tvStreams;
     } else {
       const movieStreams = [
