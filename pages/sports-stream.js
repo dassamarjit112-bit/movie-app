@@ -25,25 +25,55 @@ const SportsStreamPage = (() => {
 
     // Setup redirect logic
     const watchBtn = document.getElementById('btn-watch-app');
+    const intentUrl = `intent://match/${currentMatchId}#Intent;scheme=cricztv;package=com.cricztv.app;end`;
+    const downloadUrl = `/CricZ TV.apk`;
+
+    const triggerDownload = () => {
+      const downloadAnim = document.getElementById('download-animation');
+      if (watchBtn) watchBtn.style.display = 'none';
+      if (downloadAnim) downloadAnim.style.display = 'flex';
+      
+      const a = document.createElement('a');
+      a.href = downloadUrl;
+      a.download = "CricZ TV.apk";
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+
+      // Bring back button after some time to allow retry
+      setTimeout(() => {
+        if (watchBtn) watchBtn.style.display = 'flex';
+        if (downloadAnim) downloadAnim.style.display = 'none';
+      }, 5000);
+    };
+
+    const attemptIntent = () => {
+      // Check if browser went to background (meaning app opened)
+      let hidden = false;
+      const onHide = () => { hidden = true; };
+      document.addEventListener('visibilitychange', onHide);
+      window.addEventListener('blur', onHide);
+
+      window.location.href = intentUrl;
+      
+      setTimeout(() => {
+        document.removeEventListener('visibilitychange', onHide);
+        window.removeEventListener('blur', onHide);
+        // If still visible, app did not open, fallback to download
+        if (!hidden && document.visibilityState === 'visible') {
+           triggerDownload();
+        }
+      }, 2000);
+    };
+
+    // Auto attempt to open the app directly on page load if on mobile
+    const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+    if (isMobile) {
+      setTimeout(() => attemptIntent(), 500); // brief delay before redirect
+    }
+
     if (watchBtn) {
-      watchBtn.onclick = () => {
-        // App Intent URL format with fallback
-        const intentUrl = `intent://match/${currentMatchId}#Intent;scheme=cricztv;package=com.cricztv.app;end`;
-        const downloadUrl = `/CricZ TV.apk`;
-        
-        // Try opening intent
-        window.location.href = intentUrl;
-        
-        // Fallback to downloading APK if app doesn't intercept
-        setTimeout(() => {
-          const a = document.createElement('a');
-          a.href = downloadUrl;
-          a.download = "CricZ TV.apk";
-          document.body.appendChild(a);
-          a.click();
-          document.body.removeChild(a);
-        }, 1500);
-      };
+      watchBtn.onclick = () => attemptIntent();
     }
 
     // Poll to keep score updated every 15s
