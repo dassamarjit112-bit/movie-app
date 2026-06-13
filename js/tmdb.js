@@ -102,46 +102,27 @@ const TMDB = (() => {
   // Get embed stream URLs for TMDB title
   function getRegionalStreams(itemOrId, season, episode) {
     if (itemOrId && typeof itemOrId === 'object' && itemOrId.streams && season == null && episode == null) {
-      return itemOrId.streams;
+      // Rebuild the 4 streams instead of relying on cached item.streams which might be wrong
     }
     
     // Support both direct ID or full item object
     const id = (typeof itemOrId === 'object') ? itemOrId.tmdb_id || itemOrId.id : itemOrId;
-    const imdbId = (typeof itemOrId === 'object') ? itemOrId.imdb_id : null;
+    const imdbId = (typeof itemOrId === 'object') ? itemOrId.imdb_id || id : id;
 
     if (season != null && episode != null) {
-      const tvStreams = [
-        `https://www.2embed.cc/embedtv/${id}&s=${season}&e=${episode}`
-      ];
-      
-      // Inject new IMDB server as second option for series if imdb_id is available
-      if (imdbId) {
-        tvStreams.push(`https://streamimdb.ru/embed/tv/${imdbId}/${season}/${episode}`);
-      }
-      
-      tvStreams.push(
+      return [
+        `https://www.2embed.cc/embedtv/${id}&s=${season}&e=${episode}`,
+        `https://streamimdb.ru/embed/tv/${imdbId}/${season}/${episode}`,
         `https://vidlink.pro/tv/${id}/${season}/${episode}`,
         `https://autoembed.co/tv/tmdb/${id}-${season}-${episode}`
-      );
-      
-      return tvStreams;
-    } else {
-      const movieStreams = [
-        `https://www.2embed.cc/embed/${id}`
       ];
-      
-      // Inject new IMDB server as second option if imdb_id is available
-      if (imdbId) {
-        movieStreams.push(`https://streamimdb.ru/embed/movie/${imdbId}`);
-      }
-      
-      // Add the rest
-      movieStreams.push(
+    } else {
+      return [
+        `https://www.2embed.cc/embed/${id}`,
+        `https://streamimdb.ru/embed/movie/${imdbId}`,
         `https://vidlink.pro/movie/${id}`,
         `https://autoembed.co/movie/tmdb/${id}`
-      );
-      
-      return movieStreams;
+      ];
     }
   }
 

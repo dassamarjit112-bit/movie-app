@@ -4,9 +4,11 @@
 
 const SportsPage = (() => {
   let pollingInterval = null;
+  let carouselInterval = null;
   let currentSport = 'all';
   let searchQuery = '';
   let allMatches = [];
+  let currentHeroIndex = 0;
 
   // ── Sport type emoji / label mapping ──
   const sportMeta = {
@@ -147,7 +149,18 @@ const SportsPage = (() => {
     if (todayCountEl) todayCountEl.textContent = allMatches.length + UPCOMING.length;
 
     // Update hero featured match
-    renderHeroFeatured(liveMatches[0] || allMatches[0]);
+    const featuredPool = liveMatches.length > 0 ? liveMatches.slice(0, 5) : allMatches.slice(0, 5);
+    if (carouselInterval) clearInterval(carouselInterval);
+    if (featuredPool.length > 0) {
+      currentHeroIndex = 0;
+      renderHeroFeatured(featuredPool[currentHeroIndex]);
+      carouselInterval = setInterval(() => {
+        currentHeroIndex = (currentHeroIndex + 1) % featuredPool.length;
+        renderHeroFeatured(featuredPool[currentHeroIndex]);
+      }, 5000);
+    } else {
+      renderHeroFeatured(null);
+    }
 
     // Trigger animations
     allMatches.forEach(match => {
@@ -310,6 +323,7 @@ const SportsPage = (() => {
 
   function cleanup() {
     if (pollingInterval) clearInterval(pollingInterval);
+    if (carouselInterval) clearInterval(carouselInterval);
   }
 
   return { init, cleanup };

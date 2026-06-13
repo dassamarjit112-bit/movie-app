@@ -39,7 +39,7 @@
 
   /* Push content above bottom nav */
   body {
-    padding-bottom: 80px; /* Increased to comfortably clear 64px nav */
+    padding-bottom: 90px; /* Increased to comfortably clear floating nav */
   }
 
   .account-container {

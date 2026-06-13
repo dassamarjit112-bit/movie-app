@@ -54,22 +54,24 @@ const SportsAPI = (() => {
           const match = event.competitions[0];
           const homeTeam = match.competitors.find(c => c.homeAway === 'home') || match.competitors[0];
           const awayTeam = match.competitors.find(c => c.homeAway === 'away') || match.competitors[1];
-                  // Ensure poster fallback uses official posters if available
-            const posterUrl = item.poster_path ? `${IMG}${item.poster_path}` : `https://via.placeholder.com/500x750?text=${encodeURIComponent(item.title)}`;
-            matches.push({
-              matchId: `fb-${event.id}`,
-              sportType: 'football',
-              tournament: tournamentName,
-              homeTeam: homeTeam?.team?.name || 'Home',
-              awayTeam: awayTeam?.team?.name || 'Away',
-              homeLogo: homeTeam?.team?.logo || `https://api.dicebear.com/7.x/initials/svg?seed=${homeTeam?.team?.abbreviation}&backgroundColor=e50914`,
-              awayLogo: awayTeam?.team?.logo || `https://api.dicebear.com/7.x/initials/svg?seed=${awayTeam?.team?.abbreviation}&backgroundColor=14d1ff`,
-              score: `${homeTeam?.score ?? 0} - ${awayTeam?.score ?? 0}`,
-              rawScoreHome: parseInt(homeTeam?.score ?? 0, 10),
-              rawScoreAway: parseInt(awayTeam?.score ?? 0, 10),
-              status: event.status.type.shortDetail,
-              poster: posterUrl
-            });
+          const homeName = homeTeam?.team?.name || 'Home';
+          const awayName = awayTeam?.team?.name || 'Away';
+          const matchTitle = `${homeName} vs ${awayName}`;
+          
+          matches.push({
+            matchId: `fb-${event.id}`,
+            sportType: 'football',
+            tournament: tournamentName,
+            homeTeam: homeName,
+            awayTeam: awayName,
+            homeLogo: homeTeam?.team?.logo || `https://api.dicebear.com/7.x/initials/svg?seed=${homeTeam?.team?.abbreviation}&backgroundColor=e50914`,
+            awayLogo: awayTeam?.team?.logo || `https://api.dicebear.com/7.x/initials/svg?seed=${awayTeam?.team?.abbreviation}&backgroundColor=14d1ff`,
+            score: `${homeTeam?.score ?? 0} - ${awayTeam?.score ?? 0}`,
+            rawScoreHome: parseInt(homeTeam?.score ?? 0, 10),
+            rawScoreAway: parseInt(awayTeam?.score ?? 0, 10),
+            status: event.status.type.shortDetail,
+            poster: `https://via.placeholder.com/500x750/0f1420/00d084?text=${encodeURIComponent(matchTitle)}`
+          });
         });
       }
     });

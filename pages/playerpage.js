@@ -172,13 +172,7 @@ const PlayerPage = (() => {
         switchBtn.style.display = availableStreams.length > 1 ? 'flex' : 'none';
       }
 
-      // Auto‑fallback timer – if video hasn't started playing within 3 s, try the next server
-      let fallbackTimer = setTimeout(() => {
-        if (videoElement && videoElement.paused && !videoElement.ended) {
-          UI.toast('Stream is slow, switching server automatically…', 'info');
-          switchServer();
-        }
-      }, 3000);
+      // Auto-fallback timer removed per user request
 
       // Show spinner initially (if exists)
       const spinner = document.getElementById('buffer-spinner');
@@ -196,13 +190,13 @@ const PlayerPage = (() => {
           clearTimeout(loadingTimer);
           loadingTimer = null;
         }
-        if (fallbackTimer) {
-          clearTimeout(fallbackTimer);
-          fallbackTimer = null;
+        if (videoElement) {
+          videoElement.removeEventListener('play', onPlayClear);
         }
-        videoElement.removeEventListener('play', onPlayClear);
       };
-      videoElement.addEventListener('play', onPlayClear);
+      if (videoElement) {
+        videoElement.addEventListener('play', onPlayClear);
+      }
 
         // Detect possible ad URLs and handle them with auto‑fullscreen, landscape, and audio unmute
         const handleAds = (url) => {
@@ -235,6 +229,7 @@ const PlayerPage = (() => {
 
       // Initialize the player
       // Helper to enforce fullscreen and landscape orientation
+// Helper to enforce fullscreen and landscape orientation
 function enforceFullScreenLandscape() {
   const container = document.getElementById('player-container');
   if (container && container.requestFullscreen) {
@@ -248,6 +243,11 @@ function enforceFullScreenLandscape() {
     videoElement.style.width = '100%';
     videoElement.style.height = '100%';
     videoElement.style.objectFit = 'contain';
+  }
+  const iframeElement = document.getElementById('iframe-video');
+  if (iframeElement) {
+    iframeElement.style.width = '100%';
+    iframeElement.style.height = '100%';
   }
 }
 
@@ -281,18 +281,24 @@ function onPlayerReady() {
         enforceFullScreenLandscape();
       }
 
-      // Initialize the player with onReady callback
-      window.Player.init(videoElement, primaryStream, {
-        autoplay: true,
-        qualityMenuId: 'quality-menu',
-        streams: availableStreams,
-        withCredentials: true,
-        requestHeaders: {
-          'Accept': '*/*',
-          'Origin': window.location.origin
-        },
-        onReady: onPlayerReady
-      }); window.Player.setupControls('player-container');
+      // Initialize the player with onReady callback only if native video
+      if (!isIframeStream) {
+        window.Player.init(videoElement, primaryStream, {
+          autoplay: true,
+          qualityMenuId: 'quality-menu',
+          streams: availableStreams,
+          withCredentials: true,
+          requestHeaders: {
+            'Accept': '*/*',
+            'Origin': window.location.origin
+          },
+          onReady: onPlayerReady
+        }); 
+        window.Player.setupControls('player-container');
+      } else {
+        enforceFullScreenLandscape();
+        setFullScreenFlag();
+      }
       // Force landscape orientation for immersive experience
       if (screen.orientation && screen.orientation.lock) {
         screen.orientation.lock('landscape').catch(() => {});
@@ -417,44 +423,35 @@ function onPlayerReady() {
   }
 
   function renderServerButtons() {
-    // Show a single cycling button that displays the CURRENT server name.
-    // Clicking it advances to the next server.
     const container = document.getElementById('server-buttons');
     if (!container || !availableStreams || availableStreams.length === 0) return;
 
-    let serverNames = ['2Embed', 'VidLink', 'AutoEmbed'];
-    if (availableStreams.some(s => s.includes('streamimdb'))) {
-      serverNames = ['2Embed', 'StreamIMDB', 'VidLink', 'AutoEmbed'];
-    }
-    const currentName = serverNames[activeStreamIndex] || `Server ${activeStreamIndex + 1}`;
-    const nextIndex = (activeStreamIndex + 1) % availableStreams.length;
-    const nextName  = serverNames[nextIndex] || `Server ${nextIndex + 1}`;
+    let serverNames = ['2Embed', 'StreamIMDB', 'VidLink', 'AutoEmbed'];
 
-    container.innerHTML = `
-      <button
-        id="server-cycle-btn"
-        onclick="PlayerPage.switchServer()"
-        title="Switch to ${nextName}"
-        style="
-          display: flex;
-          align-items: center;
-          gap: 6px;
-          padding: 6px 14px;
-          border-radius: 6px;
-          font-size: 12px;
-          font-weight: 600;
-          cursor: pointer;
-          border: 1.5px solid rgba(20,209,255,0.5);
-          background: rgba(20,209,255,0.12);
-          color: #14d1ff;
-          transition: all 0.2s;
-          white-space: nowrap;
-        "
-      >
-        <span class="material-symbols-outlined" style="font-size:15px;">dns</span>
-        Server: ${currentName}
-        <span style="opacity:0.55; font-size:10px; margin-left:2px;">→ ${nextName}</span>
-      </button>`;
+    container.innerHTML = availableStreams.map((stream, idx) => {
+      const isActive = idx === activeStreamIndex;
+      const name = serverNames[idx] || `Server ${idx + 1}`;
+      return `
+        <button
+          onclick="PlayerPage.switchServer(${idx})"
+          title="Switch to ${name}"
+          style="
+            padding: 6px 12px;
+            border-radius: 6px;
+            font-size: 12px;
+            font-weight: 600;
+            cursor: pointer;
+            border: 1.5px solid ${isActive ? 'rgba(0,208,132,0.6)' : 'rgba(255,255,255,0.2)'};
+            background: ${isActive ? 'rgba(0,208,132,0.15)' : 'rgba(255,255,255,0.05)'};
+            color: ${isActive ? '#00d084' : 'rgba(255,255,255,0.6)'};
+            transition: all 0.2s;
+            white-space: nowrap;
+          "
+        >
+          ${name}
+        </button>
+      `;
+    }).join('');
   }
 
   return { init, goBack, switchServer, renderServerButtons };
