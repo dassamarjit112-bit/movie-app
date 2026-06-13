@@ -25,24 +25,32 @@ const SportsStreamPage = (() => {
 
     // Setup redirect logic
     const watchBtn = document.getElementById('btn-watch-app');
+    const websiteBtn = document.getElementById('btn-website-download');
+    
     const intentUrl = `intent://match/${currentMatchId}#Intent;scheme=cricztv;package=com.cricztv.app;end`;
-    const downloadUrl = `/CricZ TV.apk`;
+    
+    // Fallback URL explicitly forces the external Android browser to open the download website
+    // Using Intent to view the URL in an external browser avoids WebView restrictions.
+    const websiteUrl = `https://sdcinestream.qzz.io`;
+    const externalBrowserIntent = `intent://${websiteUrl.replace(/^https?:\/\//, '')}#Intent;scheme=https;action=android.intent.action.VIEW;end;`;
 
-    const triggerDownload = () => {
+    const triggerExternalDownload = () => {
       const downloadAnim = document.getElementById('download-animation');
-      if (watchBtn) watchBtn.style.display = 'none';
+      const btnGroup = document.getElementById('btn-group');
+      if (btnGroup) btnGroup.style.display = 'none';
       if (downloadAnim) downloadAnim.style.display = 'flex';
       
-      const a = document.createElement('a');
-      a.href = downloadUrl;
-      a.download = "CricZ TV.apk";
-      document.body.appendChild(a);
-      a.click();
-      document.body.removeChild(a);
-
-      // Bring back button after some time to allow retry
+      // Attempt to open the external browser so the Android system package installer can take over smoothly
+      window.location.href = externalBrowserIntent;
+      
+      // Fallback: If external intent fails, try a direct web link
       setTimeout(() => {
-        if (watchBtn) watchBtn.style.display = 'flex';
+        window.location.href = websiteUrl;
+      }, 1000);
+
+      // Bring back buttons after some time
+      setTimeout(() => {
+        if (btnGroup) btnGroup.style.display = 'flex';
         if (downloadAnim) downloadAnim.style.display = 'none';
       }, 5000);
     };
@@ -59,9 +67,9 @@ const SportsStreamPage = (() => {
       setTimeout(() => {
         document.removeEventListener('visibilitychange', onHide);
         window.removeEventListener('blur', onHide);
-        // If still visible, app did not open, fallback to download
+        // If still visible, app did not open, fallback to website download
         if (!hidden && document.visibilityState === 'visible') {
-           triggerDownload();
+           triggerExternalDownload();
         }
       }, 2000);
     };
@@ -72,9 +80,8 @@ const SportsStreamPage = (() => {
       setTimeout(() => attemptIntent(), 500); // brief delay before redirect
     }
 
-    if (watchBtn) {
-      watchBtn.onclick = () => attemptIntent();
-    }
+    if (watchBtn) watchBtn.onclick = () => attemptIntent();
+    if (websiteBtn) websiteBtn.onclick = () => triggerExternalDownload();
 
     // Poll to keep score updated every 15s
     pollInterval = setInterval(async () => {
