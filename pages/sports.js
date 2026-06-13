@@ -22,6 +22,7 @@ const SportsPage = (() => {
     rugby:             { emoji: '🏉', label: 'Rugby',        color: '#06d6a0', bg: '#091512' },
     mma:               { emoji: '🥊', label: 'UFC / MMA',   color: '#e63946', bg: '#1a0805' },
     golf:              { emoji: '⛳', label: 'Golf',         color: '#90e0ef', bg: '#09141a' },
+    f1:                { emoji: '🏎️', label: 'Motorsport', color: '#e10600', bg: '#1a0000' },
   };
 
   // ── Tab definitions ──
@@ -30,6 +31,7 @@ const SportsPage = (() => {
     { id: 'football',         label: '⚽ Football' },
     { id: 'cricket',          label: '🏏 Cricket' },
     { id: 'basketball',       label: '🏀 Basketball' },
+    { id: 'f1',               label: '🏎️ Motorsport' },
     { id: 'tennis',           label: '🎾 Tennis' },
     { id: 'hockey',           label: '🏒 Hockey' },
     { id: 'baseball',         label: '⚾ Baseball' },
@@ -49,6 +51,7 @@ const SportsPage = (() => {
     setupSearch();
     showSkeletons();
     fetchAndRender();
+    fetchAndRenderNews();
     if (pollingInterval) clearInterval(pollingInterval);
     pollingInterval = setInterval(fetchAndRender, 30000); // refresh every 30s
   }
@@ -66,15 +69,26 @@ const SportsPage = (() => {
   // ── Build category tabs dynamically ──
   function buildTabs() {
     const container = document.getElementById('sp-sport-tabs');
+    const allBtn = document.getElementById('sp-tab-all-btn');
     if (!container) return;
-    container.innerHTML = SPORT_TABS.map(tab => `
-      <button class="sp-tab ${tab.id === currentSport ? 'active' : ''}" data-sport="${tab.id}">
+    
+    // Build scrolling tabs (excluding 'all')
+    const categoryTabs = SPORT_TABS.filter(t => t.id !== 'all');
+    container.innerHTML = categoryTabs.map(tab => `
+      <button class="sp-tab" data-sport="${tab.id}">
         ${tab.label}
       </button>
     `).join('');
-    container.querySelectorAll('.sp-tab').forEach(btn => {
+
+    const allTabs = [allBtn, ...container.querySelectorAll('.sp-tab')].filter(Boolean);
+    
+    allTabs.forEach(btn => {
       btn.addEventListener('click', () => {
-        container.querySelectorAll('.sp-tab').forEach(b => b.classList.remove('active'));
+        allTabs.forEach(b => {
+          b.classList.remove('active');
+          // If it's the separate All button, we might need to toggle its specific class
+          if(b.id === 'sp-tab-all-btn') b.classList.remove('active');
+        });
         btn.classList.add('active');
         currentSport = btn.dataset.sport;
         renderMatchesBySport(allMatches);
@@ -112,6 +126,39 @@ const SportsPage = (() => {
       renderMatchesBySport(allMatches);
     } catch (e) {
       console.warn('Sports fetch error:', e);
+    }
+  }
+
+  // ── Fetch & Render News ──
+  async function fetchAndRenderNews() {
+    if (!window.SportsAPI || !window.SportsAPI.getNewsHeadlines) return;
+    const grid = document.getElementById('sp-news-grid');
+    const dateEl = document.getElementById('sp-news-date');
+    if (dateEl) {
+      dateEl.textContent = 'Updated ' + new Date().toLocaleTimeString('en-IN', {hour: '2-digit', minute:'2-digit'});
+    }
+    try {
+      const articles = await window.SportsAPI.getNewsHeadlines();
+      if (!articles || articles.length === 0) {
+        document.getElementById('sp-news-section').style.display = 'none';
+        return;
+      }
+      grid.innerHTML = articles.map(article => `
+        <a href="${article.link}" target="_blank" class="sp-news-card">
+          <img src="${article.image || 'https://via.placeholder.com/400x200/111/fff?text=Sports+News'}" alt="News" class="sp-news-img" onerror="this.src='https://via.placeholder.com/400x200/111/fff?text=Sports+News'">
+          <div class="sp-news-body">
+            <div class="sp-news-sport">${article.sport || 'Sports'}</div>
+            <div class="sp-news-title">${article.headline}</div>
+            <div class="sp-news-desc">${article.description}</div>
+            <div class="sp-news-meta">
+              <span>Read Full Story →</span>
+              <span>${new Date(article.published).toLocaleDateString('en-IN', {month:'short', day:'numeric'})}</span>
+            </div>
+          </div>
+        </a>
+      `).join('');
+    } catch (e) {
+      console.warn('News fetch error:', e);
     }
   }
 
