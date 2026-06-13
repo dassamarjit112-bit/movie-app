@@ -1,5 +1,7 @@
 /* CineStream — Detail Page Controller */
 
+const isSeries = (type) => type === 'series' || type === 'tv';
+
 const DetailPage = (() => {
   let currentContent = null;
   let inWatchlist = false;
@@ -52,8 +54,13 @@ const DetailPage = (() => {
 
     const typeBadge = document.getElementById('detail-type-badge');
     if (typeBadge) {
-      typeBadge.textContent = item.type === 'series' ? 'TV SERIES' : 'MOVIE';
-      typeBadge.className = item.type === 'series' ? 'badge badge-gold' : 'badge badge-red';
+      if (isSeries(item.type)) {
+        typeBadge.textContent = 'TV SERIES';
+        typeBadge.className = 'badge badge-gold';
+      } else {
+        typeBadge.textContent = 'MOVIE';
+        typeBadge.className = 'badge badge-red';
+      }
     }
 
     const genreBadge = document.getElementById('detail-genre-badge');
@@ -71,7 +78,7 @@ const DetailPage = (() => {
 
     const durationEl = document.getElementById('detail-duration');
     if (durationEl) {
-      durationEl.textContent = item.type === 'series'
+      durationEl.textContent = isSeries(item.type)
         ? `${item.seasons || 1} Season${(item.seasons || 1) > 1 ? 's' : ''}`
         : UI.formatDuration(item.duration || 120);
     }
@@ -80,7 +87,7 @@ const DetailPage = (() => {
     const playBtn = document.getElementById('detail-play-btn');
     if (playBtn) {
       playBtn.onclick = () => {
-        if (item.type === 'series') {
+        if (isSeries(item.type)) {
           Router.navigate('player', { id: item.id, type: 'series', season: 1, episode: 1 });
         } else {
           Router.navigate('player', { id: item.id, type: 'movie' });
@@ -94,7 +101,7 @@ const DetailPage = (() => {
     // Episodes Section (only for Series)
     const episodesSection = document.getElementById('episodes-section');
     if (episodesSection) {
-      if (item.type === 'series') {
+      if (isSeries(item.type)) {
         episodesSection.style.display = 'block';
         setupEpisodes(item);
       } else {

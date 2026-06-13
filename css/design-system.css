@@ -634,20 +634,20 @@ input, textarea, select {
 .mobile-nav {
   display: flex;
   position: fixed;
-  bottom: 12px;
-  left: 12px;
-  right: 12px;
-  height: 60px;
+  bottom: 8px;
+  left: 8px;
+  right: 8px;
+  height: 56px;
   z-index: var(--z-nav);
-  background: rgba(13, 13, 13, 0.85);
-  backdrop-filter: blur(30px);
-  -webkit-backdrop-filter: blur(30px);
-  border: 1px solid rgba(255, 255, 255, 0.1);
-  border-radius: 24px;
+  background: rgba(13, 13, 13, 0.9);
+  backdrop-filter: blur(28px);
+  -webkit-backdrop-filter: blur(28px);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-radius: 20px;
   align-items: center;
-  justify-content: space-around;
-  padding: 0 8px;
-  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.5);
+  justify-content: space-evenly;
+  padding: 0 6px;
+  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.45);
 }
 /* Hide mobile nav on larger screens */
 @media screen and (min-width: 768px) {
@@ -661,14 +661,14 @@ input, textarea, select {
   flex-direction: column;
   align-items: center;
   gap: 2px;
-  padding: 8px 12px;
-  border-radius: var(--r-md);
-  color: rgba(229, 226, 225, 0.5);
+  padding: 6px 8px;
+  border-radius: var(--r-sm);
+  color: rgba(229, 226, 225, 0.6);
   transition: all var(--t-fast);
   cursor: pointer;
-  font-size: 9px;
-  font-weight: 700;
-  letter-spacing: 0.05em;
+  font-size: 8px;
+  font-weight: 600;
+  letter-spacing: 0.04em;
   text-transform: uppercase;
 }
 
@@ -678,7 +678,7 @@ input, textarea, select {
 }
 
 .mobile-nav-item .material-symbols-outlined {
-  font-size: 22px;
+  font-size: 20px;
 }
 
 /* ── Hero Section ── */
