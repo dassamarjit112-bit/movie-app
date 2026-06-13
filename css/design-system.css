@@ -641,20 +641,22 @@ input, textarea, select {
 .mobile-nav {
   display: flex;
   position: fixed;
-  bottom: 8px;
-  left: 8px;
-  right: 8px;
+  bottom: 16px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 90%;
+  max-width: 380px;
   height: 56px;
   z-index: var(--z-nav);
-  background: rgba(13, 13, 13, 0.9);
+  background: rgba(13, 13, 13, 0.95);
   backdrop-filter: blur(28px);
   -webkit-backdrop-filter: blur(28px);
   border: 1px solid rgba(255, 255, 255, 0.12);
-  border-radius: 20px;
+  border-radius: 28px;
   align-items: center;
   justify-content: space-evenly;
   padding: 0 6px;
-  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.45);
+  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.6);
 }
 /* Hide mobile nav on larger screens */
 @media screen and (min-width: 768px) {

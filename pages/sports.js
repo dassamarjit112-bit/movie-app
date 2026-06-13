@@ -21,11 +21,12 @@ const SportsPage = (() => {
 
   // ── Upcoming match simulation data ──
   const UPCOMING = [
-    { sport:'cricket',  teams:'India vs Australia',    tournament:'ICC World Cup', time:'Today, 7:30 PM' },
-    { sport:'football', teams:'Man City vs Real Madrid',tournament:'Champions League', time:'Today, 9:00 PM' },
-    { sport:'cricket',  teams:'CSK vs RCB',            tournament:'IPL 2025', time:'Tomorrow, 7:30 PM' },
-    { sport:'tennis',   teams:'Djokovic vs Alcaraz',   tournament:'French Open SF', time:'Tomorrow, 3:00 PM' },
-    { sport:'football', teams:'Arsenal vs Barcelona',  tournament:'Champions League', time:'Thu, 9:00 PM' },
+    { sport:'football', teams:'Argentina vs France',    tournament:'FIFA World Cup Final', time:'Today, 8:00 PM' },
+    { sport:'cricket',  teams:'India vs Australia',     tournament:'ICC World Cup', time:'Today, 7:30 PM' },
+    { sport:'football', teams:'Real Madrid vs Man City',tournament:'Champions League', time:'Tomorrow, 9:00 PM' },
+    { sport:'cricket',  teams:'CSK vs RCB',             tournament:'IPL 2025', time:'Tomorrow, 7:30 PM' },
+    { sport:'basketball', teams:'Lakers vs Warriors',   tournament:'NBA Playoffs', time:'Thu, 7:00 AM' },
+    { sport:'tennis',   teams:'Alcaraz vs Djokovic',    tournament:'Wimbledon Final', time:'Sun, 6:30 PM' },
   ];
 
   function init() {

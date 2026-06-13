@@ -222,9 +222,10 @@
 
     .sp-hero-bg {
       position: absolute; inset: 0; z-index: 0;
-      background: radial-gradient(ellipse at 20% 50%, rgba(0,208,132,0.08) 0%, transparent 60%),
-                  radial-gradient(ellipse at 80% 30%, rgba(20,209,255,0.06) 0%, transparent 60%),
-                  #080b12;
+      background: 
+        linear-gradient(to right, rgba(8,11,18,1) 0%, rgba(8,11,18,0.65) 45%, rgba(8,11,18,0.85) 100%),
+        linear-gradient(to bottom, rgba(8,11,18,0.2) 0%, rgba(8,11,18,1) 100%),
+        url('https://images.unsplash.com/photo-1508344928928-7137b2fde5e3?q=80&w=1920&auto=format&fit=crop') center/cover no-repeat;
     }
     .sp-hero-orb {
       position: absolute;
