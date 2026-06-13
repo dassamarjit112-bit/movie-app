@@ -426,7 +426,9 @@ function onPlayerReady() {
     const container = document.getElementById('server-buttons');
     if (!container || !availableStreams || availableStreams.length === 0) return;
 
-    let serverNames = ['2Embed', 'StreamIMDB', 'VidLink', 'AutoEmbed'];
+    // Names must match the stream order from TMDB.getRegionalStreams:
+    // [0] 2Embed, [1] StreamIMDB, [2] VidLink, [3] AutoEmbed
+    const serverNames = ['2Embed', 'StreamIMDB', 'VidLink', 'AutoEmbed'];
 
     container.innerHTML = availableStreams.map((stream, idx) => {
       const isActive = idx === activeStreamIndex;
@@ -436,16 +438,17 @@ function onPlayerReady() {
           onclick="PlayerPage.switchServer(${idx})"
           title="Switch to ${name}"
           style="
-            padding: 6px 12px;
+            padding: 6px 14px;
             border-radius: 6px;
             font-size: 12px;
             font-weight: 600;
             cursor: pointer;
-            border: 1.5px solid ${isActive ? 'rgba(0,208,132,0.6)' : 'rgba(255,255,255,0.2)'};
-            background: ${isActive ? 'rgba(0,208,132,0.15)' : 'rgba(255,255,255,0.05)'};
-            color: ${isActive ? '#00d084' : 'rgba(255,255,255,0.6)'};
+            border: 1.5px solid ${isActive ? 'rgba(0,208,132,0.7)' : 'rgba(255,255,255,0.18)'};
+            background: ${isActive ? 'rgba(0,208,132,0.18)' : 'rgba(255,255,255,0.05)'};
+            color: ${isActive ? '#00d084' : 'rgba(255,255,255,0.65)'};
             transition: all 0.2s;
             white-space: nowrap;
+            box-shadow: ${isActive ? '0 0 10px rgba(0,208,132,0.25)' : 'none'};
           "
         >
           ${name}

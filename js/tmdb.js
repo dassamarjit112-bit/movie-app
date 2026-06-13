@@ -69,10 +69,12 @@ const TMDB = (() => {
     const tmdbId = item.id;
     const streams = isTV ? [
       `https://www.2embed.cc/embedtv/${tmdbId}&s=1&e=1`,
+      `https://streamimdb.ru/embed/tv/${tmdbId}/1/1`,
       `https://vidlink.pro/tv/${tmdbId}/1/1`,
       `https://autoembed.co/tv/tmdb/${tmdbId}-1-1`,
     ] : [
       `https://www.2embed.cc/embed/${tmdbId}`,
+      `https://streamimdb.ru/embed/movie/${tmdbId}`,
       `https://vidlink.pro/movie/${tmdbId}`,
       `https://autoembed.co/movie/tmdb/${tmdbId}`,
     ];
@@ -331,7 +333,23 @@ const TMDB = (() => {
       const raw = await res.json();
       const item = normalize(raw, type);
       item.imdb_id = raw.external_ids ? raw.external_ids.imdb_id : null;
-      
+
+      // Rebuild streams using IMDb ID for StreamIMDB (normalize() didn't have imdb_id yet)
+      if (item.imdb_id) {
+        const sid = item.imdb_id;
+        const tid = item.tmdb_id || item.id;
+        if (type === 'movie') {
+          item.streams = [
+            `https://www.2embed.cc/embed/${tid}`,
+            `https://streamimdb.ru/embed/movie/${sid}`,
+            `https://vidlink.pro/movie/${tid}`,
+            `https://autoembed.co/movie/tmdb/${tid}`,
+          ];
+          item.stream = item.streams[0];
+        }
+        // TV stream rebuild happens inside the TV block below after tvImdbId is resolved
+      }
+
       // Add cast and crew
       if (raw.credits) {
         item.cast = (raw.credits.cast || []).map(c => ({
@@ -348,40 +366,59 @@ const TMDB = (() => {
         }));
       }
 
-      // For TV series: fetch episodes
+      // For TV series: fetch full TV details + all seasons/episodes
       if (type === 'tv') {
-        const tvData = await tmdbFetch(`/tv/${tmdbId}`, { append_to_response: 'credits,videos' });
-        if (tvData) {
-          const seasons = tvData.seasons || [];
-          item.seasons = seasons.length;
-          
+        // NOTE: We must directly fetch (not use tmdbFetch which strips to .results[])
+        const tvUrl = `${BASE}/tv/${tmdbId}?api_key=${key}&language=en-US&append_to_response=external_ids`;
+        const tvRes = await fetch(tvUrl);
+        if (tvRes.ok) {
+          const tvData = await tvRes.json();
+          // Get IMDb ID from TV data external_ids (more reliable than movie external_ids)
+          const tvImdbId = tvData.external_ids?.imdb_id || item.imdb_id || tmdbId;
+          if (tvImdbId) item.imdb_id = tvImdbId; // update with the confirmed IMDb ID
+
+          const allSeasons = (tvData.seasons || []).filter(s => s.season_number >= 0);
+          // Count only real seasons (exclude season 0 = specials from the count shown)
+          const realSeasons = allSeasons.filter(s => s.season_number > 0);
+          item.seasons = realSeasons.length || 1;
+          item.total_episodes = tvData.number_of_episodes || 0;
+
           const episodesMap = {};
-          for (const seasonInfo of seasons) {
+          // Fetch all seasons in parallel for speed
+          await Promise.all(allSeasons.map(async (seasonInfo) => {
             const seasonNum = seasonInfo.season_number;
-            const seasonUrl = `${BASE}/tv/${tmdbId}/season/${seasonNum}?api_key=${key}&language=en-US`;
-            const seasonRes = await fetch(seasonUrl);
-            if (!seasonRes.ok) continue;
-            
-            const seasonData = await seasonRes.json();
-            const eps = (seasonData.episodes || []).map(ep => {
-              const epStreams = [
-                `https://www.2embed.cc/embedtv/${tmdbId}&s=${seasonNum}&e=${ep.episode_number}`,
-                `https://vidlink.pro/tv/${tmdbId}/${seasonNum}/${ep.episode_number}`,
-                `https://autoembed.co/tv/tmdb/${tmdbId}-${seasonNum}-${ep.episode_number}`,
-              ];
-              return {
-                epNum: ep.episode_number,
-                title: ep.name || `Episode ${ep.episode_number}`,
-                desc: ep.overview || '',
-                thumb: ep.still_path ? `${IMG}${ep.still_path}` : item.poster,
-                duration: ep.runtime || 45,
-                stream: epStreams[0],
-                streams: epStreams
-              };
-            });
-            episodesMap[seasonNum] = eps;
-          }
+            try {
+              const seasonUrl = `${BASE}/tv/${tmdbId}/season/${seasonNum}?api_key=${key}&language=en-US`;
+              const seasonRes = await fetch(seasonUrl);
+              if (!seasonRes.ok) return;
+              const seasonData = await seasonRes.json();
+              const eps = (seasonData.episodes || []).map(ep => {
+                const sn = seasonNum;
+                const en = ep.episode_number;
+                // StreamIMDB requires IMDb ID (tt-format); others use TMDB ID
+                const epStreams = [
+                  `https://www.2embed.cc/embedtv/${tmdbId}&s=${sn}&e=${en}`,
+                  `https://streamimdb.ru/embed/tv/${tvImdbId}/${sn}/${en}`,
+                  `https://vidlink.pro/tv/${tmdbId}/${sn}/${en}`,
+                  `https://autoembed.co/tv/tmdb/${tmdbId}-${sn}-${en}`,
+                ];
+                return {
+                  epNum: en,
+                  title: ep.name || `Episode ${en}`,
+                  desc: ep.overview || '',
+                  thumb: ep.still_path ? `${IMG}${ep.still_path}` : item.poster,
+                  duration: ep.runtime || tvData.episode_run_time?.[0] || 45,
+                  stream: epStreams[0],
+                  streams: epStreams
+                };
+              });
+              if (eps.length > 0) episodesMap[seasonNum] = eps;
+            } catch (err) {
+              console.warn(`Failed to load season ${seasonNum}:`, err);
+            }
+          }));
           item.episodes = episodesMap;
+          console.log(`✅ TV series loaded: ${Object.keys(episodesMap).length} seasons, ${item.total_episodes} eps — IMDb: ${tvImdbId}`);
         }
       }
       return item;
