@@ -10,13 +10,17 @@ const SportsAPI = (() => {
   async function getLiveMatches() {
     const matches = [];
 
+    // Format today's date as YYYYMMDD for ESPN API
+    const today = new Date();
+    const yyyymmdd = today.toISOString().split('T')[0].replace(/-/g, '');
+
     // 1. Fetch Football Matches (ESPN Public API - Multiple Leagues)
     const footballEndpoints = [
-      'https://site.api.espn.com/apis/site/v2/sports/soccer/eng.1/scoreboard',
-      'https://site.api.espn.com/apis/site/v2/sports/soccer/esp.1/scoreboard',
-      'https://site.api.espn.com/apis/site/v2/sports/soccer/uefa.champions/scoreboard',
-      'https://site.api.espn.com/apis/site/v2/sports/soccer/fifa.world/scoreboard',
-      'https://site.api.espn.com/apis/site/v2/sports/soccer/uefa.euro/scoreboard'
+      `https://site.api.espn.com/apis/site/v2/sports/soccer/eng.1/scoreboard?dates=${yyyymmdd}`,
+      `https://site.api.espn.com/apis/site/v2/sports/soccer/esp.1/scoreboard?dates=${yyyymmdd}`,
+      `https://site.api.espn.com/apis/site/v2/sports/soccer/uefa.champions/scoreboard?dates=${yyyymmdd}`,
+      `https://site.api.espn.com/apis/site/v2/sports/soccer/fifa.world/scoreboard?dates=${yyyymmdd}`,
+      `https://site.api.espn.com/apis/site/v2/sports/soccer/uefa.euro/scoreboard?dates=${yyyymmdd}`
     ];
 
     const footballPromises = footballEndpoints.map(url => 
@@ -27,12 +31,14 @@ const SportsAPI = (() => {
 
     // 2. Fetch Cricket Matches (ESPN Public API - International/IPL)
     const cricketEndpoints = [
-      '8039', // Internationals
+      '8039', // ODI
+      '8041', // T20I
+      '8040', // Test Matches
       '8048'  // IPL
     ];
 
     const cricketPromises = cricketEndpoints.map(league => 
-      fetch(`https://site.api.espn.com/apis/site/v2/sports/cricket/${league}/scoreboard`)
+      fetch(`https://site.api.espn.com/apis/site/v2/sports/cricket/${league}/scoreboard?dates=${yyyymmdd}`)
         .then(res => res.json())
         .catch(err => { console.warn(`Failed to fetch cricket data for ${league}:`, err); return null; })
     );
@@ -43,11 +49,13 @@ const SportsAPI = (() => {
     // Parse Football results
     allResults.slice(0, footballEndpoints.length).forEach((data, index) => {
       if (data && data.events) {
-        const tournamentName = footballEndpoints[index] === 'https://site.api.espn.com/apis/site/v2/sports/soccer/fifa.world/scoreboard' ? 'FIFA World Cup' :
-                                 footballEndpoints[index] === 'https://site.api.espn.com/apis/site/v2/sports/soccer/uefa.champions/scoreboard' ? 'Champions League' :
-                                 footballEndpoints[index] === 'https://site.api.espn.com/apis/site/v2/sports/soccer/esp.1/scoreboard' ? 'La Liga' :
-                                 footballEndpoints[index] === 'https://site.api.espn.com/apis/site/v2/sports/soccer/uefa.euro/scoreboard' ? 'Euro 2024' :
-                                 'Premier League';
+        const urlObj = new URL(footballEndpoints[index]);
+        const path = urlObj.pathname;
+        const tournamentName = path.includes('fifa.world') ? 'FIFA World Cup 2026' :
+                               path.includes('uefa.champions') ? 'UEFA Champions League' :
+                               path.includes('esp.1') ? 'La Liga' :
+                               path.includes('uefa.euro') ? 'Euro 2024' :
+                               'Premier League';
         
         data.events.forEach(event => {
           if (!event.competitions || event.competitions.length === 0) return;
@@ -77,8 +85,14 @@ const SportsAPI = (() => {
     });
 
     // Parse Cricket results
-    allResults.slice(footballEndpoints.length).forEach((data) => {
+    allResults.slice(footballEndpoints.length).forEach((data, index) => {
       if (data && data.events) {
+        const leagueId = cricketEndpoints[index];
+        const tournamentName = leagueId === '8039' ? 'ODI International' :
+                               leagueId === '8041' ? 'T20 International' :
+                               leagueId === '8040' ? 'Test Match' :
+                               leagueId === '8048' ? 'IPL 2026' : 'Cricket Match';
+
         data.events.forEach(event => {
           if (!event.competitions || event.competitions.length === 0) return;
           const match = event.competitions[0];
@@ -88,7 +102,7 @@ const SportsAPI = (() => {
           matches.push({
             matchId: `cr-${event.id}`,
             sportType: 'cricket',
-            tournament: event.season?.slug || 'Cricket',
+            tournament: tournamentName,
             homeTeam: homeTeam?.team?.name || 'Home',
             awayTeam: awayTeam?.team?.name || 'Away',
             homeLogo: homeTeam?.team?.logo || `https://api.dicebear.com/7.x/initials/svg?seed=${homeTeam?.team?.abbreviation}&backgroundColor=e50914`,

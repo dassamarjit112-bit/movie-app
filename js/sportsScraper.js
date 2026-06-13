@@ -8,24 +8,31 @@ const SportsScraper = (() => {
   // ── Server Definitions ──
   const SERVERS = [
     {
-      id: 'vidsrc',
-      name: 'Server 1',
-      icon: '🎯',
-      description: 'VidSrc Sports',
-      getUrl: (matchId) => `https://vidsrc.cc/v2/embed/sports/${matchId}`
+      id: 'streamed',
+      name: 'Streamed.su Proxy',
+      icon: '⚽',
+      description: 'FIFA WC 2026 Live (4K)',
+      getUrl: (matchId) => `https://streamed.su/watch/${matchId}`
     },
     {
-      id: 'daddylive',
-      name: 'Server 2',
-      icon: '📡',
-      description: 'DaddyLive HD',
-      getUrl: (matchId) => `https://vidsrc.xyz/embed/sports/${matchId}` // DaddyLive mapped here via matrix path
+      id: 'sportsurge',
+      name: 'SportSurge V2',
+      icon: '🔥',
+      description: 'Global Sports (HD)',
+      getUrl: (matchId) => `https://v2.sportsurge.net/watch/${matchId}`
+    },
+    {
+      id: 'livetv',
+      name: 'LiveTV Embed',
+      icon: '📺',
+      description: 'Multi-League Streams',
+      getUrl: (matchId) => `https://livetv.sx/enx/eventinfo/${matchId}/`
     },
     {
       id: 'fancode',
-      name: 'FanCode Server',
+      name: 'Premium HLS Server',
       icon: '🏏',
-      description: 'Cricket Premium (1080p)',
+      description: 'Cricket Native Player (1080p)',
       getUrl: (matchId) => 'native_hls'
     }
   ];

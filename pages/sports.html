@@ -48,32 +48,14 @@
   <div class="sp-tabs-wrap" style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:16px;">
     <div style="position:relative; flex:1; display:flex; min-width:0;">
       <div class="sp-tabs" id="sp-sport-tabs" style="flex:1;">
-        <button class="sp-tab active" data-sport="all">
-          <span class="sp-tab-icon">🏆</span>
-          <span>All Sports</span>
-        </button>
-        <button class="sp-tab" data-sport="cricket">
-          <span class="sp-tab-icon">🏏</span>
-          <span>Cricket</span>
-        </button>
-        <button class="sp-tab" data-sport="football">
-          <span class="sp-tab-icon">⚽</span>
-          <span>Football</span>
-        </button>
-        <button class="sp-tab" data-sport="basketball">
-          <span class="sp-tab-icon">🏀</span>
-          <span>Basketball</span>
-        </button>
-        <button class="sp-tab" data-sport="tennis">
-          <span class="sp-tab-icon">🎾</span>
-          <span>Tennis</span>
-        </button>
-        <button class="sp-tab" data-sport="kabaddi">
-          <span class="sp-tab-icon">🤼</span>
-          <span>Kabaddi</span>
-        </button>
+        <button class="sp-tab active" data-sport="all">All Live</button>
+        <button class="sp-tab" data-sport="fifa">FIFA World Cup</button>
+        <button class="sp-tab" data-sport="football">Football</button>
+        <button class="sp-tab" data-sport="ipl">IPL</button>
+        <button class="sp-tab" data-sport="cricket">Cricket</button>
       </div>
-      <div class="sp-tabs-fade"></div>
+      <!-- gradient masks for scroll -->
+      <div style="position:absolute; right:0; top:0; bottom:0; width:40px; background:linear-gradient(to left, var(--c-surface), transparent); pointer-events:none;"></div>
     </div>
     
     <div class="sp-search-box">
@@ -82,8 +64,21 @@
     </div>
   </div>
 
+  <!-- ── AI Match Suggestions ── -->
+  <section class="sp-section" style="margin-bottom: 20px;">
+    <div class="sp-section-hd">
+      <div class="sp-section-title-wrap">
+        <span class="material-symbols-outlined" style="color:var(--c-secondary-container)">auto_awesome</span>
+        <h2 class="sp-section-title">AI Match Suggestions</h2>
+      </div>
+    </div>
+    <div id="ai-suggestions-grid" style="display:flex; gap:20px; overflow-x:auto; padding-bottom:16px; scrollbar-width:none;">
+      <!-- AI Suggestions populated by JS -->
+    </div>
+  </section>
+
   <!-- ── Live Matches Section ── -->
-  <section class="sp-section">
+  <section class="sp-section" id="live-matches-container">
     <div class="sp-section-hd">
       <div class="sp-section-title-wrap">
         <span class="sp-live-dot"></span>
@@ -217,7 +212,10 @@
       gap: 40px;
     }
     @media(max-width:768px) {
-      .sp-hero { grid-template-columns: 1fr; padding: 90px 20px 32px; }
+      .sp-hero { grid-template-columns: 1fr; padding: 110px 20px 40px; min-height: 500px; }
+      .sp-hero-bg {
+        background-position: 60% center !important; /* adjust poster center on mobile */
+      }
     }
 
     .sp-hero-bg {

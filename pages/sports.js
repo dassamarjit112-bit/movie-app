@@ -170,7 +170,52 @@ const SportsPage = (() => {
       }
     });
 
+    renderAISuggestions(allMatches);
     renderMatchGrid(allMatches);
+  }
+
+  // ── Render AI Suggestions ──
+  function renderAISuggestions(matches) {
+    const container = document.getElementById('ai-suggestions-grid');
+    if (!container) return;
+    
+    // Pick top 4 popular matches
+    const popularLeagues = ['FIFA World Cup 2026', 'IPL 2026', 'Champions League', 'Premier League', 'T20 International'];
+    let suggestions = matches.filter(m => popularLeagues.some(l => m.tournament.includes(l)));
+    if (suggestions.length === 0) suggestions = matches.slice(0, 4);
+    else suggestions = suggestions.slice(0, 4);
+
+    if (suggestions.length === 0) {
+      container.parentElement.style.display = 'none';
+      return;
+    }
+
+    container.parentElement.style.display = 'block';
+    container.innerHTML = suggestions.map(match => {
+      const isLive = match.status && (match.status.toUpperCase().includes('LIVE') || match.status === 'LIVE');
+      return `
+        <div class="sp-ai-card" style="min-width:280px; background:rgba(255,255,255,0.03); border:1px solid rgba(255,255,255,0.08); border-radius:12px; padding:16px; cursor:pointer; transition:transform 0.2s;" onclick="Router.navigate('sports-stream', {id: '${match.matchId}'})" onmouseover="this.style.transform='scale(1.02)'; this.style.borderColor='var(--c-secondary-container)';" onmouseout="this.style.transform='scale(1)'; this.style.borderColor='rgba(255,255,255,0.08)';">
+          <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px;">
+            <span style="font-size:10px; font-weight:800; color:var(--c-secondary-container); text-transform:uppercase; letter-spacing:0.1em;">${match.tournament}</span>
+            ${isLive ? `<span class="sp-live-dot"></span>` : `<span style="font-size:10px; color:rgba(255,255,255,0.4);">${match.status}</span>`}
+          </div>
+          <div style="display:flex; justify-content:space-between; align-items:center;">
+            <div style="display:flex; flex-direction:column; align-items:center; gap:8px;">
+              <img src="${match.homeLogo}" alt="${match.homeTeam}" style="width:40px; height:40px; border-radius:50%; object-fit:contain; background:rgba(0,0,0,0.5);">
+              <span style="font-size:12px; font-weight:600; text-align:center;">${match.homeTeam.substring(0,10)}</span>
+            </div>
+            <div style="font-size:16px; font-weight:800; color:#fff;">${match.score || 'vs'}</div>
+            <div style="display:flex; flex-direction:column; align-items:center; gap:8px;">
+              <img src="${match.awayLogo}" alt="${match.awayTeam}" style="width:40px; height:40px; border-radius:50%; object-fit:contain; background:rgba(0,0,0,0.5);">
+              <span style="font-size:12px; font-weight:600; text-align:center;">${match.awayTeam.substring(0,10)}</span>
+            </div>
+          </div>
+          <div style="margin-top:16px; text-align:center;">
+            <button style="width:100%; padding:8px; border-radius:6px; background:rgba(20,209,255,0.1); color:var(--c-secondary-container); font-weight:700; border:1px solid rgba(20,209,255,0.2);">Watch Now</button>
+          </div>
+        </div>
+      `;
+    }).join('');
   }
 
   // ── Render hero featured match ──
@@ -233,14 +278,14 @@ const SportsPage = (() => {
     `;
   }
 
-  // ── Render match grid (with filtering) ──
+  // ── Render match grid (with filtering & grouping) ──
   function renderMatchGrid(matches) {
-    const grid = document.getElementById('live-matches-grid');
-    if (!grid) return;
+    const container = document.getElementById('live-matches-container');
+    if (!container) return;
 
     let filtered = currentSport === 'all'
       ? matches
-      : matches.filter(m => m.sportType === currentSport);
+      : matches.filter(m => m.sportType === currentSport || m.tournament.toLowerCase().includes(currentSport));
 
     if (searchQuery) {
       filtered = filtered.filter(m => 
@@ -251,17 +296,43 @@ const SportsPage = (() => {
     }
 
     if (!filtered || filtered.length === 0) {
-      grid.innerHTML = `
+      container.innerHTML = `
         <div class="sp-no-matches">
           <div class="sp-no-matches-icon">📡</div>
-          <div class="sp-no-matches-text">No live matches found</div>
-          <div class="sp-no-matches-sub">Check back soon for live coverage</div>
+          <div class="sp-no-matches-text">No matches found</div>
+          <div class="sp-no-matches-sub">Check back later for live coverage</div>
         </div>
       `;
       return;
     }
 
-    grid.innerHTML = filtered.map(match => buildMatchCard(match)).join('');
+    // Group by tournament
+    const groups = {};
+    filtered.forEach(m => {
+      const t = m.tournament || 'Other';
+      if (!groups[t]) groups[t] = [];
+      groups[t].push(m);
+    });
+
+    // Priority order for rendering groups
+    const priority = ['FIFA World Cup 2026', 'IPL 2026', 'T20 International', 'UEFA Champions League', 'Premier League', 'ODI International'];
+    const sortedGroups = Object.keys(groups).sort((a, b) => {
+      const idxA = priority.indexOf(a);
+      const idxB = priority.indexOf(b);
+      if (idxA !== -1 && idxB !== -1) return idxA - idxB;
+      if (idxA !== -1) return -1;
+      if (idxB !== -1) return 1;
+      return a.localeCompare(b);
+    });
+
+    container.innerHTML = sortedGroups.map(tournament => `
+      <div style="margin-bottom: 32px;">
+        <h3 class="text-headline-sm" style="margin-bottom: 16px; border-left: 4px solid var(--c-primary-container); padding-left: 12px;">${tournament}</h3>
+        <div class="sp-live-grid">
+          ${groups[tournament].map(match => buildMatchCard(match)).join('')}
+        </div>
+      </div>
+    `).join('');
   }
 
   // ── Build a single match card HTML ──
