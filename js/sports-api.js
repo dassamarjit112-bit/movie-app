@@ -127,70 +127,15 @@ const SportsAPI = (() => {
     } catch (err) {
       console.error('Failed to fetch FanCode matches:', err);
     }
-    function startHeroCarousel() {
-      const container = document.getElementById('sp-hero-featured');
-      if (!container) return;
-      let index = 0;
-      const matches = window.DEMO_CONTENT?.filter(m => m.sportType === 'football') || [];
-      function render() {
-        const match = matches[index % matches.length];
-        if (!match) return;
-        container.innerHTML = `
-          <div class="sp-hero-match">
-            <div class="sp-hero-match-top">
-              <div class="sp-hero-match-tournament">${match.tournament || 'Live'} • ${match.status}</div>
-              <div class="sp-hero-live-badge"><span class="material-symbols-outlined" style="font-size:14px">live_tv</span> LIVE</div>
-            </div>
-            <div class="sp-hero-teams">
-              <div class="sp-hero-team">
-                <img src="${match.homeLogo}" alt="${match.homeTeam}" class="sp-hero-team-logo"/>
-                <div class="sp-hero-team-name">${match.homeTeam}</div>
-              </div>
-              <div class="sp-hero-vs"><div class="sp-hero-score">${match.score}</div><div class="sp-hero-vs-text">VS</div></div>
-              <div class="sp-hero-team">
-                <img src="${match.awayLogo}" alt="${match.awayTeam}" class="sp-hero-team-logo"/>
-                <div class="sp-hero-team-name">${match.awayTeam}</div>
-              </div>
-            </div>
-            <div class="sp-hero-match-footer">
-              <button class="sp-hero-watch-btn" onclick="Router.navigate('player',{id:'${match.matchId}'})">
-                <span class="material-symbols-outlined" style="font-size:16px">play_arrow</span> Watch Now
-              </button>
-              <div class="sp-hero-viewers"><span class="material-symbols-outlined" style="font-size:14px">people</span> ${match.viewerCount || '--'}</div>
-            </div>
-          </div>
-        `;
+    // Check for score changes for animations
+    matches.forEach(match => {
+      if (previousMatches[match.matchId]) {
+        if (match.rawScoreHome > previousMatches[match.matchId].rawScoreHome ||
+            match.rawScoreAway > previousMatches[match.matchId].rawScoreAway) {
+          match.scoreChanged = true;
+        }
       }
-      render();
-      setInterval(() => { index++; render(); }, 12000); // rotate every 12s
-    }
-    // Initialize carousel after content load
-    if (document.readyState === 'loading') {
-      document.addEventListener('DOMContentLoaded', startHeroCarousel);
-    } else {
-      startHeroCarousel();
-    }Changes for Animations
-    // Adjust mobile navigation bar for proper sizing and glass‑morphism effect
-    function renderMobileNav(activeRoute) {
-      const items = [
-        { route: 'home',     icon: 'home',         label: 'Home' },
-        { route: 'movies',   icon: 'movie',        label: 'Movies' },
-        { route: 'tvshows',  icon: 'tv',           label: 'Shows' },
-        { route: 'sports',   icon: 'sports_soccer',label: 'Sports' },
-        { route: 'search',   icon: 'search',       label: 'Search' },
-        { route: 'account',  icon: 'person',       label: 'Profile' }
-      ];
-      return `
-        <nav class="mobile-nav" style="backdrop-filter:blur(12px);background:rgba(10,12,18,0.85);border-top:1px solid rgba(255,255,255,0.07)">
-          ${items.map(item => `
-            <div class="mobile-nav-item ${activeRoute===item.route?'active':''}" data-route="${item.route}" onclick="${item.route==='search' ? 'UI.openMobileSearch()' : `Router.navigate('${item.route}')`}">
-              <span class="material-symbols-outlined ${activeRoute===item.route?'icon-fill':''}">${item.icon}</span>
-              <span class="mobile-nav-label" style="font-size:10px;color:${activeRoute===item.route?'var(--c-primary-container)':'rgba(229,226,225,0.6)'}">${item.label}</span>
-            </div>
-          `).join('')}
-        </nav>
-      `;
-    }  // Save current state for next poll
+      // Save current state for next poll
       previousMatches[match.matchId] = {
         rawScoreHome: match.rawScoreHome,
         rawScoreAway: match.rawScoreAway
@@ -201,14 +146,9 @@ const SportsAPI = (() => {
   }
 
   // --- Simulation Fallback logic ---
-  let simFootballScore = 0;
-  let simCricketRuns = 120;
   function getSimulationMatches() {
-    // Increment scores periodically to trigger UI animations during testing
-// Simulation matches placeholder – returns empty array for now
-function getSimulationMatches() {
-  return [];
-}
+    return [];
+  }
 
   async function getMatchDetails(matchId) {
     const matches = await getLiveMatches();
