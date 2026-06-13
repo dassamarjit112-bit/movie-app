@@ -25,29 +25,20 @@ const SportsStreamPage = (() => {
 
     // Setup redirect logic
     const watchBtn = document.getElementById('btn-watch-app');
+    const directDownloadBtn = document.getElementById('btn-direct-download');
     const websiteBtn = document.getElementById('btn-website-download');
     
     const intentUrl = `intent://match/${currentMatchId}#Intent;scheme=cricztv;package=com.cricztv.app;end`;
     
-    // Fallback URL explicitly forces the external Android browser to open the download website
-    // Using Intent to view the URL in an external browser avoids WebView restrictions.
     const websiteUrl = `https://sdcinestream.qzz.io`;
     const externalBrowserIntent = `intent://${websiteUrl.replace(/^https?:\/\//, '')}#Intent;scheme=https;action=android.intent.action.VIEW;end;`;
 
-    const triggerExternalDownload = () => {
+    const showLoading = () => {
       const downloadAnim = document.getElementById('download-animation');
       const btnGroup = document.getElementById('btn-group');
       if (btnGroup) btnGroup.style.display = 'none';
       if (downloadAnim) downloadAnim.style.display = 'flex';
       
-      // Attempt to open the external browser so the Android system package installer can take over smoothly
-      window.location.href = externalBrowserIntent;
-      
-      // Fallback: If external intent fails, try a direct web link
-      setTimeout(() => {
-        window.location.href = websiteUrl;
-      }, 1000);
-
       // Bring back buttons after some time
       setTimeout(() => {
         if (btnGroup) btnGroup.style.display = 'flex';
@@ -55,8 +46,33 @@ const SportsStreamPage = (() => {
       }, 5000);
     };
 
+    const triggerExternalDownload = () => {
+      showLoading();
+      window.location.href = externalBrowserIntent;
+      setTimeout(() => {
+        window.location.href = websiteUrl;
+      }, 1000);
+    };
+
+    const triggerDirectDownload = () => {
+      showLoading();
+      // Directly download the APK to phone storage
+      const a = document.createElement('a');
+      a.href = "/CricZ TV.apk";
+      a.download = "CricZ TV.apk";
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      
+      // Fallback intent direct download
+      setTimeout(() => {
+        const directApkUrl = window.location.origin + "/CricZ%20TV.apk";
+        const externalApkIntent = `intent://${directApkUrl.replace(/^https?:\/\//, '')}#Intent;scheme=https;action=android.intent.action.VIEW;end;`;
+        window.location.href = externalApkIntent;
+      }, 1500);
+    };
+
     const attemptIntent = () => {
-      // Check if browser went to background (meaning app opened)
       let hidden = false;
       const onHide = () => { hidden = true; };
       document.addEventListener('visibilitychange', onHide);
@@ -67,20 +83,13 @@ const SportsStreamPage = (() => {
       setTimeout(() => {
         document.removeEventListener('visibilitychange', onHide);
         window.removeEventListener('blur', onHide);
-        // If still visible, app did not open, fallback to website download
-        if (!hidden && document.visibilityState === 'visible') {
-           triggerExternalDownload();
-        }
       }, 2000);
     };
 
-    // Auto attempt to open the app directly on page load if on mobile
-    const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
-    if (isMobile) {
-      setTimeout(() => attemptIntent(), 500); // brief delay before redirect
-    }
-
+    // No auto-redirect on page load as requested.
+    
     if (watchBtn) watchBtn.onclick = () => attemptIntent();
+    if (directDownloadBtn) directDownloadBtn.onclick = () => triggerDirectDownload();
     if (websiteBtn) websiteBtn.onclick = () => triggerExternalDownload();
 
     // Poll to keep score updated every 15s

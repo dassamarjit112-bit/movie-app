@@ -39,10 +39,14 @@
   </style>
 
   <!-- Main Video Area -->
-  <div style="flex:1; display:flex; flex-direction:column; align-items:center; justify-content:center; padding-top:60px;">
+  <div style="flex:1; display:flex; flex-direction:column; align-items:center; position:relative; overflow:hidden; padding-top:60px;">
+    
+    <!-- Animated Background Elements -->
+    <div style="position:absolute; top:-10%; left:-10%; width:300px; height:300px; background:radial-gradient(circle, rgba(229,9,20,0.3) 0%, transparent 70%); border-radius:50%; filter:blur(40px); animation:float 6s ease-in-out infinite;"></div>
+    <div style="position:absolute; bottom:-10%; right:-10%; width:350px; height:350px; background:radial-gradient(circle, rgba(20,209,255,0.2) 0%, transparent 70%); border-radius:50%; filter:blur(50px); animation:float 8s ease-in-out infinite reverse;"></div>
 
     <!-- Match Header -->
-    <div id="stream-match-header" style="width:100%; max-width:1280px; padding:0 24px 16px; display:flex; align-items:center; justify-content:space-between; flex-wrap:wrap; gap:12px;">
+    <div id="stream-match-header" style="width:100%; max-width:1280px; padding:0 24px 16px; display:flex; align-items:center; justify-content:space-between; flex-wrap:wrap; gap:12px; z-index:2; position:relative;">
       <div style="display:flex; align-items:center; gap:16px;">
         <div style="display:flex; align-items:center; gap:8px;">
           <span style="width:10px; height:10px; background:#e50914; border-radius:50%; animation:pulse-live 1.5s infinite; flex-shrink:0;"></span>
@@ -60,51 +64,46 @@
       </div>
     </div>
 
-    <!-- Video Iframe Container -->
-    <div class="sp-player-wrapper">
-      <div class="sp-player-inner">
-        <!-- App Download / Redirect UI -->
-        <div id="app-redirect-container" style="display:flex; flex-direction:column; align-items:center; justify-content:center; width:100%; height:100%; position:absolute; inset:0; padding:24px; text-align:center; background:#050505; overflow:hidden;">
-          
-          <!-- Animated Background Elements -->
-          <div style="position:absolute; top:-20%; left:-10%; width:300px; height:300px; background:radial-gradient(circle, rgba(229,9,20,0.4) 0%, transparent 70%); border-radius:50%; filter:blur(40px); animation:float 6s ease-in-out infinite;"></div>
-          <div style="position:absolute; bottom:-20%; right:-10%; width:350px; height:350px; background:radial-gradient(circle, rgba(20,209,255,0.3) 0%, transparent 70%); border-radius:50%; filter:blur(50px); animation:float 8s ease-in-out infinite reverse;"></div>
-
-          <!-- Glassmorphism Card -->
-          <div style="position:relative; z-index:1; background:rgba(25,25,35,0.6); backdrop-filter:blur(20px); -webkit-backdrop-filter:blur(20px); border:1px solid rgba(255,255,255,0.1); border-radius:24px; padding:40px 32px; max-width:440px; box-shadow:0 24px 64px rgba(0,0,0,0.8), inset 0 1px 0 rgba(255,255,255,0.1); display:flex; flex-direction:column; align-items:center;">
-            
-            <div style="width:72px; height:72px; border-radius:20px; background:linear-gradient(135deg, #14d1ff, #e50914); display:flex; align-items:center; justify-content:center; margin-bottom:20px; box-shadow:0 12px 32px rgba(229,9,20,0.3);">
-              <span class="material-symbols-outlined" style="font-size:36px; color:#fff;">sports_esports</span>
-            </div>
-
-            <h2 style="font-size:26px; font-weight:900; color:#fff; margin-bottom:12px; letter-spacing:-0.03em;">Open CricZ TV</h2>
-            <p style="font-size:15px; color:rgba(255,255,255,0.7); margin-bottom:28px; line-height:1.6;">To watch live sports in ultra HD without buffering, please use our dedicated Android app.</p>
-            
-            <div id="download-animation" style="display:none; flex-direction:column; align-items:center; gap:16px; margin-bottom: 24px;">
-               <div style="width:40px; height:40px; border-radius:50%; border:3px solid rgba(255,255,255,0.1); border-top-color:#14d1ff; animation:spin 1s linear infinite;"></div>
-               <span style="font-size:13px; font-weight:700; color:#14d1ff; letter-spacing:1px; animation:pulse-live 1.5s infinite;">CONNECTING...</span>
-            </div>
-
-            <div id="btn-group" style="display:flex; flex-direction:column; gap:14px; width:100%;">
-              <button id="btn-watch-app" style="width:100%; background:linear-gradient(45deg, #e50914, #ff4b2b); color:#fff; border:none; padding:16px 24px; font-size:16px; font-weight:800; border-radius:14px; cursor:pointer; box-shadow:0 8px 24px rgba(229,9,20,0.4); display:flex; align-items:center; justify-content:center; gap:10px; transition:all 0.3s; position:relative; overflow:hidden;">
-                <span class="material-symbols-outlined" style="font-size:22px;">bolt</span>
-                Launch CricZ TV App
-              </button>
-              
-              <button id="btn-website-download" style="width:100%; background:rgba(255,255,255,0.05); color:#fff; border:1px solid rgba(255,255,255,0.1); padding:16px 24px; font-size:15px; font-weight:700; border-radius:14px; cursor:pointer; display:flex; align-items:center; justify-content:center; gap:10px; transition:all 0.3s;">
-                <span class="material-symbols-outlined" style="font-size:20px;">language</span>
-                Download from Website
-              </button>
-            </div>
-
-            <p style="font-size:12px; color:rgba(255,255,255,0.4); margin-top:24px; text-align:center; line-height:1.5;">
-              If you are in an app browser and the installer doesn't launch, use the <strong>Download from Website</strong> button to open your phone's browser.
-            </p>
-          </div>
+    <!-- App Download / Redirect UI (Full Page) -->
+    <div id="app-redirect-container" style="flex:1; display:flex; flex-direction:column; align-items:center; justify-content:center; width:100%; padding:24px; text-align:center; z-index:2; position:relative;">
+      
+      <!-- Glassmorphism Card -->
+      <div style="background:rgba(25,25,35,0.6); backdrop-filter:blur(20px); -webkit-backdrop-filter:blur(20px); border:1px solid rgba(255,255,255,0.1); border-radius:24px; padding:40px 32px; width:100%; max-width:440px; box-shadow:0 24px 64px rgba(0,0,0,0.8), inset 0 1px 0 rgba(255,255,255,0.1); display:flex; flex-direction:column; align-items:center;">
+        
+        <div style="width:72px; height:72px; border-radius:20px; background:linear-gradient(135deg, #14d1ff, #e50914); display:flex; align-items:center; justify-content:center; margin-bottom:20px; box-shadow:0 12px 32px rgba(229,9,20,0.3);">
+          <span class="material-symbols-outlined" style="font-size:36px; color:#fff;">sports_esports</span>
         </div>
+
+        <h2 style="font-size:26px; font-weight:900; color:#fff; margin-bottom:12px; letter-spacing:-0.03em;">Open CricZ TV</h2>
+        <p style="font-size:15px; color:rgba(255,255,255,0.7); margin-bottom:28px; line-height:1.6;">To watch live sports in ultra HD without buffering, please use our dedicated Android app.</p>
+        
+        <div id="download-animation" style="display:none; flex-direction:column; align-items:center; gap:16px; margin-bottom: 24px;">
+           <div style="width:40px; height:40px; border-radius:50%; border:3px solid rgba(255,255,255,0.1); border-top-color:#14d1ff; animation:spin 1s linear infinite;"></div>
+           <span style="font-size:13px; font-weight:700; color:#14d1ff; letter-spacing:1px; animation:pulse-live 1.5s infinite;">CONNECTING...</span>
+        </div>
+
+        <div id="btn-group" style="display:flex; flex-direction:column; gap:14px; width:100%;">
+          <button id="btn-watch-app" style="width:100%; background:linear-gradient(45deg, #e50914, #ff4b2b); color:#fff; border:none; padding:16px 24px; font-size:16px; font-weight:800; border-radius:14px; cursor:pointer; box-shadow:0 8px 24px rgba(229,9,20,0.4); display:flex; align-items:center; justify-content:center; gap:10px; transition:all 0.3s;">
+            <span class="material-symbols-outlined" style="font-size:22px;">bolt</span>
+            Launch CricZ TV App
+          </button>
+
+          <button id="btn-direct-download" style="width:100%; background:rgba(20, 209, 255, 0.1); color:#14d1ff; border:1px solid rgba(20, 209, 255, 0.3); padding:16px 24px; font-size:15px; font-weight:700; border-radius:14px; cursor:pointer; display:flex; align-items:center; justify-content:center; gap:10px; transition:all 0.3s;">
+            <span class="material-symbols-outlined" style="font-size:20px;">install_mobile</span>
+            Download APK to Phone
+          </button>
+          
+          <button id="btn-website-download" style="width:100%; background:rgba(255,255,255,0.05); color:#fff; border:1px solid rgba(255,255,255,0.1); padding:16px 24px; font-size:15px; font-weight:700; border-radius:14px; cursor:pointer; display:flex; align-items:center; justify-content:center; gap:10px; transition:all 0.3s;">
+            <span class="material-symbols-outlined" style="font-size:20px;">language</span>
+            Download from Website
+          </button>
+        </div>
+
+        <p style="font-size:12px; color:rgba(255,255,255,0.4); margin-top:24px; text-align:center; line-height:1.5;">
+          If the app is not installed, click <strong>Download APK to Phone</strong> to download and install it properly. 
+        </p>
       </div>
     </div>
-
   </div>
 
   <style>
