@@ -21,12 +21,12 @@ const SportsPage = (() => {
 
   // ── Upcoming match simulation data ──
   const UPCOMING = [
-    { sport:'football', teams:'Argentina vs France',    tournament:'FIFA World Cup Final', time:'Today, 8:00 PM' },
-    { sport:'cricket',  teams:'India vs Australia',     tournament:'ICC World Cup', time:'Today, 7:30 PM' },
-    { sport:'football', teams:'Real Madrid vs Man City',tournament:'Champions League', time:'Tomorrow, 9:00 PM' },
-    { sport:'cricket',  teams:'CSK vs RCB',             tournament:'IPL 2025', time:'Tomorrow, 7:30 PM' },
-    { sport:'basketball', teams:'Lakers vs Warriors',   tournament:'NBA Playoffs', time:'Thu, 7:00 AM' },
-    { sport:'tennis',   teams:'Alcaraz vs Djokovic',    tournament:'Wimbledon Final', time:'Sun, 6:30 PM' },
+    { sport:'football', teams:'USA vs England',         tournament:'FIFA World Cup 2026', time:'Today, 8:00 PM' },
+    { sport:'cricket',  teams:'India vs Sri Lanka',     tournament:'ICC T20 World Cup 2026', time:'Today, 7:30 PM' },
+    { sport:'football', teams:'Real Madrid vs Man City',tournament:'Champions League Final', time:'Tomorrow, 9:00 PM' },
+    { sport:'cricket',  teams:'CSK vs MI',              tournament:'IPL 2026', time:'Tomorrow, 7:30 PM' },
+    { sport:'basketball', teams:'Lakers vs Celtics',    tournament:'NBA Finals 2026', time:'Thu, 7:00 AM' },
+    { sport:'tennis',   teams:'Alcaraz vs Sinner',      tournament:'Wimbledon 2026', time:'Sun, 6:30 PM' },
   ];
 
   function init() {
