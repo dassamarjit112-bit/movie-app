@@ -59,7 +59,7 @@ const SportsAPI = (() => {
       const dtDay = new Date(dt.getFullYear(), dt.getMonth(), dt.getDate());
       const nowDay = new Date(now.getFullYear(), now.getMonth(), now.getDate());
       const diff = Math.round((dtDay - nowDay) / 86400000);
-      return diff === 0 || diff === 1; // today or tomorrow
+      return diff >= -3 && diff <= 7; // Show recent and upcoming matches
     } catch { return true; }
   }
 
@@ -159,40 +159,40 @@ const SportsAPI = (() => {
 
     const endpoints = [
       // ── Football ──
-      { url: `https://site.api.espn.com/apis/site/v2/sports/soccer/fifa.world/scoreboard?dates=${dateRange}`,     sport: 'football',          t: 'FIFA World Cup 2026', i: '🌍' },
-      { url: `https://site.api.espn.com/apis/site/v2/sports/soccer/eng.1/scoreboard?dates=${dateRange}`,          sport: 'football',          t: 'Premier League',      i: '⚽' },
-      { url: `https://site.api.espn.com/apis/site/v2/sports/soccer/esp.1/scoreboard?dates=${dateRange}`,          sport: 'football',          t: 'La Liga',             i: '🇪🇸' },
-      { url: `https://site.api.espn.com/apis/site/v2/sports/soccer/ger.1/scoreboard?dates=${dateRange}`,          sport: 'football',          t: 'Bundesliga',          i: '🇩🇪' },
-      { url: `https://site.api.espn.com/apis/site/v2/sports/soccer/ita.1/scoreboard?dates=${dateRange}`,          sport: 'football',          t: 'Serie A',             i: '🇮🇹' },
-      { url: `https://site.api.espn.com/apis/site/v2/sports/soccer/fra.1/scoreboard?dates=${dateRange}`,          sport: 'football',          t: 'Ligue 1',             i: '🇫🇷' },
-      { url: `https://site.api.espn.com/apis/site/v2/sports/soccer/uefa.champions/scoreboard?dates=${dateRange}`, sport: 'football',          t: 'Champions League',    i: '⭐' },
-      { url: `https://site.api.espn.com/apis/site/v2/sports/soccer/usa.1/scoreboard?dates=${dateRange}`,          sport: 'football',          t: 'MLS',                 i: '🇺🇸' },
+      { url: `https://site.api.espn.com/apis/site/v2/sports/soccer/fifa.world/scoreboard`,     sport: 'football',          t: 'FIFA World Cup 2026', i: '🌍' },
+      { url: `https://site.api.espn.com/apis/site/v2/sports/soccer/eng.1/scoreboard`,          sport: 'football',          t: 'Premier League',      i: '⚽' },
+      { url: `https://site.api.espn.com/apis/site/v2/sports/soccer/esp.1/scoreboard`,          sport: 'football',          t: 'La Liga',             i: '🇪🇸' },
+      { url: `https://site.api.espn.com/apis/site/v2/sports/soccer/ger.1/scoreboard`,          sport: 'football',          t: 'Bundesliga',          i: '🇩🇪' },
+      { url: `https://site.api.espn.com/apis/site/v2/sports/soccer/ita.1/scoreboard`,          sport: 'football',          t: 'Serie A',             i: '🇮🇹' },
+      { url: `https://site.api.espn.com/apis/site/v2/sports/soccer/fra.1/scoreboard`,          sport: 'football',          t: 'Ligue 1',             i: '🇫🇷' },
+      { url: `https://site.api.espn.com/apis/site/v2/sports/soccer/uefa.champions/scoreboard`, sport: 'football',          t: 'Champions League',    i: '⭐' },
+      { url: `https://site.api.espn.com/apis/site/v2/sports/soccer/usa.1/scoreboard`,          sport: 'football',          t: 'MLS',                 i: '🇺🇸' },
       // ── Cricket ──
-      { url: `https://site.api.espn.com/apis/site/v2/sports/cricket/8048/scoreboard?dates=${dateRange}`,          sport: 'cricket',           t: 'IPL 2026',            i: '🏆' },
-      { url: `https://site.api.espn.com/apis/site/v2/sports/cricket/8041/scoreboard?dates=${dateRange}`,          sport: 'cricket',           t: 'T20 International',   i: '🏏' },
-      { url: `https://site.api.espn.com/apis/site/v2/sports/cricket/8039/scoreboard?dates=${dateRange}`,          sport: 'cricket',           t: 'ODI International',   i: '🏏' },
-      { url: `https://site.api.espn.com/apis/site/v2/sports/cricket/8040/scoreboard?dates=${dateRange}`,          sport: 'cricket',           t: 'Test Match',          i: '🏏' },
+      { url: `https://site.api.espn.com/apis/site/v2/sports/cricket/8048/scoreboard`,          sport: 'cricket',           t: 'IPL 2026',            i: '🏆' },
+      { url: `https://site.api.espn.com/apis/site/v2/sports/cricket/8041/scoreboard`,          sport: 'cricket',           t: 'T20 International',   i: '🏏' },
+      { url: `https://site.api.espn.com/apis/site/v2/sports/cricket/8039/scoreboard`,          sport: 'cricket',           t: 'ODI International',   i: '🏏' },
+      { url: `https://site.api.espn.com/apis/site/v2/sports/cricket/8040/scoreboard`,          sport: 'cricket',           t: 'Test Match',          i: '🏏' },
       // ── Basketball ──
-      { url: `https://site.api.espn.com/apis/site/v2/sports/basketball/nba/scoreboard?dates=${dateRange}`,        sport: 'basketball',        t: 'NBA 2026',            i: '🏀' },
-      { url: `https://site.api.espn.com/apis/site/v2/sports/basketball/wnba/scoreboard?dates=${dateRange}`,       sport: 'basketball',        t: 'WNBA',                i: '🏀' },
+      { url: `https://site.api.espn.com/apis/site/v2/sports/basketball/nba/scoreboard`,        sport: 'basketball',        t: 'NBA 2026',            i: '🏀' },
+      { url: `https://site.api.espn.com/apis/site/v2/sports/basketball/wnba/scoreboard`,       sport: 'basketball',        t: 'WNBA',                i: '🏀' },
       // ── Tennis ──
-      { url: `https://site.api.espn.com/apis/site/v2/sports/tennis/atp/scoreboard?dates=${dateRange}`,            sport: 'tennis',            t: 'ATP Tour',            i: '🎾' },
-      { url: `https://site.api.espn.com/apis/site/v2/sports/tennis/wta/scoreboard?dates=${dateRange}`,            sport: 'tennis',            t: 'WTA Tour',            i: '🎾' },
+      { url: `https://site.api.espn.com/apis/site/v2/sports/tennis/atp/scoreboard`,            sport: 'tennis',            t: 'ATP Tour',            i: '🎾' },
+      { url: `https://site.api.espn.com/apis/site/v2/sports/tennis/wta/scoreboard`,            sport: 'tennis',            t: 'WTA Tour',            i: '🎾' },
       // ── Formula 1 ──
-      { url: `https://site.api.espn.com/apis/site/v2/sports/racing/f1/scoreboard?dates=${dateRange}`,             sport: 'f1',                t: 'Formula 1 2026',      i: '🏎️' },
-      { url: `https://site.api.espn.com/apis/site/v2/sports/racing/indycar/scoreboard?dates=${dateRange}`,        sport: 'f1',                t: 'IndyCar Series',      i: '🏁' },
+      { url: `https://site.api.espn.com/apis/site/v2/sports/racing/f1/scoreboard`,             sport: 'f1',                t: 'Formula 1 2026',      i: '🏎️' },
+      { url: `https://site.api.espn.com/apis/site/v2/sports/racing/indycar/scoreboard`,        sport: 'f1',                t: 'IndyCar Series',      i: '🏁' },
       // ── Hockey ──
-      { url: `https://site.api.espn.com/apis/site/v2/sports/hockey/nhl/scoreboard?dates=${dateRange}`,            sport: 'hockey',            t: 'NHL Playoffs',        i: '🏒' },
+      { url: `https://site.api.espn.com/apis/site/v2/sports/hockey/nhl/scoreboard`,            sport: 'hockey',            t: 'NHL Playoffs',        i: '🏒' },
       // ── Baseball ──
-      { url: `https://site.api.espn.com/apis/site/v2/sports/baseball/mlb/scoreboard?dates=${dateRange}`,          sport: 'baseball',          t: 'MLB 2026',            i: '⚾' },
+      { url: `https://site.api.espn.com/apis/site/v2/sports/baseball/mlb/scoreboard`,          sport: 'baseball',          t: 'MLB 2026',            i: '⚾' },
       // ── American Football ──
-      { url: `https://site.api.espn.com/apis/site/v2/sports/football/nfl/scoreboard?dates=${dateRange}`,          sport: 'american-football', t: 'NFL 2026',            i: '🏈' },
+      { url: `https://site.api.espn.com/apis/site/v2/sports/football/nfl/scoreboard`,          sport: 'american-football', t: 'NFL 2026',            i: '🏈' },
       // ── Rugby ──
-      { url: `https://site.api.espn.com/apis/site/v2/sports/rugby/scoreboard?dates=${dateRange}`,                 sport: 'rugby',             t: 'Rugby Union',         i: '🏉' },
+      { url: `https://site.api.espn.com/apis/site/v2/sports/rugby/scoreboard`,                 sport: 'rugby',             t: 'Rugby Union',         i: '🏉' },
       // ── MMA ──
-      { url: `https://site.api.espn.com/apis/site/v2/sports/mma/ufc/scoreboard?dates=${dateRange}`,               sport: 'mma',               t: 'UFC',                 i: '🥊' },
+      { url: `https://site.api.espn.com/apis/site/v2/sports/mma/ufc/scoreboard`,               sport: 'mma',               t: 'UFC',                 i: '🥊' },
       // ── Golf ──
-      { url: `https://site.api.espn.com/apis/site/v2/sports/golf/leaderboard?dates=${dateRange}`,                 sport: 'golf',              t: 'PGA Tour',            i: '⛳' },
+      { url: `https://site.api.espn.com/apis/site/v2/sports/golf/leaderboard`,                 sport: 'golf',              t: 'PGA Tour',            i: '⛳' },
     ];
 
     const results = await Promise.all(endpoints.map(ep => espnFetch(ep.url)));

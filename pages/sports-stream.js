@@ -1,14 +1,11 @@
 /* ============================================================
    CineStream — Sports Stream Player Controller
-   Manages server selection, live score overlay polling,
-   and embed iframe injection via SportsScraper.
+   Manages app intent redirect and download for CricZ TV.
    ============================================================ */
 
 const SportsStreamPage = (() => {
   let pollInterval = null;
   let currentMatchId = null;
-  let activeServerId = 'vidsrc';
-  let videojsPlayer = null;
 
   async function init(params) {
     const matchId = params && params.id;
@@ -18,24 +15,36 @@ const SportsStreamPage = (() => {
     }
     currentMatchId = matchId;
 
-    // Load match details for the header overlay and check if it's a FanCode match
-    let isFancodeMatch = false;
+    // Load match details for the header overlay
     if (window.SportsAPI) {
       const matchDetails = await window.SportsAPI.getMatchDetails(matchId);
       if (matchDetails) {
         updateHeader(matchDetails);
-        if (matchDetails.isFancode && matchDetails.streamUrl) {
-          isFancodeMatch = true;
-          activeServerId = 'fancode';
-        }
       }
     }
 
-    // Build server selector buttons
-    renderServerButtons();
-
-    // Load stream with default or matched server
-    loadStream(activeServerId);
+    // Setup redirect logic
+    const watchBtn = document.getElementById('btn-watch-app');
+    if (watchBtn) {
+      watchBtn.onclick = () => {
+        // App Intent URL format with fallback
+        const intentUrl = `intent://match/${currentMatchId}#Intent;scheme=cricztv;package=com.cricztv.app;end`;
+        const downloadUrl = `/CricZ TV.apk`;
+        
+        // Try opening intent
+        window.location.href = intentUrl;
+        
+        // Fallback to downloading APK if app doesn't intercept
+        setTimeout(() => {
+          const a = document.createElement('a');
+          a.href = downloadUrl;
+          a.download = "CricZ TV.apk";
+          document.body.appendChild(a);
+          a.click();
+          document.body.removeChild(a);
+        }, 1500);
+      };
+    }
 
     // Poll to keep score updated every 15s
     pollInterval = setInterval(async () => {
@@ -44,125 +53,6 @@ const SportsStreamPage = (() => {
       const updated = matches.find(m => m.matchId === currentMatchId);
       if (updated) updateHeader(updated);
     }, 15000);
-  }
-
-  function renderServerButtons() {
-    const container = document.getElementById('server-selector-buttons');
-    if (!container || !window.SportsScraper) return;
-
-    const servers = window.SportsScraper.getServers();
-    container.innerHTML = servers.map(server => `
-      <button
-        class="server-btn ${server.id === activeServerId ? 'active' : ''}"
-        id="server-btn-${server.id}"
-        onclick="SportsStreamPage.switchServer('${server.id}')">
-        <span>${server.icon}</span>
-        <span>${server.name}</span>
-        <span class="server-badge">${server.description}</span>
-      </button>
-    `).join('');
-  }
-
-  function switchServer(serverId) {
-    activeServerId = serverId;
-    // Update button states
-    document.querySelectorAll('.server-btn').forEach(btn => btn.classList.remove('active'));
-    const activeBtn = document.getElementById(`server-btn-${serverId}`);
-    if (activeBtn) activeBtn.classList.add('active');
-    // Reload stream with new server
-    loadStream(serverId);
-  }
-
-  async function loadStream(serverId) {
-    const iframe = document.getElementById('live-embed-frame');
-    const nativeContainer = document.getElementById('native-video-container');
-    const loadingEl = document.getElementById('stream-loading');
-
-    if (!iframe || !nativeContainer || !window.SportsScraper) return;
-
-    // Show loading spinner
-    if (loadingEl) loadingEl.style.display = 'flex';
-
-    let streamType = 'iframe';
-    let streamUrl = '';
-
-    if (serverId === 'fancode') {
-      streamType = 'native_hls';
-      const matchDetails = window.SportsAPI ? await window.SportsAPI.getMatchDetails(currentMatchId) : null;
-      if (matchDetails && matchDetails.streamUrl) {
-        streamUrl = matchDetails.streamUrl;
-      } else {
-        // Fallback if no valid Fancode URL
-        streamType = 'iframe';
-        streamUrl = window.SportsScraper.getStreamUrl(currentMatchId, 'vidsrc');
-      }
-    } else {
-      streamType = 'iframe';
-      streamUrl = window.SportsScraper.getStreamUrl(currentMatchId, serverId);
-    }
-
-    setTimeout(() => {
-      if (streamType === 'iframe') {
-        // Switch to iframe
-        nativeContainer.style.display = 'none';
-        if (videojsPlayer) {
-          videojsPlayer.pause();
-        }
-        
-        iframe.style.display = 'block';
-        iframe.src = streamUrl;
-      } else {
-        // Switch to native HLS with video.js
-        iframe.style.display = 'none';
-        iframe.src = '';
-        nativeContainer.style.display = 'block';
-        
-        if (window.videojs) {
-          if (!videojsPlayer) {
-            videojsPlayer = window.videojs('native-video-player', {
-              controls: true,
-              autoplay: true,
-              fluid: true,
-              preload: 'auto',
-              html5: { vhs: { overrideNative: true } }
-            });
-          }
-          videojsPlayer.src({ src: streamUrl, type: 'application/x-mpegURL' });
-          videojsPlayer.play().catch(e => console.warn('Video.js play error:', e));
-        } else {
-          console.error("Video.js is not loaded.");
-        }
-      }
-
-      // Hide loading overlay after giving player time to start loading
-      setTimeout(() => {
-        if (loadingEl) loadingEl.style.display = 'none';
-        
-        // Auto fullscreen + landscape for immersive sports viewing
-        const tryFullscreen = () => {
-          const container = document.getElementById('sports-stream-page');
-          if (container) {
-            if (container.requestFullscreen) {
-              container.requestFullscreen().catch(() => {});
-            } else if (container.webkitRequestFullscreen) {
-              container.webkitRequestFullscreen();
-            } else if (container.mozRequestFullScreen) {
-              container.mozRequestFullScreen();
-            }
-          }
-          // Lock landscape orientation (works on Android Chrome/WebApp)
-          if (screen.orientation && screen.orientation.lock) {
-            screen.orientation.lock('landscape').catch(() => {});
-          } else if (screen.lockOrientation) {
-            screen.lockOrientation('landscape');
-          } else if (screen.mozLockOrientation) {
-            screen.mozLockOrientation('landscape');
-          }
-        };
-        tryFullscreen();
-
-      }, 2500);
-    }, 300);
   }
 
   function updateHeader(match) {
@@ -181,11 +71,9 @@ const SportsStreamPage = (() => {
       clearInterval(pollInterval);
       pollInterval = null;
     }
-    const iframe = document.getElementById('live-embed-frame');
-    if (iframe) iframe.src = '';
   }
 
-  return { init, cleanup, switchServer };
+  return { init, cleanup };
 })();
 
 window.SportsStreamPage = SportsStreamPage;
