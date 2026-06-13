@@ -1,27 +1,21 @@
+<!-- CineStream — Sports Page -->
+<link rel="stylesheet" href="../css/detail.css">
 <div id="sports-page" class="sp-root">
-  <!-- Animation Overlay Container -->
   <div id="sports-anim-container"></div>
-
-  <!-- Navbar -->
   <div id="navbar-mount"></div>
 
-  <!-- ── Sports Hero Banner ── -->
+  <!-- ── Hero Section ── -->
   <section class="sp-hero">
-    <div class="sp-hero-bg">
-      <div class="sp-hero-orb sp-hero-orb-1"></div>
-      <div class="sp-hero-orb sp-hero-orb-2"></div>
-      <div class="sp-hero-orb sp-hero-orb-3"></div>
-      <div class="sp-hero-grid"></div>
-    </div>
+    <div class="sp-hero-bg"></div>
     <div class="sp-hero-content">
       <div class="sp-hero-badge">
         <span class="sp-live-dot"></span>
         <span>LIVE NOW</span>
       </div>
       <h1 class="sp-hero-title">
-        <span class="sp-hero-title-accent">LIVE</span> SPORTS
+        <span class="sp-hero-accent">LIVE</span> SPORTS
       </h1>
-      <p class="sp-hero-subtitle">Stream every match. Feel every moment. In stunning 4K 60fps.</p>
+      <p class="sp-hero-sub" id="sp-date-display">Loading today's schedule...</p>
       <div class="sp-hero-stats">
         <div class="sp-stat">
           <span class="sp-stat-num" id="sp-live-count">--</span>
@@ -39,120 +33,35 @@
         </div>
       </div>
     </div>
-    <div class="sp-hero-featured" id="sp-hero-featured">
-      <!-- Featured match injected by JS -->
-    </div>
+    <div id="sp-hero-featured" class="sp-hero-featured"></div>
   </section>
 
-  <!-- ── Sport Type Filter Tabs & Search ── -->
-  <div class="sp-tabs-wrap" style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:16px;">
-    <div style="position:relative; flex:1; display:flex; min-width:0;">
-      <div class="sp-tabs" id="sp-sport-tabs" style="flex:1;">
-        <button class="sp-tab active" data-sport="all">All Live</button>
-        <button class="sp-tab" data-sport="fifa">FIFA World Cup</button>
-        <button class="sp-tab" data-sport="football">Football</button>
-        <button class="sp-tab" data-sport="ipl">IPL</button>
-        <button class="sp-tab" data-sport="cricket">Cricket</button>
-      </div>
-      <!-- gradient masks for scroll -->
-      <div style="position:absolute; right:0; top:0; bottom:0; width:40px; background:linear-gradient(to left, var(--c-surface), transparent); pointer-events:none;"></div>
+  <!-- ── Tabs + Search ── -->
+  <div class="sp-controls">
+    <div class="sp-tabs-scroll">
+      <div class="sp-tabs" id="sp-sport-tabs"><!-- built by JS --></div>
     </div>
-    
-    <div class="sp-search-box">
-      <span class="material-symbols-outlined sp-search-icon">search</span>
-      <input type="text" id="sp-search-input" placeholder="Search matches, teams, tournaments..." autocomplete="off" />
+    <div class="sp-search-wrap">
+      <span class="material-symbols-outlined">search</span>
+      <input id="sp-search-input" type="text" placeholder="Search teams, tournaments...">
     </div>
   </div>
 
   <!-- ── AI Match Suggestions ── -->
-  <section class="sp-section" style="margin-bottom: 20px;">
-    <div class="sp-section-hd">
-      <div class="sp-section-title-wrap">
-        <span class="material-symbols-outlined" style="color:var(--c-secondary-container)">auto_awesome</span>
-        <h2 class="sp-section-title">AI Match Suggestions</h2>
-      </div>
-    </div>
-    <div id="ai-suggestions-grid" style="display:flex; gap:20px; overflow-x:auto; padding-bottom:16px; scrollbar-width:none;">
-      <!-- AI Suggestions populated by JS -->
-    </div>
-  </section>
-
-  <!-- ── Live Matches Section ── -->
-  <section class="sp-section" id="live-matches-container">
-    <div class="sp-section-hd">
-      <div class="sp-section-title-wrap">
-        <span class="sp-live-dot"></span>
-        <h2 class="sp-section-title">Live Matches</h2>
-      </div>
-      <button class="sp-see-all" onclick="document.getElementById('live-matches-grid').scrollIntoView({behavior:'smooth'})">View All</button>
-    </div>
-
-    <div class="sp-live-grid" id="live-matches-grid">
-      <!-- Skeleton loaders -->
-      <div class="sp-match-skeleton"></div>
-      <div class="sp-match-skeleton"></div>
-      <div class="sp-match-skeleton"></div>
-    </div>
-  </section>
-
-  <!-- ── Upcoming Matches Section ── -->
   <section class="sp-section">
-    <div class="sp-section-hd">
-      <div class="sp-section-title-wrap">
-        <span class="sp-calendar-icon material-symbols-outlined">calendar_today</span>
-        <h2 class="sp-section-title">Upcoming</h2>
-      </div>
+    <div class="sp-sec-hd">
+      <span class="material-symbols-outlined" style="color:var(--c-secondary-container)">auto_awesome</span>
+      <h2>Top Matches Today</h2>
     </div>
-    <div class="sp-upcoming-list" id="sp-upcoming-list">
-      <!-- Injected by JS -->
+    <div id="ai-suggestions-grid" class="sp-suggest-row">
+      <!-- JS populated -->
     </div>
   </section>
 
-  <!-- ── Tournament Spotlight ── -->
+  <!-- ── All Matches (grouped by tournament) ── -->
   <section class="sp-section">
-    <div class="sp-section-hd">
-      <div class="sp-section-title-wrap">
-        <span class="sp-trophy-icon">🏆</span>
-        <h2 class="sp-section-title">Tournament Spotlight</h2>
-      </div>
-    </div>
-    <div class="sp-tournaments-row" id="sp-tournaments-row">
-      <div class="sp-tournament-card" data-sport="cricket">
-        <div class="sp-tourn-bg" style="background:linear-gradient(135deg,#1a3a2a,#0d2a1a)"></div>
-        <div class="sp-tourn-emoji">🏏</div>
-        <div class="sp-tourn-info">
-          <div class="sp-tourn-name">IPL 2025</div>
-          <div class="sp-tourn-matches">8 matches today</div>
-          <div class="sp-tourn-badge">LIVE</div>
-        </div>
-      </div>
-      <div class="sp-tournament-card" data-sport="football">
-        <div class="sp-tourn-bg" style="background:linear-gradient(135deg,#1a2a3a,#0d1a2a)"></div>
-        <div class="sp-tourn-emoji">⚽</div>
-        <div class="sp-tourn-info">
-          <div class="sp-tourn-name">Premier League</div>
-          <div class="sp-tourn-matches">5 matches today</div>
-          <div class="sp-tourn-badge">TODAY</div>
-        </div>
-      </div>
-      <div class="sp-tournament-card" data-sport="basketball">
-        <div class="sp-tourn-bg" style="background:linear-gradient(135deg,#2a1a1a,#1a0d0d)"></div>
-        <div class="sp-tourn-emoji">🏀</div>
-        <div class="sp-tourn-info">
-          <div class="sp-tourn-name">NBA Finals</div>
-          <div class="sp-tourn-matches">2 games tonight</div>
-          <div class="sp-tourn-badge sp-badge-blue">UPCOMING</div>
-        </div>
-      </div>
-      <div class="sp-tournament-card" data-sport="tennis">
-        <div class="sp-tourn-bg" style="background:linear-gradient(135deg,#1a2a1a,#0d1a0d)"></div>
-        <div class="sp-tourn-emoji">🎾</div>
-        <div class="sp-tourn-info">
-          <div class="sp-tourn-name">French Open</div>
-          <div class="sp-tourn-matches">12 matches today</div>
-          <div class="sp-tourn-badge">LIVE</div>
-        </div>
-      </div>
+    <div id="sp-matches-root">
+      <!-- JS populated with groups -->
     </div>
   </section>
 
@@ -169,554 +78,424 @@
           Get Premium Access
         </button>
       </div>
-      <div class="sp-cta-sports-icons">
-        <span>🏏</span><span>⚽</span><span>🏀</span><span>🎾</span><span>🏐</span><span>🤼</span>
+      <div class="sp-cta-icons">
+        <span>🏏</span><span>⚽</span><span>🏀</span><span>🎾</span><span>🏒</span><span>🥊</span><span>⚾</span><span>🏈</span>
       </div>
     </div>
   </section>
 
-  <!-- Footer -->
   <div id="footer-mount"></div>
-  <!-- Mobile Nav -->
   <div id="mobile-nav-mount"></div>
 
-  <style>
-    /* ═══════════════════════════════════════
-       SPORTS PAGE — FanCode-Inspired Premium
-       ═══════════════════════════════════════ */
+<style>
+/* ══════════════════════════════════════
+   SPORTS PAGE — Premium OTT Design
+   ══════════════════════════════════════ */
+.sp-root {
+  --sp-green: #00d084;
+  --sp-blue: #14d1ff;
+  --sp-red: #e50914;
+  --sp-gold: #ffc832;
+  --sp-bg: #080b12;
+  --sp-card: #0f1420;
+  background: var(--sp-bg);
+  min-height: 100vh;
+}
 
-    .sp-root {
-      --sp-green: #00d084;
-      --sp-blue: #14d1ff;
-      --sp-red: #ff3a3a;
-      --sp-orange: #ff7a00;
-      --sp-purple: #a855f7;
-      --sp-gold: #ffd700;
-      --sp-bg: #080b12;
-      --sp-card: #0f1420;
-      --sp-card-border: rgba(255,255,255,0.07);
-      --sp-card-hover: rgba(255,255,255,0.1);
-      background: var(--sp-bg);
-      min-height: 100vh;
-    }
+/* ── Hero ── */
+.sp-hero {
+  position: relative;
+  min-height: 480px;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  align-items: center;
+  padding: 100px 64px 56px;
+  overflow: hidden;
+  gap: 40px;
+}
+.sp-hero-bg {
+  position: absolute; inset: 0; z-index: 0;
+  background:
+    linear-gradient(to right, rgba(8,11,18,1) 0%, rgba(8,11,18,0.7) 50%, rgba(8,11,18,0.9) 100%),
+    linear-gradient(to bottom, rgba(8,11,18,0.1) 0%, rgba(8,11,18,1) 95%),
+    url('https://images.unsplash.com/photo-1574629810360-7efbbe195018?q=80&w=1920&auto=format&fit=crop') center 30%/cover no-repeat;
+}
+.sp-hero-content, .sp-hero-featured { position: relative; z-index: 2; }
 
-    /* ── Hero ── */
-    .sp-hero {
-      position: relative;
-      min-height: 440px;
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      align-items: center;
-      padding: 100px 64px 48px;
-      overflow: hidden;
-      gap: 40px;
-    }
-    @media(max-width:768px) {
-      .sp-hero { grid-template-columns: 1fr; padding: 110px 20px 40px; min-height: 500px; }
-      .sp-hero-bg {
-        background-position: 60% center !important; /* adjust poster center on mobile */
-      }
-    }
+.sp-hero-badge {
+  display: inline-flex; align-items: center; gap: 8px;
+  background: rgba(0,208,132,0.12); border: 1px solid rgba(0,208,132,0.4);
+  border-radius: 999px; padding: 6px 16px;
+  font-size: 11px; font-weight: 800; letter-spacing: 0.12em;
+  color: var(--sp-green); margin-bottom: 20px;
+}
+.sp-hero-title {
+  font-family: 'Montserrat', sans-serif;
+  font-size: clamp(36px, 6vw, 72px);
+  font-weight: 900; letter-spacing: -0.03em;
+  color: #fff; margin-bottom: 12px; line-height: 1;
+}
+.sp-hero-accent { color: var(--sp-green); }
+.sp-hero-sub {
+  font-size: 14px; color: rgba(255,255,255,0.55);
+  margin-bottom: 28px; font-weight: 500;
+}
+.sp-hero-stats {
+  display: flex; align-items: center; gap: 24px;
+}
+.sp-stat { text-align: center; }
+.sp-stat-num {
+  display: block; font-size: 28px; font-weight: 800;
+  color: var(--sp-green); font-family: 'Montserrat', sans-serif;
+}
+.sp-stat-label { font-size: 11px; color: rgba(255,255,255,0.45); font-weight: 600; }
+.sp-stat-divider { width: 1px; height: 40px; background: rgba(255,255,255,0.1); }
 
-    .sp-hero-bg {
-      position: absolute; inset: 0; z-index: 0;
-      background: 
-        linear-gradient(to right, rgba(8,11,18,1) 0%, rgba(8,11,18,0.65) 45%, rgba(8,11,18,0.85) 100%),
-        linear-gradient(to bottom, rgba(8,11,18,0.2) 0%, rgba(8,11,18,1) 100%),
-        url('https://images.unsplash.com/photo-1508344928928-7137b2fde5e3?q=80&w=1920&auto=format&fit=crop') center/cover no-repeat;
-    }
-    .sp-hero-orb {
-      position: absolute;
-      border-radius: 50%;
-      filter: blur(80px);
-      opacity: 0.5;
-      animation: sp-orb-float 8s ease-in-out infinite;
-    }
-    .sp-hero-orb-1 { width:400px; height:400px; top:-100px; left:-50px; background:radial-gradient(circle, rgba(0,208,132,0.15), transparent 70%); }
-    .sp-hero-orb-2 { width:300px; height:300px; top:50px; right:100px; background:radial-gradient(circle, rgba(20,209,255,0.12), transparent 70%); animation-delay: -3s; }
-    .sp-hero-orb-3 { width:200px; height:200px; bottom:-50px; left:40%; background:radial-gradient(circle, rgba(168,85,247,0.1), transparent 70%); animation-delay: -5s; }
-    @keyframes sp-orb-float {
-      0%,100% { transform: translateY(0) scale(1); }
-      50% { transform: translateY(-20px) scale(1.05); }
-    }
+/* ── Hero Match Card ── */
+.sp-hero-match {
+  background: rgba(255,255,255,0.04);
+  border: 1px solid rgba(255,255,255,0.1);
+  border-radius: 16px; padding: 24px;
+  backdrop-filter: blur(16px);
+}
+.sp-hero-match-top {
+  display: flex; justify-content: space-between; align-items: center;
+  margin-bottom: 20px; font-size: 12px;
+}
+.sp-hero-teams {
+  display: flex; align-items: center; justify-content: space-between; gap: 16px;
+  margin-bottom: 20px;
+}
+.sp-hero-team {
+  display: flex; flex-direction: column; align-items: center; gap: 10px; flex: 1;
+}
+.sp-hero-logo {
+  width: 64px; height: 64px; border-radius: 50%; object-fit: contain;
+  background: rgba(255,255,255,0.06); padding: 8px;
+}
+.sp-hero-team-name {
+  font-size: 13px; font-weight: 700; text-align: center; color: rgba(255,255,255,0.9);
+  max-width: 100px; word-break: break-word;
+}
+.sp-hero-score-wrap { text-align: center; }
+.sp-hero-score {
+  font-family: 'Montserrat', sans-serif;
+  font-size: 32px; font-weight: 900; color: #fff; letter-spacing: 0.05em;
+}
+.sp-hero-status { font-size: 11px; color: rgba(255,255,255,0.5); margin-top: 4px; }
+.sp-hero-match-footer {
+  display: flex; align-items: center; justify-content: space-between; gap: 12px;
+  flex-wrap: wrap;
+}
+.sp-venue { font-size: 11px; color: rgba(255,255,255,0.4); }
+.sp-watch-btn {
+  display: flex; align-items: center; gap: 6px;
+  padding: 8px 20px; border-radius: 8px;
+  background: var(--sp-green); color: #000;
+  font-weight: 800; font-size: 13px; cursor: pointer; border: none;
+  transition: all 0.2s; white-space: nowrap;
+}
+.sp-watch-btn:hover { opacity: 0.85; transform: scale(1.03); }
 
-    .sp-hero-grid {
-      position: absolute; inset: 0;
-      background-image: linear-gradient(rgba(255,255,255,0.02) 1px, transparent 1px),
-                        linear-gradient(90deg, rgba(255,255,255,0.02) 1px, transparent 1px);
-      background-size: 40px 40px;
-      mask-image: radial-gradient(ellipse at center, rgba(0,0,0,0.6), transparent 80%);
-    }
+/* ── Controls ── */
+.sp-controls {
+  display: flex; align-items: center; gap: 16px; flex-wrap: wrap;
+  padding: 0 64px 24px; position: relative;
+}
+.sp-tabs-scroll {
+  flex: 1; overflow-x: auto; scrollbar-width: none;
+}
+.sp-tabs-scroll::-webkit-scrollbar { display: none; }
+.sp-tabs { display: flex; gap: 8px; white-space: nowrap; }
+.sp-tab {
+  padding: 8px 16px; border-radius: 999px;
+  font-size: 13px; font-weight: 700; cursor: pointer;
+  border: 1.5px solid rgba(255,255,255,0.12);
+  background: transparent; color: rgba(255,255,255,0.55);
+  transition: all 0.2s; white-space: nowrap;
+}
+.sp-tab.active, .sp-tab:hover {
+  background: rgba(0,208,132,0.15);
+  border-color: var(--sp-green);
+  color: var(--sp-green);
+}
+.sp-search-wrap {
+  display: flex; align-items: center; gap: 8px;
+  background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1);
+  border-radius: 8px; padding: 8px 14px; min-width: 240px;
+  color: rgba(255,255,255,0.4);
+}
+.sp-search-wrap input {
+  background: none; border: none; outline: none;
+  color: rgba(255,255,255,0.85); font-size: 14px; flex: 1;
+  font-family: 'Inter', sans-serif;
+}
+.sp-search-wrap .material-symbols-outlined { font-size: 18px; }
 
-    .sp-hero-content { position: relative; z-index: 2; }
-    .sp-hero-featured { position: relative; z-index: 2; }
+/* ── Sections ── */
+.sp-section { padding: 0 64px 40px; }
+.sp-sec-hd {
+  display: flex; align-items: center; gap: 10px;
+  margin-bottom: 20px;
+}
+.sp-sec-hd h2 {
+  font-size: 18px; font-weight: 800;
+  color: rgba(255,255,255,0.9);
+}
 
-    .sp-hero-badge {
-      display: inline-flex; align-items: center; gap: 8px;
-      background: rgba(0,208,132,0.15); border: 1px solid rgba(0,208,132,0.4);
-      border-radius: 999px; padding: 6px 16px;
-      font-size: 11px; font-weight: 800; letter-spacing: 0.12em;
-      color: var(--sp-green); text-transform: uppercase;
-      margin-bottom: 20px;
-    }
-    .sp-hero-title {
-      font-family: 'Montserrat', sans-serif;
-      font-size: clamp(48px, 7vw, 84px);
-      font-weight: 900; letter-spacing: -0.03em;
-      line-height: 0.95; color: #fff;
-      margin-bottom: 20px;
-    }
-    .sp-hero-title-accent {
-      background: linear-gradient(135deg, var(--sp-green), var(--sp-blue));
-      -webkit-background-clip: text; -webkit-text-fill-color: transparent;
-      background-clip: text;
-    }
-    .sp-hero-subtitle {
-      font-size: 16px; color: rgba(255,255,255,0.55);
-      margin-bottom: 32px; max-width: 420px; line-height: 1.6;
-    }
-    .sp-hero-stats {
-      display: flex; align-items: center; gap: 24px;
-    }
-    .sp-stat { display: flex; flex-direction: column; gap: 2px; }
-    .sp-stat-num {
-      font-family: 'Montserrat', sans-serif;
-      font-size: 28px; font-weight: 900; color: #fff;
-    }
-    .sp-stat-label { font-size: 11px; color: rgba(255,255,255,0.4); font-weight: 600; text-transform: uppercase; letter-spacing: 0.06em; }
-    .sp-stat-divider { width: 1px; height: 40px; background: rgba(255,255,255,0.1); }
+/* ── AI Suggestion Cards ── */
+.sp-suggest-row {
+  display: flex; gap: 16px; overflow-x: auto;
+  scrollbar-width: none; padding-bottom: 8px;
+}
+.sp-suggest-row::-webkit-scrollbar { display: none; }
+.sp-suggest-card {
+  min-width: 220px; max-width: 220px;
+  background: rgba(255,255,255,0.04);
+  border: 1px solid rgba(255,255,255,0.08);
+  border-radius: 12px; padding: 14px;
+  cursor: pointer; transition: all 0.2s; flex-shrink: 0;
+}
+.sp-suggest-card:hover {
+  border-color: var(--sp-blue);
+  background: rgba(20,209,255,0.06);
+  transform: translateY(-3px);
+}
+.sp-suggest-top {
+  display: flex; justify-content: space-between; align-items: center;
+  margin-bottom: 12px;
+}
+.sp-suggest-league {
+  font-size: 10px; font-weight: 800; color: var(--sp-blue);
+  text-transform: uppercase; letter-spacing: 0.08em;
+}
+.sp-suggest-time { font-size: 10px; color: rgba(255,255,255,0.4); }
+.sp-suggest-teams {
+  display: flex; align-items: center; justify-content: space-between;
+  margin-bottom: 12px;
+}
+.sp-suggest-team {
+  display: flex; flex-direction: column; align-items: center; gap: 6px;
+}
+.sp-suggest-team img {
+  width: 36px; height: 36px; border-radius: 50%; object-fit: contain;
+  background: rgba(255,255,255,0.06); padding: 4px;
+}
+.sp-suggest-team span {
+  font-size: 10px; font-weight: 700; color: rgba(255,255,255,0.8);
+}
+.sp-suggest-score {
+  font-size: 15px; font-weight: 900; color: #fff;
+  font-family: 'Montserrat', sans-serif;
+}
+.sp-suggest-footer {
+  font-size: 11px; font-weight: 700; color: var(--sp-blue);
+  text-align: center; padding-top: 10px;
+  border-top: 1px solid rgba(255,255,255,0.06);
+}
 
-    /* ── Hero Featured Match Card ── */
-    .sp-hero-match {
-      background: rgba(255,255,255,0.03);
-      border: 1px solid rgba(255,255,255,0.1);
-      border-radius: 20px;
-      padding: 28px;
-      backdrop-filter: blur(20px);
-      position: relative;
-      overflow: hidden;
-    }
-    .sp-hero-match::before {
-      content: '';
-      position: absolute; inset: 0;
-      background: linear-gradient(135deg, rgba(0,208,132,0.05), transparent 60%);
-      pointer-events: none;
-    }
-    .sp-hero-match-top {
-      display: flex; justify-content: space-between; align-items: center;
-      margin-bottom: 24px;
-    }
-    .sp-hero-match-tournament {
-      font-size: 11px; font-weight: 700; text-transform: uppercase;
-      letter-spacing: 0.1em; color: rgba(255,255,255,0.4);
-      background: rgba(255,255,255,0.05); border-radius: 6px; padding: 4px 10px;
-    }
-    .sp-hero-live-badge {
-      display: flex; align-items: center; gap: 6px;
-      background: rgba(255,58,58,0.15); border: 1px solid rgba(255,58,58,0.4);
-      border-radius: 999px; padding: 4px 12px;
-      font-size: 11px; font-weight: 800; color: var(--sp-red);
-      letter-spacing: 0.1em; text-transform: uppercase;
-    }
-    .sp-hero-teams {
-      display: flex; align-items: center; gap: 16px; margin-bottom: 20px;
-    }
-    .sp-hero-team { flex: 1; display: flex; flex-direction: column; align-items: center; gap: 10px; }
-    .sp-hero-team-logo {
-      width: 64px; height: 64px; border-radius: 50%;
-      object-fit: contain; background: rgba(255,255,255,0.05);
-      padding: 6px; border: 2px solid rgba(255,255,255,0.1);
-    }
-    .sp-hero-team-name { font-weight: 700; font-size: 14px; text-align: center; color: #fff; }
-    .sp-hero-vs {
-      display: flex; flex-direction: column; align-items: center; gap: 8px; flex-shrink: 0;
-    }
-    .sp-hero-score {
-      font-family: 'Montserrat', sans-serif;
-      font-size: 36px; font-weight: 900; color: #fff;
-      background: rgba(0,208,132,0.1); border: 1px solid rgba(0,208,132,0.2);
-      border-radius: 12px; padding: 8px 20px; letter-spacing: -2px;
-      min-width: 100px; text-align: center;
-    }
-    .sp-hero-vs-text { font-size: 11px; color: rgba(255,255,255,0.3); font-weight: 700; text-transform: uppercase; }
-    .sp-hero-match-footer {
-      display: flex; align-items: center; justify-content: space-between;
-    }
-    .sp-hero-watch-btn {
-      background: linear-gradient(135deg, var(--sp-green), #00a866);
-      color: #fff; border: none; border-radius: 10px;
-      padding: 12px 28px; font-size: 14px; font-weight: 700;
-      cursor: pointer; display: flex; align-items: center; gap: 8px;
-      transition: all 0.3s; box-shadow: 0 4px 24px rgba(0,208,132,0.35);
-    }
-    .sp-hero-watch-btn:hover {
-      transform: translateY(-2px); box-shadow: 0 8px 32px rgba(0,208,132,0.5);
-    }
-    .sp-hero-viewers {
-      display: flex; align-items: center; gap: 6px;
-      font-size: 12px; color: rgba(255,255,255,0.4);
-    }
+/* ── Tournament Section ── */
+.sp-tournament-section { margin-bottom: 40px; }
+.sp-tournament-header {
+  display: flex; align-items: center; justify-content: space-between;
+  margin-bottom: 16px;
+  border-left: 4px solid var(--sp-red);
+  padding-left: 14px;
+}
+.sp-tournament-title {
+  display: flex; align-items: center; gap: 10px;
+  font-size: 16px; font-weight: 800; color: rgba(255,255,255,0.95);
+}
+.sp-tournament-icon { font-size: 20px; }
 
-    /* ── Live Dot ── */
-    .sp-live-dot {
-      display: inline-block; width: 9px; height: 9px;
-      background: var(--sp-red); border-radius: 50%;
-      box-shadow: 0 0 0 0 rgba(255,58,58,0.7);
-      animation: sp-pulse 1.5s ease-in-out infinite;
-      flex-shrink: 0;
-    }
-    @keyframes sp-pulse {
-      0% { box-shadow: 0 0 0 0 rgba(255,58,58,0.7); }
-      70% { box-shadow: 0 0 0 10px rgba(255,58,58,0); }
-      100% { box-shadow: 0 0 0 0 rgba(255,58,58,0); }
-    }
+/* ── Match Cards Grid ── */
+.sp-cards-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 16px;
+}
+.sp-match-card {
+  background: var(--sp-card, #0f1420);
+  border: 1px solid rgba(255,255,255,0.07);
+  border-radius: 14px; overflow: hidden;
+  cursor: pointer; transition: all 0.25s;
+}
+.sp-match-card:hover {
+  border-color: rgba(255,255,255,0.2);
+  transform: translateY(-3px);
+  box-shadow: 0 12px 40px rgba(0,0,0,0.4);
+}
+.sp-card-live {
+  border-color: rgba(0,208,132,0.35) !important;
+  box-shadow: 0 0 20px rgba(0,208,132,0.08);
+}
+.sp-card-header {
+  display: flex; justify-content: space-between; align-items: center;
+  padding: 10px 14px 0;
+  font-size: 10px; font-weight: 700;
+  color: rgba(255,255,255,0.4);
+}
+.sp-card-tournament { text-transform: uppercase; letter-spacing: 0.06em; }
+.sp-card-body {
+  display: flex; align-items: center;
+  justify-content: space-between;
+  padding: 16px 14px;
+  gap: 12px;
+}
+.sp-card-team {
+  display: flex; flex-direction: column; align-items: center;
+  gap: 8px; flex: 1;
+}
+.sp-card-team img {
+  width: 52px; height: 52px; border-radius: 50%;
+  object-fit: contain; background: rgba(255,255,255,0.05); padding: 6px;
+  transition: transform 0.2s;
+}
+.sp-match-card:hover .sp-card-team img { transform: scale(1.08); }
+.sp-card-team-name {
+  font-size: 12px; font-weight: 700; color: rgba(255,255,255,0.85);
+  text-align: center; max-width: 80px; word-break: break-word;
+  line-height: 1.3;
+}
+.sp-card-score-col {
+  display: flex; flex-direction: column; align-items: center; gap: 4px;
+  flex-shrink: 0;
+}
+.sp-card-score {
+  font-family: 'Montserrat', sans-serif;
+  font-size: 22px; font-weight: 900; color: #fff; letter-spacing: 0.05em;
+}
+.sp-score-live { color: var(--sp-green); }
+.sp-card-status { font-size: 10px; color: rgba(255,255,255,0.45); font-weight: 600; }
+.sp-card-venue { font-size: 9px; color: rgba(255,255,255,0.3); text-align: center; max-width: 100px; }
+.sp-card-viewers { font-size: 10px; color: rgba(255,255,255,0.35); }
+.sp-card-footer {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 10px 14px 14px;
+  border-top: 1px solid rgba(255,255,255,0.05);
+}
+.sp-card-date { font-size: 10px; color: rgba(255,255,255,0.35); }
+.sp-card-watch-btn {
+  display: flex; align-items: center; gap: 4px;
+  padding: 5px 12px; border-radius: 6px; border: none; cursor: pointer;
+  background: rgba(255,255,255,0.07); color: rgba(255,255,255,0.65);
+  font-size: 11px; font-weight: 700; transition: all 0.2s;
+}
+.sp-card-live .sp-card-watch-btn {
+  background: rgba(0,208,132,0.15); color: var(--sp-green);
+}
+.sp-card-watch-btn:hover { opacity: 0.8; }
 
-    /* ── Sport Tabs & Search ── */
-    .sp-tabs-wrap {
-      position: relative;
-      padding: 0 64px;
-      margin-bottom: 4px;
-    }
-    @media(max-width:768px) { .sp-tabs-wrap { padding: 0 20px; } }
-    .sp-tabs {
-      display: flex; gap: 8px; overflow-x: auto;
-      scrollbar-width: none; padding: 16px 0;
-    }
-    .sp-tabs::-webkit-scrollbar { display: none; }
-    .sp-tabs-fade {
-      position: absolute; top: 0; right: 0; bottom: 0; width: 60px;
-      background: linear-gradient(to right, transparent, var(--sp-bg));
-      pointer-events: none;
-    }
+/* ── Badges ── */
+.sp-live-badge {
+  display: inline-flex; align-items: center; gap: 5px;
+  background: rgba(229,9,20,0.15); border: 1px solid rgba(229,9,20,0.4);
+  border-radius: 999px; padding: 3px 10px;
+  font-size: 10px; font-weight: 900; color: #ff4444; letter-spacing: 0.06em;
+}
+.sp-live-badge-sm {
+  display: inline-flex; align-items: center; gap: 4px;
+  background: rgba(229,9,20,0.1); border: 1px solid rgba(229,9,20,0.3);
+  border-radius: 999px; padding: 2px 8px;
+  font-size: 9px; font-weight: 900; color: #ff4444;
+}
+.sp-live-dot {
+  display: inline-block; width: 7px; height: 7px;
+  border-radius: 50%; background: #ff4444;
+  animation: sp-pulse 1.2s ease infinite;
+}
+@keyframes sp-pulse {
+  0%,100% { opacity: 1; transform: scale(1); }
+  50% { opacity: 0.4; transform: scale(0.75); }
+}
+.sp-ft-badge {
+  background: rgba(255,255,255,0.07); border-radius: 4px;
+  padding: 2px 8px; font-size: 10px; font-weight: 700;
+  color: rgba(255,255,255,0.4);
+}
+.sp-time-badge {
+  background: rgba(20,209,255,0.1); border-radius: 4px;
+  padding: 2px 8px; font-size: 10px; font-weight: 700;
+  color: var(--sp-blue);
+}
 
-    .sp-search-box {
-      display: flex; align-items: center; gap: 8px;
-      background: rgba(255,255,255,0.05);
-      border: 1px solid rgba(255,255,255,0.1);
-      border-radius: 999px;
-      padding: 8px 16px;
-      width: 100%; max-width: 320px;
-      transition: all 0.3s;
-    }
-    .sp-search-box:focus-within {
-      background: rgba(255,255,255,0.08);
-      border-color: var(--sp-green);
-      box-shadow: 0 0 15px rgba(0,208,132,0.15);
-    }
-    .sp-search-box input {
-      background: transparent; border: none; outline: none;
-      color: #fff; font-family: inherit; font-size: 13px; width: 100%;
-    }
-    .sp-search-box input::placeholder { color: rgba(255,255,255,0.3); }
+/* ── Skeleton ── */
+.sp-skeleton-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 16px;
+}
+.sp-match-skeleton {
+  height: 180px; border-radius: 14px;
+  background: linear-gradient(90deg,
+    rgba(255,255,255,0.04) 25%,
+    rgba(255,255,255,0.08) 50%,
+    rgba(255,255,255,0.04) 75%);
+  background-size: 400%;
+  animation: sp-shimmer 1.4s ease infinite;
+}
+@keyframes sp-shimmer {
+  0% { background-position: 100%; }
+  100% { background-position: 0%; }
+}
 
-    .sp-tab {
-      display: inline-flex; align-items: center; gap: 8px;
-      padding: 10px 20px; border-radius: 12px;
-      border: 1px solid rgba(255,255,255,0.08);
-      background: rgba(255,255,255,0.03);
-      font-size: 13px; font-weight: 600; color: rgba(255,255,255,0.5);
-      cursor: pointer; white-space: nowrap;
-      transition: all 0.25s ease; flex-shrink: 0;
-    }
-    .sp-tab:hover {
-      border-color: rgba(255,255,255,0.15);
-      color: rgba(255,255,255,0.8);
-      background: rgba(255,255,255,0.06);
-    }
-    .sp-tab.active {
-      background: rgba(0,208,132,0.12);
-      border-color: rgba(0,208,132,0.35);
-      color: var(--sp-green);
-    }
-    .sp-tab-icon { font-size: 18px; }
+/* ── Empty ── */
+.sp-empty {
+  text-align: center; padding: 80px 20px;
+  color: rgba(255,255,255,0.4);
+}
+.sp-empty h3 { font-size: 20px; margin: 16px 0 8px; color: rgba(255,255,255,0.65); }
+.sp-empty p { font-size: 14px; }
 
-    /* ── Section ── */
-    .sp-section {
-      padding: 32px 64px;
-      max-width: 1440px; margin: 0 auto;
-    }
-    @media(max-width:768px) { .sp-section { padding: 24px 20px; } }
+/* ── CTA Banner ── */
+.sp-cta-banner {
+  position: relative; border-radius: 20px; overflow: hidden;
+  background: linear-gradient(135deg, #0a1f1a 0%, #060f14 100%);
+  border: 1px solid rgba(0,208,132,0.2);
+  padding: 48px 56px; display: flex;
+  align-items: center; justify-content: space-between; gap: 40px;
+}
+.sp-cta-glow {
+  position: absolute; inset: 0; z-index: 0;
+  background: radial-gradient(ellipse at 10% 50%, rgba(0,208,132,0.12) 0%, transparent 60%);
+}
+.sp-cta-content { position: relative; z-index: 1; max-width: 500px; }
+.sp-cta-badge {
+  display: inline-block; padding: 4px 12px; border-radius: 4px;
+  background: rgba(0,208,132,0.15); border: 1px solid rgba(0,208,132,0.3);
+  color: var(--sp-green); font-size: 11px; font-weight: 800;
+  text-transform: uppercase; letter-spacing: 0.1em; margin-bottom: 16px;
+}
+.sp-cta-title { font-size: 28px; font-weight: 900; color: #fff; margin-bottom: 12px; }
+.sp-cta-desc { font-size: 14px; color: rgba(255,255,255,0.5); margin-bottom: 24px; }
+.sp-cta-btn {
+  display: inline-flex; align-items: center; gap: 8px;
+  padding: 14px 28px; border-radius: 10px; border: none; cursor: pointer;
+  background: var(--sp-green); color: #000; font-weight: 900; font-size: 14px;
+  transition: all 0.2s;
+}
+.sp-cta-btn:hover { opacity: 0.85; transform: scale(1.03); }
+.sp-cta-icons { position: relative; z-index: 1; font-size: 32px; display: flex; gap: 12px; flex-wrap: wrap; }
 
-    .sp-section-hd {
-      display: flex; align-items: center; justify-content: space-between;
-      margin-bottom: 24px;
-    }
-    .sp-section-title-wrap { display: flex; align-items: center; gap: 10px; }
-    .sp-section-title {
-      font-family: 'Montserrat', sans-serif;
-      font-size: 20px; font-weight: 800; color: #fff;
-    }
-    .sp-calendar-icon { font-size: 20px; color: var(--sp-blue); }
-    .sp-trophy-icon { font-size: 22px; }
-    .sp-see-all {
-      font-size: 13px; font-weight: 600; color: var(--sp-green);
-      background: none; border: none; cursor: pointer;
-      transition: color 0.2s;
-    }
-    .sp-see-all:hover { color: #00a866; text-decoration: underline; }
-
-    /* ── Live Match Grid ── */
-    .sp-live-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
-      gap: 20px;
-    }
-
-    /* ── Match Card ── */
-    .sp-match-card {
-      position: relative;
-      background: var(--sp-card);
-      border: 1px solid var(--sp-card-border);
-      border-radius: 18px;
-      overflow: hidden;
-      cursor: pointer;
-      transition: all 0.3s ease;
-      group: true;
-    }
-    .sp-match-card:hover {
-      border-color: rgba(0,208,132,0.3);
-      transform: translateY(-4px);
-      box-shadow: 0 20px 60px rgba(0,0,0,0.6), 0 0 0 1px rgba(0,208,132,0.1);
-    }
-    .sp-match-card::before {
-      content: '';
-      position: absolute; top: 0; left: 0; right: 0; height: 2px;
-      background: linear-gradient(90deg, var(--sp-green), var(--sp-blue));
-      opacity: 0;
-      transition: opacity 0.3s;
-    }
-    .sp-match-card:hover::before { opacity: 1; }
-
-    .sp-match-card-inner { padding: 20px; }
-
-    .sp-match-header {
-      display: flex; justify-content: space-between; align-items: center;
-      margin-bottom: 20px;
-    }
-    .sp-match-tournament {
-      display: flex; align-items: center; gap: 6px;
-      font-size: 11px; font-weight: 700; text-transform: uppercase;
-      letter-spacing: 0.08em; color: rgba(255,255,255,0.4);
-    }
-    .sp-match-sport-badge {
-      font-size: 14px;
-    }
-    .sp-status-live {
-      display: flex; align-items: center; gap: 6px;
-      font-size: 10px; font-weight: 800; color: var(--sp-red);
-      letter-spacing: 0.1em; text-transform: uppercase;
-      background: rgba(255,58,58,0.1); border: 1px solid rgba(255,58,58,0.25);
-      border-radius: 999px; padding: 3px 10px;
-    }
-    .sp-status-live .sp-live-dot { width: 6px; height: 6px; }
-    .sp-status-ft {
-      font-size: 10px; font-weight: 700; color: rgba(255,255,255,0.35);
-      background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.08);
-      border-radius: 999px; padding: 3px 10px;
-    }
-
-    .sp-match-teams {
-      display: flex; align-items: center; gap: 12px; margin-bottom: 16px;
-    }
-    .sp-team {
-      flex: 1; display: flex; flex-direction: column; align-items: center; gap: 8px;
-    }
-    .sp-team-logo-wrap {
-      width: 52px; height: 52px; border-radius: 50%;
-      background: rgba(255,255,255,0.05); border: 2px solid rgba(255,255,255,0.08);
-      display: flex; align-items: center; justify-content: center;
-      overflow: hidden; transition: border-color 0.3s;
-    }
-    .sp-match-card:hover .sp-team-logo-wrap { border-color: rgba(0,208,132,0.25); }
-    .sp-team-logo {
-      width: 36px; height: 36px; object-fit: contain;
-    }
-    .sp-team-abbr {
-      width: 100%; height: 100%; display: flex; align-items: center; justify-content: center;
-      font-family: 'Montserrat', sans-serif; font-size: 14px; font-weight: 900;
-      color: rgba(255,255,255,0.7);
-    }
-    .sp-team-name {
-      font-size: 12px; font-weight: 700; text-align: center; color: #fff;
-      white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 90px;
-    }
-
-    .sp-score-center {
-      display: flex; flex-direction: column; align-items: center; gap: 6px; flex-shrink: 0;
-    }
-    .sp-score {
-      font-family: 'Montserrat', sans-serif; font-size: 28px; font-weight: 900;
-      color: #fff; letter-spacing: -1px;
-      background: rgba(255,255,255,0.05); border-radius: 10px;
-      padding: 6px 14px; border: 1px solid rgba(255,255,255,0.08);
-      min-width: 90px; text-align: center;
-    }
-    .sp-score-label { font-size: 10px; color: rgba(255,255,255,0.3); text-transform: uppercase; letter-spacing: 0.08em; font-weight: 600; }
-
-    .sp-match-footer {
-      display: flex; align-items: center; justify-content: space-between;
-      border-top: 1px solid rgba(255,255,255,0.05); padding-top: 14px;
-    }
-    .sp-match-viewers {
-      display: flex; align-items: center; gap: 5px;
-      font-size: 11px; color: rgba(255,255,255,0.35); font-weight: 600;
-    }
-    .sp-match-watch-btn {
-      background: linear-gradient(135deg, rgba(0,208,132,0.15), rgba(20,209,255,0.1));
-      border: 1px solid rgba(0,208,132,0.3);
-      color: var(--sp-green); border-radius: 8px;
-      padding: 7px 16px; font-size: 12px; font-weight: 700;
-      cursor: pointer; transition: all 0.25s;
-      display: flex; align-items: center; gap: 6px;
-    }
-    .sp-match-watch-btn:hover {
-      background: rgba(0,208,132,0.2);
-      box-shadow: 0 4px 16px rgba(0,208,132,0.25);
-      transform: scale(1.05);
-    }
-
-    /* ── Skeleton ── */
-    .sp-match-skeleton {
-      height: 200px; border-radius: 18px;
-      background: linear-gradient(90deg, #0f1420 25%, #1a2030 50%, #0f1420 75%);
-      background-size: 200% 100%;
-      animation: sp-shimmer 1.5s infinite;
-    }
-    @keyframes sp-shimmer {
-      0% { background-position: 200% 0; }
-      100% { background-position: -200% 0; }
-    }
-
-    /* ── Upcoming List ── */
-    .sp-upcoming-list { display: flex; flex-direction: column; gap: 12px; }
-    .sp-upcoming-item {
-      display: flex; align-items: center; gap: 16px;
-      background: var(--sp-card); border: 1px solid var(--sp-card-border);
-      border-radius: 14px; padding: 16px 20px;
-      cursor: pointer; transition: all 0.25s;
-    }
-    .sp-upcoming-item:hover {
-      border-color: rgba(20,209,255,0.25);
-      background: rgba(20,209,255,0.03);
-    }
-    .sp-upcoming-sport { font-size: 22px; flex-shrink: 0; }
-    .sp-upcoming-info { flex: 1; }
-    .sp-upcoming-teams { font-size: 14px; font-weight: 700; color: #fff; margin-bottom: 4px; }
-    .sp-upcoming-sub {
-      display: flex; align-items: center; gap: 10px;
-      font-size: 12px; color: rgba(255,255,255,0.4);
-    }
-    .sp-upcoming-dot { width: 3px; height: 3px; border-radius: 50%; background: rgba(255,255,255,0.25); }
-    .sp-upcoming-time {
-      font-family: 'Montserrat', sans-serif; font-weight: 800;
-      font-size: 13px; color: var(--sp-blue); flex-shrink: 0;
-    }
-    .sp-upcoming-remind {
-      background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.08);
-      border-radius: 8px; padding: 6px 12px; font-size: 12px; font-weight: 600;
-      color: rgba(255,255,255,0.5); cursor: pointer; transition: all 0.2s; flex-shrink: 0;
-    }
-    .sp-upcoming-remind:hover {
-      background: rgba(20,209,255,0.1); border-color: rgba(20,209,255,0.3);
-      color: var(--sp-blue);
-    }
-
-    /* ── Tournament Cards ── */
-    .sp-tournaments-row {
-      display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
-      gap: 16px;
-    }
-    .sp-tournament-card {
-      position: relative; border-radius: 16px; overflow: hidden;
-      cursor: pointer; transition: all 0.3s; aspect-ratio: 4/3;
-      border: 1px solid rgba(255,255,255,0.07);
-      display: flex; align-items: center; justify-content: center;
-    }
-    .sp-tournament-card:hover { transform: scale(1.03); box-shadow: 0 20px 50px rgba(0,0,0,0.6); }
-    .sp-tourn-bg { position: absolute; inset: 0; }
-    .sp-tourn-emoji { position: relative; z-index: 2; font-size: 52px; opacity: 0.9; }
-    .sp-tourn-info {
-      position: absolute; bottom: 0; left: 0; right: 0; z-index: 3;
-      padding: 16px; background: linear-gradient(to top, rgba(0,0,0,0.8), transparent);
-    }
-    .sp-tourn-name { font-family: 'Montserrat', sans-serif; font-size: 14px; font-weight: 800; color: #fff; }
-    .sp-tourn-matches { font-size: 11px; color: rgba(255,255,255,0.5); margin-top: 2px; }
-    .sp-tourn-badge {
-      display: inline-block; margin-top: 6px;
-      font-size: 9px; font-weight: 800; text-transform: uppercase; letter-spacing: 0.1em;
-      background: rgba(255,58,58,0.2); border: 1px solid rgba(255,58,58,0.4);
-      color: #ff6b6b; border-radius: 999px; padding: 2px 8px;
-    }
-    .sp-badge-blue { background: rgba(20,209,255,0.15); border-color: rgba(20,209,255,0.3); color: var(--sp-blue); }
-
-    /* ── CTA Banner ── */
-    .sp-cta-banner {
-      position: relative; border-radius: 24px; overflow: hidden;
-      background: linear-gradient(135deg, #0a1628, #071220);
-      border: 1px solid rgba(0,208,132,0.2);
-      padding: 48px; display: flex; align-items: center; gap: 40px;
-      flex-wrap: wrap;
-    }
-    .sp-cta-glow {
-      position: absolute; top: -80px; right: -80px; width: 300px; height: 300px;
-      background: radial-gradient(circle, rgba(0,208,132,0.12), transparent 70%);
-      pointer-events: none;
-    }
-    .sp-cta-content { position: relative; z-index: 2; flex: 1; min-width: 260px; }
-    .sp-cta-badge {
-      display: inline-block; padding: 4px 14px; border-radius: 999px;
-      background: rgba(0,208,132,0.12); border: 1px solid rgba(0,208,132,0.3);
-      font-size: 11px; font-weight: 800; color: var(--sp-green); letter-spacing: 0.08em;
-      text-transform: uppercase; margin-bottom: 16px;
-    }
-    .sp-cta-title {
-      font-family: 'Montserrat', sans-serif; font-size: clamp(22px,3vw,32px);
-      font-weight: 900; color: #fff; margin-bottom: 10px;
-    }
-    .sp-cta-desc { font-size: 15px; color: rgba(255,255,255,0.5); margin-bottom: 24px; max-width: 440px; }
-    .sp-cta-btn {
-      display: inline-flex; align-items: center; gap: 10px;
-      background: linear-gradient(135deg, var(--sp-green), #00a866);
-      color: #fff; border: none; border-radius: 12px;
-      padding: 14px 32px; font-size: 15px; font-weight: 700;
-      cursor: pointer; transition: all 0.3s;
-      box-shadow: 0 4px 24px rgba(0,208,132,0.35);
-    }
-    .sp-cta-btn:hover { transform: translateY(-2px); box-shadow: 0 8px 40px rgba(0,208,132,0.5); }
-    .sp-cta-sports-icons {
-      position: relative; z-index: 2;
-      display: flex; gap: 8px; flex-wrap: wrap; justify-content: center;
-    }
-    .sp-cta-sports-icons span {
-      font-size: 36px; display: inline-block;
-      animation: sp-icon-bounce 2s ease-in-out infinite;
-      opacity: 0.85;
-    }
-    .sp-cta-sports-icons span:nth-child(1) { animation-delay: 0s; }
-    .sp-cta-sports-icons span:nth-child(2) { animation-delay: 0.2s; }
-    .sp-cta-sports-icons span:nth-child(3) { animation-delay: 0.4s; }
-    .sp-cta-sports-icons span:nth-child(4) { animation-delay: 0.6s; }
-    .sp-cta-sports-icons span:nth-child(5) { animation-delay: 0.8s; }
-    .sp-cta-sports-icons span:nth-child(6) { animation-delay: 1s; }
-    @keyframes sp-icon-bounce {
-      0%,100% { transform: translateY(0); }
-      50% { transform: translateY(-8px); }
-    }
-
-    /* ── No Match State ── */
-    .sp-no-matches {
-      grid-column: 1/-1; text-align: center; padding: 60px 20px;
-      color: rgba(255,255,255,0.3);
-    }
-    .sp-no-matches-icon { font-size: 64px; margin-bottom: 16px; opacity: 0.5; }
-    .sp-no-matches-text { font-size: 16px; font-weight: 600; margin-bottom: 8px; color: rgba(255,255,255,0.5); }
-    .sp-no-matches-sub { font-size: 13px; }
-
-    /* ── Pulse animation for LIVE ── */
-    @keyframes pulse-live {
-      0% { box-shadow: 0 0 0 0 rgba(229, 9, 20, 0.7); }
-      70% { box-shadow: 0 0 0 10px rgba(229, 9, 20, 0); }
-      100% { box-shadow: 0 0 0 0 rgba(229, 9, 20, 0); }
-    }
-  </style>
+/* ══ MOBILE ══ */
+@media(max-width: 768px) {
+  .sp-hero {
+    grid-template-columns: 1fr;
+    padding: 100px 20px 40px;
+    min-height: 420px;
+  }
+  .sp-hero-bg {
+    background-position: 65% center !important;
+  }
+  .sp-hero-featured { display: none; }
+  .sp-controls { padding: 0 16px 20px; }
+  .sp-section { padding: 0 16px 32px; }
+  .sp-cards-grid { grid-template-columns: 1fr; }
+  .sp-suggest-row { padding-bottom: 4px; }
+  .sp-cta-banner { flex-direction: column; padding: 32px 24px; text-align: center; }
+  .sp-cta-icons { justify-content: center; }
+  .sp-hero-stats { gap: 16px; }
+  .sp-stat-num { font-size: 22px; }
+}
+</style>
 </div>
