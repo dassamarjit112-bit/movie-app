@@ -140,8 +140,6 @@ const HomePage = (() => {
     // Load TMDB data async, fill sections as they arrive
     loadTMDBSections();
     
-    // Initialize Adcash banner
-    initAdBanner();
     loadLiveSports();
   }
 
@@ -218,33 +216,6 @@ const HomePage = (() => {
       }
     } catch (err) {
       console.warn("Failed to load live sports on home page:", err);
-    }
-  }
-
-  // Initialize Adcash banner
-  function initAdBanner() {
-    console.log('[Adcash] initAdBanner called');
-    const container = document.getElementById('ad-banner-container');
-    if (!container) {
-      console.warn('[Adcash] No ad container found');
-      return;
-    }
-    // Ensure container has some height/min-width to display ad
-    container.style.minHeight = '60px';
-    function onLoad(){ console.log('[Adcash] Banner loaded'); }
-    function onError(e){ console.error('[Adcash] Banner error', e); }
-    function tryRun(){
-      if (window.aclib && typeof aclib.runBanner === 'function') {
-        try { aclib.runBanner({ zoneId: '11473046', onLoad, onError }); }
-        catch(e){ console.warn('[Adcash] callbacks not supported, calling without them'); aclib.runBanner({ zoneId: '11473046' }); }
-        return true;
-      }
-      return false;
-    }
-    if (!tryRun()) {
-      const interval = setInterval(() => {
-        if (tryRun()) { clearInterval(interval); }
-      }, 200);
     }
   }
 
@@ -513,8 +484,6 @@ async function populateContinueWatching() {
     grid.innerHTML = fallback.map(item => UI.posterCard(item, {})).join('');
   }
 
-  // Expose initAdBanner globally
-  window.initAdBanner = initAdBanner;
   return { init };
 })();
 

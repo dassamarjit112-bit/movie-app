@@ -82,9 +82,7 @@
     <div class="hs-sports-row scroll-row" id="home-sports-row">
       <!-- Matches injected here via JS -->
     </div>
-<div id="ad-banner-container" style="margin:24px 0;display:flex;justify-content:center;"></div>
-    </script>
-</div>
+  </section>
 
   <!-- ── Trending Now ── -->
   <section class="section">
@@ -206,11 +204,6 @@
     </div>
   </section>
 
-  <!-- Adcash Banner Container -->
-    <!-- Adcash Banner Container -->
-  <div id="ad-banner-container" class="adcash-banner" style="min-width:468px;min-height:60px;display:flex;justify-content:center;align-items:center;background:#111;color:#888;">Ad Loading...</div>
-  </div>
-
   <!-- Footer -->
   <div id="footer-mount"></div>
   <!-- Mobile Nav -->
@@ -287,7 +280,7 @@
     /* ── Home Sport Match Card ── */
     .hs-match-card {
       position: relative;
-      flex-shrink: 0; width: 280px;
+      flex-shrink: 0; width: clamp(250px, 75vw, 280px);
       background: linear-gradient(135deg, #0f1824, #0a1018);
       border: 1px solid rgba(255,255,255,0.08);
       border-radius: 18px; overflow: hidden;

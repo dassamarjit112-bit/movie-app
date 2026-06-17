@@ -37,9 +37,10 @@
     display: flex;
   }
 
-  /* Push content above bottom nav */
+  /* Push content aside for left nav */
   body {
-    padding-bottom: 90px; /* Increased to comfortably clear floating nav */
+    padding-left: 84px; /* Space for the 64px wide left nav + margin */
+    padding-bottom: 0;
   }
 
   .account-container {
