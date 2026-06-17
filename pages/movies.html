@@ -113,9 +113,27 @@
   <!-- ── Adcash Banner Ad ── -->
   <div style="display:flex;justify-content:center;align-items:center;padding:24px var(--space-margin-desktop);">
     <div>
-      <script type="text/javascript">
-        aclib.runBanner({ zoneId: '11473046' });
-      </script>
+        <script type="text/javascript">
+          if (window.aclib) {
+            if (window.aclib) {
+          aclib.runBanner({ zoneId: '11473046' });
+        } else {
+          var interval = setInterval(function() {
+            if (window.aclib) {
+              clearInterval(interval);
+              aclib.runBanner({ zoneId: '11473046' });
+            }
+          }, 200);
+        }
+          } else {
+            var interval = setInterval(function() {
+              if (window.aclib) {
+                clearInterval(interval);
+                aclib.runBanner({ zoneId: '11473046' });
+              }
+            }, 200);
+          }
+        </script>
     </div>
   </div>
 
