@@ -641,12 +641,13 @@ input, textarea, select {
 .mobile-nav {
   display: flex;
   position: fixed;
-  left: 12px;
-  top: 50%;
-  transform: translateY(-50%);
-  width: 64px;
-  height: auto;
-  flex-direction: column;
+  bottom: 24px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: auto;
+  min-width: 300px;
+  max-width: 90%;
+  flex-direction: row;
   z-index: var(--z-nav);
   background: rgba(13, 13, 13, 0.95);
   backdrop-filter: blur(28px);
@@ -654,9 +655,8 @@ input, textarea, select {
   border: 1px solid rgba(255, 255, 255, 0.12);
   border-radius: 32px;
   align-items: center;
-  justify-content: center;
-  padding: 16px 0;
-  gap: 12px;
+  justify-content: space-around;
+  padding: 8px 16px;
   box-shadow: 0 10px 40px rgba(0, 0, 0, 0.6);
 }
 /* Hide mobile nav on larger screens */
@@ -671,8 +671,8 @@ input, textarea, select {
   flex-direction: column;
   align-items: center;
   gap: 4px;
-  padding: 8px 0;
-  width: 100%;
+  padding: 8px 12px;
+  width: auto;
   border-radius: var(--r-sm);
   color: rgba(229, 226, 225, 0.6);
   transition: all var(--t-fast);
