@@ -82,13 +82,9 @@
     <div class="hs-sports-row scroll-row" id="home-sports-row">
       <!-- Matches injected here via JS -->
     </div>
-  </section>
-
-<div>
-    <script type="text/javascript">
-        aclib.runBanner({
-            zoneId: '11473046',
-        });
+<div id="ad-banner-container" style="margin:24px 0;display:flex;justify-content:center;"></div>
+            }
+        })();
     </script>
 </div>
 
@@ -214,26 +210,7 @@
 
   <!-- Adcash Banner Container -->
     <!-- Adcash Banner Container -->
-      <div class="adcash-banner" style="min-width:468px;min-height:60px;display:flex;justify-content:center;align-items:center;background:#111;color:#888;">
-        <script type="text/javascript">
-          (function(){
-            function onLoad(){ console.log('[Adcash] Banner loaded'); }
-            function onError(e){ console.error('[Adcash] Banner error', e); }
-            if(window.aclib && typeof aclib.runBanner === 'function'){
-              try{ aclib.runBanner({ zoneId: '11473046', onLoad: onLoad, onError: onError }); }
-              catch(e){ console.warn('[Adcash] callbacks not supported, calling without them'); aclib.runBanner({ zoneId: '11473046' }); }
-            } else {
-              var interval = setInterval(function(){
-                if(window.aclib && typeof aclib.runBanner === 'function'){
-                  clearInterval(interval);
-                  try{ aclib.runBanner({ zoneId: '11473046', onLoad: onLoad, onError: onError }); }
-                  catch(e){ aclib.runBanner({ zoneId: '11473046' }); }
-                }
-              },200);
-            }
-          })();
-        </script>
-      </div>
+  <div id="ad-banner-container" class="adcash-banner" style="min-width:468px;min-height:60px;display:flex;justify-content:center;align-items:center;background:#111;color:#888;">Ad Loading...</div>
   </div>
 
   <!-- Footer -->
