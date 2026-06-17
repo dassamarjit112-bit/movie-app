@@ -163,8 +163,11 @@ const Router = (() => {
       case 'scraper':     window.ScraperPage?.init(); break;
       case 'sports':      window.SportsPage?.init(); break;
       case 'sports-stream': window.SportsStreamPage?.init(params); break;
-    }
-  }
+      }
+      // After page-specific init, trigger global ad banner if available
+      if (typeof window.initAdBanner === 'function') {
+        try { window.initAdBanner(); } catch (e) { console.warn('Ad banner init error:', e); }
+      }  }
 
   // ── Update navbar active state ──
   function updateNavActive(route) {

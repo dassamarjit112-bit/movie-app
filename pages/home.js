@@ -513,6 +513,8 @@ async function populateContinueWatching() {
     grid.innerHTML = fallback.map(item => UI.posterCard(item, {})).join('');
   }
 
+  // Expose initAdBanner globally
+  window.initAdBanner = initAdBanner;
   return { init };
 })();
 

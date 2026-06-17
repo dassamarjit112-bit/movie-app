@@ -1156,3 +1156,10 @@ input, textarea, select {
 .line-clamp-1 { -webkit-line-clamp: 1; display: -webkit-box; -webkit-box-orient: vertical; overflow: hidden; }
 .line-clamp-2 { -webkit-line-clamp: 2; display: -webkit-box; -webkit-box-orient: vertical; overflow: hidden; }
 .line-clamp-3 { -webkit-line-clamp: 3; display: -webkit-box; -webkit-box-orient: vertical; overflow: hidden; }
+#global-ad-banner {
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  margin: 24px 0;
+  min-height: 60px;
+}
