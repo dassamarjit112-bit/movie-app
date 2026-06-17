@@ -101,6 +101,21 @@
       opacity: 0;
     }
 
+    /* Global Ad Banner */
+    #global-ad-banner {
+      width: 100%;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 60px;
+      background: rgba(0,0,0,0.3);
+      border-bottom: 1px solid rgba(255,255,255,0.05);
+      padding: 8px 0;
+      box-sizing: border-box;
+      position: relative;
+      z-index: 100;
+    }
+
     /* Quality menu styling */
     .quality-item, .speed-item {
       padding: 8px 16px;
@@ -121,7 +136,88 @@
 <body>
   <!-- Page loading bar -->
   <div id="top-loading-bar"></div>
-  <div id="global-ad-banner" class="global-ad-banner" style="margin:24px 0;display:flex;justify-content:center;min-height:60px;"></div>
+
+  <!-- Global Ad Banner: shown on all pages except account -->
+  <div id="global-ad-banner"></div>
+
+  <!-- Ad Banner Manager -->
+  <script>
+    (function() {
+      var _adInitialized = false;
+
+      function _runBannerIntoContainer() {
+        var container = document.getElementById('global-ad-banner');
+        if (!container) return;
+        // Clear any previous ad
+        container.innerHTML = '';
+        _adInitialized = false;
+
+        function tryRun() {
+          if (window.aclib && typeof window.aclib.runBanner === 'function') {
+            if (_adInitialized) return true;
+            _adInitialized = true;
+            // aclib.runBanner renders into the PARENT of the calling script.
+            // We create a wrapper div inside the container and a script inside it.
+            var wrapper = document.createElement('div');
+            container.appendChild(wrapper);
+            // Directly call runBanner — aclib targets the script's parentNode.
+            // Since we can't inject a script via innerHTML in SPA context,
+            // we call runBanner and it will append into the container itself.
+            try {
+              window.aclib.runBanner({ zoneId: '11473046' });
+              console.log('[AdBanner] Banner triggered successfully');
+            } catch(e) {
+              console.warn('[AdBanner] runBanner error:', e);
+            }
+            return true;
+          }
+          return false;
+        }
+
+        if (!tryRun()) {
+          var attempts = 0;
+          var iv = setInterval(function() {
+            attempts++;
+            if (tryRun() || attempts > 30) clearInterval(iv);
+          }, 200);
+        }
+      }
+
+      function _shouldShowAd() {
+        var hash = window.location.hash || '';
+        // Skip login and account pages
+        var route = hash.replace('#/', '').split('?')[0];
+        return route !== 'account' && route !== 'login';
+      }
+
+      function _onRouteChange() {
+        var container = document.getElementById('global-ad-banner');
+        if (!container) return;
+        if (_shouldShowAd()) {
+          container.style.display = 'flex';
+          _runBannerIntoContainer();
+        } else {
+          container.style.display = 'none';
+          container.innerHTML = '';
+          _adInitialized = false;
+        }
+      }
+
+      // Expose for router/pages to call manually if needed
+      window.initAdBanner = _onRouteChange;
+
+      // Listen for hash changes (SPA navigation)
+      window.addEventListener('hashchange', function() {
+        // Small delay so the route switch completes first
+        setTimeout(_onRouteChange, 300);
+      });
+
+      // Also run once the page is ready
+      document.addEventListener('DOMContentLoaded', function() {
+        setTimeout(_onRouteChange, 1500);
+      });
+    })();
+  </script>
 
   <!-- Initial splash loader -->
   <div id="initial-loader">
