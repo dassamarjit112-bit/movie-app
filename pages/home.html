@@ -205,28 +205,27 @@
   </section>
 
   <!-- Adcash Banner Container -->
-  <div class="adcash-banner" style="min-width:468px;min-height:60px;display:flex;justify-content:center;align-items:center;background:#111;color:#888;">
-    <script type="text/javascript">
-      (function(){
-        function onLoad(){ console.log('[Adcash] Banner loaded'); }
-        function onError(e){ console.error('[Adcash] Banner error', e); }
-        if(window.aclib){
-          if(typeof aclib.runBanner === 'function'){
-            // try to pass callbacks if supported
-            try{ aclib.runBanner({ zoneId: '11473046', onLoad: onLoad, onError: onError }); }
-            catch(e){ console.warn('[Adcash] callbacks not supported, calling without them'); aclib.runBanner({ zoneId: '11473046' }); }
-          } else { console.warn('[Adcash] runBanner not found'); }
-        } else {
-          var interval = setInterval(function(){
+    <!-- Adcash Banner Container -->
+      <div class="adcash-banner" style="min-width:468px;min-height:60px;display:flex;justify-content:center;align-items:center;background:#111;color:#888;">
+        <script type="text/javascript">
+          (function(){
+            function onLoad(){ console.log('[Adcash] Banner loaded'); }
+            function onError(e){ console.error('[Adcash] Banner error', e); }
             if(window.aclib && typeof aclib.runBanner === 'function'){
-              clearInterval(interval);
               try{ aclib.runBanner({ zoneId: '11473046', onLoad: onLoad, onError: onError }); }
-              catch(e){ aclib.runBanner({ zoneId: '11473046' }); }
+              catch(e){ console.warn('[Adcash] callbacks not supported, calling without them'); aclib.runBanner({ zoneId: '11473046' }); }
+            } else {
+              var interval = setInterval(function(){
+                if(window.aclib && typeof aclib.runBanner === 'function'){
+                  clearInterval(interval);
+                  try{ aclib.runBanner({ zoneId: '11473046', onLoad: onLoad, onError: onError }); }
+                  catch(e){ aclib.runBanner({ zoneId: '11473046' }); }
+                }
+              },200);
             }
-          },200);
-        }
-      </script>
-    </div>
+          })();
+        </script>
+      </div>
   </div>
 
   <!-- Footer -->
