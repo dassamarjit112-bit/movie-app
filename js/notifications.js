@@ -74,12 +74,9 @@ const NotificationSystem = (() => {
     if (!('Notification' in window)) return;
     _notifPermission = Notification.permission;
     if (_notifPermission === 'default') {
-      // Show full-screen welcome permission modal immediately
-      const firstVisit = !localStorage.getItem('cs_notif_asked');
-      if (firstVisit) {
-        await new Promise(resolve => setTimeout(resolve, 1200)); // let page render first
-        _showWelcomePermissionModal(resolve => resolve);
-      }
+      // Show full-screen welcome permission modal if not granted or denied
+      await new Promise(resolve => setTimeout(resolve, 2000)); // let page render first
+      _showWelcomePermissionModal();
     }
   }
 
@@ -247,6 +244,14 @@ const NotificationSystem = (() => {
   }
 
   async function requestPermission() {
+    // Support for Median.co JS Bridge
+    if (window.median && window.median.push && typeof window.median.push.register === 'function') {
+      window.median.push.register();
+    }
+    if (window.median && window.median.onesignal && typeof window.median.onesignal.register === 'function') {
+      window.median.onesignal.register();
+    }
+
     if (!('Notification' in window)) return false;
     const result = await Notification.requestPermission();
     _notifPermission = result;
@@ -272,6 +277,12 @@ const NotificationSystem = (() => {
   // ── Android-style Web Push Notification ──
   function _showAndroidNotification({ title, body, type, image, url, tag }) {
     if (_notifPermission !== 'granted') return;
+
+    // Support for Median.co (GoNative)
+    if (window.median) {
+      new Notification(title, { body, icon: '/icons/icon-192.png' });
+      return;
+    }
 
     if (_swRegistration) {
       _swRegistration.showNotification(title, {
