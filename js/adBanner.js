@@ -11,8 +11,8 @@
     function onError(e) { console.error('[Adcash] Banner error', e); }
     function tryRun() {
       if (window.aclib && typeof aclib.runBanner === 'function') {
-        try { aclib.runBanner({ zoneId: 'x89bizpkdk', onLoad, onError }); }
-        catch (e) { console.warn('[Adcash] callbacks not supported, calling without them'); aclib.runBanner({ zoneId: 'x89bizpkdk' }); }
+        try { aclib.runBanner({ zoneId: '11473046', onLoad, onError }); }
+        catch (e) { console.warn('[Adcash] callbacks not supported, calling without them'); aclib.runBanner({ zoneId: '11473046' }); }
         return true;
       }
       return false;
