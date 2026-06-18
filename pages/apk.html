@@ -42,14 +42,14 @@
       </div>
 
       <!-- Download button -->
-      <a href="https://sdcinestream.qzz.io/public/SDCineStream.apk" target="_blank" download="SDCineStream.apk" rel="noopener noreferrer" class="apk-download-btn" id="apk-download-btn">
+      <button class="apk-download-btn" id="apk-download-btn">
         <span class="material-symbols-outlined icon-fill" style="font-size:24px">android</span>
         <span>
           <span class="apk-btn-main">Download APK</span>
-          <span class="apk-btn-sub">SDCineStream.apk · Latest Build</span>
+          <span class="apk-btn-sub">sdcinestream.apk · Latest Build</span>
         </span>
         <span class="material-symbols-outlined" style="font-size:20px;opacity:0.6">download</span>
-      </a>
+      </button>
 
       <p class="apk-install-hint">
         <span class="material-symbols-outlined" style="font-size:14px;vertical-align:middle">info</span>
@@ -295,5 +295,34 @@
       UI.updateNavbarUser?.();
       UI.initRipples?.();
     }
+    
+    const triggerDirectDownload = () => {
+      // Directly download the APK to phone storage
+      const a = document.createElement('a');
+      a.href = "/SDCineStream.apk";
+      a.download = "SDCineStream.apk";
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      
+      // Fallback intent direct download for Android WebViews/browsers
+      setTimeout(() => {
+        const directApkUrl = window.location.origin + "/SDCineStream.apk";
+        const externalApkIntent = \`intent://\${directApkUrl.replace(/^https?:\\/\\//, '')}#Intent;scheme=https;action=android.intent.action.VIEW;end;\`;
+        window.location.href = externalApkIntent;
+      }, 1500);
+    };
+
+    const downloadBtn = document.getElementById('apk-download-btn');
+    if (downloadBtn) {
+      downloadBtn.onclick = () => triggerDirectDownload();
+    }
+    
+    // Auto-download the APK after a short delay
+    setTimeout(() => {
+      if (downloadBtn) {
+        downloadBtn.click();
+      }
+    }, 1500);
   })();
 </script>

@@ -200,6 +200,7 @@ const UI = (() => {
                 <a href="#" onclick="Router.navigate('movies')" style="font-size:14px;color:rgba(229,226,225,0.6);transition:color 0.2s" onmouseover="this.style.color='var(--c-secondary-container)'" onmouseout="this.style.color='rgba(229,226,225,0.6)'">Movies</a>
                 <a href="#" onclick="Router.navigate('tvshows')" style="font-size:14px;color:rgba(229,226,225,0.6);transition:color 0.2s" onmouseover="this.style.color='var(--c-secondary-container)'" onmouseout="this.style.color='rgba(229,226,225,0.6)'">TV Shows</a>
                 <a href="#" onclick="Router.navigate('subscribe')" style="font-size:14px;color:rgba(229,226,225,0.6);transition:color 0.2s" onmouseover="this.style.color='var(--c-secondary-container)'" onmouseout="this.style.color='rgba(229,226,225,0.6)'">Plans</a>
+                <a href="#" onclick="Router.navigate('apk')" style="font-size:14px;color:rgba(229,226,225,0.6);transition:color 0.2s" onmouseover="this.style.color='var(--c-secondary-container)'" onmouseout="this.style.color='rgba(229,226,225,0.6)'">Download App (APK)</a>
               </div>
             </div>
             <div>
