@@ -646,24 +646,22 @@ input, textarea, select {
 .mobile-nav {
   display: flex;
   position: fixed;
-  bottom: 24px;
-  left: 0;
-  right: 30%;
-  margin: 0 auto;
-  width: 400px;
-  min-width: 280px;
-  max-width: 100%;
+  bottom: 16px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: calc(100% - 24px);
+  max-width: 420px;
   flex-direction: row;
   z-index: var(--z-nav);
-  background: rgba(13, 13, 13, 0.95);
+  background: rgba(15, 15, 15, 0.96);
   backdrop-filter: blur(28px);
   -webkit-backdrop-filter: blur(28px);
-  border: 1px solid rgba(255, 255, 255, 0.12);
+  border: 1px solid rgba(255, 255, 255, 0.1);
   border-radius: 32px;
   align-items: center;
-  justify-content: space-around;
-  padding: 8px 16px;
-  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.6);
+  justify-content: space-evenly;
+  padding: 6px 8px;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.7), 0 0 0 1px rgba(229, 9, 20, 0.06);
 }
 /* Hide mobile nav on larger screens */
 @media screen and (min-width: 768px) {
@@ -674,14 +672,14 @@ input, textarea, select {
 
 .mobile-nav-item {
   display: flex;
+  flex: 1;
   flex-direction: column;
   align-items: center;
-  gap: 4px;
-  padding: 8px 12px;
-  width: auto;
-  border-radius: var(--r-sm);
-  color: rgba(229, 226, 225, 0.6);
-  transition: all var(--t-fast);
+  gap: 3px;
+  padding: 8px 4px;
+  border-radius: 20px;
+  color: rgba(229, 226, 225, 0.45);
+  transition: all 150ms ease;
   cursor: pointer;
   font-size: 9px;
   font-weight: 600;
@@ -689,13 +687,17 @@ input, textarea, select {
   text-transform: uppercase;
 }
 
-.mobile-nav-item.active,
-.mobile-nav-item:hover {
+.mobile-nav-item.active {
   color: var(--c-primary-container);
+  background: rgba(229, 9, 20, 0.1);
+}
+
+.mobile-nav-item:hover {
+  color: rgba(229, 226, 225, 0.85);
 }
 
 .mobile-nav-item .material-symbols-outlined {
-  font-size: 20px;
+  font-size: 22px;
 }
 
 /* ── Hero Section ── */

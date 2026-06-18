@@ -164,18 +164,15 @@ const UI = (() => {
       { route: 'movies',   icon: 'movie',        label: 'Movies' },
       { route: 'tvshows',  icon: 'tv',           label: 'Shows' },
       { route: 'sports',   icon: 'sports_soccer',label: 'Sports' },
-      { route: 'search',   icon: 'search',       label: 'Search' },
       { route: 'account',  icon: 'person',       label: 'Profile' }
     ];
     return `
       <nav class="mobile-nav">
         ${items.map(item => `
           <div class="mobile-nav-item ${activeRoute===item.route?'active':''}" 
-               data-route="${item.route}" onclick="${
-                 item.route === 'search' ? 'UI.openMobileSearch()' : 
-                 `Router.navigate('${item.route}')`
-               }">
-            <span class="material-symbols-outlined ${activeRoute===item.route?'icon-fill':''}">${item.icon}</span>
+               data-route="${item.route}" onclick="Router.navigate('${item.route}')">
+            <span class="material-symbols-outlined ${activeRoute===item.route?'icon-fill':''}"
+                  style="${activeRoute===item.route ? 'filter:drop-shadow(0 0 6px rgba(229,9,20,0.6))' : ''}">${item.icon}</span>
             <span>${item.label}</span>
           </div>
         `).join('')}
