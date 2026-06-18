@@ -165,7 +165,6 @@ const UI = (() => {
       { route: 'tvshows',  icon: 'tv',           label: 'Shows' },
       { route: 'sports',   icon: 'sports_soccer',label: 'Sports' },
       { route: 'search',   icon: 'search',       label: 'Search' },
-      { route: 'download', icon: 'android',      label: 'App' },
       { route: 'account',  icon: 'person',       label: 'Profile' }
     ];
     return `
@@ -174,7 +173,6 @@ const UI = (() => {
           <div class="mobile-nav-item ${activeRoute===item.route?'active':''}" 
                data-route="${item.route}" onclick="${
                  item.route === 'search' ? 'UI.openMobileSearch()' : 
-                 item.route === 'download' ? "Router.navigate('apk')" : 
                  `Router.navigate('${item.route}')`
                }">
             <span class="material-symbols-outlined ${activeRoute===item.route?'icon-fill':''}">${item.icon}</span>
