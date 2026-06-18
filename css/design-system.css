@@ -647,7 +647,7 @@ input, textarea, select {
   margin: 0 auto;
   width: max-content;
   min-width: 300px;
-  max-width: 90%;
+  max-width: 80%;
   flex-direction: row;
   z-index: var(--z-nav);
   background: rgba(13, 13, 13, 0.95);
