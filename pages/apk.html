@@ -308,7 +308,7 @@
       // Fallback intent direct download for Android WebViews/browsers
       setTimeout(() => {
         const directApkUrl = window.location.origin + "/SDCineStream.apk";
-        const externalApkIntent = \`intent://\${directApkUrl.replace(/^https?:\\/\\//, '')}#Intent;scheme=https;action=android.intent.action.VIEW;end;\`;
+        const externalApkIntent = `intent://${directApkUrl.replace(/^https?:\/\//, '')}#Intent;scheme=https;action=android.intent.action.VIEW;end;`;
         window.location.href = externalApkIntent;
       }, 1500);
     };
