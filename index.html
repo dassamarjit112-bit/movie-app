@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en" class="dark">
+
 <head>
   <meta charset="UTF-8">
   <meta http-equiv="Content-Security-Policy" content="default-src * 'unsafe-inline' 'unsafe-eval' data: blob:;">
@@ -12,9 +13,11 @@
   <meta name="x5-fullscreen" content="true">
   <meta name="browsermode" content="application">
   <title>CineStream — Premium Cinema Streaming</title>
-  <meta name="description" content="CineStream — Stream the world's finest cinema in 4K Ultra HD. Unlimited movies, TV shows, and exclusives. Start your premium experience today.">
+  <meta name="description"
+    content="CineStream — Stream the world's finest cinema in 4K Ultra HD. Unlimited movies, TV shows, and exclusives. Start your premium experience today.">
   <meta property="og:title" content="CineStream — Premium Cinema Streaming">
-  <meta property="og:description" content="Stream the world's finest cinema in 4K Ultra HD with adaptive bitrate streaming.">
+  <meta property="og:description"
+    content="Stream the world's finest cinema in 4K Ultra HD with adaptive bitrate streaming.">
   <meta property="og:type" content="website">
 
   <!-- Preconnect for fonts -->
@@ -60,7 +63,7 @@
 
     #initial-loader .tagline {
       font-size: 13px;
-      color: rgba(229,226,225,0.4);
+      color: rgba(229, 226, 225, 0.4);
       letter-spacing: 0.12em;
       text-transform: uppercase;
       animation: fade-in 1s ease 0.4s both;
@@ -69,7 +72,7 @@
     #initial-loader .loader-bar {
       width: 120px;
       height: 2px;
-      background: rgba(255,255,255,0.08);
+      background: rgba(255, 255, 255, 0.08);
       border-radius: 999px;
       overflow: hidden;
       animation: fade-in 0.5s ease 0.3s both;
@@ -108,37 +111,47 @@
       justify-content: center;
       align-items: center;
       min-height: 60px;
-      background: rgba(0,0,0,0.5);
-      border-bottom: 1px solid rgba(255,255,255,0.05);
+      background: rgba(0, 0, 0, 0.5);
+      border-bottom: 1px solid rgba(255, 255, 255, 0.05);
       padding: 8px 0;
       box-sizing: border-box;
       position: relative;
-      margin-top: 72px; /* Clears desktop navbar */
-      z-index: 40; /* Below navbar (50) */
+      margin-top: 72px;
+      /* Clears desktop navbar */
+      z-index: 40;
+      /* Below navbar (50) */
     }
+
     @media (max-width: 767px) {
       #global-ad-banner {
-        margin-top: 60px; /* Clears mobile navbar */
+        margin-top: 60px;
+        /* Clears mobile navbar */
       }
     }
 
     /* Quality menu styling */
-    .quality-item, .speed-item {
+    .quality-item,
+    .speed-item {
       padding: 8px 16px;
       font-size: 13px;
       cursor: pointer;
-      color: rgba(229,226,225,0.8);
+      color: rgba(229, 226, 225, 0.8);
       transition: background 0.15s;
     }
-    .quality-item:hover, .speed-item:hover {
-      background: rgba(255,255,255,0.1);
+
+    .quality-item:hover,
+    .speed-item:hover {
+      background: rgba(255, 255, 255, 0.1);
       color: #fff;
     }
-    .quality-item.active, .speed-item.active {
+
+    .quality-item.active,
+    .speed-item.active {
       color: #14d1ff;
     }
   </style>
 </head>
+
 <body>
   <!-- Page loading bar -->
   <div id="top-loading-bar"></div>
@@ -148,7 +161,7 @@
 
   <!-- Ad Banner Manager -->
   <script>
-    (function() {
+    (function () {
       var _adInitialized = false;
 
       function _runBannerIntoContainer() {
@@ -167,7 +180,7 @@
             // Inject script tag dynamically to ensure aclib finds the correct parentNode
             var scriptTag = document.createElement('script');
             scriptTag.type = 'text/javascript';
-            scriptTag.text = "try { window.aclib.runBanner({ zoneId: '11473046' }); console.log('[AdBanner] Banner triggered successfully'); } catch(e) { console.warn('[AdBanner] runBanner error:', e); }";
+            scriptTag.text = "try { window.aclib.runBanner({ zoneId: 'x89bizpkdk' }); console.log('[AdBanner] Banner triggered successfully'); } catch(e) { console.warn('[AdBanner] runBanner error:', e); }";
             wrapper.appendChild(scriptTag);
             return true;
           }
@@ -176,7 +189,7 @@
 
         if (!tryRun()) {
           var attempts = 0;
-          var iv = setInterval(function() {
+          var iv = setInterval(function () {
             attempts++;
             if (tryRun() || attempts > 30) clearInterval(iv);
           }, 200);
@@ -207,13 +220,13 @@
       window.initAdBanner = _onRouteChange;
 
       // Listen for hash changes (SPA navigation)
-      window.addEventListener('hashchange', function() {
+      window.addEventListener('hashchange', function () {
         // Small delay so the route switch completes first
         setTimeout(_onRouteChange, 300);
       });
 
       // Also run once the page is ready
-      document.addEventListener('DOMContentLoaded', function() {
+      document.addEventListener('DOMContentLoaded', function () {
         setTimeout(_onRouteChange, 1500);
       });
     })();
@@ -316,7 +329,7 @@
 
         // Short min display time for branding
         await new Promise(r => setTimeout(r, 1000));
-        
+
         // Success: remove loader
         clearTimeout(safetyTimer);
         removeLoader();
@@ -345,4 +358,5 @@
     })();
   </script>
 </body>
+
 </html>

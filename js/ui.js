@@ -165,13 +165,17 @@ const UI = (() => {
       { route: 'tvshows',  icon: 'tv',           label: 'Shows' },
       { route: 'sports',   icon: 'sports_soccer',label: 'Sports' },
       { route: 'search',   icon: 'search',       label: 'Search' },
-      { route: 'account',  icon: 'person',       label: 'Profile' }
+      { route: 'download', icon: 'android',      label: 'App' }
     ];
     return `
       <nav class="mobile-nav">
         ${items.map(item => `
           <div class="mobile-nav-item ${activeRoute===item.route?'active':''}" 
-               data-route="${item.route}" onclick="${item.route==='search' ? 'UI.openMobileSearch()' : `Router.navigate('${item.route}')`}">
+               data-route="${item.route}" onclick="${
+                 item.route === 'search' ? 'UI.openMobileSearch()' : 
+                 item.route === 'download' ? "const a=document.createElement('a');a.href='SDCineStream.apk';a.download='SDCineStream.apk';document.body.appendChild(a);a.click();document.body.removeChild(a);" : 
+                 `Router.navigate('${item.route}')`
+               }">
             <span class="material-symbols-outlined ${activeRoute===item.route?'icon-fill':''}">${item.icon}</span>
             <span>${item.label}</span>
           </div>

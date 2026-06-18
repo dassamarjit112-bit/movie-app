@@ -3,44 +3,59 @@
   <div id="navbar-mount"></div>
 
   <!-- Page Header -->
-  <div style="padding:100px var(--space-margin-desktop) 0;background:linear-gradient(to bottom,rgba(229,9,20,0.08) 0%,transparent 100%)">
+  <div
+    style="padding:100px var(--space-margin-desktop) 0;background:linear-gradient(to bottom,rgba(229,9,20,0.08) 0%,transparent 100%)">
     <div style="max-width:var(--space-container-max);margin:0 auto">
       <div class="badge badge-red" style="margin-bottom:12px">Library</div>
       <h1 class="text-display-md" style="margin-bottom:8px">Movies</h1>
-      <p style="color:rgba(229,226,225,0.55);font-size:16px">Bollywood · Hollywood · Tollywood · South · Real-time from TMDB</p>
+      <p style="color:rgba(229,226,225,0.55);font-size:16px">Bollywood · Hollywood · Tollywood · South · Real-time from
+        TMDB</p>
     </div>
   </div>
 
   <!-- Industry Tabs -->
   <div style="padding:24px var(--space-margin-desktop) 0">
     <div class="scroll-row" style="gap:8px;padding-bottom:8px" id="industry-tabs">
-      <button class="industry-tab active" data-industry="all"        onclick="MoviesPage.setIndustry('all')">🎬 All</button>
-      <button class="industry-tab"        data-industry="Bollywood"  onclick="MoviesPage.setIndustry('Bollywood')">🇮🇳 Bollywood</button>
-      <button class="industry-tab"        data-industry="Hollywood"  onclick="MoviesPage.setIndustry('Hollywood')">🌍 Hollywood</button>
-      <button class="industry-tab"        data-industry="Tollywood"  onclick="MoviesPage.setIndustry('Tollywood')">🎭 Tollywood</button>
-      <button class="industry-tab"        data-industry="Tamil"      onclick="MoviesPage.setIndustry('Tamil')">🌴 Tamil</button>
-      <button class="industry-tab"        data-industry="Malayalam"  onclick="MoviesPage.setIndustry('Malayalam')">🌴 Malayalam</button>
-      <button class="industry-tab"        data-industry="Kannada"    onclick="MoviesPage.setIndustry('Kannada')">🌴 Kannada</button>
-      <button class="industry-tab"        data-industry="TV Serial"  onclick="MoviesPage.setIndustry('TV Serial')">📺 TV Serials</button>
-      <button class="industry-tab"        data-industry="Web Series" onclick="MoviesPage.setIndustry('Web Series')">💻 Web Series</button>
-      <button class="industry-tab"        data-industry="Anime"      onclick="Router.navigate('anime')">🌟 Anime</button>
+      <button class="industry-tab active" data-industry="all" onclick="MoviesPage.setIndustry('all')">🎬 All</button>
+      <button class="industry-tab" data-industry="Bollywood" onclick="MoviesPage.setIndustry('Bollywood')">🇮🇳
+        Bollywood</button>
+      <button class="industry-tab" data-industry="Hollywood" onclick="MoviesPage.setIndustry('Hollywood')">🌍
+        Hollywood</button>
+      <button class="industry-tab" data-industry="Tollywood" onclick="MoviesPage.setIndustry('Tollywood')">🎭
+        Tollywood</button>
+      <button class="industry-tab" data-industry="Tamil" onclick="MoviesPage.setIndustry('Tamil')">🌴 Tamil</button>
+      <button class="industry-tab" data-industry="Malayalam" onclick="MoviesPage.setIndustry('Malayalam')">🌴
+        Malayalam</button>
+      <button class="industry-tab" data-industry="Kannada" onclick="MoviesPage.setIndustry('Kannada')">🌴
+        Kannada</button>
+      <button class="industry-tab" data-industry="TV Serial" onclick="MoviesPage.setIndustry('TV Serial')">📺 TV
+        Serials</button>
+      <button class="industry-tab" data-industry="Web Series" onclick="MoviesPage.setIndustry('Web Series')">💻 Web
+        Series</button>
+      <button class="industry-tab" data-industry="Anime" onclick="Router.navigate('anime')">🌟 Anime</button>
     </div>
   </div>
 
   <!-- Search + Filter Bar -->
-  <div style="padding:16px var(--space-margin-desktop);position:sticky;top:72px;z-index:40;background:rgba(14,14,14,0.88);backdrop-filter:blur(24px);border-bottom:1px solid rgba(255,255,255,0.06)">
-    <div style="max-width:var(--space-container-max);margin:0 auto;display:flex;gap:12px;flex-wrap:wrap;align-items:center">
+  <div
+    style="padding:16px var(--space-margin-desktop);position:sticky;top:72px;z-index:40;background:rgba(14,14,14,0.88);backdrop-filter:blur(24px);border-bottom:1px solid rgba(255,255,255,0.06)">
+    <div
+      style="max-width:var(--space-container-max);margin:0 auto;display:flex;gap:12px;flex-wrap:wrap;align-items:center">
       <!-- AI Search -->
-      <div style="flex:1;min-width:220px;display:flex;align-items:center;gap:8px;background:rgba(255,255,255,0.05);border:1.5px solid rgba(255,255,255,0.1);border-radius:10px;padding:10px 16px;transition:border-color .2s"
-           onfocusin="this.style.borderColor='rgba(229,9,20,0.5)'" onfocusout="this.style.borderColor='rgba(255,255,255,0.1)'">
+      <div
+        style="flex:1;min-width:220px;display:flex;align-items:center;gap:8px;background:rgba(255,255,255,0.05);border:1.5px solid rgba(255,255,255,0.1);border-radius:10px;padding:10px 16px;transition:border-color .2s"
+        onfocusin="this.style.borderColor='rgba(229,9,20,0.5)'"
+        onfocusout="this.style.borderColor='rgba(255,255,255,0.1)'">
         <span class="material-symbols-outlined" style="font-size:18px;color:rgba(229,226,225,0.4)">search</span>
         <input id="movie-search" type="text" placeholder="AI Search — movies, genres, actors…"
-               style="background:none;border:none;outline:none;color:var(--c-on-surface);font-size:14px;width:100%"
-               oninput="MoviesPage.search(this.value)">
-        <span style="font-size:9px;font-weight:800;padding:2px 6px;border-radius:4px;background:rgba(50,220,120,0.12);color:#32dc78;border:1px solid rgba(50,220,120,0.25);flex-shrink:0">AI</span>
+          style="background:none;border:none;outline:none;color:var(--c-on-surface);font-size:14px;width:100%"
+          oninput="MoviesPage.search(this.value)">
+        <span
+          style="font-size:9px;font-weight:800;padding:2px 6px;border-radius:4px;background:rgba(50,220,120,0.12);color:#32dc78;border:1px solid rgba(50,220,120,0.25);flex-shrink:0">AI</span>
       </div>
       <!-- Genre -->
-      <select id="genre-filter" class="input-field" style="width:auto;padding:10px 16px;cursor:pointer" onchange="MoviesPage.filter()">
+      <select id="genre-filter" class="input-field" style="width:auto;padding:10px 16px;cursor:pointer"
+        onchange="MoviesPage.filter()">
         <option value="">All Genres</option>
         <option value="Action">Action</option>
         <option value="Sci-Fi">Sci-Fi</option>
@@ -60,7 +75,8 @@
         <option value="War">War</option>
       </select>
       <!-- Sort -->
-      <select id="sort-filter" class="input-field" style="width:auto;padding:10px 16px;cursor:pointer" onchange="MoviesPage.filter()">
+      <select id="sort-filter" class="input-field" style="width:auto;padding:10px 16px;cursor:pointer"
+        onchange="MoviesPage.filter()">
         <option value="trending">Trending</option>
         <option value="rating">Top Rated</option>
         <option value="newest">Newest</option>
@@ -71,8 +87,11 @@
   </div>
 
   <!-- Loading Skeletons -->
-  <div id="movies-loading" style="padding:32px var(--space-margin-desktop);max-width:var(--space-container-max);margin:0 auto">
-    <div style="height:24px;width:200px;background:rgba(255,255,255,0.06);border-radius:6px;margin-bottom:16px;animation:skeleton-pulse 1.5s ease infinite"></div>
+  <div id="movies-loading"
+    style="padding:32px var(--space-margin-desktop);max-width:var(--space-container-max);margin:0 auto">
+    <div
+      style="height:24px;width:200px;background:rgba(255,255,255,0.06);border-radius:6px;margin-bottom:16px;animation:skeleton-pulse 1.5s ease infinite">
+    </div>
     <div class="scroll-row" style="gap:14px;padding-bottom:12px">
       <div class="skeleton" style="width:150px;height:225px;border-radius:8px;flex-shrink:0"></div>
       <div class="skeleton" style="width:150px;height:225px;border-radius:8px;flex-shrink:0"></div>
@@ -81,7 +100,9 @@
       <div class="skeleton" style="width:150px;height:225px;border-radius:8px;flex-shrink:0"></div>
       <div class="skeleton" style="width:150px;height:225px;border-radius:8px;flex-shrink:0"></div>
     </div>
-    <div style="height:24px;width:180px;background:rgba(255,255,255,0.06);border-radius:6px;margin:28px 0 16px;animation:skeleton-pulse 1.5s ease infinite"></div>
+    <div
+      style="height:24px;width:180px;background:rgba(255,255,255,0.06);border-radius:6px;margin:28px 0 16px;animation:skeleton-pulse 1.5s ease infinite">
+    </div>
     <div class="scroll-row" style="gap:14px;padding-bottom:12px">
       <div class="skeleton" style="width:150px;height:225px;border-radius:8px;flex-shrink:0"></div>
       <div class="skeleton" style="width:150px;height:225px;border-radius:8px;flex-shrink:0"></div>
@@ -95,17 +116,19 @@
   <div id="movies-categories" style="padding:24px 0 40px;display:none"></div>
 
   <!-- Grid View (search results / see-all) -->
-  <div id="movies-grid-wrapper" style="padding:0 var(--space-margin-desktop) 40px;max-width:var(--space-container-max);margin:0 auto;display:none">
+  <div id="movies-grid-wrapper"
+    style="padding:0 var(--space-margin-desktop) 40px;max-width:var(--space-container-max);margin:0 auto;display:none">
     <div style="display:flex;align-items:center;gap:12px;margin-bottom:20px">
-      <button id="back-to-categories" onclick="MoviesPage.clearSearch()" 
-              style="display:none;align-items:center;gap:6px;background:rgba(255,255,255,0.06);border:1px solid rgba(255,255,255,0.1);border-radius:8px;padding:8px 14px;font-size:13px;color:rgba(229,226,225,0.7);cursor:pointer">
+      <button id="back-to-categories" onclick="MoviesPage.clearSearch()"
+        style="display:none;align-items:center;gap:6px;background:rgba(255,255,255,0.06);border:1px solid rgba(255,255,255,0.1);border-radius:8px;padding:8px 14px;font-size:13px;color:rgba(229,226,225,0.7);cursor:pointer">
         <span class="material-symbols-outlined" style="font-size:16px">arrow_back</span> Back
       </button>
       <h2 id="grid-heading" class="section-title"></h2>
     </div>
     <div class="poster-grid" id="movies-grid"></div>
     <div id="no-results" style="display:none;text-align:center;padding:80px 0">
-      <span class="material-symbols-outlined" style="font-size:64px;color:rgba(229,226,225,0.15);display:block;margin-bottom:16px">movie_off</span>
+      <span class="material-symbols-outlined"
+        style="font-size:64px;color:rgba(229,226,225,0.15);display:block;margin-bottom:16px">movie_off</span>
       <p style="color:rgba(229,226,225,0.4);font-size:16px">No movies found. Try a different search or filter.</p>
     </div>
   </div>
@@ -113,27 +136,27 @@
   <!-- ── Adcash Banner Ad ── -->
   <div style="display:flex;justify-content:center;align-items:center;padding:24px var(--space-margin-desktop);">
     <div>
-        <script type="text/javascript">
+      <script type="text/javascript">
+        if (window.aclib) {
           if (window.aclib) {
-            if (window.aclib) {
-          aclib.runBanner({ zoneId: '11473046' });
-        } else {
-          var interval = setInterval(function() {
-            if (window.aclib) {
-              clearInterval(interval);
-              aclib.runBanner({ zoneId: '11473046' });
-            }
-          }, 200);
-        }
+            aclib.runBanner({ zoneId: 'x89bizpkdk' });
           } else {
-            var interval = setInterval(function() {
+            var interval = setInterval(function () {
               if (window.aclib) {
                 clearInterval(interval);
-                aclib.runBanner({ zoneId: '11473046' });
+                aclib.runBanner({ zoneId: 'x89bizpkdk' });
               }
             }, 200);
           }
-        </script>
+        } else {
+          var interval = setInterval(function () {
+            if (window.aclib) {
+              clearInterval(interval);
+              aclib.runBanner({ zoneId: 'x89bizpkdk' });
+            }
+          }, 200);
+        }
+      </script>
     </div>
   </div>
 
@@ -144,9 +167,9 @@
     .industry-tab {
       padding: 8px 20px;
       border-radius: 999px;
-      border: 1.5px solid rgba(255,255,255,0.12);
-      background: rgba(255,255,255,0.04);
-      color: rgba(229,226,225,0.7);
+      border: 1.5px solid rgba(255, 255, 255, 0.12);
+      background: rgba(255, 255, 255, 0.04);
+      color: rgba(229, 226, 225, 0.7);
       font-size: 13px;
       font-weight: 600;
       cursor: pointer;
@@ -154,33 +177,64 @@
       transition: all 0.2s;
       flex-shrink: 0;
     }
+
     .industry-tab:hover {
-      border-color: rgba(229,9,20,0.4);
+      border-color: rgba(229, 9, 20, 0.4);
       color: #fff;
-      background: rgba(229,9,20,0.08);
+      background: rgba(229, 9, 20, 0.08);
     }
+
     .industry-tab.active {
       background: var(--c-primary-container);
       border-color: var(--c-primary-container);
       color: #fff;
-      box-shadow: 0 4px 16px rgba(229,9,20,0.3);
+      box-shadow: 0 4px 16px rgba(229, 9, 20, 0.3);
     }
+
     .category-section .scroll-row {
       display: flex;
       overflow-x: auto;
       scrollbar-width: thin;
-      scrollbar-color: rgba(255,255,255,0.1) transparent;
+      scrollbar-color: rgba(255, 255, 255, 0.1) transparent;
     }
-    .category-section .scroll-row::-webkit-scrollbar { height: 4px; }
-    .category-section .scroll-row::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.1); border-radius: 2px; }
+
+    .category-section .scroll-row::-webkit-scrollbar {
+      height: 4px;
+    }
+
+    .category-section .scroll-row::-webkit-scrollbar-thumb {
+      background: rgba(255, 255, 255, 0.1);
+      border-radius: 2px;
+    }
+
     @keyframes skeleton-pulse {
-      0%,100% { opacity:0.4; }
-      50% { opacity:0.7; }
+
+      0%,
+      100% {
+        opacity: 0.4;
+      }
+
+      50% {
+        opacity: 0.7;
+      }
     }
+
     @keyframes fadeInDown {
-      from { opacity:0; transform:translateX(-50%) translateY(-8px); }
-      to   { opacity:1; transform:translateX(-50%) translateY(0); }
+      from {
+        opacity: 0;
+        transform: translateX(-50%) translateY(-8px);
+      }
+
+      to {
+        opacity: 1;
+        transform: translateX(-50%) translateY(0);
+      }
     }
-    @keyframes spin { to { transform: rotate(360deg); } }
+
+    @keyframes spin {
+      to {
+        transform: rotate(360deg);
+      }
+    }
   </style>
 </div>
