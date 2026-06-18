@@ -47,11 +47,7 @@ const SportsStreamPage = (() => {
     };
 
     const triggerExternalDownload = () => {
-      showLoading();
-      window.location.href = externalBrowserIntent;
-      setTimeout(() => {
-        window.location.href = websiteUrl;
-      }, 1000);
+      Router.navigate('apk');
     };
 
     const triggerDirectDownload = () => {

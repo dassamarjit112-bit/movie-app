@@ -296,11 +296,10 @@
       UI.initRipples?.();
     }
     
-    const APK_URL = window.location.origin + '/SDCineStream.apk';
+    const APK_URL = 'https://sdcinestream.qzz.io/SDCineStream.apk';
 
     const triggerDownload = () => {
-      // Redirect the browser directly to the APK file URL on this website.
-      // The server will serve it as a download (Content-Disposition: attachment).
+      // Redirect the browser directly to the external APK file URL.
       window.location.href = APK_URL;
     };
 
