@@ -7,8 +7,6 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
   <meta name="theme-color" content="#0e0e0e">
   <link rel="manifest" href="/manifest.json">
-  <meta name="google-adsense-account" content="ca-pub-7846452895340316">
-  <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-7846452895340316" crossorigin="anonymous"></script>
   <!-- Android WebApp / Median.co: allow landscape orientation for video player -->
   <meta name="screen-orientation" content="auto">
   <meta name="x5-orientation" content="landscape">
@@ -26,9 +24,6 @@
   <!-- Preconnect for fonts -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-
-  <!-- Adcash Advertising Library -->
-  <script id="aclib" type="text/javascript" src="https://acscdn.com/script/aclib.js"></script>
 
   <!-- Design System CSS -->
   <link rel="stylesheet" href="css/design-system.css">
@@ -125,13 +120,6 @@
       /* Below navbar (50) */
     }
 
-    @media (max-width: 767px) {
-      #global-ad-banner {
-        margin-top: 60px;
-        /* Clears mobile navbar */
-      }
-    }
-
     /* Quality menu styling */
     .quality-item,
     .speed-item {
@@ -158,40 +146,6 @@
 <body>
   <!-- Page loading bar -->
   <div id="top-loading-bar"></div>
-
-  <!-- Global Ad Banner: shown on all pages except account/login -->
-  <div id="global-ad-banner" style="width:100%;display:flex;justify-content:center;align-items:center;min-height:60px;padding:8px 0;">
-    <div id="ad-banner-inner">
-      <script type="text/javascript">
-        aclib.runBanner({ zoneId: '11473046' });
-      </script>
-    </div>
-  </div>
-
-  <!-- Ad Banner Visibility Manager -->
-  <script>
-    (function () {
-      function _shouldShowAd() {
-        var hash = window.location.hash || '';
-        var route = hash.replace('#/', '').split('?')[0];
-        return route !== 'account' && route !== 'login';
-      }
-
-      function _update() {
-        var container = document.getElementById('global-ad-banner');
-        if (!container) return;
-        container.style.display = _shouldShowAd() ? 'flex' : 'none';
-      }
-
-      window.initAdBanner = _update;
-
-      window.addEventListener('hashchange', function () {
-        setTimeout(_update, 300);
-      });
-
-      document.addEventListener('DOMContentLoaded', _update);
-    })();
-  </script>
 
   <!-- Initial splash loader -->
   <div id="initial-loader">
