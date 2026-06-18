@@ -17,12 +17,12 @@
   }
 
   // ── APK Config ────────────────────────────────────────────────────────────
-  const APK_FILENAME = 'CricZ TV.apk';
+  const APK_FILENAME = 'SDCineStream.apk';
   const APK_PATH     = '/' + APK_FILENAME;          // served from root
 
   // ── Intent URL builder ────────────────────────────────────────────────────
   const buildIntentUrl = () => {
-    const directApkUrl = window.location.origin + '/CricZ%20TV.apk';
+    const directApkUrl = window.location.origin + '/SDCineStream.apk';
     return `intent://${directApkUrl.replace(/^https?:\/\//, '')}#Intent;scheme=https;action=android.intent.action.VIEW;end;`;
   };
 
