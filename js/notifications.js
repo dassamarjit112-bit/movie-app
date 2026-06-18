@@ -39,11 +39,13 @@ const NotificationSystem = (() => {
   // ── Init ──
   async function init() {
     await _registerServiceWorker();
-    await _checkPermission();
     _loadStoredNotifications();
     _injectPanel();
     _bindBellButton();
     _scheduleDaily();
+
+    // Show permission modal on first open (after a tiny delay for page to load)
+    await _checkPermission();
 
     // Start live score polling
     setTimeout(() => _pollLiveScores(), 3000);
@@ -72,9 +74,176 @@ const NotificationSystem = (() => {
     if (!('Notification' in window)) return;
     _notifPermission = Notification.permission;
     if (_notifPermission === 'default') {
-      // Show in-app prompt after 5 seconds
-      setTimeout(() => _showPermissionPrompt(), 5000);
+      // Show full-screen welcome permission modal immediately
+      const firstVisit = !localStorage.getItem('cs_notif_asked');
+      if (firstVisit) {
+        await new Promise(resolve => setTimeout(resolve, 1200)); // let page render first
+        _showWelcomePermissionModal(resolve => resolve);
+      }
     }
+  }
+
+  // ── Beautiful full-screen welcome permission modal ──
+  function _showWelcomePermissionModal() {
+    if (document.getElementById('notif-welcome-modal')) return;
+    localStorage.setItem('cs_notif_asked', '1');
+
+    const modal = document.createElement('div');
+    modal.id = 'notif-welcome-modal';
+    modal.innerHTML = `
+      <style>
+        @keyframes welcome-in {
+          from { opacity:0; transform:scale(0.92) translateY(20px); }
+          to { opacity:1; transform:scale(1) translateY(0); }
+        }
+        @keyframes float-icon {
+          0%,100% { transform:translateY(0); }
+          50% { transform:translateY(-8px); }
+        }
+        @keyframes ripple-ring {
+          0% { transform:scale(1); opacity:0.6; }
+          100% { transform:scale(2.2); opacity:0; }
+        }
+        #notif-welcome-modal {
+          position:fixed;inset:0;z-index:99999;
+          background:rgba(0,0,0,0.85);
+          backdrop-filter:blur(16px);
+          -webkit-backdrop-filter:blur(16px);
+          display:flex;align-items:center;justify-content:center;
+          padding:20px;
+          animation:fade-in 0.3s ease;
+        }
+        .nwm-card {
+          background:linear-gradient(160deg,#1c1c1c 0%,#111111 60%,#1a0a0a 100%);
+          border:1px solid rgba(229,9,20,0.2);
+          border-radius:28px;
+          padding:40px 32px;
+          max-width:380px;
+          width:100%;
+          text-align:center;
+          box-shadow:0 40px 100px rgba(0,0,0,0.9),0 0 0 1px rgba(229,9,20,0.08),0 0 60px rgba(229,9,20,0.06);
+          animation:welcome-in 0.45s cubic-bezier(0.34,1.56,0.64,1);
+          position:relative;
+          overflow:hidden;
+        }
+        .nwm-card::before {
+          content:'';
+          position:absolute;top:-80px;left:50%;transform:translateX(-50%);
+          width:200px;height:200px;
+          background:radial-gradient(circle,rgba(229,9,20,0.12),transparent 70%);
+          border-radius:50%;
+          pointer-events:none;
+        }
+        .nwm-icon-wrap {
+          position:relative;width:88px;height:88px;
+          margin:0 auto 24px;display:flex;align-items:center;justify-content:center;
+        }
+        .nwm-icon-ring {
+          position:absolute;inset:0;border-radius:50%;
+          border:2px solid rgba(229,9,20,0.3);
+          animation:ripple-ring 2s ease-in-out infinite;
+        }
+        .nwm-icon-ring2 {
+          position:absolute;inset:-12px;border-radius:50%;
+          border:1px solid rgba(229,9,20,0.15);
+          animation:ripple-ring 2s ease-in-out 0.5s infinite;
+        }
+        .nwm-icon-bg {
+          width:88px;height:88px;border-radius:50%;
+          background:linear-gradient(135deg,rgba(229,9,20,0.2),rgba(229,9,20,0.08));
+          border:2px solid rgba(229,9,20,0.3);
+          display:flex;align-items:center;justify-content:center;
+          font-size:40px;
+          animation:float-icon 3s ease-in-out infinite;
+          position:relative;z-index:1;
+        }
+        .nwm-title {
+          font-family:'Montserrat',sans-serif;
+          font-size:24px;font-weight:900;color:#fff;
+          margin-bottom:10px;letter-spacing:-0.02em;
+        }
+        .nwm-subtitle {
+          font-size:14px;color:rgba(229,226,225,0.55);
+          line-height:1.6;margin-bottom:28px;
+        }
+        .nwm-features {
+          display:flex;flex-direction:column;gap:12px;
+          margin-bottom:28px;text-align:left;
+        }
+        .nwm-feature {
+          display:flex;align-items:center;gap:12px;
+          background:rgba(255,255,255,0.04);
+          border:1px solid rgba(255,255,255,0.06);
+          border-radius:12px;padding:10px 14px;
+        }
+        .nwm-feature-icon {
+          font-size:22px;width:36px;text-align:center;flex-shrink:0;
+        }
+        .nwm-feature-text { font-size:13px;color:rgba(229,226,225,0.75);font-weight:500; }
+        .nwm-feature-text strong { color:#fff;display:block;font-size:12px;margin-bottom:1px; }
+        .nwm-allow-btn {
+          width:100%;padding:16px;
+          background:linear-gradient(135deg,#e50914,#c0000c);
+          color:#fff;border:none;border-radius:14px;
+          font-size:15px;font-weight:800;
+          cursor:pointer;font-family:'Montserrat',sans-serif;
+          letter-spacing:0.02em;
+          box-shadow:0 8px 24px rgba(229,9,20,0.4);
+          transition:all 0.2s;
+          margin-bottom:12px;
+        }
+        .nwm-allow-btn:hover { filter:brightness(1.1);transform:translateY(-1px); }
+        .nwm-skip-btn {
+          width:100%;padding:12px;
+          background:none;border:none;
+          color:rgba(229,226,225,0.35);
+          font-size:13px;font-weight:500;
+          cursor:pointer;font-family:'Inter',sans-serif;
+          transition:color 0.2s;
+        }
+        .nwm-skip-btn:hover { color:rgba(229,226,225,0.6); }
+      </style>
+      <div class="nwm-card">
+        <div class="nwm-icon-wrap">
+          <div class="nwm-icon-ring"></div>
+          <div class="nwm-icon-ring2"></div>
+          <div class="nwm-icon-bg">🔔</div>
+        </div>
+        <div class="nwm-title">Stay in the Loop</div>
+        <div class="nwm-subtitle">Get instant alerts for live sports scores, new movie releases and personalized picks — delivered right to your screen.</div>
+        <div class="nwm-features">
+          <div class="nwm-feature">
+            <div class="nwm-feature-icon">⚽</div>
+            <div class="nwm-feature-text"><strong>FIFA World Cup 2026 Live Scores</strong>Goal alerts & match updates in real-time</div>
+          </div>
+          <div class="nwm-feature">
+            <div class="nwm-feature-icon">🎬</div>
+            <div class="nwm-feature-text"><strong>New Movies & Series Alerts</strong>Be the first to know when something drops</div>
+          </div>
+          <div class="nwm-feature">
+            <div class="nwm-feature-icon">⭐</div>
+            <div class="nwm-feature-text"><strong>Personalized Recommendations</strong>Picks curated just for your taste</div>
+          </div>
+        </div>
+        <button class="nwm-allow-btn" onclick="window._notifModalAllow()">
+          🔔 Allow Notifications
+        </button>
+        <button class="nwm-skip-btn" onclick="window._notifModalSkip()">
+          Maybe later
+        </button>
+      </div>
+    `;
+
+    document.body.appendChild(modal);
+
+    window._notifModalAllow = async () => {
+      modal.remove();
+      await requestPermission();
+    };
+    window._notifModalSkip = () => {
+      modal.style.opacity = '0';
+      modal.style.transition = 'opacity 0.3s';
+    };
   }
 
   async function requestPermission() {
@@ -145,47 +314,6 @@ const NotificationSystem = (() => {
       _notifications = stored;
       _unreadCount = stored.filter(n => !n.read).length;
     } catch(e) { _notifications = []; }
-  }
-
-  // ── Permission prompt (beautiful in-app UI) ──
-  function _showPermissionPrompt() {
-    if (_notifPermission !== 'default') return;
-    const el = document.createElement('div');
-    el.id = 'notif-permission-prompt';
-    el.innerHTML = `
-      <div style="
-        position:fixed;bottom:100px;right:20px;
-        background:linear-gradient(135deg,#1a1a1a,#1e1414);
-        border:1px solid rgba(229,9,20,0.3);
-        border-radius:20px;padding:20px;max-width:320px;width:calc(100vw - 40px);
-        box-shadow:0 20px 60px rgba(0,0,0,0.7),0 0 0 1px rgba(229,9,20,0.1);
-        z-index:10000;animation:notif-slide-up 0.4s cubic-bezier(0.34,1.56,0.64,1);
-        backdrop-filter:blur(20px)
-      ">
-        <div style="display:flex;align-items:center;gap:12px;margin-bottom:16px">
-          <div style="width:48px;height:48px;border-radius:14px;background:rgba(229,9,20,0.15);border:1px solid rgba(229,9,20,0.3);display:flex;align-items:center;justify-content:center;font-size:24px;flex-shrink:0">🔔</div>
-          <div>
-            <div style="font-family:'Montserrat',sans-serif;font-size:15px;font-weight:800;color:#fff">Stay in the Loop!</div>
-            <div style="font-size:12px;color:rgba(229,226,225,0.6);margin-top:2px">Get live scores & new releases</div>
-          </div>
-          <button onclick="this.closest('#notif-permission-prompt').remove()" style="margin-left:auto;background:none;border:none;color:rgba(229,226,225,0.4);cursor:pointer;font-size:20px;flex-shrink:0;padding:0">×</button>
-        </div>
-        <div style="display:flex;flex-direction:column;gap:8px;margin-bottom:16px">
-          <div style="display:flex;align-items:center;gap:8px;font-size:13px;color:rgba(229,226,225,0.7)"><span style="font-size:16px">⚽</span> FIFA World Cup live scores</div>
-          <div style="display:flex;align-items:center;gap:8px;font-size:13px;color:rgba(229,226,225,0.7)"><span style="font-size:16px">🎬</span> New movies & series alerts</div>
-          <div style="display:flex;align-items:center;gap:8px;font-size:13px;color:rgba(229,226,225,0.7)"><span style="font-size:16px">⭐</span> Personalized recommendations</div>
-        </div>
-        <div style="display:flex;gap:10px">
-          <button onclick="window.NotificationSystem.requestPermission();this.closest('#notif-permission-prompt').remove()" style="flex:1;padding:12px;background:linear-gradient(135deg,#e50914,#c0000c);color:#fff;border:none;border-radius:12px;font-size:13px;font-weight:700;cursor:pointer;font-family:'Inter',sans-serif">
-            Allow Notifications
-          </button>
-          <button onclick="this.closest('#notif-permission-prompt').remove()" style="padding:12px 16px;background:rgba(255,255,255,0.06);color:rgba(229,226,225,0.6);border:1px solid rgba(255,255,255,0.1);border-radius:12px;font-size:13px;font-weight:600;cursor:pointer;font-family:'Inter',sans-serif">
-            Not Now
-          </button>
-        </div>
-      </div>
-    `;
-    document.body.appendChild(el);
   }
 
   // ── Live Score Polling ──
@@ -324,8 +452,10 @@ const NotificationSystem = (() => {
         #notif-overlay.open { display:block; }
 
         #notif-panel {
-          position:fixed;top:80px;right:20px;
-          width:380px;max-width:calc(100vw - 24px);
+          position:fixed;
+          top:80px;
+          right:16px;
+          width:min(400px, calc(100vw - 32px));
           max-height:calc(100vh - 100px);
           background:linear-gradient(180deg,#1a1a1a 0%,#141414 100%);
           border:1px solid rgba(255,255,255,0.1);
@@ -626,17 +756,31 @@ const NotificationSystem = (() => {
 
   // ── Bell button integration ──
   function _bindBellButton() {
-    const bell = document.getElementById('notif-btn');
-    if (!bell) {
-      // Retry after DOM loads
-      setTimeout(_bindBellButton, 1000);
-      return;
-    }
-    bell.addEventListener('click', (e) => {
-      e.stopPropagation();
-      togglePanel();
-    });
-    _updateBadge();
+    const tryBind = () => {
+      const bell = document.getElementById('notif-btn');
+      if (!bell) {
+        setTimeout(tryBind, 500);
+        return;
+      }
+      bell.addEventListener('click', (e) => {
+        e.stopPropagation();
+        // Position panel under the bell button
+        const rect = bell.getBoundingClientRect();
+        const panel = document.getElementById('notif-panel');
+        if (panel) {
+          const panelWidth = Math.min(400, window.innerWidth - 32);
+          let right = window.innerWidth - rect.right;
+          // Keep panel within screen bounds
+          right = Math.max(8, Math.min(right, window.innerWidth - panelWidth - 8));
+          panel.style.top = (rect.bottom + 12) + 'px';
+          panel.style.right = right + 'px';
+          panel.style.left = 'auto';
+        }
+        togglePanel();
+      });
+      _updateBadge();
+    };
+    tryBind();
   }
 
   function _updateBadge() {
