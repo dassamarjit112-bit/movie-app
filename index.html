@@ -156,96 +156,37 @@
   <!-- Page loading bar -->
   <div id="top-loading-bar"></div>
 
-  <!-- Global Ad Banner: shown on all pages except account -->
-  <div id="global-ad-banner"></div>
+  <!-- Global Ad Banner: shown on all pages except account/login -->
+  <div id="global-ad-banner" style="width:100%;display:flex;justify-content:center;align-items:center;min-height:60px;padding:8px 0;">
+    <div id="ad-banner-inner">
+      <script type="text/javascript">
+        aclib.runBanner({ zoneId: 'x89bizpkdk' });
+      </script>
+    </div>
+  </div>
+
+  <!-- Ad Banner Visibility Manager -->
   <script>
     (function () {
-      var _adInitialized = false;
-
       function _shouldShowAd() {
         var hash = window.location.hash || '';
         var route = hash.replace('#/', '').split('?')[0];
         return route !== 'account' && route !== 'login';
       }
 
-      function _runBannerIntoContainer() {
+      function _update() {
         var container = document.getElementById('global-ad-banner');
         if (!container) return;
-
-        // Always clear and reset
-        container.innerHTML = '';
-        _adInitialized = false;
-
-        if (!_shouldShowAd()) {
-          container.style.display = 'none';
-          return;
-        }
-
-        container.style.display = 'flex';
-
-        function injectAd() {
-          if (_adInitialized) return;
-          if (!(window.aclib && typeof window.aclib.runBanner === 'function')) return;
-
-          _adInitialized = true;
-
-          // Use a Range to create a real inline <script> tag, which gives aclib
-          // a valid document.currentScript with the correct parentNode.
-          var wrapper = document.createElement('div');
-          wrapper.id = 'ad-banner-inner';
-          container.appendChild(wrapper);
-
-          // document.createRange().createContextualFragment creates real scripts
-          // (unlike innerHTML which blocks script execution in some browsers)
-          try {
-            var frag = document.createRange().createContextualFragment(
-              '<script type="text/javascript">window.aclib.runBanner({ zoneId: "x89bizpkdk" });<\/script>'
-            );
-            wrapper.appendChild(frag);
-          } catch(e) {
-            console.warn('[AdBanner] fragment inject failed:', e);
-          }
-        }
-
-        // Try immediately, then poll up to 6 seconds for aclib to load
-        if (!window.aclib) {
-          var attempts = 0;
-          var iv = setInterval(function () {
-            attempts++;
-            if (window.aclib && typeof window.aclib.runBanner === 'function') {
-              clearInterval(iv);
-              injectAd();
-            } else if (attempts > 30) {
-              clearInterval(iv);
-              console.warn('[AdBanner] aclib not available after 6s');
-            }
-          }, 200);
-        } else {
-          injectAd();
-        }
+        container.style.display = _shouldShowAd() ? 'flex' : 'none';
       }
 
-      function _onRouteChange() {
-        var container = document.getElementById('global-ad-banner');
-        if (!container) return;
-        if (_shouldShowAd()) {
-          _runBannerIntoContainer();
-        } else {
-          container.style.display = 'none';
-          container.innerHTML = '';
-          _adInitialized = false;
-        }
-      }
-
-      window.initAdBanner = _onRouteChange;
+      window.initAdBanner = _update;
 
       window.addEventListener('hashchange', function () {
-        setTimeout(_onRouteChange, 350);
+        setTimeout(_update, 300);
       });
 
-      document.addEventListener('DOMContentLoaded', function () {
-        setTimeout(_onRouteChange, 2000);
-      });
+      document.addEventListener('DOMContentLoaded', _update);
     })();
   </script>
 
