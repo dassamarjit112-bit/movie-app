@@ -108,18 +108,17 @@
       justify-content: center;
       align-items: center;
       min-height: 60px;
-      background: rgba(0,0,0,0.8);
-      border-top: 1px solid rgba(255,255,255,0.05);
+      background: rgba(0,0,0,0.5);
+      border-bottom: 1px solid rgba(255,255,255,0.05);
       padding: 8px 0;
       box-sizing: border-box;
-      position: fixed;
-      bottom: 0;
-      left: 0;
-      z-index: 999;
+      position: relative;
+      margin-top: 72px; /* Clears desktop navbar */
+      z-index: 40; /* Below navbar (50) */
     }
     @media (max-width: 767px) {
       #global-ad-banner {
-        bottom: 84px; /* Above the mobile nav */
+        margin-top: 60px; /* Clears mobile navbar */
       }
     }
 
