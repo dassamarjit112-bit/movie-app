@@ -15,8 +15,15 @@
 /* ── Navbar ── */
 @media (max-width: 767px) {
   .navbar {
-    padding: 0 var(--space-gutter-mobile);
-    height: 60px;
+    padding: 0 16px;
+    height: 56px;
+    width: 92%;
+    left: 0;
+    right: 0;
+    margin: 12px auto 0;
+    border-radius: 28px;
+    background: rgba(13, 13, 13, 0.95);
+    border: 1px solid rgba(255, 255, 255, 0.1);
   }
 
   .navbar-logo {

@@ -643,7 +643,7 @@ input, textarea, select {
   position: fixed;
   bottom: 24px;
   left: 0;
-  right: 20%;
+  right: 25%;
   margin: 0 auto;
   width: max-content;
   min-width: 300px;
