@@ -144,6 +144,8 @@ const ApkPage = (() => {
       }
     });
   }
+  
+  } // close init()
 
   return { init };
 })();
