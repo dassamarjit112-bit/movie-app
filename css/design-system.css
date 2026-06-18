@@ -642,8 +642,8 @@ input, textarea, select {
   display: flex;
   position: fixed;
   bottom: 24px;
-  left: 50%;
-  right: 0;
+  left: 0;
+  right: 20%;
   margin: 0 auto;
   width: max-content;
   min-width: 300px;
