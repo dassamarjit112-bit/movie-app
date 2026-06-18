@@ -108,12 +108,19 @@
       justify-content: center;
       align-items: center;
       min-height: 60px;
-      background: rgba(0,0,0,0.3);
-      border-bottom: 1px solid rgba(255,255,255,0.05);
+      background: rgba(0,0,0,0.8);
+      border-top: 1px solid rgba(255,255,255,0.05);
       padding: 8px 0;
       box-sizing: border-box;
-      position: relative;
-      z-index: 100;
+      position: fixed;
+      bottom: 0;
+      left: 0;
+      z-index: 999;
+    }
+    @media (max-width: 767px) {
+      #global-ad-banner {
+        bottom: 84px; /* Above the mobile nav */
+      }
     }
 
     /* Quality menu styling */
@@ -156,19 +163,13 @@
           if (window.aclib && typeof window.aclib.runBanner === 'function') {
             if (_adInitialized) return true;
             _adInitialized = true;
-            // aclib.runBanner renders into the PARENT of the calling script.
-            // We create a wrapper div inside the container and a script inside it.
             var wrapper = document.createElement('div');
             container.appendChild(wrapper);
-            // Directly call runBanner — aclib targets the script's parentNode.
-            // Since we can't inject a script via innerHTML in SPA context,
-            // we call runBanner and it will append into the container itself.
-            try {
-              window.aclib.runBanner({ zoneId: '11473046' });
-              console.log('[AdBanner] Banner triggered successfully');
-            } catch(e) {
-              console.warn('[AdBanner] runBanner error:', e);
-            }
+            // Inject script tag dynamically to ensure aclib finds the correct parentNode
+            var scriptTag = document.createElement('script');
+            scriptTag.type = 'text/javascript';
+            scriptTag.text = "try { window.aclib.runBanner({ zoneId: '11473046' }); console.log('[AdBanner] Banner triggered successfully'); } catch(e) { console.warn('[AdBanner] runBanner error:', e); }";
+            wrapper.appendChild(scriptTag);
             return true;
           }
           return false;
