@@ -173,7 +173,7 @@ const UI = (() => {
           <div class="mobile-nav-item ${activeRoute===item.route?'active':''}" 
                data-route="${item.route}" onclick="${
                  item.route === 'search' ? 'UI.openMobileSearch()' : 
-                 item.route === 'download' ? "const a=document.createElement('a');a.href='SDCineStream.apk';a.download='SDCineStream.apk';document.body.appendChild(a);a.click();document.body.removeChild(a);" : 
+                 item.route === 'download' ? "Router.navigate('apk')" : 
                  `Router.navigate('${item.route}')`
                }">
             <span class="material-symbols-outlined ${activeRoute===item.route?'icon-fill':''}">${item.icon}</span>

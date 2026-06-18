@@ -20,6 +20,7 @@ const Router = (() => {
     'scraper':     { page: 'pages/scraper.html',   auth: true  },
     'sports':      { page: 'pages/sports.html',    auth: true  },
     'sports-stream': { page: 'pages/sports-stream.html', auth: true },
+    'apk':         { page: 'pages/apk.html',       auth: false }
   };
 
   const appEl = document.getElementById('app');

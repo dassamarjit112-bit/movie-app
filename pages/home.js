@@ -142,24 +142,19 @@ const HomePage = (() => {
     
     loadLiveSports();
 
-    // Show APK download popup once per session
-    if (!sessionStorage.getItem('apk_popup_shown')) {
+    // Show APK download popup once forever
+    if (!localStorage.getItem('apk_popup_dismissed')) {
       setTimeout(() => {
         UI.showModal({
           title: 'Latest Version Available',
           content: 'This is the latest version of the app. If any problem occurs to this app, please download the latest version.',
-          confirmText: 'Download APK',
+          confirmText: 'Download App',
           cancelText: 'Dismiss',
           onConfirm: () => {
-            const link = document.createElement('a');
-            link.href = 'SDCineStream.apk';
-            link.download = 'SDCineStream.apk';
-            document.body.appendChild(link);
-            link.click();
-            document.body.removeChild(link);
+            Router.navigate('apk');
           }
         });
-        sessionStorage.setItem('apk_popup_shown', 'true');
+        localStorage.setItem('apk_popup_dismissed', 'true');
       }, 1200);
     }
   }

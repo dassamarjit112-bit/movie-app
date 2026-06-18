@@ -158,56 +158,77 @@
 
   <!-- Global Ad Banner: shown on all pages except account -->
   <div id="global-ad-banner"></div>
-
-  <!-- Ad Banner Manager -->
   <script>
     (function () {
       var _adInitialized = false;
 
+      function _shouldShowAd() {
+        var hash = window.location.hash || '';
+        var route = hash.replace('#/', '').split('?')[0];
+        return route !== 'account' && route !== 'login';
+      }
+
       function _runBannerIntoContainer() {
         var container = document.getElementById('global-ad-banner');
         if (!container) return;
-        // Clear any previous ad
+
+        // Always clear and reset
         container.innerHTML = '';
         _adInitialized = false;
 
-        function tryRun() {
-          if (window.aclib && typeof window.aclib.runBanner === 'function') {
-            if (_adInitialized) return true;
-            _adInitialized = true;
-            var wrapper = document.createElement('div');
-            container.appendChild(wrapper);
-            // Inject script tag dynamically to ensure aclib finds the correct parentNode
-            var scriptTag = document.createElement('script');
-            scriptTag.type = 'text/javascript';
-            scriptTag.text = "try { window.aclib.runBanner({ zoneId: '11473046' }); console.log('[AdBanner] Banner triggered successfully'); } catch(e) { console.warn('[AdBanner] runBanner error:', e); }";
-            wrapper.appendChild(scriptTag);
-            return true;
-          }
-          return false;
+        if (!_shouldShowAd()) {
+          container.style.display = 'none';
+          return;
         }
 
-        if (!tryRun()) {
+        container.style.display = 'flex';
+
+        function injectAd() {
+          if (_adInitialized) return;
+          if (!(window.aclib && typeof window.aclib.runBanner === 'function')) return;
+
+          _adInitialized = true;
+
+          // Use a Range to create a real inline <script> tag, which gives aclib
+          // a valid document.currentScript with the correct parentNode.
+          var wrapper = document.createElement('div');
+          wrapper.id = 'ad-banner-inner';
+          container.appendChild(wrapper);
+
+          // document.createRange().createContextualFragment creates real scripts
+          // (unlike innerHTML which blocks script execution in some browsers)
+          try {
+            var frag = document.createRange().createContextualFragment(
+              '<script type="text/javascript">window.aclib.runBanner({ zoneId: "x89bizpkdk" });<\/script>'
+            );
+            wrapper.appendChild(frag);
+          } catch(e) {
+            console.warn('[AdBanner] fragment inject failed:', e);
+          }
+        }
+
+        // Try immediately, then poll up to 6 seconds for aclib to load
+        if (!window.aclib) {
           var attempts = 0;
           var iv = setInterval(function () {
             attempts++;
-            if (tryRun() || attempts > 30) clearInterval(iv);
+            if (window.aclib && typeof window.aclib.runBanner === 'function') {
+              clearInterval(iv);
+              injectAd();
+            } else if (attempts > 30) {
+              clearInterval(iv);
+              console.warn('[AdBanner] aclib not available after 6s');
+            }
           }, 200);
+        } else {
+          injectAd();
         }
-      }
-
-      function _shouldShowAd() {
-        var hash = window.location.hash || '';
-        // Skip login and account pages
-        var route = hash.replace('#/', '').split('?')[0];
-        return route !== 'account' && route !== 'login';
       }
 
       function _onRouteChange() {
         var container = document.getElementById('global-ad-banner');
         if (!container) return;
         if (_shouldShowAd()) {
-          container.style.display = 'flex';
           _runBannerIntoContainer();
         } else {
           container.style.display = 'none';
@@ -216,18 +237,14 @@
         }
       }
 
-      // Expose for router/pages to call manually if needed
       window.initAdBanner = _onRouteChange;
 
-      // Listen for hash changes (SPA navigation)
       window.addEventListener('hashchange', function () {
-        // Small delay so the route switch completes first
-        setTimeout(_onRouteChange, 300);
+        setTimeout(_onRouteChange, 350);
       });
 
-      // Also run once the page is ready
       document.addEventListener('DOMContentLoaded', function () {
-        setTimeout(_onRouteChange, 1500);
+        setTimeout(_onRouteChange, 2000);
       });
     })();
   </script>

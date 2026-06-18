@@ -1,0 +1,299 @@
+<!-- CineStream — APK Download Page -->
+<div id="apk-page">
+  <div id="navbar-mount"></div>
+
+  <div class="apk-hero">
+    <div class="apk-glow-bg"></div>
+    <div class="apk-container">
+      <!-- App Icon -->
+      <div class="apk-icon-wrap">
+        <div class="apk-icon">
+          <span class="material-symbols-outlined" style="font-size:56px;color:#e50914">movie</span>
+        </div>
+        <div class="apk-icon-ring"></div>
+      </div>
+
+      <!-- App Info -->
+      <h1 class="apk-app-name">SDCineStream</h1>
+      <p class="apk-tagline">Premium Cinema Streaming — Android App</p>
+
+      <!-- Version Badge -->
+      <div class="apk-version-badge">
+        <span class="material-symbols-outlined" style="font-size:14px;color:#00d084">verified</span>
+        Latest Version &nbsp;·&nbsp; v1.0.0
+      </div>
+
+      <!-- Stats row -->
+      <div class="apk-stats">
+        <div class="apk-stat">
+          <span class="apk-stat-value">4K</span>
+          <span class="apk-stat-label">Ultra HD</span>
+        </div>
+        <div class="apk-stat-divider"></div>
+        <div class="apk-stat">
+          <span class="apk-stat-value">Free</span>
+          <span class="apk-stat-label">To Download</span>
+        </div>
+        <div class="apk-stat-divider"></div>
+        <div class="apk-stat">
+          <span class="apk-stat-value">Android</span>
+          <span class="apk-stat-label">Platform</span>
+        </div>
+      </div>
+
+      <!-- Download button -->
+      <a href="SDCineStream.apk" download="SDCineStream.apk" class="apk-download-btn" id="apk-download-btn">
+        <span class="material-symbols-outlined icon-fill" style="font-size:24px">android</span>
+        <span>
+          <span class="apk-btn-main">Download APK</span>
+          <span class="apk-btn-sub">SDCineStream.apk · Latest Build</span>
+        </span>
+        <span class="material-symbols-outlined" style="font-size:20px;opacity:0.6">download</span>
+      </a>
+
+      <p class="apk-install-hint">
+        <span class="material-symbols-outlined" style="font-size:14px;vertical-align:middle">info</span>
+        Enable <strong>Install from Unknown Sources</strong> in Android settings before installing.
+      </p>
+
+      <!-- Notice card -->
+      <div class="apk-notice">
+        <div class="apk-notice-icon">
+          <span class="material-symbols-outlined icon-fill" style="color:#ffc832;font-size:22px">campaign</span>
+        </div>
+        <div>
+          <div class="apk-notice-title">Always use the latest version</div>
+          <div class="apk-notice-body">If you face any issues like buffering, login problems, or crashes — download the latest APK above to fix them instantly.</div>
+        </div>
+      </div>
+
+      <!-- Back home -->
+      <button class="btn btn-ghost" onclick="Router.navigate('home')" style="margin-top:16px">
+        <span class="material-symbols-outlined">arrow_back</span>
+        Back to Home
+      </button>
+    </div>
+  </div>
+
+  <div id="mobile-nav-mount"></div>
+
+  <style>
+    .apk-hero {
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 80px 20px 120px;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .apk-glow-bg {
+      position: absolute;
+      inset: 0;
+      background:
+        radial-gradient(ellipse 60% 50% at 50% 20%, rgba(229,9,20,0.12) 0%, transparent 70%),
+        radial-gradient(ellipse 40% 40% at 80% 80%, rgba(20,209,255,0.06) 0%, transparent 60%);
+      pointer-events: none;
+    }
+
+    .apk-container {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      text-align: center;
+      gap: 20px;
+      max-width: 480px;
+      width: 100%;
+      position: relative;
+      z-index: 1;
+    }
+
+    /* Icon */
+    .apk-icon-wrap {
+      position: relative;
+      width: 110px;
+      height: 110px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin-bottom: 4px;
+    }
+    .apk-icon {
+      width: 96px;
+      height: 96px;
+      border-radius: 26px;
+      background: linear-gradient(135deg, #1a0a0b, #2a0d0f);
+      border: 1.5px solid rgba(229,9,20,0.25);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      box-shadow: 0 8px 40px rgba(229,9,20,0.2), 0 0 0 1px rgba(229,9,20,0.08);
+      position: relative;
+      z-index: 1;
+    }
+    .apk-icon-ring {
+      position: absolute;
+      inset: -8px;
+      border-radius: 34px;
+      border: 1px solid rgba(229,9,20,0.12);
+      animation: apk-ring-pulse 3s ease-in-out infinite;
+    }
+    @keyframes apk-ring-pulse {
+      0%, 100% { opacity: 0.4; transform: scale(1); }
+      50% { opacity: 1; transform: scale(1.04); }
+    }
+
+    /* Text */
+    .apk-app-name {
+      font-family: 'Montserrat', sans-serif;
+      font-size: 32px;
+      font-weight: 900;
+      color: #fff;
+      letter-spacing: -0.5px;
+    }
+    .apk-tagline {
+      font-size: 14px;
+      color: rgba(229,226,225,0.5);
+      margin-top: -10px;
+    }
+
+    /* Version badge */
+    .apk-version-badge {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 12px;
+      font-weight: 700;
+      color: #00d084;
+      background: rgba(0,208,132,0.08);
+      border: 1px solid rgba(0,208,132,0.2);
+      border-radius: 999px;
+      padding: 5px 14px;
+    }
+
+    /* Stats */
+    .apk-stats {
+      display: flex;
+      align-items: center;
+      gap: 0;
+      background: rgba(255,255,255,0.03);
+      border: 1px solid rgba(255,255,255,0.06);
+      border-radius: 14px;
+      padding: 16px 24px;
+      width: 100%;
+    }
+    .apk-stat {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      gap: 2px;
+    }
+    .apk-stat-value {
+      font-family: 'Montserrat', sans-serif;
+      font-size: 18px;
+      font-weight: 800;
+      color: #fff;
+    }
+    .apk-stat-label {
+      font-size: 11px;
+      color: rgba(229,226,225,0.4);
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+    }
+    .apk-stat-divider {
+      width: 1px;
+      height: 36px;
+      background: rgba(255,255,255,0.07);
+      margin: 0 8px;
+    }
+
+    /* Download button */
+    .apk-download-btn {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      width: 100%;
+      padding: 18px 24px;
+      background: linear-gradient(135deg, #e50914, #c0000c);
+      border-radius: 16px;
+      text-decoration: none;
+      color: #fff;
+      font-family: 'Inter', sans-serif;
+      box-shadow: 0 8px 30px rgba(229,9,20,0.35), 0 2px 8px rgba(0,0,0,0.3);
+      transition: all 0.25s ease;
+      border: 1px solid rgba(255,255,255,0.12);
+      cursor: pointer;
+    }
+    .apk-download-btn:hover {
+      transform: translateY(-3px) scale(1.01);
+      box-shadow: 0 14px 40px rgba(229,9,20,0.5), 0 4px 12px rgba(0,0,0,0.4);
+      background: linear-gradient(135deg, #ff1a26, #e50914);
+    }
+    .apk-btn-main {
+      display: block;
+      font-size: 16px;
+      font-weight: 700;
+      text-align: left;
+    }
+    .apk-btn-sub {
+      display: block;
+      font-size: 11px;
+      opacity: 0.65;
+      text-align: left;
+      margin-top: 1px;
+    }
+
+    /* Install hint */
+    .apk-install-hint {
+      font-size: 12px;
+      color: rgba(229,226,225,0.4);
+      max-width: 340px;
+      line-height: 1.6;
+    }
+    .apk-install-hint strong {
+      color: rgba(229,226,225,0.7);
+    }
+
+    /* Notice */
+    .apk-notice {
+      display: flex;
+      gap: 14px;
+      align-items: flex-start;
+      background: rgba(255,200,50,0.06);
+      border: 1px solid rgba(255,200,50,0.15);
+      border-radius: 14px;
+      padding: 16px 18px;
+      text-align: left;
+      width: 100%;
+    }
+    .apk-notice-icon {
+      flex-shrink: 0;
+      margin-top: 2px;
+    }
+    .apk-notice-title {
+      font-size: 13px;
+      font-weight: 700;
+      color: #ffc832;
+      margin-bottom: 4px;
+    }
+    .apk-notice-body {
+      font-size: 13px;
+      color: rgba(229,226,225,0.55);
+      line-height: 1.6;
+    }
+  </style>
+</div>
+
+<script>
+  (function () {
+    const navbar = document.getElementById('navbar-mount');
+    if (navbar && window.UI) navbar.innerHTML = UI.renderNavbar('');
+    const mobileNav = document.getElementById('mobile-nav-mount');
+    if (mobileNav && window.UI) mobileNav.innerHTML = UI.renderMobileNav('');
+    if (window.UI) {
+      UI.updateNavbarUser?.();
+      UI.initRipples?.();
+    }
+  })();
+</script>
