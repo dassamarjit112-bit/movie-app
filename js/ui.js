@@ -165,7 +165,8 @@ const UI = (() => {
       { route: 'tvshows',  icon: 'tv',           label: 'Shows' },
       { route: 'sports',   icon: 'sports_soccer',label: 'Sports' },
       { route: 'search',   icon: 'search',       label: 'Search' },
-      { route: 'download', icon: 'android',      label: 'App' }
+      { route: 'download', icon: 'android',      label: 'App' },
+      { route: 'account',  icon: 'person',       label: 'Profile' }
     ];
     return `
       <nav class="mobile-nav">
