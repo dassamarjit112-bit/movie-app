@@ -45,6 +45,14 @@
         { "key": "Access-Control-Allow-Methods", "value": "GET, OPTIONS" },
         { "key": "Access-Control-Allow-Headers", "value": "Content-Type" }
       ]
+    },
+    {
+      "source": "/SDCineStream.apk",
+      "headers": [
+        { "key": "Content-Type", "value": "application/vnd.android.package-archive" },
+        { "key": "Content-Disposition", "value": "attachment; filename=\"SDCineStream.apk\"" },
+        { "key": "Cache-Control", "value": "no-cache" }
+      ]
     }
   ]
 }

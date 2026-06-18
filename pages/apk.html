@@ -296,33 +296,17 @@
       UI.initRipples?.();
     }
     
-    const triggerDirectDownload = () => {
-      // Directly download the APK to phone storage
-      const a = document.createElement('a');
-      a.href = "/SDCineStream.apk";
-      a.download = "SDCineStream.apk";
-      document.body.appendChild(a);
-      a.click();
-      document.body.removeChild(a);
-      
-      // Fallback intent direct download for Android WebViews/browsers
-      setTimeout(() => {
-        const directApkUrl = window.location.origin + "/SDCineStream.apk";
-        const externalApkIntent = `intent://${directApkUrl.replace(/^https?:\/\//, '')}#Intent;scheme=https;action=android.intent.action.VIEW;end;`;
-        window.location.href = externalApkIntent;
-      }, 1500);
+    const APK_URL = window.location.origin + '/SDCineStream.apk';
+
+    const triggerDownload = () => {
+      // Redirect the browser directly to the APK file URL on this website.
+      // The server will serve it as a download (Content-Disposition: attachment).
+      window.location.href = APK_URL;
     };
 
     const downloadBtn = document.getElementById('apk-download-btn');
     if (downloadBtn) {
-      downloadBtn.onclick = () => triggerDirectDownload();
+      downloadBtn.onclick = () => triggerDownload();
     }
-    
-    // Auto-download the APK after a short delay
-    setTimeout(() => {
-      if (downloadBtn) {
-        downloadBtn.click();
-      }
-    }, 1500);
   })();
 </script>

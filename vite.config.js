@@ -43,6 +43,9 @@ export default defineConfig({
 
         // Copy entire pages folder (HTML and JS controllers)
         copyFolderRecursiveSync(path.resolve(__dirname, 'pages'), path.resolve(__dirname, 'dist/pages'));
+
+        // Copy public/ folder (APK files, static assets) to dist/ root
+        copyFolderRecursiveSync(path.resolve(__dirname, 'public'), path.resolve(__dirname, 'dist'));
       }
     }
   ]
