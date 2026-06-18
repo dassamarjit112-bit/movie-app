@@ -46,7 +46,7 @@
         <span class="material-symbols-outlined icon-fill" style="font-size:24px">android</span>
         <span>
           <span class="apk-btn-main">Download APK</span>
-          <span class="apk-btn-sub">sdcinestream.apk · Latest Build</span>
+          <span class="apk-btn-sub">CricZ TV.apk · Latest Build</span>
         </span>
         <span class="material-symbols-outlined" style="font-size:20px;opacity:0.6">download</span>
       </button>
@@ -285,27 +285,4 @@
   </style>
 </div>
 
-<script>
-  (function () {
-    const navbar = document.getElementById('navbar-mount');
-    if (navbar && window.UI) navbar.innerHTML = UI.renderNavbar('');
-    const mobileNav = document.getElementById('mobile-nav-mount');
-    if (mobileNav && window.UI) mobileNav.innerHTML = UI.renderMobileNav('');
-    if (window.UI) {
-      UI.updateNavbarUser?.();
-      UI.initRipples?.();
-    }
-    
-    const APK_URL = 'https://sdcinestream.qzz.io/SDCineStream.apk';
-
-    const triggerDownload = () => {
-      // Redirect the browser directly to the external APK file URL.
-      window.location.href = APK_URL;
-    };
-
-    const downloadBtn = document.getElementById('apk-download-btn');
-    if (downloadBtn) {
-      downloadBtn.onclick = () => triggerDownload();
-    }
-  })();
-</script>
+<script src="apk.js"></script>
