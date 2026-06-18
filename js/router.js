@@ -164,6 +164,7 @@ const Router = (() => {
       case 'scraper':     window.ScraperPage?.init(); break;
       case 'sports':      window.SportsPage?.init(); break;
       case 'sports-stream': window.SportsStreamPage?.init(params); break;
+      case 'apk':         window.ApkPage?.init(); break;
     }
     // Trigger global ad banner on every route except account
     if (route !== 'account' && route !== 'login' && typeof window.initAdBanner === 'function') {

@@ -3,7 +3,8 @@
  * Shows animated progress overlay, then triggers the real APK download.
  */
 
-(function () {
+const ApkPage = (() => {
+  function init() {
   // ── Mount Navbar & Mobile Nav ──────────────────────────────────────────────
   const navbar = document.getElementById('navbar-mount');
   if (navbar && window.UI) navbar.innerHTML = UI.renderNavbar('');
@@ -143,4 +144,8 @@
       }
     });
   }
+
+  return { init };
 })();
+
+window.ApkPage = ApkPage;
