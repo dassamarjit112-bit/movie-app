@@ -106,13 +106,14 @@ const AIRecommender = (() => {
   async function getPersonalizedRecommendations(userId, limit = 12) {
     const allContent = window.DEMO_CONTENT;
     if (!userId) {
-      // Fallback for guest profiles (sort by IMDb rating + trending shuffle)
-      return allContent
-        .sort((a, b) => parseFloat(b.imdb) - parseFloat(a.imdb))
+      // Fallback for guest profiles (shuffle top rated content for freshness)
+      const shuffled = [...allContent].sort(() => Math.random() - 0.5);
+      return shuffled
+        .sort((a, b) => (parseFloat(b.imdb || 0) - parseFloat(a.imdb || 0)) + (Math.random() - 0.5) * 2)
         .slice(0, limit)
         .map(item => ({
           ...item,
-          aiMatchScore: 90,
+          aiMatchScore: Math.floor(Math.random() * 15) + 80,
           aiReason: 'Popular on CineStream'
         }));
     }
@@ -128,7 +129,7 @@ const AIRecommender = (() => {
     const secondaryGenre = sortedGenres[1] || '';
 
     const recommended = allContent.map(item => {
-      let score = 50; // Base score
+      let score = 50 + (Math.random() * 20); // Base score with 20pt random jitter for fresh results
       let reasons = [];
 
       // A. Match against user's top genres
