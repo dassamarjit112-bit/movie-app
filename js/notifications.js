@@ -42,7 +42,7 @@ const NotificationSystem = (() => {
     _loadStoredNotifications();
     _injectPanel();
     _bindBellButton();
-    _scheduleDaily();
+    _schedulePeriodic();
 
     // Show permission modal on first open (after a tiny delay for page to load)
     await _checkPermission();
@@ -378,18 +378,18 @@ const NotificationSystem = (() => {
   }
 
   // ── New Releases Scheduler ──
-  function _scheduleDaily() {
+  function _schedulePeriodic() {
     const lastShown = parseInt(localStorage.getItem('cs_notif_last_release') || '0');
     const now = Date.now();
-    const oneDayMs = 24 * 60 * 60 * 1000;
+    const fourHoursMs = 4 * 60 * 60 * 1000;
 
-    if (now - lastShown > oneDayMs) {
+    if (now - lastShown > fourHoursMs) {
       setTimeout(() => _sendNewReleaseNotification(), 10000);
       localStorage.setItem('cs_notif_last_release', String(now));
     }
 
-    // Schedule for next day
-    setTimeout(() => _scheduleDaily(), oneDayMs);
+    // Schedule for next interval
+    setTimeout(() => _schedulePeriodic(), fourHoursMs);
   }
 
   function _sendNewReleaseNotification() {
