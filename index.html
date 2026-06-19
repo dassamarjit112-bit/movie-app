@@ -219,9 +219,9 @@
   <script type="module" src="pages/apk.js"></script>
 
   <!-- ── Notification Engine (non-module, needs global scope) ── -->
-  <script src="js/notifications.js"></script>
+  <script src="js/notifications.js?v=2"></script>
 
-  <script>
+  <script type="module">
     // ── Bootstrap Application ──
     (async function bootstrap() {
       // Animate loader bar
@@ -239,7 +239,13 @@
           setTimeout(() => loader.remove(), 600);
         }
       };
-      const safetyTimer = setTimeout(removeLoader, 3000);
+      const safetyTimer = setTimeout(() => {
+        removeLoader();
+        if (window.Router && !window.Router.initialized) {
+          window.Router.initialized = true;
+          window.Router.init();
+        }
+      }, 3000);
 
       try {
         // Wait for DOM + font load with a fallback timeout
@@ -248,9 +254,12 @@
           new Promise(r => setTimeout(r, 1000))
         ]);
 
-        // Get session, handle rejections safely
+        // Get session, handle rejections safely (max 2 seconds wait)
         if (window.sb && window.sb.auth) {
-          await window.sb.auth.getSession().catch(err => console.warn('Auth check skipped:', err));
+          await Promise.race([
+            window.sb.auth.getSession(),
+            new Promise((resolve) => setTimeout(resolve, 2000))
+          ]).catch(err => console.warn('Auth check skipped:', err));
         }
 
         // Short min display time for branding
@@ -261,9 +270,10 @@
         removeLoader();
 
         // Initialize router
-        if (window.Router) {
+        if (window.Router && !window.Router.initialized) {
+          window.Router.initialized = true;
           window.Router.init();
-        } else {
+        } else if (!window.Router) {
           console.error('Router not loaded!');
         }
 
