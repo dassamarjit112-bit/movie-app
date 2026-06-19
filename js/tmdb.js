@@ -446,6 +446,8 @@ const TMDB = (() => {
     window.DEMO_CONTENT = unique;
 
     return { trending, nowPlaying, bollywood, hollywood, tollywood, south, topRated };
+  }
+
   // Fetch Similar
   async function fetchSimilar(type, id) {
     const results = await tmdbFetch(`/${type}/${id}/similar`);
