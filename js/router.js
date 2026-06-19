@@ -166,9 +166,16 @@ const Router = (() => {
       case 'sports-stream': window.SportsStreamPage?.init(params); break;
       case 'apk':         window.ApkPage?.init(); break;
     }
-    // Trigger global ad banner on every route except account
-    if (route !== 'account' && route !== 'login' && typeof window.initAdBanner === 'function') {
-      try { window.initAdBanner(); } catch (e) { console.warn('Ad banner init error:', e); }
+    // Trigger global ad banner
+    const adRoutes = ['login', 'home', 'movies', 'tvshows', 'sports', 'sports-stream', 'apk'];
+    const banner = document.getElementById('global-ad-banner');
+    if (adRoutes.includes(route)) {
+      if (banner) banner.style.display = 'flex';
+      if (typeof window.initAdBanner === 'function') {
+        try { window.initAdBanner(); } catch (e) { console.warn('Ad banner init error:', e); }
+      }
+    } else {
+      if (banner) banner.style.display = 'none';
     }
   }
 

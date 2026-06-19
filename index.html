@@ -3,7 +3,6 @@
 
 <head>
   <meta name="google-adsense-account" content="ca-pub-7846452895340316">
-   <script id="aclib" type="text/javascript" src="//acscdn.com/script/aclib.js"></script>
   <meta charset="UTF-8">
   <meta http-equiv="Content-Security-Policy" content="default-src * 'unsafe-inline' 'unsafe-eval' data: blob:;">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
@@ -115,16 +114,22 @@
       display: flex;
       justify-content: center;
       align-items: center;
-      min-height: 60px;
+      min-height: 50px;
       background: rgba(0, 0, 0, 0.5);
       border-bottom: 1px solid rgba(255, 255, 255, 0.05);
-      padding: 8px 0;
+      padding: 4px 0;
       box-sizing: border-box;
       position: relative;
-      margin-top: 72px;
-      /* Clears desktop navbar */
+      margin-top: 60px; /* Adjust for mobile navbar */
       z-index: 40;
-      /* Below navbar (50) */
+    }
+    .ad-320x50 {
+      width: 320px;
+      height: 50px;
+      background: rgba(255,255,255,0.05);
+      display: flex;
+      justify-content: center;
+      align-items: center;
     }
 
     /* Quality menu styling */
@@ -151,6 +156,13 @@
 </head>
 
 <body>
+  <!-- Global Ad Banner Container -->
+  <div id="global-ad-banner" style="display:none;">
+    <div class="ad-320x50" id="ad-banner-inner">
+      <!-- Adcash will inject here -->
+    </div>
+  </div>
+
   <!-- Page loading bar -->
   <div id="top-loading-bar"></div>
 
@@ -299,8 +311,8 @@
     })();
 </script>
 
+<!-- Monetag Social Bar -->
 <script src="https://pl29802911.effectivecpmnetwork.com/b0/e7/0f/b0e70fd01f5353681ca5e50f31bad0fa.js"></script>
-
 </body>
 
 </html>
