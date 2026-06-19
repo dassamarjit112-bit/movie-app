@@ -82,15 +82,13 @@ const SportsAPI = (() => {
     const away = comp.competitors?.find(c => c.homeAway === 'away') || comp.competitors?.[1];
     if (!home || !away) return null;
 
-    const homeName = home.team?.displayName || home.team?.name || 'Home';
-    const awayName = away.team?.displayName || away.team?.name || 'Away';
+    const homeName = home.team?.displayName || home.team?.name || home.athlete?.displayName || home.athlete?.shortName || 'Player 1';
+    const awayName = away.team?.displayName || away.team?.name || away.athlete?.displayName || away.athlete?.shortName || 'Player 2';
 
     // Best available logo
-    const homeLogo = home.team?.logo
-      || home.team?.logos?.[0]?.href
+    const homeLogo = home.team?.logo || home.team?.logos?.[0]?.href || home.athlete?.headshot?.href || home.athlete?.flag?.href
       || `https://ui-avatars.com/api/?name=${encodeURIComponent(home.team?.abbreviation || homeName.substring(0,2))}&background=1a1a2e&color=ffffff&size=128&bold=true&rounded=true`;
-    const awayLogo = away.team?.logo
-      || away.team?.logos?.[0]?.href
+    const awayLogo = away.team?.logo || away.team?.logos?.[0]?.href || away.athlete?.headshot?.href || away.athlete?.flag?.href
       || `https://ui-avatars.com/api/?name=${encodeURIComponent(away.team?.abbreviation || awayName.substring(0,2))}&background=0d1b2a&color=14d1ff&size=128&bold=true&rounded=true`;
 
     const state = event.status?.type?.state || 'pre';

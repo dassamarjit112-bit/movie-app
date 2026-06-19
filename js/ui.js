@@ -587,6 +587,32 @@ const UI = (() => {
     }
     Router.navigate(route);
   }
+  // ── Global Countdown Timer ──
+  setInterval(() => {
+    document.querySelectorAll('.sp-countdown').forEach(el => {
+      const timeStr = el.getAttribute('data-time');
+      if (!timeStr) return;
+      const target = new Date(timeStr).getTime();
+      const now = new Date().getTime();
+      const diff = target - now;
+
+      if (diff <= 0) {
+        el.textContent = "Starting Soon...";
+        return;
+      }
+
+      const d = Math.floor(diff / (1000 * 60 * 60 * 24));
+      const h = Math.floor((diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+      const m = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
+      const s = Math.floor((diff % (1000 * 60)) / 1000);
+
+      if (d > 0) {
+        el.textContent = `Starts in ${d}d ${h}h`;
+      } else {
+        el.textContent = `Starts in ${h}h ${m}m ${s}s`;
+      }
+    });
+  }, 1000);
 
   return {
     toast,

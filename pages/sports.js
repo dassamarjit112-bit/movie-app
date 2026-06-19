@@ -6,6 +6,7 @@
 const SportsPage = (() => {
   let pollingInterval = null;
   let carouselInterval = null;
+  let countdownInterval = null;
   let currentSport = 'all';
   let searchQuery = '';
   let allMatches = [];
@@ -55,6 +56,13 @@ const SportsPage = (() => {
     if (pollingInterval) clearInterval(pollingInterval);
     pollingInterval = setInterval(fetchAndRender, 30000); // refresh every 30s
   }
+
+  function cleanup() {
+    if (pollingInterval) clearInterval(pollingInterval);
+    if (carouselInterval) clearInterval(carouselInterval);
+  }
+
+
 
   // ── Render today's date in header ──
   function renderDateHeader() {
@@ -204,7 +212,10 @@ const SportsPage = (() => {
           </span>
           ${match.isLive
             ? `<span class="sp-live-badge"><span class="sp-live-dot"></span>LIVE</span>`
-            : `<span class="sp-time-badge">${match.matchTime}</span>`}
+            : `<div style="display:flex; flex-direction:column; align-items:flex-end;">
+                 <span class="sp-time-badge">${match.matchTime}</span>
+                 ${match.rawDate ? `<span class="sp-countdown" data-time="${match.rawDate}" style="font-size:11px; color:#14d1ff; font-weight:700; margin-top:4px;"></span>` : ''}
+               </div>`}
         </div>
         <div class="sp-hero-teams">
           <div class="sp-hero-team">
@@ -252,7 +263,10 @@ const SportsPage = (() => {
             <span class="sp-suggest-league">${match.tournamentIcon || meta.emoji} ${match.tournament}</span>
             ${match.isLive
               ? `<span class="sp-live-badge-sm"><span class="sp-live-dot" style="width:5px;height:5px;"></span>LIVE</span>`
-              : `<span class="sp-suggest-time">${match.matchTime}</span>`}
+              : `<div style="display:flex; flex-direction:column; align-items:flex-end;">
+                   <span class="sp-suggest-time">${match.matchTime}</span>
+                   ${match.rawDate ? `<span class="sp-countdown" data-time="${match.rawDate}" style="font-size:10px; color:#14d1ff; font-weight:700; margin-top:2px;"></span>` : ''}
+                 </div>`}
           </div>
           <div class="sp-suggest-teams">
             <div class="sp-suggest-team">
@@ -383,7 +397,10 @@ const SportsPage = (() => {
 
         <!-- Card Footer -->
         <div class="sp-card-footer">
-          <span class="sp-card-date">${match.matchDate} · ${match.matchTime}</span>
+          <div style="display:flex; flex-direction:column; gap:2px;">
+            <span class="sp-card-date">${match.matchDate} · ${match.matchTime}</span>
+            ${!isLive && !isFinished && match.rawDate ? `<span class="sp-countdown" data-time="${match.rawDate}" style="font-size:11px; color:#14d1ff; font-weight:700;"></span>` : ''}
+          </div>
           <button class="sp-card-watch-btn">
             <span class="material-symbols-outlined icon-fill" style="font-size:13px;">play_arrow</span>
             ${isLive ? 'Watch Live' : 'Preview'}
@@ -393,9 +410,39 @@ const SportsPage = (() => {
     `;
   }
 
+  function startCountdownTimer() {
+    if (countdownInterval) clearInterval(countdownInterval);
+    countdownInterval = setInterval(() => {
+      document.querySelectorAll('.sp-countdown').forEach(el => {
+        const timeStr = el.getAttribute('data-time');
+        if (!timeStr) return;
+        const target = new Date(timeStr).getTime();
+        const now = new Date().getTime();
+        const diff = target - now;
+
+        if (diff <= 0) {
+          el.textContent = "Starting Soon...";
+          return;
+        }
+
+        const d = Math.floor(diff / (1000 * 60 * 60 * 24));
+        const h = Math.floor((diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+        const m = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
+        const s = Math.floor((diff % (1000 * 60)) / 1000);
+
+        if (d > 0) {
+          el.textContent = `Starts in ${d}d ${h}h`;
+        } else {
+          el.textContent = `Starts in ${h}h ${m}m ${s}s`;
+        }
+      });
+    }, 1000);
+  }
+
   function cleanup() {
     if (pollingInterval) clearInterval(pollingInterval);
     if (carouselInterval) clearInterval(carouselInterval);
+    if (countdownInterval) clearInterval(countdownInterval);
   }
 
   return { init, cleanup };

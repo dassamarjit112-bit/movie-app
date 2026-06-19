@@ -203,7 +203,10 @@ const HomePage = (() => {
                   </div>
                   ${isLive
                     ? `<div class="hs-live-tag"><div class="hs-live-tag-dot"></div>LIVE</div>`
-                    : `<div style="font-size:9px;font-weight:700;color:rgba(255,255,255,0.3);background:rgba(255,255,255,0.05);border-radius:999px;padding:3px 9px;">${match.status}</div>`
+                    : `<div style="display:flex; flex-direction:column; align-items:flex-end;">
+                         <div style="font-size:9px;font-weight:700;color:rgba(255,255,255,0.3);background:rgba(255,255,255,0.05);border-radius:999px;padding:3px 9px;">${match.status}</div>
+                         ${match.rawDate ? `<div class="sp-countdown" data-time="${match.rawDate}" style="font-size:10px; color:#14d1ff; font-weight:700; margin-top:2px;"></div>` : ''}
+                       </div>`
                   }
                 </div>
                 <div class="hs-card-teams">
