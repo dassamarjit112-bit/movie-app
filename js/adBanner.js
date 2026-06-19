@@ -10,7 +10,7 @@
     }
 
     // IMPORTANT: Replace 'YOUR_ADSTERRA_KEY_HERE' with your actual 320x50 Adsterra key string
-    const adsterraKey = db1c269a1c6399f959bb4b51e661c32e ; 
+    const adsterraKey = 'db1c269a1c6399f959bb4b51e661c32e'; 
 
     if (container.dataset.loadedKey === adsterraKey) {
       // Ad already loaded for this SPA session
