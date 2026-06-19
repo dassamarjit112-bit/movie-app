@@ -611,15 +611,19 @@ const NotificationSystem = (() => {
         /* ── Footer CTA ── */
         .np-footer {
           padding:12px 16px;border-top:1px solid rgba(255,255,255,0.05);
-          flex-shrink:0;display:flex;gap:10px;flex-wrap:wrap;
+          flex-shrink:0;display:flex;gap:8px;flex-wrap:wrap;
           border-bottom-left-radius: 24px;
           border-bottom-right-radius: 24px;
         }
         .np-cta-btn {
-          flex:1;padding:10px;background:linear-gradient(135deg,#e50914,#c0000c);
+          flex: 1 1 calc(50% - 4px);
+          padding:10px;background:linear-gradient(135deg,#e50914,#c0000c);
           color:#fff;border:none;border-radius:12px;font-size:12px;font-weight:700;
           cursor:pointer;font-family:'Inter',sans-serif;transition:all 0.2s;
           white-space:nowrap;
+        }
+        .np-cta-btn.full-width {
+          flex: 1 1 100%;
         }
         .np-cta-btn:hover { filter:brightness(1.1); }
         .np-cta-btn.secondary {
@@ -629,7 +633,7 @@ const NotificationSystem = (() => {
         .np-cta-btn.secondary:hover { background:rgba(0,208,132,0.2); }
         .np-cta-btn.test-btn {
           background:rgba(20,209,255,0.12);border:1px solid rgba(20,209,255,0.25);
-          color:#14d1ff; flex:0.4;
+          color:#14d1ff;
         }
         .np-cta-btn.test-btn:hover { background:rgba(20,209,255,0.2); }
       </style>
@@ -661,7 +665,7 @@ const NotificationSystem = (() => {
         <div class="np-body" id="np-body"></div>
 
         <div class="np-footer">
-          <button class="np-cta-btn" onclick="window.NotificationSystem.requestPermission()">
+          <button class="np-cta-btn full-width" onclick="window.NotificationSystem.requestPermission()">
             🔔 Enable Push
           </button>
           <button class="np-cta-btn secondary" onclick="Router.navigate('sports');window.NotificationSystem.closePanel()">
