@@ -278,11 +278,7 @@ const NotificationSystem = (() => {
   function _showAndroidNotification({ title, body, type, image, url, tag }) {
     if (_notifPermission !== 'granted') return;
 
-    // Support for Median.co (GoNative)
-    if (window.median) {
-      new Notification(title, { body, icon: '/icons/icon-192.png' });
-      return;
-    }
+    // Let Service Worker handle the push notification natively in Median.co WebView
 
     if (_swRegistration) {
       _swRegistration.showNotification(title, {
