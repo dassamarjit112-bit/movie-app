@@ -224,7 +224,7 @@ const SportsPage = (() => {
         </div>
         <div class="sp-hero-match-footer">
           ${match.venue ? `<span class="sp-venue">📍 ${match.venue}</span>` : ''}
-          <button class="sp-watch-btn" onclick="Router.navigate('sports-stream', {id: '${match.matchId}'})">
+          <button class="sp-watch-btn" onclick="UI._requireAuthNav('sports-stream', {id: '${match.matchId}'})">
             <span class="material-symbols-outlined icon-fill" style="font-size:16px;">play_circle</span>
             Watch Live
           </button>
@@ -247,7 +247,7 @@ const SportsPage = (() => {
     container.innerHTML = suggestions.map(match => {
       const meta = sportMeta[match.sportType] || { emoji: '🏆', color: '#14d1ff' };
       return `
-        <div class="sp-suggest-card" onclick="Router.navigate('sports-stream', {id: '${match.matchId}'})">
+        <div class="sp-suggest-card" onclick="UI._requireAuthNav('sports-stream', {id: '${match.matchId}'})">
           <div class="sp-suggest-top">
             <span class="sp-suggest-league">${match.tournamentIcon || meta.emoji} ${match.tournament}</span>
             ${match.isLive
@@ -345,7 +345,7 @@ const SportsPage = (() => {
 
     return `
       <div class="sp-match-card ${isLive ? 'sp-card-live' : ''}" 
-           onclick="Router.navigate('sports-stream', {id: '${match.matchId}'})">
+           onclick="UI._requireAuthNav('sports-stream', {id: '${match.matchId}'})">
         <!-- Card Header -->
         <div class="sp-card-header">
           <div class="sp-card-tournament">${match.tournamentIcon || ''} ${match.tournament}</div>

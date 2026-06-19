@@ -6,21 +6,21 @@
 const Router = (() => {
   // Route registry
   const routes = {
-    'login':       { page: 'pages/login.html',     auth: false },
-    'home':        { page: 'pages/home.html',       auth: true  },
-    'movies':      { page: 'pages/movies.html',     auth: true  },
-    'tvshows':     { page: 'pages/tvshows.html',    auth: true  },
-    'detail':      { page: 'pages/detail.html',     auth: true  },
-    'player':      { page: 'pages/player.html',     auth: true  },
-    'subscribe':   { page: 'pages/subscribe.html',  auth: true  },
-    'giftcode':    { page: 'pages/giftcode.html',   auth: true  },
-    'account':     { page: 'pages/account.html',    auth: true  },
-    'search':      { page: 'pages/search.html',    auth: true  },
-    'anime':       { page: 'pages/anime.html',     auth: true  },
-    'scraper':     { page: 'pages/scraper.html',   auth: true  },
-    'sports':      { page: 'pages/sports.html',    auth: true  },
-    'sports-stream': { page: 'pages/sports-stream.html', auth: true },
-    'apk':         { page: 'pages/apk.html',       auth: false }
+    'login':         { page: 'pages/login.html',          auth: false },
+    'home':          { page: 'pages/home.html',            auth: false }, // public – browse without login
+    'movies':        { page: 'pages/movies.html',          auth: true  }, // login required to watch
+    'tvshows':       { page: 'pages/tvshows.html',         auth: true  }, // login required to watch
+    'detail':        { page: 'pages/detail.html',          auth: true  }, // login required
+    'player':        { page: 'pages/player.html',          auth: true  }, // login required
+    'subscribe':     { page: 'pages/subscribe.html',       auth: true  },
+    'giftcode':      { page: 'pages/giftcode.html',        auth: true  },
+    'account':       { page: 'pages/account.html',         auth: true  },
+    'search':        { page: 'pages/search.html',          auth: true  },
+    'anime':         { page: 'pages/anime.html',           auth: true  },
+    'scraper':       { page: 'pages/scraper.html',         auth: true  },
+    'sports':        { page: 'pages/sports.html',          auth: false }, // public – browse sports without login
+    'sports-stream': { page: 'pages/sports-stream.html',  auth: true  }, // login required to stream
+    'apk':           { page: 'pages/apk.html',            auth: false }  // always public
   };
 
   const appEl = document.getElementById('app');

@@ -142,20 +142,27 @@ const HomePage = (() => {
     
     loadLiveSports();
 
-    // Show APK download popup once forever
+    // Show APK download popup once forever (only for guests)
     if (!localStorage.getItem('apk_popup_dismissed')) {
-      setTimeout(() => {
-        UI.showModal({
-          title: 'Latest Version Available',
-          content: 'This is the latest version of the app. If any problem occurs to this app, please download the latest version.',
-          confirmText: 'Download App',
-          cancelText: 'Dismiss',
-          onConfirm: () => {
-            Router.navigate('apk');
+      (async () => {
+        try {
+          const session = await window.Auth.getSession();
+          if (!session) {
+            setTimeout(() => {
+              UI.showModal({
+                title: 'Latest Version Available',
+                content: 'This is the latest version of the app. If any problem occurs to this app, please download the latest version.',
+                confirmText: 'Download App',
+                cancelText: 'Dismiss',
+                onConfirm: () => {
+                  Router.navigate('apk');
+                }
+              });
+              localStorage.setItem('apk_popup_dismissed', 'true');
+            }, 1200);
           }
-        });
-        localStorage.setItem('apk_popup_dismissed', 'true');
-      }, 1200);
+        } catch(e) {}
+      })();
     }
   }
 
@@ -187,7 +194,7 @@ const HomePage = (() => {
             : `<div class="hs-team-abbr">${(match.awayTeam||'?').substring(0,3).toUpperCase()}</div>`;
 
           return `
-            <div class="hs-match-card" onclick="Router.navigate('sports-stream', {id: '${match.matchId}'})">
+            <div class="hs-match-card" onclick="UI._requireAuthNav('sports-stream', {id: '${match.matchId}'})">
               <div class="hs-card-inner">
                 <div class="hs-card-top">
                   <div class="hs-tournament-tag">
@@ -380,8 +387,8 @@ const HomePage = (() => {
     if (desc) desc.textContent = slide.desc;
     if (badge) badge.textContent = slide.badge;
     if (rating) rating.textContent = slide.rating;
-    if (playBtn) playBtn.onclick = () => Router.navigate('player', { id: slide.id });
-    if (infoBtn) infoBtn.onclick = () => Router.navigate('detail', { id: slide.id, type: slide.type });
+    if (playBtn) playBtn.onclick = () => UI._requireAuthNav('player', { id: slide.id });
+    if (infoBtn) infoBtn.onclick = () => UI._requireAuthNav('detail', { id: slide.id, type: slide.type });
 
     document.querySelectorAll('.carousel-dot').forEach((dot, i) => {
       dot.classList.toggle('active', i === idx);

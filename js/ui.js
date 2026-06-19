@@ -135,7 +135,16 @@ const UI = (() => {
             <span class="material-symbols-outlined" style="font-size:20px">notifications</span>
             <span class="notif-dot" style="position:absolute;top:6px;right:6px"></span>
           </button>
-          <div class="avatar-btn" id="avatar-btn" onclick="Router.navigate('account')" title="My Account">
+          <!-- Guest: Login button (visible by default, hidden after login detected) -->
+          <button id="navbar-login-btn"
+            onclick="Router.navigate('login')"
+            style="display:flex;align-items:center;gap:6px;padding:8px 18px;border-radius:8px;border:1.5px solid var(--c-primary-container);background:var(--c-primary-container);color:#fff;font-size:13px;font-weight:700;cursor:pointer;transition:all 0.2s;"
+            onmouseover="this.style.opacity='0.85'" onmouseout="this.style.opacity='1'">
+            <span class="material-symbols-outlined" style="font-size:16px">login</span>
+            Login
+          </button>
+          <!-- Logged-in: Avatar button (hidden by default, shown after login detected) -->
+          <div class="avatar-btn" id="avatar-btn" onclick="Router.navigate('account')" title="My Account" style="display:none">
             <img src="https://api.dicebear.com/7.x/initials/svg?seed=CS&backgroundColor=e50914&textColor=ffffff" alt="Avatar" id="user-avatar">
           </div>
         </div>
@@ -156,7 +165,6 @@ const UI = (() => {
     `;
   }
 
-
   // ── Mobile Bottom Nav HTML ──
   function renderMobileNav(activeRoute) {
     const items = [
@@ -164,13 +172,16 @@ const UI = (() => {
       { route: 'movies',   icon: 'movie',        label: 'Movies' },
       { route: 'tvshows',  icon: 'tv',           label: 'Shows' },
       { route: 'sports',   icon: 'sports_soccer',label: 'Sports' },
-      { route: 'account',  icon: 'person',       label: 'Profile' }
+      // Profile nav item handled separately — shows 'Login' for guests
+      { route: 'account',  icon: 'person',       label: 'Profile', id: 'mobile-profile-nav' }
     ];
     return `
       <nav class="mobile-nav">
         ${items.map(item => `
           <div class="mobile-nav-item ${activeRoute===item.route?'active':''}" 
-               data-route="${item.route}" onclick="Router.navigate('${item.route}')">
+               data-route="${item.route}"
+               id="${item.id || ''}"
+               onclick="UI._mobileNavClick('${item.route}')">
             <span class="material-symbols-outlined ${activeRoute===item.route?'icon-fill':''}"
                   style="${activeRoute===item.route ? 'filter:drop-shadow(0 0 6px rgba(229,9,20,0.6))' : ''}">${item.icon}</span>
             <span>${item.label}</span>
@@ -417,13 +428,28 @@ const UI = (() => {
     return String(rawUrl).replace("http://", "https://");
   }
 
+  // ── Auth-gated navigation helper ──
+  // Navigates to route only if logged in, otherwise redirects to login
+  async function _requireAuthNav(route, params) {
+    try {
+      const session = await window.Auth.getSession();
+      if (!session) {
+        window.Router.navigate('login');
+        return;
+      }
+      window.Router.navigate(route, params || {});
+    } catch(e) {
+      window.Router.navigate('login');
+    }
+  }
+
   // ── Build a poster card ──
   function posterCard(item, options = {}) {
     const { showRank = false, rank = 0, size = '' } = options;
     const hasAiScore = item.aiMatchScore !== undefined;
     return `
       <div class="poster-card-item ${size}" style="flex-shrink:0">
-        <div class="poster-card" onclick="Router.navigate('detail', {id:'${item.id}', type:'${item.type||'movie'}'})" 
+        <div class="poster-card" onclick="UI._requireAuthNav('detail', {id:'${item.id}', type:'${item.type||'movie'}'})" 
              title="${item.title}">
           <img src="${getSecurePosterUrl(item.poster_url || item.poster)}" alt="${item.title}" loading="lazy"
                onerror="this.onerror=null;this.src='data:image/svg+xml;utf8,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 width=%22170%22 height=%22255%22 viewBox=%220 0 170 255%22%3E%3Crect width=%22170%22 height=%22255%22 fill=%22%231a1a1a%22/%3E%3Ctext x=%2250%25%22 y=%2250%25%22 dominant-baseline=%22middle%22 text-anchor=%22middle%22 font-size=%2236%22 fill=%22%23333%22%3E🎬%3C/text%3E%3C/svg%3E'">
@@ -493,20 +519,73 @@ const UI = (() => {
     document.querySelectorAll('.btn-primary, .btn-ghost').forEach(btn => addRipple(btn));
   }
 
-  // ── Update user avatar in navbar ──
+  // ── Update user avatar in navbar (handles guest vs logged-in) ──
   async function updateNavbarUser() {
-    const user = await window.Auth.getUser().catch(() => null);
-    if (!user) return;
-    const avatarEl = document.getElementById('user-avatar');
-    if (!avatarEl) return;
+    try {
+      const session = await window.Auth.getSession();
+      const loginBtn  = document.getElementById('navbar-login-btn');
+      const avatarBtn = document.getElementById('avatar-btn');
 
-    const profile = await window.Auth.getProfile(user.id).catch(() => null);
-    const name = profile?.full_name || user.email || 'User';
-    const avatarUrl = profile?.avatar_url
-      || user.user_metadata?.avatar_url
-      || `https://api.dicebear.com/7.x/initials/svg?seed=${encodeURIComponent(name)}&backgroundColor=e50914&textColor=ffffff`;
-    avatarEl.src = avatarUrl;
-    avatarEl.alt = name;
+      if (!session) {
+        // Guest: show Login button, hide avatar
+        if (loginBtn)  loginBtn.style.display  = 'flex';
+        if (avatarBtn) avatarBtn.style.display = 'none';
+        // Update mobile profile nav to say "Login"
+        _updateMobileProfileNav(false);
+        return;
+      }
+
+      // Logged in: hide Login button, show avatar
+      if (loginBtn)  loginBtn.style.display  = 'none';
+      if (avatarBtn) avatarBtn.style.display = 'flex';
+      _updateMobileProfileNav(true);
+
+      const user = await window.Auth.getUser().catch(() => null);
+      if (!user) return;
+      const avatarEl = document.getElementById('user-avatar');
+      if (!avatarEl) return;
+
+      const profile = await window.Auth.getProfile(user.id).catch(() => null);
+      const name = profile?.full_name || user.email || 'User';
+      const avatarUrl = profile?.avatar_url
+        || user.user_metadata?.avatar_url
+        || `https://api.dicebear.com/7.x/initials/svg?seed=${encodeURIComponent(name)}&backgroundColor=e50914&textColor=ffffff`;
+      avatarEl.src = avatarUrl;
+      avatarEl.alt = name;
+    } catch(e) {
+      // On any error keep login button visible
+      const loginBtn = document.getElementById('navbar-login-btn');
+      if (loginBtn) loginBtn.style.display = 'flex';
+    }
+  }
+
+  // ── Update mobile profile nav item for guest vs logged-in ──
+  function _updateMobileProfileNav(isLoggedIn) {
+    const el = document.getElementById('mobile-profile-nav');
+    if (!el) return;
+    const iconEl  = el.querySelector('.material-symbols-outlined');
+    const labelEl = el.querySelectorAll('span')[1];
+    if (!isLoggedIn) {
+      if (iconEl)  iconEl.textContent  = 'login';
+      if (labelEl) labelEl.textContent = 'Login';
+      el.setAttribute('data-route', 'login');
+    } else {
+      if (iconEl)  iconEl.textContent  = 'person';
+      if (labelEl) labelEl.textContent = 'Profile';
+      el.setAttribute('data-route', 'account');
+    }
+  }
+
+  // ── Mobile nav click handler — routes to login if guest tries account ──
+  async function _mobileNavClick(route) {
+    if (route === 'account' || route === 'movies' || route === 'tvshows') {
+      const session = await window.Auth.getSession();
+      if (!session) {
+        Router.navigate('login');
+        return;
+      }
+    }
+    Router.navigate(route);
   }
 
   return {
@@ -526,7 +605,9 @@ const UI = (() => {
     videoCard,
     initVideoCardHovers,
     initRipples,
-    updateNavbarUser
+    updateNavbarUser,
+    _mobileNavClick,
+    _requireAuthNav
   };
 })();
 
