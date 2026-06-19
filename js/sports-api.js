@@ -109,8 +109,14 @@ const SportsAPI = (() => {
       statusLabel = toLocalTime(event.date);
     }
 
-    const homeScore = isLive || isDone ? (home.score ?? '0') : '-';
-    const awayScore = isLive || isDone ? (away.score ?? '0') : '-';
+    const getScoreStr = (competitor) => {
+      if (!isLive && !isDone) return '-';
+      if (competitor.score?.displayValue !== undefined) return competitor.score.displayValue;
+      return competitor.score ?? '0';
+    };
+
+    const homeScore = getScoreStr(home);
+    const awayScore = getScoreStr(away);
 
     // Score string
     let scoreStr;

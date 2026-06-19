@@ -8,35 +8,35 @@ const Subscriptions = (() => {
     {
       id: 'basic',
       name: 'Basic',
-      price: 4.99,
-      period: 'month',
+      price: 40,
+      period: '3 months',
       quality: 'SD',
       screens: 1,
       downloads: false,
-      features: ['SD Quality (480p)', '1 Screen at a time', 'Mobile only', 'Limited catalog'],
+      features: ['Activate all features'],
       color: 'var(--c-tertiary)'
     },
     {
       id: 'standard',
       name: 'Standard',
-      price: 9.99,
-      period: 'month',
+      price: 79,
+      period: '3 months',
       quality: 'FHD',
       screens: 2,
       downloads: true,
       featured: true,
-      features: ['Full HD (1080p)', '2 Screens simultaneously', 'All devices', 'Full catalog', '25 downloads/month'],
+      features: ['Activate all features'],
       color: 'var(--c-secondary-container)'
     },
     {
       id: 'premium',
       name: 'Premium 4K',
-      price: 14.99,
-      period: 'month',
+      price: 129,
+      period: '3 months',
       quality: '4K',
       screens: 4,
       downloads: true,
-      features: ['Ultra HD 4K + HDR', '4 Screens simultaneously', 'All devices', 'Full catalog + Exclusives', 'Unlimited downloads', 'Dolby Atmos Audio'],
+      features: ['Activate all features'],
       color: 'var(--c-primary-container)'
     }
   ];

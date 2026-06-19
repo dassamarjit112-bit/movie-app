@@ -52,7 +52,7 @@ const SubscribePage = (() => {
           <div style="margin-bottom:24px;">
             <h3 style="font-family:'Montserrat',sans-serif; font-size:22px; font-weight:700; color:#fff;">${plan.name}</h3>
             <div style="display:flex; align-items:baseline; gap:4px; margin-top:12px;">
-              <span style="font-size:36px; font-weight:800; color:#fff;">$${plan.price}</span>
+              <span style="font-size:36px; font-weight:800; color:#fff;">₹${plan.price}</span>
               <span style="font-size:13px; color:rgba(229,226,225,0.45)">/ ${plan.period}</span>
             </div>
             <p style="font-size:12px; font-weight:700; letter-spacing:0.04em; color:${color}; text-transform:uppercase; margin-top:8px;">

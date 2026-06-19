@@ -587,32 +587,86 @@ const UI = (() => {
     }
     Router.navigate(route);
   }
-  // ── Global Countdown Timer ──
-  setInterval(() => {
-    document.querySelectorAll('.sp-countdown').forEach(el => {
-      const timeStr = el.getAttribute('data-time');
-      if (!timeStr) return;
-      const target = new Date(timeStr).getTime();
-      const now = new Date().getTime();
-      const diff = target - now;
+  // ── Promo Banner ──
+  function showPromoBanner() {
+    if (localStorage.getItem('cs_promo_dismissed')) return;
+    
+    const notifBtn = document.getElementById('notif-btn');
+    if (!notifBtn) {
+      setTimeout(showPromoBanner, 500);
+      return;
+    }
 
-      if (diff <= 0) {
-        el.textContent = "Starting Soon...";
-        return;
-      }
-
-      const d = Math.floor(diff / (1000 * 60 * 60 * 24));
-      const h = Math.floor((diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
-      const m = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
-      const s = Math.floor((diff % (1000 * 60)) / 1000);
-
-      if (d > 0) {
-        el.textContent = `Starts in ${d}d ${h}h`;
-      } else {
-        el.textContent = `Starts in ${h}h ${m}m ${s}s`;
-      }
-    });
-  }, 1000);
+    // Only show on desktop for better UI, or show centrally on mobile
+    const rect = notifBtn.getBoundingClientRect();
+    const rightPos = window.innerWidth > 768 ? (window.innerWidth - rect.right - 10) : 20;
+    
+    const banner = document.createElement('div');
+    banner.id = 'promo-banner-container';
+    banner.innerHTML = `
+      <style>
+        @keyframes floatCloud {
+          0%, 100% { transform: translateY(0); }
+          50% { transform: translateY(-5px); }
+        }
+        @keyframes popIn {
+          0% { opacity: 0; transform: scale(0.9) translateY(-10px); }
+          100% { opacity: 1; transform: scale(1) translateY(0); }
+        }
+        .promo-cloud {
+          position: fixed;
+          top: ${rect.bottom + 15}px;
+          right: ${rightPos}px;
+          background: linear-gradient(135deg, #2a2a3a, #1a1a2e);
+          border: 1px solid rgba(20, 209, 255, 0.4);
+          padding: 16px 20px;
+          border-radius: 20px;
+          box-shadow: 0 15px 35px rgba(0,0,0,0.6), 0 0 20px rgba(20,209,255,0.15);
+          z-index: 10000;
+          color: white;
+          width: 280px;
+          animation: popIn 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards, floatCloud 3s ease-in-out infinite alternate;
+        }
+        .promo-cloud::before {
+          content: '';
+          position: absolute;
+          top: -8px;
+          right: ${window.innerWidth > 768 ? '25px' : '40px'};
+          width: 0;
+          height: 0;
+          border-left: 8px solid transparent;
+          border-right: 8px solid transparent;
+          border-bottom: 8px solid rgba(20, 209, 255, 0.4);
+        }
+        .promo-cloud::after {
+          content: '';
+          position: absolute;
+          top: -6px;
+          right: ${window.innerWidth > 768 ? '26px' : '41px'};
+          width: 0;
+          height: 0;
+          border-left: 7px solid transparent;
+          border-right: 7px solid transparent;
+          border-bottom: 7px solid #2a2a3a;
+        }
+      </style>
+      <div class="promo-cloud">
+        <button onclick="document.getElementById('promo-banner-container').remove(); localStorage.setItem('cs_promo_dismissed', '1');" style="position:absolute; top:8px; right:8px; background:none; border:none; color:rgba(255,255,255,0.5); cursor:pointer; font-size:18px; outline:none; transition: color 0.2s;" onmouseover="this.style.color='white'" onmouseout="this.style.color='rgba(255,255,255,0.5)'">&times;</button>
+        <div style="display:flex; align-items:center; gap:10px; margin-bottom:8px;">
+          <span style="font-size:24px; animation: floatCloud 2s infinite alternate;">🎁</span>
+          <strong style="font-size:14px; color:#14d1ff;">Free Premium Offer!</strong>
+        </div>
+        <p style="font-size:12px; color:rgba(255,255,255,0.8); line-height:1.4; margin:0 0 10px 0;">
+          Get 2 months of Premium free. Use live giftcode:
+        </p>
+        <div style="background:rgba(0,0,0,0.3); padding:8px; border-radius:6px; text-align:center; font-family:monospace; font-weight:bold; letter-spacing:2px; font-size:15px; color:#ffc832; border:1px dashed rgba(255,200,50,0.4); user-select:all;">
+          CINESTREAM123
+        </div>
+        <button onclick="Router.navigate('subscribe'); document.getElementById('promo-banner-container').remove(); localStorage.setItem('cs_promo_dismissed', '1');" style="width:100%; margin-top:12px; padding:10px; background:linear-gradient(135deg, var(--c-primary-container), #ff3040); border:none; border-radius:8px; color:white; font-weight:800; cursor:pointer; font-size:12px; transition: filter 0.2s; box-shadow: 0 4px 12px rgba(229,9,20,0.3);" onmouseover="this.style.filter='brightness(1.1)'" onmouseout="this.style.filter='brightness(1)'">Redeem Now</button>
+      </div>
+    `;
+    document.body.appendChild(banner);
+  }
 
   return {
     toast,
@@ -633,11 +687,19 @@ const UI = (() => {
     initRipples,
     updateNavbarUser,
     _mobileNavClick,
-    _requireAuthNav
+    _requireAuthNav,
+    showPromoBanner
   };
 })();
 
 window.UI = UI;
+
+// Show promo banner shortly after page load
+setTimeout(() => {
+  if (window.UI && window.UI.showPromoBanner) {
+    window.UI.showPromoBanner();
+  }
+}, 3000);
 
 window.registerDemoContent = function(items) {
   if (!items) return;
