@@ -250,15 +250,21 @@ function setupEpisodes(item) {
     try {
       // Fetch similar titles from TMDB via proxy
       const tmdbType = item.type === 'series' ? 'tv' : 'movie';
-      const apiKey = window.ENV?.TMDB_API_KEY || window.ENV?.TMDB_API_KEYS || 'b7bb606801e160a12504bae3568cced9';
-      const res = await fetch(
-        `/tmdb-api/${tmdbType}/${item.tmdb_id || item.id}/similar?api_key=${apiKey.split(',')[0]}&language=en-US&page=1`
-      );
-      if (!res.ok) throw new Error('TMDB similar failed');
-      const data = await res.json();
-      const similar = (data.results || []).slice(0, 8);
+      
+      let similar = [];
+      if (window.TMDB && typeof window.TMDB.fetchSimilar === 'function') {
+         similar = await window.TMDB.fetchSimilar(tmdbType, item.tmdb_id || item.id);
+      } else {
+         const apiKey = window.ENV?.TMDB_API_KEY || window.ENV?.TMDB_API_KEYS || 'b7bb606801e160a12504bae3568cced9';
+         const res = await fetch(
+           `/tmdb-api/${tmdbType}/${item.tmdb_id || item.id}/similar?api_key=${apiKey.split(',')[0]}&language=en-US&page=1`
+         );
+         if (!res.ok) throw new Error('TMDB similar failed');
+         const data = await res.json();
+         similar = (data.results || []).slice(0, 8);
+      }
 
-      if (similar.length === 0) {
+      if (!similar || similar.length === 0) {
         row.innerHTML = '<p style="color:rgba(255,255,255,0.4);padding:12px;">No recommendations found.</p>';
         return;
       }

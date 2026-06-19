@@ -446,6 +446,10 @@ const TMDB = (() => {
     window.DEMO_CONTENT = unique;
 
     return { trending, nowPlaying, bollywood, hollywood, tollywood, south, topRated };
+  // Fetch Similar
+  async function fetchSimilar(type, id) {
+    const results = await tmdbFetch(`/${type}/${id}/similar`);
+    return results.slice(0, 8); // Need raw data for detail.js mapping, or we can just return it
   }
 
   return {
@@ -458,6 +462,7 @@ const TMDB = (() => {
     fetchTVSeries,
     fetchTopRated,
     fetchUpcoming,
+    fetchSimilar,
     search,
     getDetails,
     getRegionalStreams,

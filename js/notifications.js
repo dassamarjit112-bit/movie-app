@@ -475,14 +475,25 @@ const NotificationSystem = (() => {
           z-index:9999;
           display:none;
           flex-direction:column;
-          overflow:hidden;
+          overflow:visible;
           animation:notif-slide-up 0.35s cubic-bezier(0.34,1.56,0.64,1);
+        }
+        #notif-panel::before {
+          content: '';
+          position: absolute;
+          top: -10px;
+          right: 24px;
+          border-left: 10px solid transparent;
+          border-right: 10px solid transparent;
+          border-bottom: 10px solid #1a1a1a;
         }
         #notif-panel.open { display:flex; }
 
         .np-header {
           display:flex;align-items:center;justify-content:space-between;
           padding:20px 20px 0;flex-shrink:0;
+          border-top-left-radius: 24px;
+          border-top-right-radius: 24px;
         }
         .np-title {
           font-family:'Montserrat',sans-serif;font-size:18px;font-weight:800;color:#fff;
@@ -520,6 +531,8 @@ const NotificationSystem = (() => {
         .np-body {
           overflow-y:auto;flex:1;padding:12px 16px 16px;
           scrollbar-width:thin;scrollbar-color:rgba(255,255,255,0.1) transparent;
+          border-bottom-left-radius: 24px;
+          border-bottom-right-radius: 24px;
         }
         .np-body::-webkit-scrollbar { width:4px; }
         .np-body::-webkit-scrollbar-thumb { background:rgba(255,255,255,0.1);border-radius:2px; }
@@ -602,12 +615,15 @@ const NotificationSystem = (() => {
         /* ── Footer CTA ── */
         .np-footer {
           padding:12px 16px;border-top:1px solid rgba(255,255,255,0.05);
-          flex-shrink:0;display:flex;gap:10px;
+          flex-shrink:0;display:flex;gap:10px;flex-wrap:wrap;
+          border-bottom-left-radius: 24px;
+          border-bottom-right-radius: 24px;
         }
         .np-cta-btn {
           flex:1;padding:10px;background:linear-gradient(135deg,#e50914,#c0000c);
           color:#fff;border:none;border-radius:12px;font-size:12px;font-weight:700;
           cursor:pointer;font-family:'Inter',sans-serif;transition:all 0.2s;
+          white-space:nowrap;
         }
         .np-cta-btn:hover { filter:brightness(1.1); }
         .np-cta-btn.secondary {
@@ -615,6 +631,11 @@ const NotificationSystem = (() => {
           color:#00d084;
         }
         .np-cta-btn.secondary:hover { background:rgba(0,208,132,0.2); }
+        .np-cta-btn.test-btn {
+          background:rgba(20,209,255,0.12);border:1px solid rgba(20,209,255,0.25);
+          color:#14d1ff; flex:0.4;
+        }
+        .np-cta-btn.test-btn:hover { background:rgba(20,209,255,0.2); }
       </style>
 
       <div id="notif-overlay" onclick="window.NotificationSystem.closePanel()"></div>
@@ -645,10 +666,13 @@ const NotificationSystem = (() => {
 
         <div class="np-footer">
           <button class="np-cta-btn" onclick="window.NotificationSystem.requestPermission()">
-            🔔 Enable Push Alerts
+            🔔 Enable Push
           </button>
           <button class="np-cta-btn secondary" onclick="Router.navigate('sports');window.NotificationSystem.closePanel()">
-            ⚽ Live Sports
+            ⚽ Sports
+          </button>
+          <button class="np-cta-btn test-btn" onclick="window.NotificationSystem.sendMovieNotification()">
+            🧪 Test
           </button>
         </div>
       </div>
