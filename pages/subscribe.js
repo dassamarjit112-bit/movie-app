@@ -30,7 +30,40 @@ const SubscribePage = (() => {
     const grid = document.getElementById('plans-grid');
     if (!grid) return;
 
-    const plans = Subscriptions.getPlans();
+    const pricing = Subscriptions.getCountryPricing();
+    const { symbol, plans, isIndia } = pricing;
+
+    // Inject a country switcher above the grid
+    let switcher = document.getElementById('country-switcher');
+    if (!switcher) {
+      switcher = document.createElement('div');
+      switcher.id = 'country-switcher';
+      switcher.style.cssText = 'display:flex;align-items:center;justify-content:center;gap:12px;margin-bottom:24px;';
+      grid.parentElement.insertBefore(switcher, grid);
+    }
+    switcher.innerHTML = `
+      <span style="font-size:13px;color:rgba(229,226,225,0.5);">Pricing for:</span>
+      <button onclick="window._setCountry('india')" style="
+        padding:7px 16px;border-radius:99px;border:1.5px solid ${isIndia ? '#e50914' : 'rgba(255,255,255,0.12)'};
+        background:${isIndia ? 'rgba(229,9,20,0.12)' : 'transparent'};
+        color:${isIndia ? '#fff' : 'rgba(229,226,225,0.5)'};
+        font-size:13px;font-weight:700;cursor:pointer;transition:all 0.2s;">
+        🇮🇳 India (INR)
+      </button>
+      <button onclick="window._setCountry('others')" style="
+        padding:7px 16px;border-radius:99px;border:1.5px solid ${!isIndia ? '#14d1ff' : 'rgba(255,255,255,0.12)'};
+        background:${!isIndia ? 'rgba(20,209,255,0.1)' : 'transparent'};
+        color:${!isIndia ? '#fff' : 'rgba(229,226,225,0.5)'};
+        font-size:13px;font-weight:700;cursor:pointer;transition:all 0.2s;">
+        🌍 Other Countries (USD)
+      </button>
+    `;
+
+    window._setCountry = (c) => {
+      localStorage.setItem('cs_user_country', c);
+      populatePlans(activePlanId, session); // re-render
+    };
+
     grid.innerHTML = plans.map(plan => {
       const isActive   = plan.id === activePlanId;
       const isFeatured = plan.featured;
@@ -52,7 +85,7 @@ const SubscribePage = (() => {
           <div style="margin-bottom:24px;">
             <h3 style="font-family:'Montserrat',sans-serif; font-size:22px; font-weight:700; color:#fff;">${plan.name}</h3>
             <div style="display:flex; align-items:baseline; gap:4px; margin-top:12px;">
-              <span style="font-size:36px; font-weight:800; color:#fff;">₹${plan.price}</span>
+              <span style="font-size:36px; font-weight:800; color:#fff;">${symbol}${plan.displayPrice}</span>
               <span style="font-size:13px; color:rgba(229,226,225,0.45)">/ ${plan.period}</span>
             </div>
             <p style="font-size:12px; font-weight:700; letter-spacing:0.04em; color:${color}; text-transform:uppercase; margin-top:8px;">

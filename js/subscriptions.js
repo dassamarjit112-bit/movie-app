@@ -9,6 +9,7 @@ const Subscriptions = (() => {
       id: 'basic',
       name: 'Basic',
       price: 40,
+      priceUSD: 2.99,
       period: '3 months',
       quality: 'SD',
       screens: 1,
@@ -20,6 +21,7 @@ const Subscriptions = (() => {
       id: 'standard',
       name: 'Standard',
       price: 79,
+      priceUSD: 4.99,
       period: '3 months',
       quality: 'FHD',
       screens: 2,
@@ -32,6 +34,7 @@ const Subscriptions = (() => {
       id: 'premium',
       name: 'Premium 4K',
       price: 129,
+      priceUSD: 8.99,
       period: '3 months',
       quality: '4K',
       screens: 4,
@@ -40,6 +43,18 @@ const Subscriptions = (() => {
       color: 'var(--c-primary-container)'
     }
   ];
+
+  // ── Get country-based pricing ──
+  function getCountryPricing() {
+    // Default to India for registered users, or check localStorage
+    const country = localStorage.getItem('cs_user_country') || 'india';
+    const isIndia = country === 'india';
+    return {
+      isIndia,
+      symbol: isIndia ? '₹' : '$',
+      plans: PLANS.map(p => ({ ...p, displayPrice: isIndia ? p.price : p.priceUSD }))
+    };
+  }
 
   // ── Get all plans ──
   function getPlans() { return PLANS; }
@@ -220,7 +235,8 @@ const Subscriptions = (() => {
     saveProgress,
     getWatchlist,
     toggleWatchlist,
-    planBadge
+    planBadge,
+    getCountryPricing
   };
 })();
 

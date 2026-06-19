@@ -100,11 +100,15 @@ const LoginPage = (() => {
     const email = document.getElementById('reg-email')?.value?.trim();
     const password = document.getElementById('reg-password')?.value;
     const confirm = document.getElementById('reg-confirm')?.value;
+    const country = document.getElementById('reg-country')?.value || 'india';
 
     if (!name || !email || !password || !confirm) return showError('reg-error', 'Please fill in all fields.');
     if (password !== confirm) return showError('reg-error', 'Passwords do not match.');
     if (password.length < 8) return showError('reg-error', 'Password must be at least 8 characters.');
     hideError('reg-error');
+
+    // Save country choice immediately so it persists after OTP
+    localStorage.setItem('cs_user_country', country);
 
     const btn = document.getElementById('register-btn');
     UI.setLoading(btn, true);
