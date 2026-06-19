@@ -131,9 +131,9 @@ const UI = (() => {
                    autocomplete="off">
             <span style="font-size:9px;font-weight:800;padding:2px 6px;border-radius:4px;background:rgba(50,220,120,0.12);color:#32dc78;border:1px solid rgba(50,220,120,0.25);white-space:nowrap">AI</span>
           </div>
-          <button class="btn-icon" id="notif-btn" title="Notifications" style="position:relative">
+          <button class="btn-icon" id="notif-btn" title="Notifications" style="position:relative" onclick="window.NotificationSystem && window.NotificationSystem.onBellClick && window.NotificationSystem.onBellClick(event)">
             <span class="material-symbols-outlined" style="font-size:20px">notifications</span>
-            <span class="notif-dot" style="position:absolute;top:6px;right:6px"></span>
+            <span class="notif-dot" id="notif-dot-nav" style="position:absolute;top:6px;right:6px"></span>
           </button>
           <!-- Guest: Login button (visible by default, hidden after login detected) -->
           <button id="navbar-login-btn"

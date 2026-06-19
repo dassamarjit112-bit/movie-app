@@ -789,48 +789,35 @@ const NotificationSystem = (() => {
     return `${Math.floor(diff / 86400000)}d ago`;
   }
 
-  // ── Bell button integration ──
-  function _bindBellButton() {
-    const tryBind = () => {
-      const bell = document.getElementById('notif-btn');
-      if (!bell) {
-        setTimeout(tryBind, 500);
-        return;
-      }
-      bell.addEventListener('click', (e) => {
-        e.stopPropagation();
-        // Position panel under the bell button
-        const rect = bell.getBoundingClientRect();
-        const panel = document.getElementById('notif-panel');
-        if (panel) {
-          const panelWidth = Math.min(400, window.innerWidth - 32);
-          let right = window.innerWidth - rect.right;
-          // Keep panel within screen bounds
-          right = Math.max(8, Math.min(right, window.innerWidth - panelWidth - 8));
-          panel.style.top = (rect.bottom + 12) + 'px';
-          panel.style.right = right + 'px';
-          panel.style.left = 'auto';
-        }
-        togglePanel();
-      });
-      _updateBadge();
-    };
-    tryBind();
+  function onBellClick(e) {
+    if (e) e.stopPropagation();
+    const bell = e ? e.currentTarget : document.getElementById('notif-btn');
+    const rect = bell ? bell.getBoundingClientRect() : { right: window.innerWidth - 20, bottom: 60 };
+    const panel = document.getElementById('notif-panel');
+    if (panel) {
+      const panelWidth = Math.min(400, window.innerWidth - 32);
+      let right = window.innerWidth - rect.right;
+      right = Math.max(8, Math.min(right, window.innerWidth - panelWidth - 8));
+      panel.style.top = (rect.bottom + 12) + 'px';
+      panel.style.right = right + 'px';
+      panel.style.left = 'auto';
+    }
+    togglePanel();
   }
 
   function _updateBadge() {
     const badge = document.getElementById('np-badge-count');
-    const dot = document.querySelector('.notif-dot');
+    const dots = document.querySelectorAll('.notif-dot');
 
     if (badge) {
       badge.textContent = _unreadCount > 9 ? '9+' : _unreadCount;
       badge.style.display = _unreadCount > 0 ? 'inline-block' : 'none';
     }
-    if (dot) {
+    dots.forEach(dot => {
       dot.style.background = _unreadCount > 0 ? '#e50914' : 'transparent';
       dot.style.width = _unreadCount > 0 ? '8px' : '0';
       dot.style.height = _unreadCount > 0 ? '8px' : '0';
-    }
+    });
   }
 
   // ── Panel open/close ──
@@ -896,6 +883,7 @@ const NotificationSystem = (() => {
     openPanel,
     closePanel,
     togglePanel,
+    onBellClick,
     markRead,
     markAllRead,
     dismiss,
