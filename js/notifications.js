@@ -41,7 +41,6 @@ const NotificationSystem = (() => {
     await _registerServiceWorker();
     _loadStoredNotifications();
     _injectPanel();
-    _bindBellButton();
     _schedulePeriodic();
 
     // Show permission modal on first open (after a tiny delay for page to load)
@@ -388,20 +387,45 @@ const NotificationSystem = (() => {
     setTimeout(() => _schedulePeriodic(), fourHoursMs);
   }
 
-  function _sendNewReleaseNotification() {
-    const release = NEW_RELEASES[Math.floor(Math.random() * NEW_RELEASES.length)];
+  async function _sendNewReleaseNotification(preselectedRelease) {
+    let release = preselectedRelease;
+
+    // Try to fetch from TMDB first for real content
+    if (!release && window.TMDB && window.TMDB.isConfigured()) {
+      try {
+        const type = Math.random() > 0.5 ? 'movie' : 'tv';
+        let items = [];
+        if (type === 'movie') {
+          items = await window.TMDB.fetchNowPlaying();
+        } else {
+          items = await window.TMDB.fetchTVSeries();
+        }
+        if (items && items.length > 0) {
+          release = items[Math.floor(Math.random() * Math.min(10, items.length))];
+        }
+      } catch (e) {
+        console.warn('Failed to fetch TMDB releases for notification:', e);
+      }
+    }
+
+    if (!release) {
+      release = NEW_RELEASES[Math.floor(Math.random() * NEW_RELEASES.length)];
+    }
+
     const title = `🎬 New ${release.type === 'series' ? 'Series' : 'Movie'}: ${release.title}`;
-    const body = `${release.desc} • ⭐ ${release.rating} • ${release.genre}`;
+    const rating = release.imdb || release.rating || 'N/A';
+    const descText = release.description || release.desc || 'Now Streaming on CineStream';
+    const body = `${descText.substring(0, 60)}${descText.length > 60 ? '...' : ''} • ⭐ ${rating} • ${release.genre || 'Drama'}`;
 
     _showAndroidNotification({
       title, body, type: 'movie',
       image: release.poster,
       url: `/#home`,
-      tag: `release-${release.id}`,
+      tag: `release-${release.id || Date.now()}`,
     });
 
     _addToPanel({
-      id: `release-${release.id}-${Date.now()}`,
+      id: `release-${release.id || Date.now()}-${Date.now()}`,
       title, body,
       type: 'movie',
       time: Date.now(),
@@ -413,8 +437,7 @@ const NotificationSystem = (() => {
 
   // ── Manual send (for demo / testing) ──
   function sendMovieNotification(release) {
-    release = release || NEW_RELEASES[Math.floor(Math.random() * NEW_RELEASES.length)];
-    _sendNewReleaseNotification();
+    _sendNewReleaseNotification(release && release.type ? release : null);
   }
 
   function sendScoreUpdate(matchId) {
