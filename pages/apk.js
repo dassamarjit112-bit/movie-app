@@ -19,7 +19,7 @@ const ApkPage = (() => {
 
   // ── APK Config ────────────────────────────────────────────────────────────
   const APK_FILENAME = 'SDCineStream.apk';
-  const APK_PATH     = '/' + APK_FILENAME;   // served from root
+  const APK_PATH     = 'https://sdcinestream.qzz.io/SDCineStream.apk';
 
   // ── Overlay elements ──────────────────────────────────────────────────────
   const overlay   = document.getElementById('apk-dl-overlay');

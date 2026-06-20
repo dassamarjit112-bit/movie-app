@@ -1,0 +1,60 @@
+name: Build Android APK (TWA)
+
+on:
+  push:
+    branches:
+      - main
+  workflow_dispatch: # Allows you to run this manually from the Actions tab
+
+jobs:
+  build:
+    name: Build APK using Bubblewrap
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v3
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: '18'
+
+      - name: Setup Java
+        uses: actions/setup-java@v3
+        with:
+          distribution: 'zulu'
+          java-version: '11'
+
+      - name: Install Bubblewrap CLI
+        run: npm install -g @bubblewrap/cli
+
+      - name: Configure Bubblewrap
+        run: |
+          mkdir -p ~/.bubblewrap
+          # Provide the paths for Android SDK and JDK that GitHub Actions provides by default
+          cat << EOF > ~/.bubblewrap/config.json
+          {
+            "jdkPath": "${JAVA_HOME}",
+            "androidSdkPath": "${ANDROID_HOME}"
+          }
+          EOF
+
+      - name: Initialize Android Project
+        run: |
+          # We use yes to auto-accept the default prompt questions Bubblewrap asks
+          yes "" | bubblewrap init --manifest="https://sdcinestream.qzz.io/manifest.json" --directory=./android-app || echo "Init completed"
+
+      - name: Build APK
+        working-directory: ./android-app
+        run: |
+          # Builds the unsigned and signed APKs
+          yes "" | bubblewrap build
+
+      - name: Upload APK Artifact
+        uses: actions/upload-artifact@v3
+        with:
+          name: SDCineStream-App
+          path: |
+            ./android-app/app-release-signed.apk
+            ./android-app/app-release-unsigned.apk

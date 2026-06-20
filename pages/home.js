@@ -433,7 +433,7 @@ async function populateContinueWatching() {
     // Fetch recent watch history entries for this user
     const { data: history, error } = await window.sb
       .from('watch_history')
-      .select('content_id, progress_seconds, last_watched, episode, content_type')
+      .select('content_id, progress_seconds, last_watched, content_type')
       .eq('user_id', userId)
       .order('last_watched', { ascending: false })
       .limit(8);
