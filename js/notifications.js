@@ -70,6 +70,24 @@ const NotificationSystem = (() => {
 
   // ── Permission ──
   async function _checkPermission() {
+    // 1. Check Swing2App native container push status
+    if (typeof swingWebViewPlugin !== 'undefined' && swingWebViewPlugin.app && swingWebViewPlugin.app.methods) {
+      try {
+        swingWebViewPlugin.app.methods.isNotificationEnabled(function (result) {
+          if (result == '1') {
+            console.log('[Notif] Swing2App: Push is fully active inside the container');
+          } else if (result == 'off_on_system') {
+            console.warn('[Notif] Swing2App Blocked: Android/iOS system settings have blocked notifications.');
+            if (window.UI) window.UI.toast('Please enable notifications for this app in your device settings.', 'warning');
+          } else if (result == 'off_on_app') {
+            console.warn('[Notif] Swing2App Blocked: Internal settings have disabled pushes.');
+          }
+        });
+      } catch (e) {
+        console.warn('Swing2App check failed', e);
+      }
+    }
+
     if (!('Notification' in window)) return;
     _notifPermission = Notification.permission;
     if (_notifPermission === 'default') {
@@ -275,10 +293,16 @@ const NotificationSystem = (() => {
 
   // ── Android-style Web Push Notification ──
   function _showAndroidNotification({ title, body, type, image, url, tag }) {
-    if (_notifPermission !== 'granted') return;
+    const isSwing2App = typeof swingWebViewPlugin !== 'undefined';
 
-    // Let Service Worker handle the push notification natively in Median.co WebView
+    if (isSwing2App || _notifPermission !== 'granted') {
+      // In Swing2App, native local browser notifications are swallowed, or if permission isn't granted.
+      // Fallback to a rich in-app banner!
+      _showInAppBanner({ title, body, type, image, url });
+      return;
+    }
 
+    // Let Service Worker handle the push notification natively in standard browsers
     if (_swRegistration) {
       _swRegistration.showNotification(title, {
         body,
@@ -297,6 +321,51 @@ const NotificationSystem = (() => {
     } else {
       new Notification(title, { body, icon: '/icons/icon-192.png' });
     }
+  }
+
+  // ── In-App Banner Fallback (For Swing2App & iOS without Push) ──
+  function _showInAppBanner({ title, body, type, image, url }) {
+    let container = document.getElementById('in-app-banner-container');
+    if (!container) {
+      container = document.createElement('div');
+      container.id = 'in-app-banner-container';
+      container.style.cssText = 'position:fixed; top:20px; left:50%; transform:translateX(-50%); z-index:999999; width:min(94vw, 400px); pointer-events:none; display:flex; flex-direction:column; gap:10px;';
+      
+      const style = document.createElement('style');
+      style.innerHTML = `
+        @keyframes iab-slide-down { from { opacity:0; transform:translateY(-20px) scale(0.95); } to { opacity:1; transform:translateY(0) scale(1); } } 
+        @keyframes iab-slide-up { to { opacity:0; transform:translateY(-20px) scale(0.95); } }
+      `;
+      document.head.appendChild(style);
+      document.body.appendChild(container);
+    }
+    
+    const banner = document.createElement('div');
+    banner.innerHTML = `
+      <div style="display:flex; align-items:center; gap:14px; padding:14px 18px; background:linear-gradient(135deg, rgba(30,30,30,0.95), rgba(15,15,15,0.95)); backdrop-filter:blur(16px); -webkit-backdrop-filter:blur(16px); border:1px solid rgba(255,255,255,0.15); border-radius:20px; box-shadow:0 15px 50px rgba(0,0,0,0.8), inset 0 1px 0 rgba(255,255,255,0.1); cursor:pointer; pointer-events:auto; animation: iab-slide-down 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);">
+        ${image ? `<img src="${image}" style="width:48px;height:48px;border-radius:10px;object-fit:cover;box-shadow:0 4px 12px rgba(0,0,0,0.5);">` : `<div style="font-size:28px; width:48px; height:48px; display:flex; align-items:center; justify-content:center; background:rgba(229,9,20,0.15); border-radius:10px; border:1px solid rgba(229,9,20,0.3);">🔔</div>`}
+        <div style="flex:1;">
+          <div style="font-size:14px; font-weight:800; color:#fff; margin-bottom:4px; font-family:'Montserrat', sans-serif;">${title}</div>
+          <div style="font-size:12px; color:rgba(255,255,255,0.65); line-height:1.4; display:-webkit-box; -webkit-line-clamp:2; -webkit-box-orient:vertical; overflow:hidden;">${body}</div>
+        </div>
+      </div>
+    `;
+    
+    banner.onclick = () => {
+      if (url) window.location.hash = url;
+      else openPanel();
+      banner.style.animation = 'iab-slide-up 0.3s forwards';
+      setTimeout(() => banner.remove(), 300);
+    };
+    
+    container.appendChild(banner);
+    
+    setTimeout(() => {
+      if (document.body.contains(banner)) {
+        banner.style.animation = 'iab-slide-up 0.3s forwards';
+        setTimeout(() => banner.remove(), 300);
+      }
+    }, 6000);
   }
 
   // ── Add to in-app panel ──
