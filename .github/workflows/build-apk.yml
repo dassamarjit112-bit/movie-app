@@ -8,74 +8,50 @@ on:
 
 jobs:
   build:
-    name: Build APK using Bubblewrap
+    name: Build TWA APK with Gradle
     runs-on: ubuntu-latest
 
     steps:
       - name: Checkout Code
         uses: actions/checkout@v4
 
-      - name: Setup Node.js
-        uses: actions/setup-node@v4
-        with:
-          node-version: '18'
-
-      - name: Setup Java
+      - name: Setup Java 17
         uses: actions/setup-java@v4
         with:
           distribution: 'zulu'
           java-version: '17'
 
-      - name: Install Bubblewrap CLI
-        run: npm install -g @bubblewrap/cli
+      - name: Setup Android SDK
+        uses: android-actions/setup-android@v3
 
-      - name: Debug & Setup Android SDK
+      - name: Accept SDK Licenses & Install Build Tools
         run: |
-          echo "=== ENV VARS ==="
-          echo "ANDROID_HOME=$ANDROID_HOME"
-          echo "ANDROID_SDK_ROOT=$ANDROID_SDK_ROOT"
-          echo "JAVA_HOME=$JAVA_HOME"
+          yes | sdkmanager --licenses > /dev/null 2>&1 || true
+          sdkmanager "build-tools;34.0.0" "platforms;android-34"
 
-          # Resolve the actual SDK path (try both common variables)
-          SDK_PATH="${ANDROID_HOME:-$ANDROID_SDK_ROOT}"
-          echo "Using SDK_PATH=$SDK_PATH"
-
-          echo "=== SDK Contents ==="
-          ls "$SDK_PATH" || echo "SDK dir not found!"
-
-          # Find sdkmanager (it may be in different cmdline-tools subdirs)
-          SDKMANAGER=$(find "$SDK_PATH/cmdline-tools" -name "sdkmanager" -type f 2>/dev/null | head -1)
-          echo "Found sdkmanager at: $SDKMANAGER"
-
-          if [ -n "$SDKMANAGER" ]; then
-            yes | "$SDKMANAGER" --licenses > /dev/null 2>&1 || true
-            "$SDKMANAGER" "build-tools;34.0.0" "platforms;android-34" || true
-          fi
-
-          echo "=== build-tools contents ==="
-          ls "$SDK_PATH/build-tools" || echo "No build-tools dir!"
-
-      - name: Configure Bubblewrap
+      - name: Download App Icons
         run: |
-          # Use Node.js to write config — guarantees proper env var expansion
-          node -e "
-            const fs = require('fs');
-            const path = require('path');
-            const os = require('os');
+          mkdir -p android-app/app/src/main/res/mipmap-mdpi
+          mkdir -p android-app/app/src/main/res/mipmap-hdpi
+          mkdir -p android-app/app/src/main/res/mipmap-xhdpi
+          mkdir -p android-app/app/src/main/res/mipmap-xxhdpi
+          mkdir -p android-app/app/src/main/res/mipmap-xxxhdpi
 
-            const sdkPath = process.env.ANDROID_HOME || process.env.ANDROID_SDK_ROOT || '';
-            const jdkPath = process.env.JAVA_HOME || '';
+          # Download the app icon from the live PWA
+          curl -L "https://sdcinestream.qzz.io/icons/icon-192.png" -o /tmp/icon-192.png
+          curl -L "https://sdcinestream.qzz.io/icons/icon-512.png" -o /tmp/icon-512.png
 
-            const config = { jdkPath, androidSdkPath: sdkPath };
-            console.log('Writing bubblewrap config:', JSON.stringify(config, null, 2));
+          # Install imagemagick for icon resizing
+          sudo apt-get install -y imagemagick > /dev/null 2>&1
 
-            const configDir = path.join(os.homedir(), '.bubblewrap');
-            fs.mkdirSync(configDir, { recursive: true });
-            fs.writeFileSync(path.join(configDir, 'config.json'), JSON.stringify(config, null, 2));
-            console.log('Done.');
-          "
+          # Resize to each density
+          convert /tmp/icon-192.png -resize 48x48  android-app/app/src/main/res/mipmap-mdpi/ic_launcher.png
+          convert /tmp/icon-192.png -resize 72x72  android-app/app/src/main/res/mipmap-hdpi/ic_launcher.png
+          convert /tmp/icon-192.png -resize 96x96  android-app/app/src/main/res/mipmap-xhdpi/ic_launcher.png
+          convert /tmp/icon-192.png -resize 144x144 android-app/app/src/main/res/mipmap-xxhdpi/ic_launcher.png
+          convert /tmp/icon-512.png -resize 192x192 android-app/app/src/main/res/mipmap-xxxhdpi/ic_launcher.png
 
-      - name: Generate Keystore
+      - name: Generate Release Keystore
         run: |
           keytool -genkey -v \
             -keystore android.keystore \
@@ -87,18 +63,26 @@ jobs:
             -keypass password123 \
             -dname "CN=SDCineStream, OU=Dev, O=CineStream, L=Unknown, S=Unknown, C=IN"
 
-      - name: Build APK
-        working-directory: ./android-app
+      - name: Make gradlew executable
+        run: chmod +x android-app/gradlew
+
+      - name: Build Release APK
+        working-directory: android-app
         env:
-          BUBBLEWRAP_KEYSTORE_PASSWORD: password123
-          BUBBLEWRAP_KEY_PASSWORD: password123
+          KEYSTORE_PASSWORD: password123
+          KEY_PASSWORD: password123
+          ANDROID_HOME: ${{ env.ANDROID_HOME }}
         run: |
-          bubblewrap build --skipPwaValidation
+          ./gradlew assembleRelease --stacktrace --no-daemon
+
+      - name: Rename APK
+        run: |
+          cp android-app/app/build/outputs/apk/release/app-release.apk SDCineStream.apk || true
 
       - name: Upload APK Artifact
         uses: actions/upload-artifact@v4
         with:
-          name: SDCineStream-App
+          name: SDCineStream-APK
           path: |
-            ./android-app/app-release-signed.apk
-            ./android-app/app-release-unsigned.apk
+            SDCineStream.apk
+            android-app/app/build/outputs/apk/release/app-release.apk

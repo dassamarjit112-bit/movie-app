@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Primary theme color matching PWA theme_color -->
+    <color name="colorPrimary">#e50914</color>
+    <!-- Background color matching PWA background_color -->
+    <color name="colorBackground">#0e0e0e</color>
+    <color name="colorPrimaryDark">#b20710</color>
+    <color name="colorAccent">#e50914</color>
+</resources>
