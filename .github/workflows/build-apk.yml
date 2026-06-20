@@ -42,6 +42,7 @@ jobs:
 
       - name: Initialize Android Project
         run: |
+          mkdir -p ./android-app
           # Use a default password to prevent infinite prompt loops when Bubblewrap asks for keystore details
           yes "password123" | bubblewrap init --manifest="https://sdcinestream.qzz.io/manifest.json" --directory=./android-app
 
