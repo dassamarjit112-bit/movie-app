@@ -4,7 +4,7 @@ on:
   push:
     branches:
       - main
-  workflow_dispatch: # Allows you to run this manually from the Actions tab
+  workflow_dispatch:
 
 jobs:
   build:
@@ -29,26 +29,51 @@ jobs:
       - name: Install Bubblewrap CLI
         run: npm install -g @bubblewrap/cli
 
-      - name: Setup Android SDK
+      - name: Debug & Setup Android SDK
         run: |
-          # Print SDK path for debugging
-          echo "ANDROID_HOME=${ANDROID_HOME}"
-          echo "ANDROID_SDK_ROOT=${ANDROID_SDK_ROOT}"
-          ls "$ANDROID_HOME" || true
+          echo "=== ENV VARS ==="
+          echo "ANDROID_HOME=$ANDROID_HOME"
+          echo "ANDROID_SDK_ROOT=$ANDROID_SDK_ROOT"
+          echo "JAVA_HOME=$JAVA_HOME"
 
-          # Install required SDK components
-          SDKMANAGER="$ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager"
-          yes | "$SDKMANAGER" --licenses > /dev/null 2>&1 || true
-          "$SDKMANAGER" "build-tools;34.0.0" "platforms;android-34"
+          # Resolve the actual SDK path (try both common variables)
+          SDK_PATH="${ANDROID_HOME:-$ANDROID_SDK_ROOT}"
+          echo "Using SDK_PATH=$SDK_PATH"
+
+          echo "=== SDK Contents ==="
+          ls "$SDK_PATH" || echo "SDK dir not found!"
+
+          # Find sdkmanager (it may be in different cmdline-tools subdirs)
+          SDKMANAGER=$(find "$SDK_PATH/cmdline-tools" -name "sdkmanager" -type f 2>/dev/null | head -1)
+          echo "Found sdkmanager at: $SDKMANAGER"
+
+          if [ -n "$SDKMANAGER" ]; then
+            yes | "$SDKMANAGER" --licenses > /dev/null 2>&1 || true
+            "$SDKMANAGER" "build-tools;34.0.0" "platforms;android-34" || true
+          fi
+
+          echo "=== build-tools contents ==="
+          ls "$SDK_PATH/build-tools" || echo "No build-tools dir!"
 
       - name: Configure Bubblewrap
         run: |
-          mkdir -p ~/.bubblewrap
-          # Use printf to avoid heredoc variable expansion issues
-          printf '{\n  "jdkPath": "%s",\n  "androidSdkPath": "%s"\n}\n' \
-            "$JAVA_HOME" "$ANDROID_HOME" > ~/.bubblewrap/config.json
-          echo "Bubblewrap config:"
-          cat ~/.bubblewrap/config.json
+          # Use Node.js to write config — guarantees proper env var expansion
+          node -e "
+            const fs = require('fs');
+            const path = require('path');
+            const os = require('os');
+
+            const sdkPath = process.env.ANDROID_HOME || process.env.ANDROID_SDK_ROOT || '';
+            const jdkPath = process.env.JAVA_HOME || '';
+
+            const config = { jdkPath, androidSdkPath: sdkPath };
+            console.log('Writing bubblewrap config:', JSON.stringify(config, null, 2));
+
+            const configDir = path.join(os.homedir(), '.bubblewrap');
+            fs.mkdirSync(configDir, { recursive: true });
+            fs.writeFileSync(path.join(configDir, 'config.json'), JSON.stringify(config, null, 2));
+            console.log('Done.');
+          "
 
       - name: Generate Keystore
         run: |
