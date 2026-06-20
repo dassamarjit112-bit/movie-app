@@ -42,14 +42,14 @@ jobs:
 
       - name: Initialize Android Project
         run: |
-          # We use yes to auto-accept the default prompt questions Bubblewrap asks
-          yes "" | bubblewrap init --manifest="https://sdcinestream.qzz.io/manifest.json" --directory=./android-app || echo "Init completed"
+          # Use a default password to prevent infinite prompt loops when Bubblewrap asks for keystore details
+          yes "password123" | bubblewrap init --manifest="https://sdcinestream.qzz.io/manifest.json" --directory=./android-app
 
       - name: Build APK
         working-directory: ./android-app
         run: |
-          # Builds the unsigned and signed APKs
-          yes "" | bubblewrap build
+          # Builds the unsigned and signed APKs, automatically answering the keystore password prompt
+          yes "password123" | bubblewrap build
 
       - name: Upload APK Artifact
         uses: actions/upload-artifact@v4
