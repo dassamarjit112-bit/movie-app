@@ -29,28 +29,41 @@ jobs:
       - name: Install Bubblewrap CLI
         run: npm install -g @bubblewrap/cli
 
+      - name: Setup Android SDK build tools
+        run: |
+          # Accept all SDK licenses non-interactively
+          yes | $ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager --licenses || true
+          $ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager "build-tools;34.0.0" "platforms;android-34"
+
       - name: Configure Bubblewrap
         run: |
           mkdir -p ~/.bubblewrap
-          # Provide the paths for Android SDK and JDK that GitHub Actions provides by default
-          cat << EOF > ~/.bubblewrap/config.json
+          cat <<EOF > ~/.bubblewrap/config.json
           {
             "jdkPath": "${JAVA_HOME}",
             "androidSdkPath": "${ANDROID_HOME}"
           }
           EOF
 
-      - name: Initialize Android Project
+      - name: Generate Keystore
         run: |
-          mkdir -p ./android-app
-          # Use a default password to prevent infinite prompt loops when Bubblewrap asks for keystore details
-          yes "password123" | bubblewrap init --manifest="https://sdcinestream.qzz.io/manifest.json" --directory=./android-app
+          keytool -genkey -v \
+            -keystore android.keystore \
+            -alias android \
+            -keyalg RSA \
+            -keysize 2048 \
+            -validity 10000 \
+            -storepass password123 \
+            -keypass password123 \
+            -dname "CN=SDCineStream, OU=Dev, O=CineStream, L=Unknown, S=Unknown, C=IN"
 
       - name: Build APK
         working-directory: ./android-app
+        env:
+          BUBBLEWRAP_KEYSTORE_PASSWORD: password123
+          BUBBLEWRAP_KEY_PASSWORD: password123
         run: |
-          # Builds the unsigned and signed APKs, automatically answering the keystore password prompt
-          yes "password123" | bubblewrap build
+          bubblewrap build --skipPwaValidation
 
       - name: Upload APK Artifact
         uses: actions/upload-artifact@v4

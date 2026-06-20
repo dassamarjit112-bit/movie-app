@@ -1,0 +1,41 @@
+{
+  "packageId": "io.qzz.sdcinestream",
+  "host": "sdcinestream.qzz.io",
+  "name": "CineStream",
+  "launcherName": "CineStream",
+  "display": "standalone",
+  "orientation": "portrait",
+  "themeColor": "#e50914",
+  "navigationColor": "#0e0e0e",
+  "navigationColorDark": "#0e0e0e",
+  "navigationDividerColor": "#0e0e0e",
+  "navigationDividerColorDark": "#0e0e0e",
+  "backgroundColor": "#0e0e0e",
+  "enableNotifications": false,
+  "startUrl": "/",
+  "iconUrl": "https://sdcinestream.qzz.io/icons/icon-512.png",
+  "splashScreenFadeOutDuration": 300,
+  "signingKey": {
+    "path": "../android.keystore",
+    "alias": "android"
+  },
+  "appVersionCode": 1,
+  "appVersionName": "1.0.0",
+  "shortcuts": [],
+  "generatorApp": "bubblewrap-cli",
+  "webManifestUrl": "https://sdcinestream.qzz.io/manifest.json",
+  "fallbackType": "customtabs",
+  "features": {},
+  "alphaDependencies": {
+    "enabled": false
+  },
+  "enableSiteSettingsShortcut": true,
+  "isChromeOSOnly": false,
+  "isMetaQuest": false,
+  "fullyImmersive": false,
+  "minSdkVersion": 19,
+  "targetSdkVersion": 34,
+  "fingerprints": [],
+  "additionalTrustedOrigins": [],
+  "retainedBundles": []
+}
