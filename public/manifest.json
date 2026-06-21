@@ -1,6 +1,6 @@
 {
-  "name": "CineStream — Premium Cinema Streaming",
-  "short_name": "CineStream",
+  "name": "SD CineStream — Premium Cinema Streaming",
+  "short_name": "SD CineStream",
   "description": "Stream movies, TV shows & live sports in 4K Ultra HD",
   "start_url": "/",
   "display": "standalone",
@@ -33,12 +33,13 @@
       "purpose": "maskable"
     },
     {
-      "src": "/icons/badge-72.png",
-      "sizes": "72x72",
+      "src": "/favicon.png",
+      "sizes": "512x512",
       "type": "image/png",
-      "purpose": "monochrome"
+      "purpose": "any"
     }
   ],
   "categories": ["entertainment", "lifestyle"],
   "lang": "en"
 }
+
