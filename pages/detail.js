@@ -95,6 +95,57 @@ const DetailPage = (() => {
       };
     }
 
+    // Download Button Setup
+    const downloadBtn = document.getElementById('detail-download-btn');
+    if (downloadBtn) {
+      downloadBtn.onclick = async () => {
+        if (!window.Auth) {
+          UI.toast('Please log in to download content.', 'info');
+          Router.navigate('login');
+          return;
+        }
+        const session = await window.Auth.getSession();
+        if (!session) {
+          UI.toast('Please log in to download content.', 'info');
+          Router.navigate('login');
+          return;
+        }
+        const contentType = isSeries(item.type) ? 'series' : 'movie';
+        const season = isSeries(item.type) ? '1' : '';
+        const episode = isSeries(item.type) ? '1' : '';
+
+        UI.setLoading(downloadBtn, true);
+        UI.toast('Starting download... Saving to local storage.', 'info');
+
+        try {
+          const downloadId = await startDownload({
+            id: item.id,
+            title: item.title,
+            type: contentType,
+            season: parseInt(season) || 1,
+            episode: parseInt(episode) || 1,
+            poster: item.poster || item.thumbnail,
+            userId: session.user.id
+          });
+
+          if (downloadId) {
+            UI.toast(`Download started! ID: ${downloadId.slice(0, 8)}...`, 'success');
+            // Optionally navigate to downloads page if it exists
+            if (Router.routes.downloads) {
+              setTimeout(() => Router.navigate('downloads'), 1500);
+            }
+          } else {
+            UI.toast('Failed to start download. Please try again.', 'error');
+          }
+        } catch (err) {
+          console.error('Download error:', err);
+          UI.toast('Failed to initiate download. Please try again.', 'error');
+        } finally {
+          UI.setLoading(downloadBtn, false);
+        }
+      };
+    }
+
     // Watchlist Management
     setupWatchlistButton(item.id);
 
