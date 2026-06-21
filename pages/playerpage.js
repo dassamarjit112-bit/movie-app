@@ -133,6 +133,17 @@ const PlayerPage = (() => {
     updateOverlayServerName();
     populateOverlayServerList();
 
+    // Bind overlay server selector toggle
+    const overlayBtn = document.getElementById('server-select-main-btn');
+    const overlayDropdown = document.getElementById('server-dropdown-overlay');
+    if (overlayBtn && overlayDropdown) {
+      overlayBtn.onclick = (e) => {
+        e.stopPropagation();
+        const isOpen = overlayDropdown.style.display === 'block';
+        overlayDropdown.style.display = isOpen ? 'none' : 'block';
+      };
+    }
+
     // Use iframe for embed servers
     if (videoElement) videoElement.style.display = 'none';
     if (controlsContainer) controlsContainer.style.display = 'none';
