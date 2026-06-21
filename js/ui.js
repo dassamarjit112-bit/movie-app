@@ -589,7 +589,8 @@ const UI = (() => {
   }
   // ── Promo Banner ──
   function showPromoBanner() {
-    if (localStorage.getItem('cs_promo_dismissed')) return;
+    // Show once per session (sessionStorage clears when tab closes)
+    if (sessionStorage.getItem('cs_promo_shown')) return;
     
     const notifBtn = document.getElementById('notif-btn');
     if (!notifBtn) {
@@ -646,12 +647,11 @@ const UI = (() => {
           width: 0;
           height: 0;
           border-left: 7px solid transparent;
-          border-right: 7px solid transparent;
-          border-bottom: 7px solid #2a2a3a;
+          animation: popIn 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
         }
       </style>
       <div class="promo-cloud">
-        <button onclick="document.getElementById('promo-banner-container').remove(); localStorage.setItem('cs_promo_dismissed', '1');" style="position:absolute; top:8px; right:8px; background:none; border:none; color:rgba(255,255,255,0.5); cursor:pointer; font-size:18px; outline:none; transition: color 0.2s;" onmouseover="this.style.color='white'" onmouseout="this.style.color='rgba(255,255,255,0.5)'">&times;</button>
+        <button onclick="document.getElementById('promo-banner-container').remove(); sessionStorage.setItem('cs_promo_shown', '1');" style="position:absolute; top:8px; right:8px; background:none; border:none; color:rgba(255,255,255,0.5); cursor:pointer; font-size:18px; outline:none; transition: color 0.2s;" onmouseover="this.style.color='white'" onmouseout="this.style.color='rgba(255,255,255,0.5)'">×</button>
         <div style="display:flex; align-items:center; gap:10px; margin-bottom:8px;">
           <span style="font-size:24px; animation: floatCloud 2s infinite alternate;">🎁</span>
           <strong style="font-size:14px; color:#14d1ff;">Free Premium Offer!</strong>
@@ -662,10 +662,11 @@ const UI = (() => {
         <div style="background:rgba(0,0,0,0.3); padding:8px; border-radius:6px; text-align:center; font-family:monospace; font-weight:bold; letter-spacing:2px; font-size:15px; color:#ffc832; border:1px dashed rgba(255,200,50,0.4); user-select:all;">
           CINESTREAM123
         </div>
-        <button onclick="Router.navigate('subscribe'); document.getElementById('promo-banner-container').remove(); localStorage.setItem('cs_promo_dismissed', '1');" style="width:100%; margin-top:12px; padding:10px; background:linear-gradient(135deg, var(--c-primary-container), #ff3040); border:none; border-radius:8px; color:white; font-weight:800; cursor:pointer; font-size:12px; transition: filter 0.2s; box-shadow: 0 4px 12px rgba(229,9,20,0.3);" onmouseover="this.style.filter='brightness(1.1)'" onmouseout="this.style.filter='brightness(1)'">Redeem Now</button>
+        <button onclick="Router.navigate('subscribe'); document.getElementById('promo-banner-container').remove(); sessionStorage.setItem('cs_promo_shown', '1');" style="width:100%; margin-top:12px; padding:10px; background:linear-gradient(135deg, var(--c-primary-container), #ff3040); border:none; border-radius:8px; color:white; font-weight:800; cursor:pointer; font-size:12px; transition: filter 0.2s; box-shadow: 0 4px 12px rgba(229,9,20,0.3);" onmouseover="this.style.filter='brightness(1.1)'" onmouseout="this.style.filter='brightness(1)'">Redeem Now</button>
       </div>
     `;
     document.body.appendChild(banner);
+    sessionStorage.setItem('cs_promo_shown', '1');
   }
 
   return {

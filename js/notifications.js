@@ -391,8 +391,61 @@ const NotificationSystem = (() => {
   // ── Real Live Score Polling using SportsAPI (ESPN) ──
   async function _startRealLiveScorePolling() {
     await _fetchAndNotifyLiveScores();
-    // Poll every 90 seconds
-    _liveMatchInterval = setInterval(() => _fetchAndNotifyLiveScores(), 90 * 1000);
+    await _fetchAndNotifyNewReleases();
+    // Poll live scores every 10 minutes
+    _liveMatchInterval = setInterval(async () => {
+      await _fetchAndNotifyLiveScores();
+    }, 10 * 60 * 1000);
+    // Poll new releases every 4 hours
+    setInterval(async () => {
+      await _fetchAndNotifyNewReleases();
+    }, 4 * 60 * 60 * 1000);
+  }
+
+  async function _fetchAndNotifyNewReleases() {
+    if (!window.TMDB) return;
+    try {
+      const lastShown = parseInt(localStorage.getItem('cs_notif_last_release') || '0');
+      const now = Date.now();
+      if (now - lastShown < 4 * 60 * 60 * 1000) return; // Max once per 4h
+
+      let items = [];
+      try { items = await window.TMDB.fetchNowPlaying?.() || []; } catch(e) {}
+      if (!items.length) {
+        try { items = await window.TMDB.fetchTrending?.() || []; } catch(e) {}
+      }
+      if (!items || !items.length) return;
+
+      const pick = items[Math.floor(Math.random() * Math.min(5, items.length))];
+      if (!pick) return;
+
+      const title = pick.title || pick.name || 'New Release';
+      const rating = pick.vote_average ? pick.vote_average.toFixed(1) : (pick.imdb || 'N/A');
+      const genre = pick.genre || (pick.genre_ids ? '' : '');
+      const poster = pick.poster_path
+        ? `https://image.tmdb.org/t/p/w500${pick.poster_path}`
+        : (pick.poster || pick.poster_url || '');
+      const type = pick.media_type === 'tv' || pick.type === 'series' ? 'Series' : 'Movie';
+
+      const notifTitle = `🎬 New ${type}: ${title}`;
+      const notifBody = `⭐ ${rating} • Now streaming on SD CineStream • Tap to watch`;
+
+      _showAndroidNotification({ title: notifTitle, body: notifBody, type: 'movie', image: poster, url: '#home', tag: `release-${pick.id || Date.now()}` });
+      _addToPanel({
+        id: `tmdb-${pick.id || Date.now()}`,
+        title: notifTitle,
+        body: notifBody,
+        type: type === 'Series' ? 'series' : 'movie',
+        time: now,
+        read: false,
+        icon: type === 'Series' ? '📺' : '🎬',
+        meta: { ...pick, poster },
+      });
+
+      localStorage.setItem('cs_notif_last_release', String(now));
+    } catch (e) {
+      console.warn('[Notif] TMDB release fetch failed:', e);
+    }
   }
 
   async function _fetchAndNotifyLiveScores() {
@@ -776,13 +829,13 @@ const NotificationSystem = (() => {
 
         <div class="np-footer">
           <button class="np-cta-btn full-width" onclick="window.NotificationSystem.requestPermission()">
-            🔔 Enable Push
+            🔔 Enable Push Notifications
           </button>
           <button class="np-cta-btn secondary" onclick="Router.navigate('sports');window.NotificationSystem.closePanel()">
-            ⚽ Sports
+            ⚽ Live Sports
           </button>
-          <button class="np-cta-btn test-btn" onclick="window.NotificationSystem.sendMovieNotification()">
-            🧪 Test
+          <button class="np-cta-btn secondary" onclick="Router.navigate('movies');window.NotificationSystem.closePanel()" style="background:rgba(229,9,20,0.1);border-color:rgba(229,9,20,0.25);color:#e50914;">
+            🎬 New Releases
           </button>
         </div>
       </div>
