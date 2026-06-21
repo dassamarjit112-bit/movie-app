@@ -9,21 +9,6 @@ const NotificationSystem = (() => {
   let _liveMatchCache = {}; // matchId → last known scores
   let _liveMatchInterval = null;
 
-  const NEW_RELEASES = [
-    { id: 'nr1', title: 'Kalki 2898 AD', type: 'movie', genre: 'Sci-Fi', rating: '9.1', year: '2026', poster: 'https://image.tmdb.org/t/p/w500/fqv8v6AycXKsivp1T5yKtLbGXce.jpg', desc: 'Now Streaming on CineStream' },
-    { id: 'nr2', title: 'Pushpa: The Rule', type: 'movie', genre: 'Action', rating: '8.8', year: '2026', poster: 'https://image.tmdb.org/t/p/w500/oaGvjB0DvdhXhteX223ik352fLl.jpg', desc: 'Part 2 — Now Available' },
-    { id: 'nr3', title: 'The Night Agent S2', type: 'series', genre: 'Thriller', rating: '8.5', year: '2026', poster: 'https://image.tmdb.org/t/p/w500/sRtWWNgLQqb7HX6LJDGy8FIXmT3.jpg', desc: 'Season 2 All Episodes Dropped' },
-    { id: 'nr4', title: 'Stranger Things S5', type: 'series', genre: 'Sci-Fi', rating: '9.3', year: '2026', poster: 'https://image.tmdb.org/t/p/w500/49WJfeN0moxb9IPfGn8AIqMGskD.jpg', desc: 'Final Season — Streaming Now' },
-    { id: 'nr5', title: 'Dune: Messiah', type: 'movie', genre: 'Sci-Fi', rating: '8.9', year: '2026', poster: 'https://image.tmdb.org/t/p/w500/d5NXSklpcuveillkZpVoXtRK2YH.jpg', desc: 'The saga continues' },
-  ];
-
-  const APP_UPDATES = [
-    { id: 'upd1', title: '🎉 New Feature: Dolby Atmos', body: 'Experience movies in Dolby Atmos spatial audio — now live!', type: 'update', icon: '🎵' },
-    { id: 'upd2', title: '🔔 Your Watchlist Updated', body: 'Pushpa 2 is now available to watch. You added it 3 days ago!', type: 'watchlist', icon: '📋' },
-    { id: 'upd3', title: '⭐ Recommended For You', body: 'Based on what you watched: Animal (2023) — 9.1 Rating', type: 'recommendation', icon: '✨' },
-    { id: 'upd4', title: '🏆 Trending Right Now', body: 'Jawan is trending in your region. Watch before everyone talks about it!', type: 'trending', icon: '🔥' },
-  ];
-
   // ── State ──
   let _swRegistration = null;
   let _notifPermission = 'default';
@@ -841,81 +826,6 @@ const NotificationSystem = (() => {
       </div>
     `;
     document.body.appendChild(container);
-
-    // Load real demo notifications from ESPN (non-blocking)
-    setTimeout(() => _loadDemoNotifications(), 2000);
-  }
-
-  async function _loadDemoNotifications() {
-    // Only load demo if we have no stored notifications yet
-    if (_notifications.length > 0) return;
-
-    // Try loading real matches from SportsAPI
-    if (window.SportsAPI) {
-      try {
-        const matches = await window.SportsAPI.getLiveMatches();
-        if (matches && matches.length > 0) {
-          const now = Date.now();
-          // Show first 3 matches (live first, then upcoming)
-          matches.slice(0, 3).forEach((match, i) => {
-            const icon = match.tournamentIcon || '⚽';
-            const isLive = match.isLive;
-            const status = isLive ? `🔴 LIVE • ${match.status}` : `🕒 ${match.matchTime}` ;
-            setTimeout(() => {
-              _addToPanel({
-                id: `demo-${match.matchId}`,
-                title: `${icon} ${isLive ? 'LIVE: ' : ''}${match.homeTeam} vs ${match.awayTeam}`,
-                body: `${isLive ? match.score + ' • ' : ''}${status} • ${match.tournament}`,
-                type: 'score',
-                time: now - i * 600000,
-                read: i > 0,
-                icon,
-                meta: match,
-              });
-            }, i * 300);
-          });
-          return; // Skip fake demo data since we have real data
-        }
-      } catch (e) { /* fall through to demo data */ }
-    }
-
-    // Fallback: show generic sports update if no API data
-    _addToPanel({
-      id: 'demo-sports',
-      title: '⚽ Sports Live Scores',
-      body: 'Live scores loading... Tap to check sports page for today’s matches.',
-      type: 'score',
-      time: Date.now(),
-      read: false,
-      icon: '⚽',
-    });
-
-    // Add 2 new release notifications
-    NEW_RELEASES.slice(0, 2).forEach((r, i) => {
-      setTimeout(() => {
-        _addToPanel({
-          id: `release-${r.id}`,
-          title: `🎬 New: ${r.title}`,
-          body: `${r.desc} • ⭐ ${r.rating}`,
-          type: r.type === 'series' ? 'series' : 'movie',
-          time: Date.now() - (i + 1) * 3600000,
-          read: i > 0,
-          icon: r.type === 'series' ? '📺' : '🎬',
-          meta: r,
-        });
-      }, i * 200);
-    });
-
-    // Add app update
-    _addToPanel({
-      id: 'upd-demo',
-      title: '✨ Recommended For You',
-      body: 'Animal (2023) is trending in your region — 9.1 Rating',
-      type: 'update',
-      time: Date.now() - 7200000,
-      read: true,
-      icon: '⭐',
-    });
   }
 
   let _activeTab = 'all';
