@@ -58,9 +58,13 @@ jobs:
 
           echo "✅ Icons generated successfully"
 
-      - name: Generate Splash Screen
+      - name: Generate Splash Screen (remove old first)
         run: |
           mkdir -p android-app/app/src/main/res/drawable
+          
+          # Remove any existing splash files to prevent duplicate resource error
+          rm -f android-app/app/src/main/res/drawable/splash.png
+          rm -f android-app/app/src/main/res/drawable/splash.jpg
 
           # Create a professional splash screen (dark bg + centered logo)
           convert -size 1080x1920 xc:'#0e0e0e' \
@@ -69,7 +73,7 @@ jobs:
           convert -size 1080x1920 xc:'#0e0e0e' \
             android-app/app/src/main/res/drawable/splash.png
 
-          echo "✅ Splash screen generated"
+          echo "✅ Splash screen generated (old splash files cleaned)"
 
       - name: Generate Release Keystore
         run: |
@@ -153,25 +157,28 @@ jobs:
         if: github.ref == 'refs/heads/main'
         uses: softprops/action-gh-release@v2
         with:
-          tag_name: "v2.0.${{ github.run_number }}"
-          name: "SD CineStream APK v2.0.${{ github.run_number }}"
+          tag_name: "v2.1.${{ github.run_number }}"
+          name: "SD CineStream APK v2.1.${{ github.run_number }}"
           body: |
-            ## 🎬 SD CineStream Android App
-            
+            ## 🎬 SD CineStream Android App v2.1
+
             **Fullscreen immersive TWA app** — looks exactly like a native app!
-            
-            ### ✨ What's new:
-            - 🔲 Full screen immersive mode (no browser UI)
+
+            ### ✨ What's new in v2.1:
+            - 🔲 Full screen immersive mode (no browser UI visible)
+            - 🎬 **15+ streaming servers** with auto-fallback (VidSrc, 2Embed, VidLink, Embed.su, MoviesAPI, StreamIMDb, DBgo & more)
+            - 🛡️ **Auto server switching** — if one server fails, app automatically switches to the next working server
+            - 🇮🇳 **India-optimized servers** — works great with Indian ISPs for Bollywood, Hollywood & South Indian movies
+            - 🎨 **Enhanced player UI** — gradient overlay, server health indicator, pulsing active server
             - 🔔 Push notifications enabled
-            - 🎬 10+ streaming servers (VidSrc, 2Embed, VidLink, AutoEmbed & more)
             - 📱 Works on Android 5.0+ (API 21+)
             - ⚡ Fast startup with custom splash screen
-            
+
             ### 📥 Install:
             1. Download **SDCineStream.apk** below
             2. Enable "Install from unknown sources" in Android settings
             3. Install and enjoy!
-            
+
             **Website:** https://sdcinestream.qzz.io
           files: SDCineStream.apk
           draft: false
