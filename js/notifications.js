@@ -17,6 +17,9 @@ const NotificationSystem = (() => {
   let _unreadCount = 0;
   let _scoreIntervals = {};
   let _announcedUpcoming = {}; // matchId → true once start-time notif sent
+  let _bannerQueue = [];
+  let _bannerShowing = false;
+  let _deniedBannerShownThisSession = false; // Track if we've shown the "please enable" banner this session
 
   // ── Init ──
   async function init() {
@@ -72,173 +75,133 @@ const NotificationSystem = (() => {
 
     if (!('Notification' in window)) return;
     _notifPermission = Notification.permission;
-    if (_notifPermission === 'default') {
-      // Show full-screen welcome permission modal if not granted or denied
-      await new Promise(resolve => setTimeout(resolve, 2000)); // let page render first
+    if (_notifPermission === 'default' || _notifPermission === 'denied') {
+      // Wait for page to render before showing the banner
+      await new Promise(resolve => setTimeout(resolve, 2000));
+      // If denied, show a slightly different banner prompting to enable in settings
       _showWelcomePermissionModal();
     }
   }
 
-  // ── Beautiful full-screen welcome permission modal ──
+  // ── Compact top banner notification permission (NOT full screen) ──
   function _showWelcomePermissionModal() {
     if (document.getElementById('notif-welcome-modal')) return;
     localStorage.setItem('cs_notif_asked', '1');
 
-    const modal = document.createElement('div');
-    modal.id = 'notif-welcome-modal';
-    modal.innerHTML = `
+    const isDenied = _notifPermission === 'denied';
+
+    // If already denied and we've already shown the banner this session, don't show again
+    if (isDenied && _deniedBannerShownThisSession) return;
+    _deniedBannerShownThisSession = true;
+
+    const banner = document.createElement('div');
+    banner.id = 'notif-welcome-modal';
+    banner.innerHTML = `
       <style>
-        @keyframes welcome-in {
-          from { opacity:0; transform:scale(0.92) translateY(20px); }
-          to { opacity:1; transform:scale(1) translateY(0); }
+        .nwm-slide-down {
+          animation: nwm-slide-in 0.4s cubic-bezier(0.34,1.56,0.64,1);
         }
-        @keyframes float-icon {
-          0%,100% { transform:translateY(0); }
-          50% { transform:translateY(-8px); }
-        }
-        @keyframes ripple-ring {
-          0% { transform:scale(1); opacity:0.6; }
-          100% { transform:scale(2.2); opacity:0; }
+        @keyframes nwm-slide-in {
+          from { opacity:0; transform:translateY(-100%) scale(0.95); }
+          to { opacity:1; transform:translateY(0) scale(1); }
         }
         #notif-welcome-modal {
-          position:fixed;inset:0;z-index:99999;
-          background:rgba(0,0,0,0.85);
-          backdrop-filter:blur(16px);
-          -webkit-backdrop-filter:blur(16px);
-          display:flex;align-items:center;justify-content:center;
-          padding:20px;
-          animation:fade-in 0.3s ease;
+          position:fixed; top:16px; left:50%; transform:translateX(-50%);
+          z-index:99999; width:min(420px, calc(100vw - 32px));
+          pointer-events:auto;
         }
-        .nwm-card {
-          background:linear-gradient(160deg,#1c1c1c 0%,#111111 60%,#1a0a0a 100%);
+        .nwm-banner {
+          background:linear-gradient(135deg,#1a1a1a,#0f0f0f);
           border:1px solid rgba(229,9,20,0.2);
-          border-radius:28px;
-          padding:40px 32px;
-          max-width:380px;
-          width:100%;
-          text-align:center;
-          box-shadow:0 40px 100px rgba(0,0,0,0.9),0 0 0 1px rgba(229,9,20,0.08),0 0 60px rgba(229,9,20,0.06);
-          animation:welcome-in 0.45s cubic-bezier(0.34,1.56,0.64,1);
-          position:relative;
-          overflow:hidden;
+          border-radius:16px; padding:16px 18px;
+          box-shadow:0 16px 48px rgba(0,0,0,0.8),0 0 0 1px rgba(229,9,20,0.08);
+          display:flex; align-items:center; gap:14px;
         }
-        .nwm-card::before {
-          content:'';
-          position:absolute;top:-80px;left:50%;transform:translateX(-50%);
-          width:200px;height:200px;
-          background:radial-gradient(circle,rgba(229,9,20,0.12),transparent 70%);
-          border-radius:50%;
-          pointer-events:none;
-        }
-        .nwm-icon-wrap {
-          position:relative;width:88px;height:88px;
-          margin:0 auto 24px;display:flex;align-items:center;justify-content:center;
-        }
-        .nwm-icon-ring {
-          position:absolute;inset:0;border-radius:50%;
-          border:2px solid rgba(229,9,20,0.3);
-          animation:ripple-ring 2s ease-in-out infinite;
-        }
-        .nwm-icon-ring2 {
-          position:absolute;inset:-12px;border-radius:50%;
-          border:1px solid rgba(229,9,20,0.15);
-          animation:ripple-ring 2s ease-in-out 0.5s infinite;
-        }
-        .nwm-icon-bg {
-          width:88px;height:88px;border-radius:50%;
-          background:linear-gradient(135deg,rgba(229,9,20,0.2),rgba(229,9,20,0.08));
-          border:2px solid rgba(229,9,20,0.3);
+        .nwm-banner-icon {
+          width:42px;height:42px;border-radius:12px;
+          background:rgba(229,9,20,0.15);border:1px solid rgba(229,9,20,0.2);
           display:flex;align-items:center;justify-content:center;
-          font-size:40px;
-          animation:float-icon 3s ease-in-out infinite;
-          position:relative;z-index:1;
+          font-size:22px;flex-shrink:0;
         }
-        .nwm-title {
-          font-family:'Montserrat',sans-serif;
-          font-size:24px;font-weight:900;color:#fff;
-          margin-bottom:10px;letter-spacing:-0.02em;
+        .nwm-banner-text { flex:1; min-width:0; }
+        .nwm-banner-title {
+          font-size:13px;font-weight:700;color:#fff;margin-bottom:2px;
+          font-family:'Inter',sans-serif;
         }
-        .nwm-subtitle {
-          font-size:14px;color:rgba(229,226,225,0.55);
-          line-height:1.6;margin-bottom:28px;
+        .nwm-banner-desc {
+          font-size:11px;color:rgba(229,226,225,0.55);line-height:1.4;
+          display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;
         }
-        .nwm-features {
-          display:flex;flex-direction:column;gap:12px;
-          margin-bottom:28px;text-align:left;
-        }
-        .nwm-feature {
-          display:flex;align-items:center;gap:12px;
-          background:rgba(255,255,255,0.04);
-          border:1px solid rgba(255,255,255,0.06);
-          border-radius:12px;padding:10px 14px;
-        }
-        .nwm-feature-icon {
-          font-size:22px;width:36px;text-align:center;flex-shrink:0;
-        }
-        .nwm-feature-text { font-size:13px;color:rgba(229,226,225,0.75);font-weight:500; }
-        .nwm-feature-text strong { color:#fff;display:block;font-size:12px;margin-bottom:1px; }
-        .nwm-allow-btn {
-          width:100%;padding:16px;
-          background:linear-gradient(135deg,#e50914,#c0000c);
-          color:#fff;border:none;border-radius:14px;
-          font-size:15px;font-weight:800;
-          cursor:pointer;font-family:'Montserrat',sans-serif;
-          letter-spacing:0.02em;
-          box-shadow:0 8px 24px rgba(229,9,20,0.4);
+        .nwm-banner-actions { display:flex; gap:6px; flex-shrink:0; }
+        .nwm-allow-btn-sm {
+          background:linear-gradient(135deg,#e50914,#c0000c); color:#fff; border:none;
+          border-radius:10px; padding:8px 14px; font-size:11px; font-weight:700;
+          cursor:pointer; white-space:nowrap; font-family:'Inter',sans-serif;
+          box-shadow:0 4px 12px rgba(229,9,20,0.3);
           transition:all 0.2s;
-          margin-bottom:12px;
         }
-        .nwm-allow-btn:hover { filter:brightness(1.1);transform:translateY(-1px); }
-        .nwm-skip-btn {
-          width:100%;padding:12px;
-          background:none;border:none;
-          color:rgba(229,226,225,0.35);
-          font-size:13px;font-weight:500;
-          cursor:pointer;font-family:'Inter',sans-serif;
-          transition:color 0.2s;
+        .nwm-allow-btn-sm:hover { filter:brightness(1.15);transform:translateY(-1px); }
+        .nwm-skip-btn-sm {
+          background:rgba(255,255,255,0.06); border:1px solid rgba(255,255,255,0.1); color:rgba(229,226,225,0.4);
+          border-radius:10px; padding:8px 12px; font-size:11px; font-weight:600;
+          cursor:pointer; white-space:nowrap; font-family:'Inter',sans-serif;
+          transition:all 0.2s;
         }
-        .nwm-skip-btn:hover { color:rgba(229,226,225,0.6); }
+        .nwm-skip-btn-sm:hover { background:rgba(255,255,255,0.12);color:rgba(229,226,225,0.7); }
+        .nwm-close-btn {
+          background:none;border:none;color:rgba(229,226,225,0.2);font-size:18px;cursor:pointer;
+          padding:0 2px;flex-shrink:0;transition:color 0.2s;line-height:1;
+        }
+        .nwm-close-btn:hover { color:rgba(229,226,225,0.6); }
+        .nwm-settings-btn-sm {
+          background:linear-gradient(135deg,#e50914,#c0000c); color:#fff; border:none;
+          border-radius:10px; padding:8px 14px; font-size:11px; font-weight:700;
+          cursor:pointer; white-space:nowrap; font-family:'Inter',sans-serif;
+          box-shadow:0 4px 12px rgba(229,9,20,0.3);
+          transition:all 0.2s;
+        }
+        .nwm-settings-btn-sm:hover { filter:brightness(1.15);transform:translateY(-1px); }
       </style>
-      <div class="nwm-card">
-        <div class="nwm-icon-wrap">
-          <div class="nwm-icon-ring"></div>
-          <div class="nwm-icon-ring2"></div>
-          <div class="nwm-icon-bg">🔔</div>
+      <div class="nwm-banner nwm-slide-down">
+        <div class="nwm-banner-icon">${isDenied ? '⚠️' : '🔔'}</div>
+        <div class="nwm-banner-text">
+          <div class="nwm-banner-title">${isDenied ? 'Notifications are Blocked' : 'Enable Notifications?'}</div>
+          <div class="nwm-banner-desc">${isDenied ? 'Please enable notifications in your browser/device settings to get live scores, new releases & more' : 'Get alerts for new movies, live scores & more'}</div>
         </div>
-        <div class="nwm-title">Stay in the Loop</div>
-        <div class="nwm-subtitle">Get instant alerts for live sports scores, new movie releases and personalized picks — delivered right to your screen.</div>
-        <div class="nwm-features">
-          <div class="nwm-feature">
-            <div class="nwm-feature-icon">⚽</div>
-            <div class="nwm-feature-text"><strong>FIFA World Cup 2026 Live Scores</strong>Goal alerts & match updates in real-time</div>
-          </div>
-          <div class="nwm-feature">
-            <div class="nwm-feature-icon">🎬</div>
-            <div class="nwm-feature-text"><strong>New Movies & Series Alerts</strong>Be the first to know when something drops</div>
-          </div>
-          <div class="nwm-feature">
-            <div class="nwm-feature-icon">⭐</div>
-            <div class="nwm-feature-text"><strong>Personalized Recommendations</strong>Picks curated just for your taste</div>
-          </div>
+        <div class="nwm-banner-actions">
+          ${isDenied
+            ? `<button class="nwm-settings-btn-sm" onclick="window._notifModalSettings()">Open Settings</button>`
+            : `<button class="nwm-allow-btn-sm" onclick="window._notifModalAllow()">Allow</button>`
+          }
+          <button class="nwm-skip-btn-sm" onclick="window._notifModalSkip()">Dismiss</button>
         </div>
-        <button class="nwm-allow-btn" onclick="window._notifModalAllow()">
-          🔔 Allow Notifications
-        </button>
-        <button class="nwm-skip-btn" onclick="window._notifModalSkip()">
-          Maybe later
-        </button>
+        <button class="nwm-close-btn" onclick="window._notifModalSkip()">×</button>
       </div>
     `;
 
-    document.body.appendChild(modal);
+    document.body.appendChild(banner);
 
     window._notifModalAllow = async () => {
-      modal.remove();
+      banner.remove();
       await requestPermission();
     };
+    window._notifModalSettings = () => {
+      banner.remove();
+      // Try to open browser/device notification settings
+      if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
+        // For some browsers, this URL pattern opens settings
+        window.open('about:settings', '_blank');
+      }
+      // Show a toast with instructions
+      if (window.UI && window.UI.toast) {
+        window.UI.toast('Go to your browser settings → Privacy & Security → Site Settings → Notifications, then allow this site.', 'info', 8000);
+      }
+    };
     window._notifModalSkip = () => {
-      modal.style.opacity = '0';
-      modal.style.transition = 'opacity 0.3s';
+      banner.style.opacity = '0';
+      banner.style.transform = 'translateX(-50%) translateY(-20px)';
+      banner.style.transition = 'opacity 0.3s, transform 0.3s';
+      setTimeout(() => banner.remove(), 300);
     };
   }
 
@@ -305,23 +268,28 @@ const NotificationSystem = (() => {
     }
   }
 
-  // ── In-App Banner Fallback (For Swing2App & iOS without Push) ──
-  function _showInAppBanner({ title, body, type, image, url }) {
+  // ── Process banner queue: show one at a time ──
+  function _processBannerQueue() {
+    if (_bannerShowing || _bannerQueue.length === 0) return;
+    _bannerShowing = true;
+
+    const { title, body, type, image, url } = _bannerQueue.shift();
+
     let container = document.getElementById('in-app-banner-container');
     if (!container) {
       container = document.createElement('div');
       container.id = 'in-app-banner-container';
-      container.style.cssText = 'position:fixed; top:20px; left:50%; transform:translateX(-50%); z-index:999999; width:min(94vw, 400px); pointer-events:none; display:flex; flex-direction:column; gap:10px;';
-      
+      container.style.cssText = 'position:fixed; top:20px; left:50%; transform:translateX(-50%); z-index:999999; width:min(94vw, 400px); pointer-events:none;';
+
       const style = document.createElement('style');
       style.innerHTML = `
-        @keyframes iab-slide-down { from { opacity:0; transform:translateY(-20px) scale(0.95); } to { opacity:1; transform:translateY(0) scale(1); } } 
+        @keyframes iab-slide-down { from { opacity:0; transform:translateY(-20px) scale(0.95); } to { opacity:1; transform:translateY(0) scale(1); } }
         @keyframes iab-slide-up { to { opacity:0; transform:translateY(-20px) scale(0.95); } }
       `;
       document.head.appendChild(style);
       document.body.appendChild(container);
     }
-    
+
     const banner = document.createElement('div');
     banner.innerHTML = `
       <div style="display:flex; align-items:center; gap:14px; padding:14px 18px; background:linear-gradient(135deg, rgba(30,30,30,0.95), rgba(15,15,15,0.95)); backdrop-filter:blur(16px); -webkit-backdrop-filter:blur(16px); border:1px solid rgba(255,255,255,0.15); border-radius:20px; box-shadow:0 15px 50px rgba(0,0,0,0.8), inset 0 1px 0 rgba(255,255,255,0.1); cursor:pointer; pointer-events:auto; animation: iab-slide-down 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);">
@@ -332,22 +300,39 @@ const NotificationSystem = (() => {
         </div>
       </div>
     `;
-    
+
     banner.onclick = () => {
       if (url) window.location.hash = url;
       else openPanel();
-      banner.style.animation = 'iab-slide-up 0.3s forwards';
-      setTimeout(() => banner.remove(), 300);
+      _dismissBanner(banner);
     };
-    
+
+    container.innerHTML = '';
     container.appendChild(banner);
-    
+
     setTimeout(() => {
-      if (document.body.contains(banner)) {
-        banner.style.animation = 'iab-slide-up 0.3s forwards';
-        setTimeout(() => banner.remove(), 300);
-      }
+      _dismissBanner(banner);
     }, 6000);
+  }
+
+  function _dismissBanner(banner) {
+    if (!banner || !document.body.contains(banner)) {
+      _bannerShowing = false;
+      _processBannerQueue();
+      return;
+    }
+    banner.style.animation = 'iab-slide-up 0.3s forwards';
+    setTimeout(() => {
+      if (document.body.contains(banner)) banner.remove();
+      _bannerShowing = false;
+      _processBannerQueue();
+    }, 300);
+  }
+
+  // ── In-App Banner Fallback (For Swing2App & iOS without Push) ──
+  function _showInAppBanner({ title, body, type, image, url }) {
+    _bannerQueue.push({ title, body, type, image, url });
+    _processBannerQueue();
   }
 
   // ── Add to in-app panel ──
