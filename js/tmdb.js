@@ -133,7 +133,7 @@ const TMDB = (() => {
       return [
         `https://www.2embed.cc/embedtv/${id}&s=${season}&e=${episode}`,
         `https://vidlink.pro/tv/${id}/${season}/${episode}`,
-        `https://autoembed.co/tv/tmdb/${id}-${season}-${episode}`,
+        `https://player.autoembed.co/embed/tv/${id}/${season}/${episode}`,
         `https://streamimdb.ru/embed/tv/${imdbId}/${season}/${episode}`,
       ];
     } else {
@@ -141,7 +141,7 @@ const TMDB = (() => {
       return [
         `https://www.2embed.cc/embed/${id}`,
         `https://vidlink.pro/movie/${id}`,
-        `https://autoembed.co/movie/tmdb/${id}`,
+        `https://player.autoembed.co/embed/movie/${id}`,
         `https://streamimdb.ru/embed/movie/${imdbId}`,
       ];
     }
