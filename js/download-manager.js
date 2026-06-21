@@ -1,4 +1,4 @@
-/* CineStream — Download Manager
+c/* CineStream — Download Manager
    Manages in-app downloads with IndexedDB storage,
    progress tracking, and offline playback support.
 */

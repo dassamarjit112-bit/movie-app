@@ -150,8 +150,10 @@ async function extractMasterPlaylistUrl(tmdbId: string, type: string, season: nu
       // 2Embed format - usually returns iframe or redirect
       else if (sourceUrl.includes('2embed.cc')) {
         // 2Embed may return HTML with embedded player
-        const htmlMatch = response.data?.match?.<script>d<iframe.*?src=["'](.*?)["']/)?.[1] ||
-                         response.data?.match?.<script>(.*?)</script>/g?.find((s?: string) => s.includes('.m3u8'));
+        const htmlString = typeof response.data === 'string' ? response.data : '';
+        const iframeMatch = htmlString.match(/<iframe[^>]+src=["']([^"']+)["']/);
+        const scriptMatch = htmlString.match(/<script[^>]*>([^<]+\.m3u8[^<]*)<\/script>/i);
+        const htmlMatch = iframeMatch?.[1] || scriptMatch?.[1] || null;
         if (htmlMatch) playlistUrl = htmlMatch;
       }
 

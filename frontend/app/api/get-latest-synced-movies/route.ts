@@ -1,4 +1,4 @@
-import { NextResponse } from "next/server";
+import { NextRequest, NextResponse } from "next/server";
 
 // Curated list of high-quality fallback movies for when DB is not yet connected
 const FALLBACK_MOVIES = [
@@ -112,8 +112,8 @@ const FALLBACK_MOVIES = [
   },
 ];
 
-export async function GET(request: Request) {
-  const { searchParams } = new URL(request.url);
+export async function GET(request: NextRequest) {
+  const searchParams = request.nextUrl.searchParams;
   const query = searchParams.get("query") || "";
 
   const dbUrl = process.env.DATABASE_URL;

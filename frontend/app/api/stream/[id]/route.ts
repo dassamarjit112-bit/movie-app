@@ -2,14 +2,18 @@ import { NextRequest, NextResponse } from 'next/server';
 
 export async function GET(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
-  const { id } = params;
+  const { id } = await params;
   const searchParams = request.nextUrl.searchParams;
   const season = searchParams.get('season');
   const episode = searchParams.get('episode');
 
   try {
+    if (!id) {
+      return NextResponse.json({ success: false, error: 'Missing content ID' }, { status: 400 });
+    }
+
     // In a real scenario, this is where you'd implement the server-side
     // fetch logic to upstream providers using native fetch, injecting headers
     // like Referer, Origin, User-Agent to bypass CORS.
