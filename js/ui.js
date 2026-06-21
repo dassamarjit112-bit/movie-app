@@ -588,10 +588,21 @@ const UI = (() => {
     Router.navigate(route);
   }
   // ── Promo Banner ──
-  function showPromoBanner() {
+  async function showPromoBanner() {
     // Show once per session (sessionStorage clears when tab closes)
     if (sessionStorage.getItem('cs_promo_shown')) return;
     
+    // Do not show if the user is already subscribed
+    try {
+      if (window.Auth && window.Subscriptions) {
+        const session = await window.Auth.getSession();
+        if (session) {
+          const isSub = await window.Subscriptions.isSubscribed(session.user.id);
+          if (isSub) return; 
+        }
+      }
+    } catch (e) {}
+
     const notifBtn = document.getElementById('notif-btn');
     if (!notifBtn) {
       setTimeout(showPromoBanner, 500);
