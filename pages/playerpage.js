@@ -104,6 +104,12 @@ const PlayerPage = (() => {
       console.warn('Could not fetch embed streams:', e);
     }
 
+    // Add Videoasy server as highest-priority stream
+    const videasyUrl = buildVideasyUrl(contentType, item, season, episode);
+    if (videasyUrl) {
+      embedStreams.unshift(videasyUrl);
+    }
+
     if (!embedStreams || embedStreams.length === 0) {
       UI.toast('No streams available for this title.', 'error');
       Router.navigate('home');
@@ -127,6 +133,14 @@ const PlayerPage = (() => {
     if (switchBtn) {
       switchBtn.style.display = availableStreams.length > 1 ? 'flex' : 'none';
     }
+
+    // Show overlay server selector
+    const serverSelectorOverlay = document.getElementById('server-selector-overlay');
+    if (serverSelectorOverlay) {
+      serverSelectorOverlay.style.display = availableStreams.length > 1 ? 'block' : 'none';
+    }
+    updateOverlayServerName();
+    populateOverlayServerList();
 
     // Use iframe for embed servers
     if (videoElement) videoElement.style.display = 'none';
@@ -348,8 +362,32 @@ const PlayerPage = (() => {
     setupOverlayAutoHide();
   }
 
+  function buildVideasyUrl(contentType, item, season, episode) {
+    try {
+      const base = 'https://player.videasy.net';
+      const tmdbId = item.id;
+      if (contentType === 'anime') {
+        const animeItem = item;
+        const anilistId = animeItem.anilist_id || animeItem.external_ids?.anilist_id || '';
+        if (!anilistId) return null;
+        const ep = episode || 1;
+        return `${base}/anime/${tmdbId}/${anilistId}/${ep}`;
+      } else if (contentType === 'series') {
+        const s = season || 1;
+        const e = episode || 1;
+        return `${base}/tv/${tmdbId}/${s}/${e}`;
+      } else {
+        return `${base}/movie/${tmdbId}`;
+      }
+    } catch (e) {
+      console.warn('Failed to build Videoasy URL:', e);
+      return null;
+    }
+  }
+
   function getServerName(index) {
     const names = [
+      'Videoasy',
       '2Embed',
       'VidLink',
       'AutoEmbed',
@@ -363,7 +401,7 @@ const PlayerPage = (() => {
     const nextIdx = (activeStreamIndex + 1) % availableStreams.length;
     if (nextIdx === 0) {
       // We've tried all servers, go back to first
-      UI.toast('All servers tried. Reverting to Server 1.', 'info');
+      UI.toast('All servers tried. Reverting to Server 1 (Videoasy).', 'info');
     }
     switchServer(nextIdx);
     failCount = 0;
@@ -485,6 +523,75 @@ const PlayerPage = (() => {
     // Update active server button highlight
     renderServerButtons();
     updateServerHealthStatus();
+    updateOverlayServerName();
+    populateOverlayServerList();
+  }
+
+  function updateOverlayServerName() {
+    const nameEl = document.getElementById('current-server-name');
+    if (nameEl) {
+      nameEl.textContent = getServerName(activeStreamIndex);
+    }
+  }
+
+  function populateOverlayServerList() {
+    const listContainer = document.getElementById('server-list-overlay');
+    if (!listContainer || !availableStreams || availableStreams.length === 0) return;
+
+    const serverNames = [
+      'Videoasy',
+      '2Embed',
+      'VidLink',
+      'AutoEmbed',
+      'StreamIMDb'
+    ];
+
+    listContainer.innerHTML = '';
+    const totalServers = Math.min(availableStreams.length, serverNames.length);
+
+    for (let idx = 0; idx < totalServers; idx++) {
+      const name = serverNames[idx] || `Server ${idx + 1}`;
+      const isActive = idx === activeStreamIndex;
+      const item = document.createElement('div');
+      item.style.cssText = `
+        padding: 10px 12px; font-size: 12px; font-weight: ${isActive ? '700' : '500'};
+        color: ${isActive ? '#00d084' : 'rgba(229,226,225,0.7)'};
+        cursor: pointer; transition: all 0.15s ease;
+        display: flex; align-items: center; gap: 8px;
+        border-radius: 8px; margin-bottom: 2px;
+        background: ${isActive ? 'rgba(0,208,132,0.1)' : 'transparent'};
+      `;
+      item.innerHTML = `
+        <span style="width:6px;height:6px;border-radius:50%;display:inline-block;flex-shrink:0;
+          background:${isActive ? '#00d084' : 'rgba(255,255,255,0.25)'};
+          animation:${isActive ? 'pulse 1.5s infinite' : 'none'};"></span>
+        <span style="flex:1;">${name}</span>
+        ${isActive ? '<span style="font-size:10px;color:#00d084;">● LIVE</span>' : ''}
+      `;
+      item.onmouseenter = () => {
+        if (!isActive) {
+          item.style.background = 'rgba(255,255,255,0.06)';
+          item.style.color = '#fff';
+        }
+      };
+      item.onmouseleave = () => {
+        if (!isActive) {
+          item.style.background = 'transparent';
+          item.style.color = 'rgba(229,226,225,0.7)';
+        }
+      };
+      item.onclick = () => {
+        PlayerPage.switchServer(idx);
+        failCount = 0;
+        closeOverlayDropdown();
+      };
+      listContainer.appendChild(item);
+    }
+  }
+
+  function closeOverlayDropdown() {
+    const dropdown = document.getElementById('server-dropdown-overlay');
+    if (dropdown) dropdown.style.display = 'none';
   }
 
   function renderServerButtons() {
@@ -584,6 +691,20 @@ const PlayerPage = (() => {
 
     // Close dropdown when clicking outside
     document.addEventListener('click', closeServerDropdown);
+
+    // Bind overlay server selector
+    const overlayBtn = document.getElementById('server-select-main-btn');
+    const overlayDropdown = document.getElementById('server-dropdown-overlay');
+    if (overlayBtn && overlayDropdown) {
+      overlayBtn.onclick = (e) => {
+        e.stopPropagation();
+        const isOpen = overlayDropdown.style.display === 'block';
+        overlayDropdown.style.display = isOpen ? 'none' : 'block';
+      };
+      document.addEventListener('click', () => {
+        overlayDropdown.style.display = 'none';
+      });
+    }
 
     function closeServerDropdown() {
       if (dropdown) dropdown.style.display = 'none';
