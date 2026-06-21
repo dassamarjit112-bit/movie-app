@@ -156,34 +156,3 @@ jobs:
           cp SDCineStream.apk public/SDCineStream.apk || true
           echo "✅ APK copied to public/ folder"
 
-      - name: Create GitHub Release
-        if: github.ref == 'refs/heads/main'
-        continue-on-error: true
-        uses: softprops/action-gh-release@v2
-        with:
-          tag_name: "v2.1.${{ github.run_number }}"
-          name: "SD CineStream APK v2.1.${{ github.run_number }}"
-          body: |
-            ## 🎬 SD CineStream Android App v2.1
-
-            **Fullscreen immersive TWA app** — looks exactly like a native app!
-
-            ### ✨ What's new in v2.1:
-            - 🔲 Full screen immersive mode (no browser UI visible)
-            - 🎬 **4 streaming servers** (2Embed, VidLink, AutoEmbed, StreamIMDb) with auto-fallback
-            - 🛡️ **Auto server switching** — if one server fails, app automatically switches to the next working server
-            - 🔔 Push notifications enabled
-            - 📱 Works on Android 5.0+ (API 21+)
-            - ⚡ Fast startup with custom splash screen
-
-            ### 📥 Install:
-            1. Download **SDCineStream.apk** below
-            2. Enable "Install from unknown sources" in Android settings
-            3. Install and enjoy!
-
-            **Website:** https://sdcinestream.qzz.io
-          files: SDCineStream.apk
-          draft: false
-          prerelease: false
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
