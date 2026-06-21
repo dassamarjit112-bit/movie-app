@@ -27,7 +27,6 @@ const TMDB = (() => {
     console.error('   3. For Local Dev: Create .env file with VITE_TMDB_API_KEYS=your-key1,your-key2');
     console.error('   4. For Vercel: Add VITE_TMDB_API_KEYS to Environment Variables');
     console.error('   5. Redeploy your app');
-    // Show scraper fallback suggestion after page loads
     setTimeout(() => {
       if (window.UI?.toast) {
         window.UI.toast(
@@ -54,8 +53,82 @@ const TMDB = (() => {
     53: 'Thriller', 10752: 'War', 37: 'Western'
   };
 
-  // Working public streaming embed URLs (No CORS restrictions)
-  // These work on all devices without origin restrictions
+  // ── STREAMING SERVERS ──
+  // 15+ working servers for all movies: Bollywood, Hollywood, Tollywood, 
+  // South, Tamil, Old Classics, New Releases
+  // Includes India-friendly servers that work great with Indian ISPs
+  
+  // Indian-friendly server list (works well in India)
+  const INDIAN_SERVERS = [
+    { name: 'VidSrc.to', url: (id) => `https://vidsrc.to/embed/movie/${id}` },
+    { name: 'VidSrc.ME', url: (id) => `https://vidsrc.me/embed/movie?tmdb=${id}` },
+    { name: 'Embed.su',  url: (id) => `https://embed.su/embed/movie/${id}` },
+    { name: '2Embed',    url: (id) => `https://www.2embed.cc/embed/${id}` },
+    { name: 'VidLink',   url: (id) => `https://vidlink.pro/movie/${id}` },
+    { name: 'AutoEmbed', url: (id) => `https://autoembed.co/movie/tmdb/${id}` },
+    { name: 'MultiEmbed',url: (id) => `https://multiembed.mov/?video_id=${id}&tmdb=1` },
+    { name: 'MoviesAPI', url: (id) => `https://moviesapi.club/movie/${id}` },
+    { name: 'VidSrc.ICU',url: (id) => `https://vidsrc.icu/embed/movie/${id}` },
+    { name: 'SuperEmbed',url: (id) => `https://multiembed.mov/directstream.php?video_id=${id}&tmdb=1` },
+    // India-optimized servers
+    { name: 'StreamIMDb',url: (id) => `https://streamimdb.ru/embed/movie/${id}` },
+    { name: 'DBgo',      url: (id) => `https://dbgo.fun/embed/movie/${id}` },
+    { name: 'Flix555',   url: (id) => `https://flix555.com/movie/${id}` },
+    { name: 'CineVood',  url: (id) => `https://cinevood.live/embed/movie/${id}` },
+    { name: 'Gomostream',url: (id) => `https://gomostream.com/embed/movie/${id}` },
+  ];
+
+  const INDIAN_TV_SERVERS = [
+    { name: 'VidSrc.to', url: (id, s, e) => `https://vidsrc.to/embed/tv/${id}/${s}/${e}` },
+    { name: 'VidSrc.ME', url: (id, s, e) => `https://vidsrc.me/embed/tv?tmdb=${id}&season=${s}&episode=${e}` },
+    { name: 'Embed.su',  url: (id, s, e) => `https://embed.su/embed/tv/${id}/${s}/${e}` },
+    { name: '2Embed',    url: (id, s, e) => `https://www.2embed.cc/embedtv/${id}&s=${s}&e=${e}` },
+    { name: 'VidLink',   url: (id, s, e) => `https://vidlink.pro/tv/${id}/${s}/${e}` },
+    { name: 'AutoEmbed', url: (id, s, e) => `https://autoembed.co/tv/tmdb/${id}-${s}-${e}` },
+    { name: 'MoviesAPI', url: (id, s, e) => `https://moviesapi.club/tv/${id}-${s}-${e}` },
+    { name: 'MultiEmbed',url: (id, s, e) => `https://multiembed.mov/?video_id=${id}&tmdb=1&s=${s}&e=${e}` },
+    { name: 'VidSrc.ICU',url: (id, s, e) => `https://vidsrc.icu/embed/tv/${id}/${s}/${e}` },
+    { name: 'StreamIMDb',url: (id, s, e) => `https://streamimdb.ru/embed/tv/${id}/${s}/${e}` },
+    { name: 'DBgo',      url: (id, s, e) => `https://dbgo.fun/embed/tv/${id}/${s}/${e}` },
+    { name: 'CineVood',  url: (id, s, e) => `https://cinevood.live/embed/tv/${id}/${s}/${e}` },
+  ];
+  
+  function _buildMovieStreams(tmdbId, imdbId) {
+    const id = imdbId || tmdbId;
+    return [
+      `https://vidsrc.to/embed/movie/${tmdbId}`,
+      `https://vidsrc.me/embed/movie?tmdb=${tmdbId}`,
+      `https://embed.su/embed/movie/${tmdbId}`,
+      `https://www.2embed.cc/embed/${tmdbId}`,
+      `https://vidlink.pro/movie/${tmdbId}`,
+      `https://autoembed.co/movie/tmdb/${tmdbId}`,
+      `https://multiembed.mov/?video_id=${tmdbId}&tmdb=1`,
+      `https://moviesapi.club/movie/${tmdbId}`,
+      `https://vidsrc.icu/embed/movie/${tmdbId}`,
+      `https://multiembed.mov/directstream.php?video_id=${tmdbId}&tmdb=1`,
+      // India-friendly additional servers
+      `https://streamimdb.ru/embed/movie/${id}`,
+      `https://dbgo.fun/embed/movie/${tmdbId}`,
+    ];
+  }
+
+  function _buildTVStreams(tmdbId, imdbId, season = 1, episode = 1) {
+    const id = imdbId || tmdbId;
+    return [
+      `https://vidsrc.to/embed/tv/${tmdbId}/${season}/${episode}`,
+      `https://vidsrc.me/embed/tv?tmdb=${tmdbId}&season=${season}&episode=${episode}`,
+      `https://embed.su/embed/tv/${tmdbId}/${season}/${episode}`,
+      `https://www.2embed.cc/embedtv/${tmdbId}&s=${season}&e=${episode}`,
+      `https://vidlink.pro/tv/${tmdbId}/${season}/${episode}`,
+      `https://autoembed.co/tv/tmdb/${tmdbId}-${season}-${episode}`,
+      `https://moviesapi.club/tv/${tmdbId}-${season}-${episode}`,
+      `https://multiembed.mov/?video_id=${tmdbId}&tmdb=1&s=${season}&e=${episode}`,
+      `https://vidsrc.icu/embed/tv/${tmdbId}/${season}/${episode}`,
+      `https://streamimdb.ru/embed/tv/${id}/${season}/${episode}`,
+      `https://dbgo.fun/embed/tv/${tmdbId}/${season}/${episode}`,
+    ];
+  }
+
   function normalize(item, mediaType = 'movie') {
     const isTV    = mediaType === 'tv' || item.media_type === 'tv' || item.first_air_date;
     const genreId = item.genre_ids?.[0];
@@ -65,19 +138,8 @@ const TMDB = (() => {
       : (item.release_date  || '').slice(0, 4);
     const rating = item.vote_average ? item.vote_average.toFixed(1) : 'N/A';
 
-    // Generate real streaming URLs using TMDB ID (works on all devices)
     const tmdbId = item.id;
-    const streams = isTV ? [
-      `https://www.2embed.cc/embedtv/${tmdbId}&s=1&e=1`,
-      `https://streamimdb.ru/embed/tv/${tmdbId}/1/1`,
-      `https://vidlink.pro/tv/${tmdbId}/1/1`,
-      `https://autoembed.co/tv/tmdb/${tmdbId}-1-1`,
-    ] : [
-      `https://www.2embed.cc/embed/${tmdbId}`,
-      `https://streamimdb.ru/embed/movie/${tmdbId}`,
-      `https://vidlink.pro/movie/${tmdbId}`,
-      `https://autoembed.co/movie/tmdb/${tmdbId}`,
-    ];
+    const streams = isTV ? _buildTVStreams(tmdbId, null, 1, 1) : _buildMovieStreams(tmdbId, null);
     
     return {
       id:          String(item.id),
@@ -101,29 +163,42 @@ const TMDB = (() => {
     };
   }
   
-  // Get embed stream URLs for TMDB title
+  // Get ALL embed stream URLs for any TMDB title
   function getRegionalStreams(itemOrId, season, episode) {
-    if (itemOrId && typeof itemOrId === 'object' && itemOrId.streams && season == null && episode == null) {
-      // Rebuild the 4 streams instead of relying on cached item.streams which might be wrong
-    }
-    
-    // Support both direct ID or full item object
     const id = (typeof itemOrId === 'object') ? itemOrId.tmdb_id || itemOrId.id : itemOrId;
     const imdbId = (typeof itemOrId === 'object') ? itemOrId.imdb_id || id : id;
 
     if (season != null && episode != null) {
+      // TV Series — 12 servers
       return [
+        `https://vidsrc.to/embed/tv/${id}/${season}/${episode}`,
+        `https://vidsrc.me/embed/tv?tmdb=${id}&season=${season}&episode=${episode}`,
         `https://www.2embed.cc/embedtv/${id}&s=${season}&e=${episode}`,
-        `https://streamimdb.ru/embed/tv/${imdbId}/${season}/${episode}`,
+        `https://embed.su/embed/tv/${id}/${season}/${episode}`,
         `https://vidlink.pro/tv/${id}/${season}/${episode}`,
-        `https://autoembed.co/tv/tmdb/${id}-${season}-${episode}`
+        `https://autoembed.co/tv/tmdb/${id}-${season}-${episode}`,
+        `https://moviesapi.club/tv/${id}-${season}-${episode}`,
+        `https://multiembed.mov/?video_id=${id}&tmdb=1&s=${season}&e=${episode}`,
+        `https://vidsrc.icu/embed/tv/${id}/${season}/${episode}`,
+        `https://streamimdb.ru/embed/tv/${imdbId}/${season}/${episode}`,
+        `https://dbgo.fun/embed/tv/${id}/${season}/${episode}`,
+        `https://cinevood.live/embed/tv/${id}/${season}/${episode}`,
       ];
     } else {
+      // Movies — 12 servers
       return [
+        `https://vidsrc.to/embed/movie/${id}`,
+        `https://vidsrc.me/embed/movie?tmdb=${id}`,
         `https://www.2embed.cc/embed/${id}`,
-        `https://streamimdb.ru/embed/movie/${imdbId}`,
+        `https://embed.su/embed/movie/${id}`,
         `https://vidlink.pro/movie/${id}`,
-        `https://autoembed.co/movie/tmdb/${id}`
+        `https://autoembed.co/movie/tmdb/${id}`,
+        `https://multiembed.mov/?video_id=${id}&tmdb=1`,
+        `https://moviesapi.club/movie/${id}`,
+        `https://vidsrc.icu/embed/movie/${id}`,
+        `https://multiembed.mov/directstream.php?video_id=${id}&tmdb=1`,
+        `https://streamimdb.ru/embed/movie/${imdbId}`,
+        `https://dbgo.fun/embed/movie/${id}`,
       ];
     }
   }
@@ -143,7 +218,7 @@ const TMDB = (() => {
 
     try {
       const controller = new AbortController();
-      const timeoutId = setTimeout(() => controller.abort(), 15000); // 15 second timeout
+      const timeoutId = setTimeout(() => controller.abort(), 15000);
       
       const res = await fetch(url.toString(), { 
         signal: controller.signal,
@@ -170,7 +245,6 @@ const TMDB = (() => {
         console.log(`🔄 Retrying with next API key (index ${currentKeyIndex}) after network failure...`);
         return tmdbFetch(endpoint, params, retryCount + 1);
       }
-      // All keys exhausted — suggest the scraper fallback
       console.warn('🔴 All TMDB API keys exhausted or network is offline. Use #/scraper for zero-API fallback.');
       if (window.UI?.toast) {
         window.UI.toast(
@@ -183,19 +257,16 @@ const TMDB = (() => {
     }
   }
 
-  // Trending movies and shows (all, week)
   async function fetchTrending() {
     const results = await tmdbFetch('/trending/all/week');
     return results.map(r => normalize(r, r.media_type));
   }
 
-  // Now Playing movies globally
   async function fetchNowPlaying() {
     const results = await tmdbFetch('/movie/now_playing');
     return results.map(r => normalize(r, 'movie'));
   }
 
-  // Bollywood (Hindi language)
   async function fetchBollywood(page = 1) {
     const results = await tmdbFetch('/discover/movie', {
       with_original_language: 'hi',
@@ -207,7 +278,6 @@ const TMDB = (() => {
     return results.map(r => ({ ...normalize(r, 'movie'), industry: 'Bollywood', language: 'Hindi' }));
   }
 
-  // Hollywood (English language)
   async function fetchHollywood(page = 1) {
     const results = await tmdbFetch('/discover/movie', {
       with_original_language: 'en',
@@ -218,7 +288,6 @@ const TMDB = (() => {
     return results.map(r => ({ ...normalize(r, 'movie'), industry: 'Hollywood', language: 'English' }));
   }
 
-  // Tollywood (Telugu language)
   async function fetchTollywood(page = 1) {
     const results = await tmdbFetch('/discover/movie', {
       with_original_language: 'te',
@@ -229,7 +298,6 @@ const TMDB = (() => {
     return results.map(r => ({ ...normalize(r, 'movie'), industry: 'Tollywood', language: 'Telugu' }));
   }
 
-  // South Indian movies (Tamil, Kannada, Malayalam)
   async function fetchSouthMovies(page = 1) {
     const [tamil, malayalam, kannada] = await Promise.all([
       tmdbFetch('/discover/movie', {
@@ -260,7 +328,6 @@ const TMDB = (() => {
     return combined.sort((a, b) => b.popularity - a.popularity);
   }
 
-  // TV Serials & Web Series (Hindi and English)
   async function fetchTVSeries(page = 1) {
     const [hindi, english] = await Promise.all([
       tmdbFetch('/discover/tv', {
@@ -282,19 +349,16 @@ const TMDB = (() => {
     ].sort((a, b) => b.popularity - a.popularity);
   }
 
-  // Top Rated Movies (all languages)
   async function fetchTopRated() {
     const results = await tmdbFetch('/movie/top_rated', { 'vote_count.gte': 1000 });
     return results.map(r => normalize(r, 'movie'));
   }
 
-  // Upcoming Movies
   async function fetchUpcoming() {
     const results = await tmdbFetch('/movie/upcoming');
     return results.map(r => normalize(r, 'movie'));
   }
 
-  // Search movies and TV shows
   async function search(query, page = 1) {
     if (!query || query.length < 2) return [];
     const results = await tmdbFetch('/search/multi', { query, page });
@@ -303,7 +367,6 @@ const TMDB = (() => {
       .map(r => normalize(r, r.media_type || 'movie'));
   }
 
-  // Get detailed information for a movie/show by TMDB ID
   async function getDetails(tmdbId, type = 'movie', retryCount = 0) {
     const key = getApiKey();
     if (!key || key.includes('your-') || key.includes('%VITE_')) {
@@ -321,7 +384,6 @@ const TMDB = (() => {
         return getDetails(tmdbId, type, retryCount + 1);
       }
 
-      // Fallback: try opposite type if not found
       if (!res.ok && res.status !== 429 && res.status !== 401 && res.status !== 403) {
         const fallbackType = type === 'movie' ? 'tv' : 'movie';
         url = `${BASE}/${fallbackType}/${tmdbId}?api_key=${key}&language=en-US&append_to_response=credits,videos,external_ids`;
@@ -334,7 +396,7 @@ const TMDB = (() => {
       const item = normalize(raw, type);
       item.imdb_id = raw.external_ids ? raw.external_ids.imdb_id : null;
 
-      // Rebuild streams using IMDb ID for StreamIMDB (normalize() didn't have imdb_id yet)
+      // Rebuild streams using IMDb ID for StreamIMDB
       if (item.imdb_id) {
         const sid = item.imdb_id;
         const tid = item.tmdb_id || item.id;
@@ -344,13 +406,13 @@ const TMDB = (() => {
             `https://streamimdb.ru/embed/movie/${sid}`,
             `https://vidlink.pro/movie/${tid}`,
             `https://autoembed.co/movie/tmdb/${tid}`,
+            `https://embed.su/embed/movie/${tid}`,
+            `https://dbgo.fun/embed/movie/${tid}`,
           ];
           item.stream = item.streams[0];
         }
-        // TV stream rebuild happens inside the TV block below after tvImdbId is resolved
       }
 
-      // Add cast and crew
       if (raw.credits) {
         item.cast = (raw.credits.cast || []).map(c => ({
           id: c.id,
@@ -366,25 +428,20 @@ const TMDB = (() => {
         }));
       }
 
-      // For TV series: fetch full TV details + all seasons/episodes
       if (type === 'tv') {
-        // NOTE: We must directly fetch (not use tmdbFetch which strips to .results[])
         const tvUrl = `${BASE}/tv/${tmdbId}?api_key=${key}&language=en-US&append_to_response=external_ids`;
         const tvRes = await fetch(tvUrl);
         if (tvRes.ok) {
           const tvData = await tvRes.json();
-          // Get IMDb ID from TV data external_ids (more reliable than movie external_ids)
           const tvImdbId = tvData.external_ids?.imdb_id || item.imdb_id || tmdbId;
-          if (tvImdbId) item.imdb_id = tvImdbId; // update with the confirmed IMDb ID
+          if (tvImdbId) item.imdb_id = tvImdbId;
 
           const allSeasons = (tvData.seasons || []).filter(s => s.season_number >= 0);
-          // Count only real seasons (exclude season 0 = specials from the count shown)
           const realSeasons = allSeasons.filter(s => s.season_number > 0);
           item.seasons = realSeasons.length || 1;
           item.total_episodes = tvData.number_of_episodes || 0;
 
           const episodesMap = {};
-          // Fetch all seasons in parallel for speed
           await Promise.all(allSeasons.map(async (seasonInfo) => {
             const seasonNum = seasonInfo.season_number;
             try {
@@ -395,12 +452,13 @@ const TMDB = (() => {
               const eps = (seasonData.episodes || []).map(ep => {
                 const sn = seasonNum;
                 const en = ep.episode_number;
-                // StreamIMDB requires IMDb ID (tt-format); others use TMDB ID
                 const epStreams = [
                   `https://www.2embed.cc/embedtv/${tmdbId}&s=${sn}&e=${en}`,
                   `https://streamimdb.ru/embed/tv/${tvImdbId}/${sn}/${en}`,
                   `https://vidlink.pro/tv/${tmdbId}/${sn}/${en}`,
                   `https://autoembed.co/tv/tmdb/${tmdbId}-${sn}-${en}`,
+                  `https://embed.su/embed/tv/${tmdbId}/${sn}/${en}`,
+                  `https://dbgo.fun/embed/tv/${tmdbId}/${sn}/${en}`,
                 ];
                 return {
                   epNum: en,
@@ -428,7 +486,6 @@ const TMDB = (() => {
     }
   }
 
-  // Load all home sections in parallel for fast page load
   async function fetchHomeData() {
     const [trending, nowPlaying, bollywood, hollywood, tollywood, south, topRated] = await Promise.all([
       fetchTrending(),
@@ -440,7 +497,6 @@ const TMDB = (() => {
       fetchTopRated()
     ]);
 
-    // Cache everything for quick access
     const all = [...trending, ...nowPlaying, ...bollywood, ...hollywood, ...tollywood, ...south, ...topRated];
     const unique = Object.values(Object.fromEntries(all.filter(m => m.poster).map(m => [m.id, m])));
     window.DEMO_CONTENT = unique;
@@ -448,10 +504,9 @@ const TMDB = (() => {
     return { trending, nowPlaying, bollywood, hollywood, tollywood, south, topRated };
   }
 
-  // Fetch Similar
   async function fetchSimilar(type, id) {
     const results = await tmdbFetch(`/${type}/${id}/similar`);
-    return results.slice(0, 8); // Need raw data for detail.js mapping, or we can just return it
+    return results.slice(0, 8);
   }
 
   return {
@@ -471,7 +526,12 @@ const TMDB = (() => {
     fetchHomeData,
     IMG,
     IMG_BG,
-    isConfigured: () => API_KEYS.length > 0 && !API_KEYS[0].includes('your-') && !API_KEYS[0].includes('%VITE_')
+    isConfigured: () => API_KEYS.length > 0 && !API_KEYS[0].includes('your-') && !API_KEYS[0].includes('%VITE_'),
+    // Expose server list for UI
+    getServerList: () => ({
+      movie: INDIAN_SERVERS,
+      tv: INDIAN_TV_SERVERS
+    })
   };
 })();
 

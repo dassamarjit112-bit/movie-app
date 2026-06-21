@@ -1,39 +1,55 @@
 {
   "packageId": "io.qzz.sdcinestream",
   "host": "sdcinestream.qzz.io",
-  "name": "CineStream",
-  "launcherName": "CineStream",
-  "display": "standalone",
-  "orientation": "portrait",
+  "name": "SD CineStream — Premium Cinema",
+  "launcherName": "SD CineStream",
+  "display": "fullscreen",
+  "orientation": "any",
   "themeColor": "#e50914",
-  "navigationColor": "#0e0e0e",
-  "navigationColorDark": "#0e0e0e",
-  "navigationDividerColor": "#0e0e0e",
-  "navigationDividerColorDark": "#0e0e0e",
-  "backgroundColor": "#0e0e0e",
-  "enableNotifications": false,
+  "navigationColor": "#000000",
+  "navigationColorDark": "#000000",
+  "navigationDividerColor": "#000000",
+  "navigationDividerColorDark": "#000000",
+  "backgroundColor": "#000000",
+  "enableNotifications": true,
   "startUrl": "/",
   "iconUrl": "https://sdcinestream.qzz.io/icons/icon-512.png",
-  "splashScreenFadeOutDuration": 300,
+  "splashScreenFadeOutDuration": 500,
   "signingKey": {
     "path": "../android.keystore",
     "alias": "android"
   },
-  "appVersionCode": 1,
-  "appVersionName": "1.0.0",
-  "shortcuts": [],
+  "appVersionCode": 6,
+  "appVersionName": "2.1.0",
+  "shortcuts": [
+    {
+      "name": "Movies",
+      "shortName": "Movies",
+      "url": "/#/movies",
+      "icons": [{ "src": "https://sdcinestream.qzz.io/icons/icon-192.png", "sizes": "192x192" }]
+    },
+    {
+      "name": "TV Shows",
+      "shortName": "TV Shows",
+      "url": "/#/tvshows",
+      "icons": [{ "src": "https://sdcinestream.qzz.io/icons/icon-192.png", "sizes": "192x192" }]
+    }
+  ],
   "generatorApp": "bubblewrap-cli",
   "webManifestUrl": "https://sdcinestream.qzz.io/manifest.json",
   "fallbackType": "customtabs",
-  "features": {},
+  "features": {
+    "locationDelegation": { "enabled": false },
+    "playBilling": { "enabled": false }
+  },
   "alphaDependencies": {
     "enabled": false
   },
-  "enableSiteSettingsShortcut": true,
+  "enableSiteSettingsShortcut": false,
   "isChromeOSOnly": false,
   "isMetaQuest": false,
-  "fullyImmersive": false,
-  "minSdkVersion": 19,
+  "fullyImmersive": true,
+  "minSdkVersion": 21,
   "targetSdkVersion": 34,
   "fingerprints": [],
   "additionalTrustedOrigins": [],

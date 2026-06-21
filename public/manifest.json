@@ -1,12 +1,19 @@
 {
   "name": "SD CineStream — Premium Cinema Streaming",
   "short_name": "SD CineStream",
-  "description": "Stream movies, TV shows & live sports in 4K Ultra HD",
+  "description": "Stream movies, TV shows & live sports in 4K Ultra HD. Full screen immersive cinema experience with 15+ streaming servers.",
   "start_url": "/",
-  "display": "standalone",
-  "orientation": "portrait",
-  "background_color": "#0e0e0e",
+  "display": "fullscreen",
+  "orientation": "any",
+  "background_color": "#000000",
   "theme_color": "#e50914",
+  "categories": ["entertainment", "movies", "videos", "social"],
+  "lang": "en",
+  "scope": "/",
+  "prefer_related_applications": false,
+  "related_applications": [],
+  "display_override": ["fullscreen", "standalone", "minimal-ui"],
+  "screenshots": [],
   "icons": [
     {
       "src": "/favicon.png",
@@ -27,7 +34,7 @@
       "purpose": "any maskable"
     }
   ],
-  "categories": ["entertainment", "lifestyle"],
-  "lang": "en"
+  "launch_handler": {
+    "client_mode": "navigate-existing"
+  }
 }
-
