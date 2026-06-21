@@ -350,9 +350,10 @@ const PlayerPage = (() => {
 
   function getServerName(index) {
     const names = [
-      'VidSrc', 'VidSrc.ME', '2Embed', 'Embed.su', 'VidLink',
-      'AutoEmbed', 'Multi', 'MoviesAPI', 'VidSrc ICU', 'Super',
-      'StreamIMDb', 'DBgo'
+      '2Embed',
+      'VidLink',
+      'AutoEmbed',
+      'StreamIMDb'
     ];
     return names[index] || `Server ${index + 1}`;
   }
@@ -491,70 +492,106 @@ const PlayerPage = (() => {
     if (!container || !availableStreams || availableStreams.length === 0) return;
 
     const serverNames = [
-      'VidSrc', 'VidSrc.ME', '2Embed', 'Embed.su', 'VidLink',
-      'AutoEmbed', 'Multi', 'MoviesAPI', 'VidSrc ICU', 'Super',
-      'StreamIMDb', 'DBgo',
+      '2Embed',
+      'VidLink',
+      'AutoEmbed',
+      'StreamIMDb',
     ];
 
-    const count = Math.min(availableStreams.length, serverNames.length);
-    container.innerHTML = '';
+    const currentName = serverNames[activeStreamIndex] || `Server ${activeStreamIndex + 1}`;
+    const totalServers = Math.min(availableStreams.length, serverNames.length);
     
-    for (let idx = 0; idx < count; idx++) {
-      const isActive = idx === activeStreamIndex;
+    container.innerHTML = `
+      <div style="position:relative;" class="server-selector-wrap">
+        <button id="server-select-btn" class="btn server-select-btn" 
+          style="background:linear-gradient(135deg,rgba(0,208,132,0.15),rgba(0,208,132,0.05)); 
+                 border:1.5px solid rgba(0,208,132,0.5); padding:6px 14px; font-size:12px; 
+                 border-radius:8px; font-weight:700; cursor:pointer; color:#00d084;
+                 font-family:'Inter',sans-serif; white-space:nowrap;
+                 display:flex; align-items:center; gap:8px;
+                 box-shadow:0 0 12px rgba(0,208,132,0.2);"
+          title="Click to switch server">
+          <span class="server-dot" style="width:6px;height:6px;border-radius:50%;display:inline-block;background:#00d084;animation:pulse 1.5s infinite;"></span>
+          <span class="server-current-name">${currentName}</span>
+          <span style="opacity:0.5;font-size:10px;">▼ ${totalServers}</span>
+        </button>
+        <div id="server-dropdown" class="hidden glass" 
+          style="position:absolute; top:42px; right:0; border-radius:10px; 
+                 min-width:140px; max-height:280px; overflow-y:auto; overflow-x:hidden; 
+                 z-index:50; display:none; flex-direction:column;
+                 background:rgba(15,15,20,0.98); backdrop-filter:blur(16px);
+                 border:1px solid rgba(255,255,255,0.08);
+                 box-shadow:0 16px 48px rgba(0,0,0,0.8);">
+        </div>
+      </div>
+    `;
+
+    const dropdown = document.getElementById('server-dropdown');
+    const selectBtn = document.getElementById('server-select-btn');
+
+    // Populate dropdown with all servers
+    for (let idx = 0; idx < totalServers; idx++) {
       const name = serverNames[idx] || `Server ${idx + 1}`;
-      const btn = document.createElement('button');
-      btn.textContent = name;
-      btn.title = `Switch to ${name}`;
-      btn.onclick = () => {
-        PlayerPage.switchServer(idx);
-        // Reset fail count when user manually switches
-        failCount = 0;
-      };
-      
-      // Different colors for active vs inactive
-      const bgColor = isActive ? 'rgba(0,208,132,0.2)' : 'rgba(255,255,255,0.06)';
-      const borderColor = isActive ? 'rgba(0,208,132,0.7)' : 'rgba(255,255,255,0.18)';
-      const textColor = isActive ? '#00d084' : 'rgba(255,255,255,0.7)';
-      const shadow = isActive ? '0 0 12px rgba(0,208,132,0.3)' : 'none';
-      
-      btn.style.cssText = `
-        padding: 5px 10px;
-        border-radius: 6px;
-        font-size: 11px;
-        font-weight: 600;
-        cursor: pointer;
-        border: 1.5px solid ${borderColor};
-        background: ${bgColor};
-        color: ${textColor};
-        transition: all 0.2s ease;
-        white-space: nowrap;
-        box-shadow: ${shadow};
-        font-family: 'Inter', sans-serif;
+      const isActive = idx === activeStreamIndex;
+      const item = document.createElement('div');
+      item.dataset.serverIdx = idx;
+      item.style.cssText = `
+        padding: 10px 14px; font-size: 12px; font-weight: ${isActive ? '700' : '500'};
+        color: ${isActive ? '#00d084' : 'rgba(229,226,225,0.7)'};
+        cursor: pointer; transition: all 0.15s ease;
+        display: flex; align-items: center; gap: 8px;
+        border-bottom: 1px solid ${isActive ? 'rgba(0,208,132,0.15)' : 'rgba(255,255,255,0.04)'};
+        background: ${isActive ? 'rgba(0,208,132,0.08)' : 'transparent'};
       `;
-      btn.onmouseenter = () => {
+      item.innerHTML = `
+        <span style="width:5px;height:5px;border-radius:50%;display:inline-block;
+          background:${isActive ? '#00d084' : 'rgba(255,255,255,0.25)'};
+          animation:${isActive ? 'pulse 1.5s infinite' : 'none'};
+          flex-shrink:0;"></span>
+        <span style="flex:1;">${name}</span>
+        ${isActive ? '<span style="font-size:10px;color:#00d084;">● LIVE</span>' : ''}
+      `;
+      item.onmouseenter = () => {
         if (!isActive) {
-          btn.style.transform = 'translateY(-1px)';
-          btn.style.filter = 'brightness(1.15)';
+          item.style.background = 'rgba(255,255,255,0.06)';
+          item.style.color = '#fff';
         }
       };
-      btn.onmouseleave = () => {
-        btn.style.transform = 'none';
-        btn.style.filter = 'none';
+      item.onmouseleave = () => {
+        if (!isActive) {
+          item.style.background = 'transparent';
+          item.style.color = 'rgba(229,226,225,0.7)';
+        }
       };
-      
-      // Add health indicator dot
-      const dot = document.createElement('span');
-      dot.className = 'server-health-dot';
-      dot.style.cssText = `
-        display: inline-block; width: 5px; height: 5px; 
-        border-radius: 50%; margin-right: 4px; 
-        vertical-align: middle; background: ${isActive ? '#00d084' : 'rgba(255,255,255,0.3)'};
-        animation: ${isActive ? 'pulse 1.5s infinite' : 'none'};
-      `;
-      btn.prepend(dot);
-      
-      container.appendChild(btn);
+      item.onclick = () => {
+        PlayerPage.switchServer(idx);
+        failCount = 0;
+        closeServerDropdown();
+      };
+      dropdown.appendChild(item);
     }
+
+    // Toggle dropdown on button click
+    selectBtn.onclick = (e) => {
+      e.stopPropagation();
+      const isOpen = dropdown.style.display === 'flex';
+      if (isOpen) {
+        closeServerDropdown();
+      } else {
+        dropdown.style.display = 'flex';
+      }
+    };
+
+    // Close dropdown when clicking outside
+    document.addEventListener('click', closeServerDropdown);
+
+    function closeServerDropdown() {
+      if (dropdown) dropdown.style.display = 'none';
+    }
+
+    // Scrollbar styling for dropdown
+    dropdown.style.scrollbarWidth = 'thin';
+    dropdown.style.scrollbarColor = 'rgba(255,255,255,0.1) transparent';
   }
 
   return { init, goBack, switchServer, renderServerButtons };

@@ -53,79 +53,39 @@ const TMDB = (() => {
     53: 'Thriller', 10752: 'War', 37: 'Western'
   };
 
-  // ── STREAMING SERVERS ──
-  // 15+ working servers for all movies: Bollywood, Hollywood, Tollywood, 
-  // South, Tamil, Old Classics, New Releases
-  // Includes India-friendly servers that work great with Indian ISPs
-  
-  // Indian-friendly server list (works well in India)
+  // ── STREAMING SERVERS (4 Servers Only) ──
+  // 2Embed, VidLink, AutoEmbed, StreamIMDb
   const INDIAN_SERVERS = [
-    { name: 'VidSrc.to', url: (id) => `https://vidsrc.to/embed/movie/${id}` },
-    { name: 'VidSrc.ME', url: (id) => `https://vidsrc.me/embed/movie?tmdb=${id}` },
-    { name: 'Embed.su',  url: (id) => `https://embed.su/embed/movie/${id}` },
     { name: '2Embed',    url: (id) => `https://www.2embed.cc/embed/${id}` },
     { name: 'VidLink',   url: (id) => `https://vidlink.pro/movie/${id}` },
     { name: 'AutoEmbed', url: (id) => `https://autoembed.co/movie/tmdb/${id}` },
-    { name: 'MultiEmbed',url: (id) => `https://multiembed.mov/?video_id=${id}&tmdb=1` },
-    { name: 'MoviesAPI', url: (id) => `https://moviesapi.club/movie/${id}` },
-    { name: 'VidSrc.ICU',url: (id) => `https://vidsrc.icu/embed/movie/${id}` },
-    { name: 'SuperEmbed',url: (id) => `https://multiembed.mov/directstream.php?video_id=${id}&tmdb=1` },
-    // India-optimized servers
     { name: 'StreamIMDb',url: (id) => `https://streamimdb.ru/embed/movie/${id}` },
-    { name: 'DBgo',      url: (id) => `https://dbgo.fun/embed/movie/${id}` },
-    { name: 'Flix555',   url: (id) => `https://flix555.com/movie/${id}` },
-    { name: 'CineVood',  url: (id) => `https://cinevood.live/embed/movie/${id}` },
-    { name: 'Gomostream',url: (id) => `https://gomostream.com/embed/movie/${id}` },
   ];
 
   const INDIAN_TV_SERVERS = [
-    { name: 'VidSrc.to', url: (id, s, e) => `https://vidsrc.to/embed/tv/${id}/${s}/${e}` },
-    { name: 'VidSrc.ME', url: (id, s, e) => `https://vidsrc.me/embed/tv?tmdb=${id}&season=${s}&episode=${e}` },
-    { name: 'Embed.su',  url: (id, s, e) => `https://embed.su/embed/tv/${id}/${s}/${e}` },
     { name: '2Embed',    url: (id, s, e) => `https://www.2embed.cc/embedtv/${id}&s=${s}&e=${e}` },
     { name: 'VidLink',   url: (id, s, e) => `https://vidlink.pro/tv/${id}/${s}/${e}` },
     { name: 'AutoEmbed', url: (id, s, e) => `https://autoembed.co/tv/tmdb/${id}-${s}-${e}` },
-    { name: 'MoviesAPI', url: (id, s, e) => `https://moviesapi.club/tv/${id}-${s}-${e}` },
-    { name: 'MultiEmbed',url: (id, s, e) => `https://multiembed.mov/?video_id=${id}&tmdb=1&s=${s}&e=${e}` },
-    { name: 'VidSrc.ICU',url: (id, s, e) => `https://vidsrc.icu/embed/tv/${id}/${s}/${e}` },
     { name: 'StreamIMDb',url: (id, s, e) => `https://streamimdb.ru/embed/tv/${id}/${s}/${e}` },
-    { name: 'DBgo',      url: (id, s, e) => `https://dbgo.fun/embed/tv/${id}/${s}/${e}` },
-    { name: 'CineVood',  url: (id, s, e) => `https://cinevood.live/embed/tv/${id}/${s}/${e}` },
   ];
   
   function _buildMovieStreams(tmdbId, imdbId) {
     const id = imdbId || tmdbId;
     return [
-      `https://vidsrc.to/embed/movie/${tmdbId}`,
-      `https://vidsrc.me/embed/movie?tmdb=${tmdbId}`,
-      `https://embed.su/embed/movie/${tmdbId}`,
       `https://www.2embed.cc/embed/${tmdbId}`,
       `https://vidlink.pro/movie/${tmdbId}`,
       `https://autoembed.co/movie/tmdb/${tmdbId}`,
-      `https://multiembed.mov/?video_id=${tmdbId}&tmdb=1`,
-      `https://moviesapi.club/movie/${tmdbId}`,
-      `https://vidsrc.icu/embed/movie/${tmdbId}`,
-      `https://multiembed.mov/directstream.php?video_id=${tmdbId}&tmdb=1`,
-      // India-friendly additional servers
       `https://streamimdb.ru/embed/movie/${id}`,
-      `https://dbgo.fun/embed/movie/${tmdbId}`,
     ];
   }
 
   function _buildTVStreams(tmdbId, imdbId, season = 1, episode = 1) {
     const id = imdbId || tmdbId;
     return [
-      `https://vidsrc.to/embed/tv/${tmdbId}/${season}/${episode}`,
-      `https://vidsrc.me/embed/tv?tmdb=${tmdbId}&season=${season}&episode=${episode}`,
-      `https://embed.su/embed/tv/${tmdbId}/${season}/${episode}`,
       `https://www.2embed.cc/embedtv/${tmdbId}&s=${season}&e=${episode}`,
       `https://vidlink.pro/tv/${tmdbId}/${season}/${episode}`,
       `https://autoembed.co/tv/tmdb/${tmdbId}-${season}-${episode}`,
-      `https://moviesapi.club/tv/${tmdbId}-${season}-${episode}`,
-      `https://multiembed.mov/?video_id=${tmdbId}&tmdb=1&s=${season}&e=${episode}`,
-      `https://vidsrc.icu/embed/tv/${tmdbId}/${season}/${episode}`,
       `https://streamimdb.ru/embed/tv/${id}/${season}/${episode}`,
-      `https://dbgo.fun/embed/tv/${tmdbId}/${season}/${episode}`,
     ];
   }
 
@@ -163,42 +123,26 @@ const TMDB = (() => {
     };
   }
   
-  // Get ALL embed stream URLs for any TMDB title
+  // Get ALL embed stream URLs for any TMDB title (4 servers only)
   function getRegionalStreams(itemOrId, season, episode) {
     const id = (typeof itemOrId === 'object') ? itemOrId.tmdb_id || itemOrId.id : itemOrId;
     const imdbId = (typeof itemOrId === 'object') ? itemOrId.imdb_id || id : id;
 
     if (season != null && episode != null) {
-      // TV Series — 12 servers
+      // TV Series — 4 servers
       return [
-        `https://vidsrc.to/embed/tv/${id}/${season}/${episode}`,
-        `https://vidsrc.me/embed/tv?tmdb=${id}&season=${season}&episode=${episode}`,
         `https://www.2embed.cc/embedtv/${id}&s=${season}&e=${episode}`,
-        `https://embed.su/embed/tv/${id}/${season}/${episode}`,
         `https://vidlink.pro/tv/${id}/${season}/${episode}`,
         `https://autoembed.co/tv/tmdb/${id}-${season}-${episode}`,
-        `https://moviesapi.club/tv/${id}-${season}-${episode}`,
-        `https://multiembed.mov/?video_id=${id}&tmdb=1&s=${season}&e=${episode}`,
-        `https://vidsrc.icu/embed/tv/${id}/${season}/${episode}`,
         `https://streamimdb.ru/embed/tv/${imdbId}/${season}/${episode}`,
-        `https://dbgo.fun/embed/tv/${id}/${season}/${episode}`,
-        `https://cinevood.live/embed/tv/${id}/${season}/${episode}`,
       ];
     } else {
-      // Movies — 12 servers
+      // Movies — 4 servers
       return [
-        `https://vidsrc.to/embed/movie/${id}`,
-        `https://vidsrc.me/embed/movie?tmdb=${id}`,
         `https://www.2embed.cc/embed/${id}`,
-        `https://embed.su/embed/movie/${id}`,
         `https://vidlink.pro/movie/${id}`,
         `https://autoembed.co/movie/tmdb/${id}`,
-        `https://multiembed.mov/?video_id=${id}&tmdb=1`,
-        `https://moviesapi.club/movie/${id}`,
-        `https://vidsrc.icu/embed/movie/${id}`,
-        `https://multiembed.mov/directstream.php?video_id=${id}&tmdb=1`,
         `https://streamimdb.ru/embed/movie/${imdbId}`,
-        `https://dbgo.fun/embed/movie/${id}`,
       ];
     }
   }
