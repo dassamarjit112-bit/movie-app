@@ -3,54 +3,60 @@ import requests
 import psycopg2
 from datetime import datetime
 from urllib.parse import urljoin
+import firebase_admin
+from firebase_admin import credentials, messaging
 
 # Load environment variables
 TMDB_API_KEY = os.getenv("TMDB_API_KEY")
 DATABASE_URL = os.getenv("DATABASE_URL")
 
-# Swing2App API Configuration
-SWING2APP_API_URL = os.getenv("SWING2APP_API_URL", "https://api.swing2app.com/v1/push/send") # Update with official endpoint
-SWING2APP_AUTH_TOKEN = os.getenv("SWING2APP_AUTH_TOKEN", "")
-SWING2APP_APP_ID = os.getenv("SWING2APP_APP_ID", "")
+# Firebase Configuration
+FIREBASE_CREDENTIALS_PATH = os.getenv("FIREBASE_CREDENTIALS_PATH", "firebase-adminsdk.json")
 
 if not TMDB_API_KEY or not DATABASE_URL:
     raise RuntimeError("TMDB_API_KEY and DATABASE_URL must be set in the environment")
 
-def send_swing2app_push(title, message, image_url=None, target_url=None):
+def initialize_firebase():
+    """Initialize the Firebase Admin SDK if not already initialized."""
+    if not firebase_admin._apps:
+        if os.path.exists(FIREBASE_CREDENTIALS_PATH):
+            cred = credentials.Certificate(FIREBASE_CREDENTIALS_PATH)
+            firebase_admin.initialize_app(cred)
+            return True
+        else:
+            print(f"Warning: Firebase credentials not found at {FIREBASE_CREDENTIALS_PATH}. Push notifications skipped.")
+            return False
+    return True
+
+def send_firebase_push(title, message, image_url=None, target_url=None):
     """
-    Sends a push notification to the Swing2App native wrapper via the Swing2App Server API.
-    This fulfills the Custom Backend Worker -> Swing2App Gateway -> Native App architecture.
+    Sends a push notification using Firebase Cloud Messaging (FCM).
+    Targets all devices subscribed to the 'movies' topic.
     """
-    if not SWING2APP_AUTH_TOKEN:
-        print("Warning: SWING2APP_AUTH_TOKEN not configured in .env. Skipping native push notification.")
+    if not initialize_firebase():
         return
 
-    headers = {
-        "Authorization": f"Bearer {SWING2APP_AUTH_TOKEN}",
-        "Content-Type": "application/json"
-    }
+    notification = messaging.Notification(
+        title=title,
+        body=message,
+        image=image_url
+    )
 
-    # Standard push payload (adjust keys based on official Swing2App Server API docs)
-    payload = {
-        "app_id": SWING2APP_APP_ID,
-        "title": title,
-        "message": message,
-        "is_background": True
-    }
-    
-    if image_url:
-        payload["image_url"] = image_url
+    data_payload = {}
     if target_url:
-        payload["link_url"] = target_url # Some APIs use link_url or target_url
+        data_payload["url"] = target_url
+
+    message_payload = messaging.Message(
+        notification=notification,
+        data=data_payload,
+        topic="movies"  # Assuming all users subscribe to 'movies'
+    )
 
     try:
-        response = requests.post(SWING2APP_API_URL, headers=headers, json=payload, timeout=10)
-        response.raise_for_status()
-        print(f"Successfully triggered Swing2App push notification: {title}")
-    except requests.exceptions.RequestException as e:
-        print(f"Failed to trigger Swing2App push notification: {str(e)}")
-        if e.response is not None:
-            print("Swing2App API Response:", e.response.text)
+        response = messaging.send(message_payload)
+        print(f"Successfully triggered Firebase push notification: {title} (Message ID: {response})")
+    except Exception as e:
+        print(f"Failed to trigger Firebase push notification: {str(e)}")
 
 def fetch_now_playing(page=1):
     url = f"https://api.themoviedb.org/3/movie/now_playing?api_key={TMDB_API_KEY}&language=en-US&page={page}"
@@ -123,10 +129,10 @@ def main():
         
     print(f"Sync completed. {len(total_new_movies)} new movies added.")
     
-    # If we found new movies, trigger the Swing2App Native Push Notification!
+    # If we found new movies, trigger the Firebase Native Push Notification!
     if total_new_movies:
         featured = total_new_movies[0]
-        send_swing2app_push(
+        send_firebase_push(
             title="🎬 New Movie Available!",
             message=f"{featured['title']} is now playing! Tap to start streaming now.",
             image_url=featured['poster'],
