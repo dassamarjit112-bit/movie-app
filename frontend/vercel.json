@@ -1,0 +1,6 @@
+{
+  "version": 2,
+  "name": "cinestream-ott-frontend",
+  "cleanUrls": true,
+  "regions": ["iad1"]
+}
