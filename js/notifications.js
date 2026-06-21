@@ -5,13 +5,9 @@
 
 const NotificationSystem = (() => {
 
-  // ── Simulated Data (FIFA World Cup Scores + New Releases) ──
-  const FIFA_MATCHES = [
-    { id: 'fifa1', homeTeam: 'Brazil', awayTeam: 'France', homeScore: 2, awayScore: 1, minute: 67, status: 'LIVE', flag1: '🇧🇷', flag2: '🇫🇷', tournament: 'FIFA World Cup 2026' },
-    { id: 'fifa2', homeTeam: 'Argentina', awayTeam: 'England', homeScore: 1, awayScore: 1, minute: 88, status: 'LIVE', flag1: '🇦🇷', flag2: '🏴󠁧󠁢󠁥󠁮󠁧󠁿', tournament: 'FIFA World Cup 2026' },
-    { id: 'fifa3', homeTeam: 'Germany', awayTeam: 'Spain', homeScore: 0, awayScore: 0, minute: 23, status: 'LIVE', flag1: '🇩🇪', flag2: '🇪🇸', tournament: 'FIFA World Cup 2026' },
-    { id: 'fifa4', homeTeam: 'Portugal', awayTeam: 'Morocco', homeScore: 3, awayScore: 1, minute: 90, status: 'FT', flag1: '🇵🇹', flag2: '🇲🇦', tournament: 'FIFA World Cup 2026' },
-  ];
+  // ── State for real live score tracking ──
+  let _liveMatchCache = {}; // matchId → last known scores
+  let _liveMatchInterval = null;
 
   const NEW_RELEASES = [
     { id: 'nr1', title: 'Kalki 2898 AD', type: 'movie', genre: 'Sci-Fi', rating: '9.1', year: '2026', poster: 'https://image.tmdb.org/t/p/w500/fqv8v6AycXKsivp1T5yKtLbGXce.jpg', desc: 'Now Streaming on CineStream' },
@@ -35,6 +31,7 @@ const NotificationSystem = (() => {
   let _notifications = [];
   let _unreadCount = 0;
   let _scoreIntervals = {};
+  let _announcedUpcoming = {}; // matchId → true once start-time notif sent
 
   // ── Init ──
   async function init() {
@@ -46,8 +43,8 @@ const NotificationSystem = (() => {
     // Show permission modal on first open (after a tiny delay for page to load)
     await _checkPermission();
 
-    // Start live score polling
-    setTimeout(() => _pollLiveScores(), 3000);
+    // Start real live score polling (wait for SportsAPI to be ready)
+    setTimeout(() => _startRealLiveScorePolling(), 5000);
   }
 
   // ── Service Worker ──
@@ -391,54 +388,75 @@ const NotificationSystem = (() => {
     } catch(e) { _notifications = []; }
   }
 
-  // ── Live Score Polling ──
-  function _pollLiveScores() {
-    const liveMatches = FIFA_MATCHES.filter(m => m.status === 'LIVE');
-    if (!liveMatches.length) return;
-
-    liveMatches.forEach(match => {
-      if (_scoreIntervals[match.id]) return;
-
-      // Immediately show initial score notification
-      _sendScoreNotification(match);
-
-      // Update score every 3 minutes (simulated)
-      _scoreIntervals[match.id] = setInterval(() => {
-        // Simulate score change
-        const rand = Math.random();
-        if (rand > 0.7) {
-          const scorer = Math.random() > 0.5 ? 'home' : 'away';
-          if (scorer === 'home') match.homeScore++;
-          else match.awayScore++;
-          match.minute = Math.min(match.minute + 3, 90);
-          _sendScoreNotification(match, true); // true = goal event
-        } else {
-          match.minute = Math.min(match.minute + 3, 90);
-        }
-      }, 3 * 60 * 1000);
-    });
+  // ── Real Live Score Polling using SportsAPI (ESPN) ──
+  async function _startRealLiveScorePolling() {
+    await _fetchAndNotifyLiveScores();
+    // Poll every 90 seconds
+    _liveMatchInterval = setInterval(() => _fetchAndNotifyLiveScores(), 90 * 1000);
   }
 
-  function _sendScoreNotification(match, isGoal = false) {
-    const title = isGoal
-      ? `⚽ GOAL! ${match.flag1} ${match.homeTeam} ${match.homeScore}-${match.awayScore} ${match.awayTeam} ${match.flag2}`
-      : `🏟️ ${match.flag1} ${match.homeTeam} vs ${match.awayTeam} ${match.flag2}`;
+  async function _fetchAndNotifyLiveScores() {
+    if (!window.SportsAPI) return;
+    try {
+      const matches = await window.SportsAPI.getLiveMatches();
+      if (!matches || !matches.length) return;
 
-    const body = isGoal
-      ? `${match.minute}' — GOAL! Score updated! Watch the replay on CineStream Sports.`
-      : `${match.minute}' | ${match.homeScore}-${match.awayScore} | ${match.tournament}`;
+      const now = Date.now();
 
-    _showAndroidNotification({ title, body, type: 'score', tag: `score-${match.id}`, url: '/#sports' });
-    _addToPanel({
-      id: `score-${match.id}-${Date.now()}`,
-      title, body,
-      type: 'score',
-      time: Date.now(),
-      read: false,
-      icon: '⚽',
-      meta: match,
-      isGoal,
-    });
+      matches.forEach(match => {
+        const id = match.matchId;
+        const prev = _liveMatchCache[id];
+
+        // ── Notify when a scheduled game is about to start (within 5 min) ──
+        if (match.isScheduled && !_announcedUpcoming[id]) {
+          const startMs = new Date(match.rawDate).getTime();
+          const minsUntil = (startMs - now) / 60000;
+          if (minsUntil >= -2 && minsUntil <= 5) {
+            _announcedUpcoming[id] = true;
+            const icon = match.tournamentIcon || '⚽';
+            const title = `${icon} ${match.tournament} — Starting Now!`;
+            const body = `${match.homeTeam} vs ${match.awayTeam} • ${match.matchTime} — Tap to watch live`;
+            _showAndroidNotification({ title, body, type: 'score', tag: `start-${id}`, url: '#sports' });
+            _addToPanel({ id: `start-${id}`, title, body, type: 'score', time: now, read: false, icon, meta: match });
+          }
+        }
+
+        // ── Notify for live score changes ──
+        if (match.isLive) {
+          const scoreKey = `${match.homeScore}-${match.awayScore}`;
+
+          if (!prev) {
+            // First time we see this live match — announce it
+            const icon = match.tournamentIcon || '⚽';
+            const title = `${icon} LIVE: ${match.homeTeam} vs ${match.awayTeam}`;
+            const body = `Score: ${match.score} • ${match.status} • ${match.tournament}`;
+            _showAndroidNotification({ title, body, type: 'score', tag: `live-${id}`, url: '#sports' });
+            _addToPanel({ id: `live-${id}-${now}`, title, body, type: 'score', time: now, read: false, icon, meta: match });
+          } else if (prev.scoreKey !== scoreKey) {
+            // Score changed — GOAL!
+            const icon = match.tournamentIcon || '⚽';
+            const title = `${icon} GOAL! ${match.homeTeam} ${match.homeScore} - ${match.awayScore} ${match.awayTeam}`;
+            const body = `${match.status} • ${match.tournament} — Tap to watch the replay`;
+            _showAndroidNotification({ title, body, type: 'score', tag: `goal-${id}`, url: '#sports' });
+            _addToPanel({ id: `goal-${id}-${now}`, title, body, type: 'score', time: now, read: false, icon, meta: match, isGoal: true });
+          }
+
+          _liveMatchCache[id] = { scoreKey };
+        }
+
+        // ── Notify when a match just ended ──
+        if (match.isFinished && prev && !prev.finished) {
+          const icon = match.tournamentIcon || '⚽';
+          const title = `${icon} Full Time: ${match.homeTeam} ${match.homeScore} - ${match.awayScore} ${match.awayTeam}`;
+          const body = `${match.tournament} — Match has ended`;
+          _showAndroidNotification({ title, body, type: 'score', tag: `ft-${id}`, url: '#sports' });
+          _addToPanel({ id: `ft-${id}`, title, body, type: 'score', time: now, read: false, icon, meta: match });
+          _liveMatchCache[id] = { ...(_liveMatchCache[id] || {}), finished: true };
+        }
+      });
+    } catch (e) {
+      console.warn('[Notif] Live score fetch failed:', e);
+    }
   }
 
   // ── New Releases Scheduler ──
@@ -771,27 +789,56 @@ const NotificationSystem = (() => {
     `;
     document.body.appendChild(container);
 
-    // Show initial demo notifications
-    setTimeout(() => _loadDemoNotifications(), 1500);
+    // Load real demo notifications from ESPN (non-blocking)
+    setTimeout(() => _loadDemoNotifications(), 2000);
   }
 
-  function _loadDemoNotifications() {
-    // Add FIFA scores
-    FIFA_MATCHES.filter(m => m.status === 'LIVE').forEach(match => {
-      _addToPanel({
-        id: `score-${match.id}`,
-        title: `⚽ ${match.flag1} ${match.homeTeam} vs ${match.awayTeam} ${match.flag2}`,
-        body: `${match.minute}' LIVE — ${match.tournament}`,
-        type: 'score',
-        time: Date.now() - Math.random() * 600000,
-        read: false,
-        icon: '⚽',
-        meta: match,
-      });
+  async function _loadDemoNotifications() {
+    // Only load demo if we have no stored notifications yet
+    if (_notifications.length > 0) return;
+
+    // Try loading real matches from SportsAPI
+    if (window.SportsAPI) {
+      try {
+        const matches = await window.SportsAPI.getLiveMatches();
+        if (matches && matches.length > 0) {
+          const now = Date.now();
+          // Show first 3 matches (live first, then upcoming)
+          matches.slice(0, 3).forEach((match, i) => {
+            const icon = match.tournamentIcon || '⚽';
+            const isLive = match.isLive;
+            const status = isLive ? `🔴 LIVE • ${match.status}` : `🕒 ${match.matchTime}` ;
+            setTimeout(() => {
+              _addToPanel({
+                id: `demo-${match.matchId}`,
+                title: `${icon} ${isLive ? 'LIVE: ' : ''}${match.homeTeam} vs ${match.awayTeam}`,
+                body: `${isLive ? match.score + ' • ' : ''}${status} • ${match.tournament}`,
+                type: 'score',
+                time: now - i * 600000,
+                read: i > 0,
+                icon,
+                meta: match,
+              });
+            }, i * 300);
+          });
+          return; // Skip fake demo data since we have real data
+        }
+      } catch (e) { /* fall through to demo data */ }
+    }
+
+    // Fallback: show generic sports update if no API data
+    _addToPanel({
+      id: 'demo-sports',
+      title: '⚽ Sports Live Scores',
+      body: 'Live scores loading... Tap to check sports page for today’s matches.',
+      type: 'score',
+      time: Date.now(),
+      read: false,
+      icon: '⚽',
     });
 
-    // Add 2 new releases
-    NEW_RELEASES.slice(0, 3).forEach((r, i) => {
+    // Add 2 new release notifications
+    NEW_RELEASES.slice(0, 2).forEach((r, i) => {
       setTimeout(() => {
         _addToPanel({
           id: `release-${r.id}`,
