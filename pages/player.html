@@ -15,10 +15,36 @@
       background: linear-gradient(to bottom, rgba(0,0,0,0.6) 0%, transparent 30%, transparent 50%, rgba(0,0,0,0.6) 100%);
     "></div>
 
-    <!-- Buffer Spinner (enhanced) -->
-    <div id="buffer-spinner" style="position:absolute; inset:0; display:flex; align-items:center; justify-content:center; background:rgba(0,0,0,0.45); z-index:20; pointer-events:none;">
-      <div class="spinner" style="width:56px; height:56px; border-width:4px; border-color:var(--c-primary-container) transparent transparent transparent;">
-        <span class="spinner-text" style="display:block; text-align:center; font-size:10px; color:rgba(255,255,255,0.4); margin-top:62px; letter-spacing:0.08em; text-transform:uppercase;">Buffering</span>
+    <!-- Buffer Spinner (advanced cinematic) -->
+    <div id="buffer-spinner" style="position:absolute; inset:0; display:flex; align-items:center; justify-content:center; background:rgba(0,0,0,0.55); z-index:20; pointer-events:none; backdrop-filter:blur(4px); -webkit-backdrop-filter:blur(4px);">
+      <div style="position:relative; width:100px; height:100px; display:flex; align-items:center; justify-content:center;">
+        
+        <!-- Outer rotating ring -->
+        <div class="buffer-ring-outer" style="position:absolute; inset:0; border-radius:50%; border:3px solid transparent; border-top-color:rgba(229,9,20,0.9); border-right-color:rgba(229,9,20,0.3); animation:spin-outer 1.2s cubic-bezier(0.68, -0.15, 0.27, 1.15) infinite; box-shadow: 0 0 20px rgba(229,9,20,0.3), inset 0 0 20px rgba(229,9,20,0.1);"></div>
+        
+        <!-- Middle rotating ring (reverse) -->
+        <div class="buffer-ring-middle" style="position:absolute; inset:12px; border-radius:50%; border:2px solid transparent; border-bottom-color:rgba(20,209,255,0.8); border-left-color:rgba(20,209,255,0.2); animation:spin-middle 1.8s cubic-bezier(0.68, -0.15, 0.27, 1.15) infinite; box-shadow: 0 0 15px rgba(20,209,255,0.2);"></div>
+        
+        <!-- Inner rotating ring -->
+        <div class="buffer-ring-inner" style="position:absolute; inset:24px; border-radius:50%; border:2px solid transparent; border-top-color:rgba(255,200,0,0.7); border-right-color:rgba(255,200,0,0.15); animation:spin-inner 0.9s cubic-bezier(0.68, -0.15, 0.27, 1.15) infinite; box-shadow: 0 0 12px rgba(255,200,0,0.2);"></div>
+        
+        <!-- Center pulsing core -->
+        <div class="buffer-core" style="width:32px; height:32px; border-radius:50%; background:radial-gradient(circle, rgba(229,9,20,0.4) 0%, rgba(229,9,20,0.1) 60%, transparent 100%); animation:pulse-core 1.5s ease-in-out infinite; display:flex; align-items:center; justify-content:center;">
+          <div style="width:12px; height:12px; border-radius:50%; background:rgba(229,9,20,0.9); box-shadow: 0 0 20px rgba(229,9,20,0.8), 0 0 40px rgba(229,9,20,0.4); animation:pulse-inner 1.5s ease-in-out infinite;"></div>
+        </div>
+        
+        <!-- Orbit dots -->
+        <div class="buffer-orbit-dot" style="position:absolute; top:-4px; left:50%; transform:translateX(-50%); width:8px; height:8px; border-radius:50%; background:#fff; box-shadow: 0 0 10px rgba(255,255,255,0.8), 0 0 20px rgba(229,9,20,0.6); animation:orbit-pulse 2s ease-in-out infinite;"></div>
+      </div>
+      
+      <!-- Buffering text with typing effect -->
+      <div style="position:absolute; bottom:calc(50% - 70px); text-align:center;">
+        <div class="buffer-text" style="font-size:11px; font-weight:700; color:rgba(255,255,255,0.9); letter-spacing:0.2em; text-transform:uppercase; font-family:'Inter', system-ui, sans-serif; text-shadow: 0 2px 8px rgba(0,0,0,0.8);">Buffering</div>
+        <div class="buffer-dots" style="display:flex; gap:4px; justify-content:center; margin-top:8px;">
+          <span class="buffer-dot" style="width:4px; height:4px; border-radius:50%; background:rgba(229,9,20,0.8); animation:dot-bounce 1.4s ease-in-out infinite; box-shadow: 0 0 6px rgba(229,9,20,0.6);"></span>
+          <span class="buffer-dot" style="width:4px; height:4px; border-radius:50%; background:rgba(20,209,255,0.8); animation:dot-bounce 1.4s ease-in-out 0.2s infinite; box-shadow: 0 0 6px rgba(20,209,255,0.6);"></span>
+          <span class="buffer-dot" style="width:4px; height:4px; border-radius:50%; background:rgba(255,200,0,0.8); animation:dot-bounce 1.4s ease-in-out 0.4s infinite; box-shadow: 0 0 6px rgba(255,200,0,0.6);"></span>
+        </div>
       </div>
     </div>
 
@@ -244,6 +270,36 @@
   @keyframes pulse {
     0%, 100% { opacity: 0.4; }
     50% { opacity: 1; }
+  }
+  
+  /* Advanced buffer spinner animations */
+  @keyframes spin-outer {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+  }
+  @keyframes spin-middle {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(-360deg); }
+  }
+  @keyframes spin-inner {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+  }
+  @keyframes pulse-core {
+    0%, 100% { transform: scale(1); opacity: 0.8; }
+    50% { transform: scale(1.15); opacity: 1; }
+  }
+  @keyframes pulse-inner {
+    0%, 100% { transform: scale(1); box-shadow: 0 0 20px rgba(229,9,20,0.8), 0 0 40px rgba(229,9,20,0.4); }
+    50% { transform: scale(1.2); box-shadow: 0 0 30px rgba(229,9,20,1), 0 0 60px rgba(229,9,20,0.6); }
+  }
+  @keyframes orbit-pulse {
+    0%, 100% { transform: translateX(-50%) scale(1); opacity: 0.6; }
+    50% { transform: translateX(-50%) scale(1.4); opacity: 1; }
+  }
+  @keyframes dot-bounce {
+    0%, 80%, 100% { transform: translateY(0); opacity: 0.4; }
+    40% { transform: translateY(-8px); opacity: 1; }
   }
   
   /* Playback speed menu item */

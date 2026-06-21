@@ -1,82 +1,101 @@
-<!-- CineStream — Account Dashboard -->
-<div id="account-page" style="min-height:100vh; padding-bottom:80px; position:relative;">
+<!-- CineStream — Account Dashboard (Mobile Responsive) -->
+<div id="account-page" style="min-height:100vh; padding-bottom:80px; position:relative; background:radial-gradient(ellipse at top, rgba(20,209,255,0.04) 0%, transparent 60%);">
   <div id="navbar-mount"></div>
 
-  <div style="padding:100px var(--space-margin-desktop) 0; background:linear-gradient(to bottom, rgba(20,209,255,0.03) 0%, transparent 100%)">
-    <div style="max-width:var(--space-container-max); margin:0 auto">
-      <h1 class="text-display-md" style="margin-bottom:8px">Account Settings</h1>
-      <p style="color:rgba(229,226,225,0.55); font-size:16px">Manage your profiles, plan details, viewing history, and preferences.</p>
-    </div>
+  <div style="padding:80px 16px 24px; max-width:var(--space-container-max); margin:0 auto;">
+    <h1 class="text-display-sm" style="margin-bottom:6px; font-size:22px;">Account Settings</h1>
+    <p style="color:rgba(229,226,225,0.55); font-size:13px; line-height:1.5;">Manage your profile, subscription, watchlist, and preferences.</p>
   </div>
 
   <!-- Dashboard Container -->
-  <div class="section" style="max-width:var(--space-container-max); margin:0 auto; padding-top:32px;">
+  <div class="section" style="max-width:var(--space-container-max); margin:0 auto; padding:0 16px 32px;">
     
-    <div style="display:grid; grid-template-columns:250px 1fr; gap:40px;" class="account-container">
-      
-      <!-- Sidebar Navigation -->
-      <aside style="display:flex; flex-direction:column; gap:8px;" class="account-sidebar">
-        <button class="account-nav-btn active" data-tab="profile" style="display:flex; align-items:center; gap:12px; padding:14px 20px; width:100%; border-radius:10px; font-weight:600; text-align:left; transition:all 0.2s;">
-          <span class="material-symbols-outlined">person</span>
-          <span>Profile Profile</span>
+    <!-- Mobile Tab Navigation (shown on small screens) -->
+    <div class="mobile-tabs" style="display:none; position:sticky; top:60px; z-index:50; background:rgba(10,10,10,0.95); backdrop-filter:blur(12px); -webkit-backdrop-filter:blur(12px); border-radius:14px; padding:6px; margin-bottom:20px; border:1px solid rgba(255,255,255,0.06); box-shadow:0 8px 32px rgba(0,0,0,0.5);">
+      <div style="display:flex; gap:4px;">
+        <button class="mobile-tab-btn active" data-tab="profile" style="flex:1; padding:10px 8px; border:none; background:rgba(255,255,255,0.04); color:rgba(229,226,225,0.6); border-radius:10px; font-size:12px; font-weight:600; cursor:pointer; transition:all 0.2s; display:flex; flex-direction:column; align-items:center; gap:4px; min-height:56px;">
+          <span class="material-symbols-outlined" style="font-size:20px;">person</span>
+          <span style="font-size:10px; letter-spacing:0.02em;">Profile</span>
         </button>
-        <button class="account-nav-btn" data-tab="subscription" style="display:flex; align-items:center; gap:12px; padding:14px 20px; width:100%; border-radius:10px; font-weight:600; text-align:left; transition:all 0.2s;">
-          <span class="material-symbols-outlined">payments</span>
+        <button class="mobile-tab-btn" data-tab="subscription" style="flex:1; padding:10px 8px; border:none; background:rgba(255,255,255,0.04); color:rgba(229,226,225,0.6); border-radius:10px; font-size:12px; font-weight:600; cursor:pointer; transition:all 0.2s; display:flex; flex-direction:column; align-items:center; gap:4px; min-height:56px;">
+          <span class="material-symbols-outlined" style="font-size:20px;">payments</span>
+          <span style="font-size:10px; letter-spacing:0.02em;">Billing</span>
+        </button>
+        <button class="mobile-tab-btn" data-tab="watchlist" style="flex:1; padding:10px 8px; border:none; background:rgba(255,255,255,0.04); color:rgba(229,226,225,0.6); border-radius:10px; font-size:12px; font-weight:600; cursor:pointer; transition:all 0.2s; display:flex; flex-direction:column; align-items:center; gap:4px; min-height:56px;">
+          <span class="material-symbols-outlined" style="font-size:20px;">bookmark</span>
+          <span style="font-size:10px; letter-spacing:0.02em;">Watchlist</span>
+        </button>
+        <button class="mobile-tab-btn" data-tab="history" style="flex:1; padding:10px 8px; border:none; background:rgba(255,255,255,0.04); color:rgba(229,226,225,0.6); border-radius:10px; font-size:12px; font-weight:600; cursor:pointer; transition:all 0.2s; display:flex; flex-direction:column; align-items:center; gap:4px; min-height:56px;">
+          <span class="material-symbols-outlined" style="font-size:20px;">history</span>
+          <span style="font-size:10px; letter-spacing:0.02em;">History</span>
+        </button>
+      </div>
+    </div>
+
+    <div style="display:grid; grid-template-columns:1fr; gap:20px;" class="account-container">
+      
+      <!-- Desktop Sidebar Navigation -->
+      <aside style="display:none; flex-direction:column; gap:6px;" class="account-sidebar">
+        <button class="account-nav-btn active" data-tab="profile" style="display:flex; align-items:center; gap:12px; padding:14px 18px; width:100%; border-radius:12px; font-weight:600; text-align:left; transition:all 0.2s; font-size:14px;">
+          <span class="material-symbols-outlined" style="font-size:22px;">person</span>
+          <span>Profile</span>
+        </button>
+        <button class="account-nav-btn" data-tab="subscription" style="display:flex; align-items:center; gap:12px; padding:14px 18px; width:100%; border-radius:12px; font-weight:600; text-align:left; transition:all 0.2s; font-size:14px;">
+          <span class="material-symbols-outlined" style="font-size:22px;">payments</span>
           <span>Membership & Billing</span>
         </button>
-        <button class="account-nav-btn" data-tab="watchlist" style="display:flex; align-items:center; gap:12px; padding:14px 20px; width:100%; border-radius:10px; font-weight:600; text-align:left; transition:all 0.2s;">
-          <span class="material-symbols-outlined">bookmark</span>
+        <button class="account-nav-btn" data-tab="watchlist" style="display:flex; align-items:center; gap:12px; padding:14px 18px; width:100%; border-radius:12px; font-weight:600; text-align:left; transition:all 0.2s; font-size:14px;">
+          <span class="material-symbols-outlined" style="font-size:22px;">bookmark</span>
           <span>My Watchlist</span>
         </button>
-        <button class="account-nav-btn" data-tab="history" style="display:flex; align-items:center; gap:12px; padding:14px 20px; width:100%; border-radius:10px; font-weight:600; text-align:left; transition:all 0.2s;">
-          <span class="material-symbols-outlined">history</span>
+        <button class="account-nav-btn" data-tab="history" style="display:flex; align-items:center; gap:12px; padding:14px 18px; width:100%; border-radius:12px; font-weight:600; text-align:left; transition:all 0.2s; font-size:14px;">
+          <span class="material-symbols-outlined" style="font-size:22px;">history</span>
           <span>Viewing History</span>
         </button>
-        <div style="height:1px; background:rgba(255,255,255,0.06); margin:12px 0;"></div>
-        <button id="account-signout-btn" style="display:flex; align-items:center; gap:12px; padding:14px 20px; width:100%; border-radius:10px; font-weight:600; text-align:left; color:#ff6b6b; transition:all 0.2s;">
-          <span class="material-symbols-outlined">logout</span>
+        <div style="height:1px; background:rgba(255,255,255,0.06); margin:8px 0;"></div>
+        <button id="account-signout-btn" style="display:flex; align-items:center; gap:12px; padding:14px 18px; width:100%; border-radius:12px; font-weight:600; text-align:left; color:#ff6b6b; transition:all 0.2s; font-size:14px;">
+          <span class="material-symbols-outlined" style="font-size:22px;">logout</span>
           <span>Sign Out</span>
         </button>
       </aside>
-
-      <!-- Main Content Area -->
-      <main class="glass-card" style="padding:40px; border-radius:16px;" id="account-content-card">
+      <!-- Main Content Area (Mobile: full width) -->
+      <main class="glass-card" style="padding:20px 16px; border-radius:16px; background:rgba(20,20,24,0.6);" id="account-content-card">
         
-        <!-- Tab 1: Profile Profile -->
+        <!-- Tab 1: Profile -->
         <div id="tab-profile" class="tab-pane">
-          <h2 class="text-headline-sm" style="margin-bottom:28px">Manage Profile Settings</h2>
+          <h2 class="text-headline-sm" style="margin-bottom:20px; font-size:18px;">Manage Profile Settings</h2>
           
-          <div style="display:flex; gap:40px; flex-wrap:wrap; align-items:flex-start;" class="profile-layout">
-            <!-- Avatar Edit Left -->
-            <div style="display:flex; flex-direction:column; align-items:center; gap:16px;">
-              <div style="width:120px; height:120px; border-radius:50%; overflow:hidden; border:4px solid var(--c-primary-container); box-shadow:0 0 30px rgba(229,9,20,0.15)">
+          <div style="display:flex; flex-direction:column; align-items:center; gap:24px;" class="profile-layout">
+            <!-- Avatar Edit (centered on mobile) -->
+            <div style="display:flex; flex-direction:column; align-items:center; gap:12px;">
+              <div style="width:100px; height:100px; border-radius:50%; overflow:hidden; border:3px solid var(--c-primary-container); box-shadow:0 0 24px rgba(229,9,20,0.2)">
                 <img src="" alt="Avatar" id="profile-avatar-img" style="width:100%; height:100%; object-fit:cover;">
               </div>
-              <button class="btn btn-ghost btn-sm" id="change-avatar-btn" style="border-radius:var(--r-sm)">Update Seed</button>
+              <button class="btn btn-ghost btn-sm" id="change-avatar-btn" style="border-radius:8px; font-size:12px; padding:8px 14px;">Update Seed</button>
             </div>
-            <!-- Form Fields Right -->
-            <div style="flex:1; min-width:280px; display:flex; flex-direction:column; gap:20px;">
+            <!-- Form Fields (stacked on mobile) -->
+            <div style="width:100%; display:flex; flex-direction:column; gap:16px;">
               <div>
-                <label class="input-label">Email Address</label>
-                <input type="text" id="profile-email-input" class="input-field" disabled style="background:rgba(255,255,255,0.02); color:rgba(229,226,225,0.4); cursor:not-allowed;">
+                <label class="input-label" style="font-size:12px; font-weight:600; display:block; margin-bottom:6px;">Email Address</label>
+                <input type="text" id="profile-email-input" class="input-field" disabled style="background:rgba(255,255,255,0.02); color:rgba(229,226,225,0.4); cursor:not-allowed; font-size:14px; padding:12px 14px; border-radius:10px;">
               </div>
               <div>
-                <label class="input-label">Display Name</label>
-                <input type="text" id="profile-name-input" class="input-field" placeholder="Enter Full Name" style="border-radius:8px">
+                <label class="input-label" style="font-size:12px; font-weight:600; display:block; margin-bottom:6px;">Display Name</label>
+                <input type="text" id="profile-name-input" class="input-field" placeholder="Enter Full Name" style="border-radius:10px; font-size:14px; padding:12px 14px;">
               </div>
               
-              <div style="margin-top:12px;">
-                <button class="btn btn-primary" id="save-profile-btn" style="border-radius:8px">SAVE CHANGES</button>
+              <div style="margin-top:8px;">
+                <button class="btn btn-primary" id="save-profile-btn" style="border-radius:10px; width:100%; padding:14px; font-size:14px; font-weight:700;">SAVE CHANGES</button>
               </div>
               
-              <div style="margin-top:24px; padding-top:24px; border-top:1px solid rgba(255,255,255,0.1);">
-                <h3 style="font-size:16px; font-weight:600; color:#fff; margin-bottom:16px;">Security</h3>
-                <div>
-                  <label class="input-label">New Password</label>
-                  <input type="password" id="profile-password-input" class="input-field" placeholder="Enter new password" style="border-radius:8px">
-                </div>
-                <div style="margin-top:12px;">
-                  <button class="btn btn-secondary-outline" id="update-password-btn" style="border-radius:8px">UPDATE PASSWORD</button>
+              <div style="margin-top:20px; padding-top:20px; border-top:1px solid rgba(255,255,255,0.08);">
+                <h3 style="font-size:15px; font-weight:700; color:#fff; margin-bottom:14px;">Security</h3>
+                <div style="display:flex; flex-direction:column; gap:12px;">
+                  <div>
+                    <label class="input-label" style="font-size:12px; font-weight:600; display:block; margin-bottom:6px;">New Password</label>
+                    <input type="password" id="profile-password-input" class="input-field" placeholder="Enter new password" style="border-radius:10px; font-size:14px; padding:12px 14px;">
+                  </div>
+                  <button class="btn btn-secondary-outline" id="update-password-btn" style="border-radius:10px; width:100%; padding:12px; font-size:13px; font-weight:700;">UPDATE PASSWORD</button>
                 </div>
               </div>
             </div>
@@ -85,75 +104,75 @@
 
         <!-- Tab 2: Membership & Billing -->
         <div id="tab-subscription" class="tab-pane" style="display:none">
-          <h2 class="text-headline-sm" style="margin-bottom:28px">Membership Details</h2>
+          <h2 class="text-headline-sm" style="margin-bottom:20px; font-size:18px;">Membership Details</h2>
           
           <!-- Sub active card -->
-          <div id="sub-active-display" class="glass-card" style="padding:24px; border-radius:12px; border:1px solid rgba(255,255,255,0.06); background:rgba(255,255,255,0.02); margin-bottom:32px; display:none;">
-            <div style="display:flex; justify-content:space-between; align-items:flex-start; flex-wrap:wrap; gap:16px;">
+          <div id="sub-active-display" class="glass-card" style="padding:20px; border-radius:14px; border:1px solid rgba(255,255,255,0.06); background:rgba(255,255,255,0.02); margin-bottom:20px; display:none;">
+            <div style="display:flex; flex-direction:column; gap:12px;">
               <div>
-                <span style="font-size:11px; font-weight:700; color:rgba(255,255,255,0.4); letter-spacing:0.06em; text-transform:uppercase;">CURRENT PLAN STATUS</span>
-                <h3 style="font-family:'Montserrat',sans-serif; font-size:24px; font-weight:800; margin-top:4px;" id="sub-plan-name">Standard HD</h3>
-                <p style="font-size:13.5px; color:rgba(229,226,225,0.6); margin-top:6px" id="sub-period">Active — Renews automatically on Dec 31, 2025</p>
+                <span style="font-size:10px; font-weight:700; color:rgba(255,255,255,0.4); letter-spacing:0.06em; text-transform:uppercase;">CURRENT PLAN STATUS</span>
+                <h3 style="font-family:'Montserrat',sans-serif; font-size:22px; font-weight:800; margin-top:4px;" id="sub-plan-name">Standard HD</h3>
+                <p style="font-size:12px; color:rgba(229,226,225,0.6); margin-top:6px; line-height:1.4;" id="sub-period">Active — Renews automatically on Dec 31, 2025</p>
               </div>
-              <div style="text-align:right">
-                <span style="font-size:28px; font-weight:800; color:#fff;" id="sub-price">$9.99</span>
-                <span style="font-size:13px; color:rgba(229,226,225,0.45)">/ month</span>
+              <div style="text-align:left; padding-top:12px; border-top:1px solid rgba(255,255,255,0.05);">
+                <span style="font-size:26px; font-weight:800; color:#fff;" id="sub-price">$9.99</span>
+                <span style="font-size:12px; color:rgba(229,226,225,0.45)">/ month</span>
               </div>
             </div>
             
-            <div style="display:flex; gap:12px; margin-top:24px; border-top:1px solid rgba(255,255,255,0.05); padding-top:20px; justify-content:flex-end;">
-              <button class="btn btn-ghost btn-sm" onclick="Router.navigate('subscribe')" style="border-radius:6px">Change Plan</button>
-              <button class="btn btn-ghost btn-sm" id="cancel-sub-btn" style="border-radius:6px; color:#ff6b6b; border-color:rgba(255,107,107,0.3)">Cancel Subscription</button>
+            <div style="display:flex; gap:10px; margin-top:20px; flex-direction:column;">
+              <button class="btn btn-ghost btn-sm" onclick="Router.navigate('subscribe')" style="border-radius:10px; width:100%; padding:12px; font-size:13px;">Change Plan</button>
+              <button class="btn btn-ghost btn-sm" id="cancel-sub-btn" style="border-radius:10px; color:#ff6b6b; border-color:rgba(255,107,107,0.3); width:100%; padding:12px; font-size:13px;">Cancel Subscription</button>
             </div>
           </div>
 
           <!-- Sub inactive display -->
-          <div id="sub-inactive-display" style="text-align:center; padding:40px 0; border:1.5px dashed rgba(255,255,255,0.08); border-radius:12px; margin-bottom:32px; display:none;">
-            <span class="material-symbols-outlined" style="font-size:48px; color:rgba(229,226,225,0.25); margin-bottom:12px;">no_accounts</span>
-            <h3 class="text-headline-sm" style="margin-bottom:6px">No Active Membership</h3>
-            <p style="font-size:13.5px; color:rgba(229,226,225,0.5); margin-bottom:20px">Redeem a code or choose a subscription plan to start premium streaming.</p>
-            <button class="btn btn-primary btn-sm" onclick="Router.navigate('subscribe')" style="border-radius:8px">EXPLORE PLANS</button>
+          <div id="sub-inactive-display" style="text-align:center; padding:36px 20px; border:1.5px dashed rgba(255,255,255,0.08); border-radius:14px; margin-bottom:20px; display:none;">
+            <span class="material-symbols-outlined" style="font-size:44px; color:rgba(229,226,225,0.25); display:block; margin-bottom:10px;">no_accounts</span>
+            <h3 class="text-headline-sm" style="margin-bottom:6px; font-size:17px;">No Active Membership</h3>
+            <p style="font-size:13px; color:rgba(229,226,225,0.5); margin-bottom:18px; line-height:1.5;">Redeem a code or choose a subscription plan to start premium streaming.</p>
+            <button class="btn btn-primary btn-sm" onclick="Router.navigate('subscribe')" style="border-radius:10px; padding:12px 20px; font-size:13px;">EXPLORE PLANS</button>
           </div>
 
           <!-- Quick gift code entry -->
-          <div class="glass-card" style="padding:24px; border-radius:12px; border:1.5px solid rgba(20,209,255,0.12)">
-            <h4 style="font-size:14px; font-weight:700; color:#fff; margin-bottom:8px">Redeem Promotional Voucher</h4>
-            <p style="font-size:12.5px; color:rgba(229,226,225,0.5); margin-bottom:16px;">Vouchers instantly override current subscriptions or add active streaming cycles.</p>
-            <div style="display:flex; gap:12px;">
-              <input type="text" id="quick-gift-input" class="input-field" placeholder="ENTER CODE" style="font-weight:700; text-transform:uppercase; border-radius:8px;">
-              <button id="quick-gift-btn" class="btn btn-secondary-outline" style="border-radius:8px;">REDEEM</button>
+          <div class="glass-card" style="padding:20px; border-radius:14px; border:1.5px solid rgba(20,209,255,0.12)">
+            <h4 style="font-size:13px; font-weight:700; color:#fff; margin-bottom:6px;">Redeem Promotional Voucher</h4>
+            <p style="font-size:12px; color:rgba(229,226,225,0.5); margin-bottom:14px; line-height:1.4;">Vouchers instantly override current subscriptions or add active streaming cycles.</p>
+            <div style="display:flex; flex-direction:column; gap:10px;">
+              <input type="text" id="quick-gift-input" class="input-field" placeholder="ENTER CODE" style="font-weight:700; text-transform:uppercase; border-radius:10px; font-size:14px; padding:12px 14px;">
+              <button id="quick-gift-btn" class="btn btn-secondary-outline" style="border-radius:10px; width:100%; padding:12px; font-size:13px; font-weight:700;">REDEEM</button>
             </div>
           </div>
         </div>
 
         <!-- Tab 3: My Watchlist -->
         <div id="tab-watchlist" class="tab-pane" style="display:none">
-          <h2 class="text-headline-sm" style="margin-bottom:20px">My Watchlist</h2>
+          <h2 class="text-headline-sm" style="margin-bottom:16px; font-size:18px;">My Watchlist</h2>
           
-          <div class="poster-grid" id="account-watchlist-grid">
+          <div class="poster-grid" id="account-watchlist-grid" style="grid-template-columns:repeat(auto-fill, minmax(120px, 1fr)); gap:12px;">
             <!-- Dynamically populated posters -->
           </div>
           
-          <div id="watchlist-empty" style="display:none; text-align:center; padding:60px 0">
-            <span class="material-symbols-outlined" style="font-size:56px; color:rgba(229,226,225,0.15); display:block; margin-bottom:12px">bookmark_border</span>
-            <p style="color:rgba(229,226,225,0.45); font-size:14px">Your watchlist is currently empty. Bookmark titles on detail views to list them here.</p>
+          <div id="watchlist-empty" style="display:none; text-align:center; padding:48px 20px">
+            <span class="material-symbols-outlined" style="font-size:48px; color:rgba(229,226,225,0.15); display:block; margin-bottom:10px">bookmark_border</span>
+            <p style="color:rgba(229,226,225,0.45); font-size:13px; line-height:1.5;">Your watchlist is empty. Bookmark titles on detail views.</p>
           </div>
         </div>
 
         <!-- Tab 4: Viewing History -->
         <div id="tab-history" class="tab-pane" style="display:none">
-          <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:24px; flex-wrap:wrap; gap:12px">
-            <h2 class="text-headline-sm">Viewing History</h2>
-            <button class="btn btn-ghost btn-sm" id="clear-history-btn" style="border-radius:6px; color:#ff6b6b; border-color:rgba(255,107,107,0.2)">Clear History</button>
+          <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:16px; gap:10px; flex-wrap:wrap;">
+            <h2 class="text-headline-sm" style="font-size:18px;">Viewing History</h2>
+            <button class="btn btn-ghost btn-sm" id="clear-history-btn" style="border-radius:8px; color:#ff6b6b; border-color:rgba(255,107,107,0.2); font-size:12px; padding:8px 12px;">Clear History</button>
           </div>
 
-          <div class="video-grid" id="account-history-grid">
+          <div class="video-grid" id="account-history-grid" style="grid-template-columns:repeat(auto-fill, minmax(160px, 1fr)); gap:12px;">
             <!-- Dynamically populated continue watching items -->
           </div>
 
-          <div id="history-empty" style="display:none; text-align:center; padding:60px 0">
-            <span class="material-symbols-outlined" style="font-size:56px; color:rgba(229,226,225,0.15); display:block; margin-bottom:12px">history_toggle_off</span>
-            <p style="color:rgba(229,226,225,0.45); font-size:14px">No titles viewed yet. Your continue-watching history will list here.</p>
+          <div id="history-empty" style="display:none; text-align:center; padding:48px 20px">
+            <span class="material-symbols-outlined" style="font-size:48px; color:rgba(229,226,225,0.15); display:block; margin-bottom:10px">history_toggle_off</span>
+            <p style="color:rgba(229,226,225,0.45); font-size:13px; line-height:1.5;">No titles viewed yet. Your continue-watching history will list here.</p>
           </div>
         </div>
 
@@ -168,6 +187,100 @@
 </div>
 
 <style>
+  /* Desktop responsive grid */
+  @media (min-width: 768px) {
+    .account-container {
+      display: grid !important;
+      grid-template-columns: 240px 1fr !important;
+      gap: 32px !important;
+    }
+    .account-sidebar {
+      display: flex !important;
+    }
+    .mobile-tabs {
+      display: none !important;
+    }
+    #account-content-card {
+      padding: 32px !important;
+    }
+    .profile-layout {
+      flex-direction: row !important;
+      align-items: flex-start !important;
+    }
+    #account-page > div:nth-child(2) {
+      padding: 100px var(--space-margin-desktop) 0 !important;
+    }
+  }
+
+  @media (max-width: 767px) {
+    .account-container {
+      display: flex !important;
+      flex-direction: column !important;
+      gap: 16px !important;
+    }
+    .account-sidebar {
+      display: none !important;
+    }
+    .mobile-tabs {
+      display: block !important;
+    }
+    #account-content-card {
+      padding: 18px 12px !important;
+      border-radius: 14px !important;
+    }
+    .profile-layout {
+      flex-direction: column !important;
+      align-items: center !important;
+      gap: 20px !important;
+    }
+    #tab-subscription div[style*="flex-direction: row"] {
+      flex-direction: column !important;
+    }
+    .poster-grid, .video-grid {
+      grid-template-columns: repeat(auto-fill, minmax(100px, 1fr)) !important;
+      gap: 10px !important;
+    }
+    #account-page > div:nth-child(2) {
+      padding: 70px 12px 16px !important;
+    }
+    #account-page > div:nth-child(2) h1 {
+      font-size: 20px !important;
+    }
+    #account-page > div:nth-child(2) p {
+      font-size: 12px !important;
+    }
+  }
+
+  @media (max-width: 380px) {
+    #account-content-card {
+      padding: 14px 10px !important;
+    }
+    .poster-grid, .video-grid {
+      grid-template-columns: repeat(2, 1fr) !important;
+      gap: 8px !important;
+    }
+    .mobile-tab-btn {
+      min-height: 48px !important;
+    }
+  }
+
+  /* Mobile tab active state */
+  .mobile-tab-btn {
+    border: none;
+    background: none;
+    color: rgba(229,226,225,0.6);
+    cursor: pointer;
+  }
+  .mobile-tab-btn:hover {
+    color: #fff;
+    background: rgba(255,255,255,0.04);
+  }
+  .mobile-tab-btn.active {
+    color: #fff;
+    background: rgba(229,9,20,0.2) !important;
+    box-shadow: 0 4px 16px rgba(229,9,20,0.25);
+  }
+
   /* Sidebar active tab adjustments */
   .account-nav-btn {
     border: none;

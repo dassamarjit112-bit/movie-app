@@ -48,25 +48,33 @@ const AccountPage = (() => {
   }
 
   function setupTabs(userId) {
-    const navButtons = document.querySelectorAll('.account-nav-btn');
+    const desktopNavButtons = document.querySelectorAll('.account-nav-btn');
+    const mobileNavButtons = document.querySelectorAll('.mobile-tab-btn');
+    const allNavButtons = [...desktopNavButtons, ...mobileNavButtons];
     const tabPanes = document.querySelectorAll('.tab-pane');
 
-    navButtons.forEach(btn => {
-      btn.onclick = () => {
-        // Toggle Nav State
-        navButtons.forEach(b => b.classList.remove('active'));
-        btn.classList.add('active');
+    function switchTab(targetTab) {
+      // Toggle Nav State for both desktop and mobile
+      allNavButtons.forEach(b => {
+        b.classList.toggle('active', b.dataset.tab === targetTab);
+      });
 
-        // Toggle Content Tab
-        const targetTab = btn.dataset.tab;
-        tabPanes.forEach(pane => {
-          if (pane.id === `tab-${targetTab}`) {
-            pane.style.display = 'block';
-          } else {
-            pane.style.display = 'none';
-          }
-        });
-      };
+      // Toggle Content Tab
+      tabPanes.forEach(pane => {
+        if (pane.id === `tab-${targetTab}`) {
+          pane.style.display = 'block';
+        } else {
+          pane.style.display = 'none';
+        }
+      });
+    }
+
+    desktopNavButtons.forEach(btn => {
+      btn.onclick = () => switchTab(btn.dataset.tab);
+    });
+
+    mobileNavButtons.forEach(btn => {
+      btn.onclick = () => switchTab(btn.dataset.tab);
     });
   }
 
