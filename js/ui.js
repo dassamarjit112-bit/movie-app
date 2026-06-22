@@ -707,26 +707,23 @@ const UI = (() => {
     // Navigate to gift code page
     Router.navigate('giftcode');
     
-    // Wait for gift code page to load, then auto-fill and redeem
+    // Auto-fill the code after page loads
     setTimeout(async () => {
-      // Use correct element IDs from giftcode.html
       const giftInput = document.getElementById('standalone-gift-input');
-      const redeemBtn = document.getElementById('standalone-gift-btn');
-      
-      if (!giftInput || !redeemBtn) {
-        console.error('[Promo] Gift code page elements not found');
-        UI.toast('Gift code page not loaded. Please try manually.', 'error');
-        return;
+      if (giftInput) {
+        giftInput.value = welcomeCode;
+        // Visual feedback that code is filled
+        giftInput.style.borderColor = '#14d1ff';
+        giftInput.style.boxShadow = '0 0 20px rgba(20, 209, 255, 0.3)';
       }
       
-      // Auto-fill the code
-      giftInput.value = welcomeCode;
+      // Mark promo as shown
+      localStorage.setItem('cs_welcome_gift_shown', '1');
+      sessionStorage.setItem('cs_promo_shown', '1');
       
-      // Small delay then trigger the button click to invoke the gift code page's onclick handler
-      setTimeout(() => {
-        redeemBtn.click();
-      }, 300);
-    }, 1200);
+      // Show instruction toast
+      UI.toast('🎁 Code auto-filled! Click "REDEEM PASS" to claim your gift.', 'info', 5000);
+    }, 1500);
   }
 
   return {
