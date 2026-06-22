@@ -709,8 +709,9 @@ const UI = (() => {
     
     // Wait for gift code page to load, then auto-fill and redeem
     setTimeout(async () => {
-      const giftInput = document.getElementById('gift-code-input');
-      const redeemBtn = document.getElementById('redeem-gift-btn');
+      // Use correct element IDs from giftcode.html
+      const giftInput = document.getElementById('standalone-gift-input');
+      const redeemBtn = document.getElementById('standalone-gift-btn');
       
       if (!giftInput || !redeemBtn) {
         console.error('[Promo] Gift code page elements not found');
@@ -721,50 +722,10 @@ const UI = (() => {
       // Auto-fill the code
       giftInput.value = welcomeCode;
       
-      // Set loading state
-      UI.setLoading(redeemBtn, true);
-      
-      try {
-        // Trigger redemption
-        if (window.Subscriptions) {
-          await window.Subscriptions.redeemGiftCode(welcomeCode, userId);
-          
-          // Mark as seen
-          try {
-            await window.Auth.updateProfile(userId, {
-              user_metadata: { ...session.user?.user_metadata, has_seen_welcome: true }
-            });
-          } catch (e) {}
-          
-          localStorage.setItem('cs_welcome_gift_shown', '1');
-          
-          // Clear input
-          giftInput.value = '';
-          
-          // Success feedback
-          UI.toast('🎉 Promo code redeemed! Enjoy 2 months of premium!', 'success');
-          
-          // Show success popup
-          setTimeout(() => {
-            UI.showModal({
-              title: '✨ Gift Activated!',
-              content: 'Your code <strong>CINESTREAM123</strong> has been redeemed. 2 months of premium access activated!',
-              confirmText: 'Let\'s Go!',
-              cancelText: '',
-              dangerous: false,
-              onConfirm: () => {
-                // Navigate to account page after confirmation
-                Router.navigate('account');
-              }
-            });
-          }, 500);
-        }
-      } catch (err) {
-        giftInput.value = '';
-        UI.toast(err.message || 'Failed to redeem promo code. Please try manually.', 'error');
-      } finally {
-        setTimeout(() => UI.setLoading(redeemBtn, false), 1500);
-      }
+      // Small delay then trigger the button click to invoke the gift code page's onclick handler
+      setTimeout(() => {
+        redeemBtn.click();
+      }, 300);
     }, 1200);
   }
 
