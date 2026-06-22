@@ -680,7 +680,7 @@ const UI = (() => {
     sessionStorage.setItem('cs_promo_shown', '1');
   }
 
-  // ── Redeem promo gift code via gift code page ──
+  // ── Redeem promo gift code directly (same logic as giftcode page) ──
   async function _redeemPromoGift() {
     const welcomeCode = 'CINESTREAM123';
     
@@ -704,26 +704,56 @@ const UI = (() => {
       return;
     }
     
-    // Navigate to gift code page
-    Router.navigate('giftcode');
-    
-    // Auto-fill the code after page loads
-    setTimeout(async () => {
-      const giftInput = document.getElementById('standalone-gift-input');
-      if (giftInput) {
-        giftInput.value = welcomeCode;
-        // Visual feedback that code is filled
-        giftInput.style.borderColor = '#14d1ff';
-        giftInput.style.boxShadow = '0 0 20px rgba(20, 209, 255, 0.3)';
-      }
+    // Get button reference
+    const redeemBtn = document.getElementById('promo-redeem-btn');
+    if (redeemBtn) {
+      UI.setLoading(redeemBtn, true);
+    }
+
+    try {
+      console.log('[Promo] Redeeming code:', welcomeCode, 'for user:', userId);
       
-      // Mark promo as shown
+      // Direct redemption (same as giftcode page)
+      const res = await Subscriptions.redeemGiftCode(welcomeCode, userId);
+      console.log('[Promo] Redemption successful:', res);
+      
+      // Success feedback
+      UI.toast('🎉 Gift code redeemed successfully! Check your account.', 'success', 5000);
+      
+      // Update navbar to reflect subscription
+      await UI.updateNavbarUser();
+      
+      // Mark as seen
+      try {
+        await window.Auth.updateProfile(userId, {
+          user_metadata: { ...session.user?.user_metadata, has_seen_welcome: true }
+        });
+      } catch (e) {}
+      
       localStorage.setItem('cs_welcome_gift_shown', '1');
-      sessionStorage.setItem('cs_promo_shown', '1');
       
-      // Show instruction toast
-      UI.toast('🎁 Code auto-filled! Click "REDEEM PASS" to claim your gift.', 'info', 5000);
-    }, 1500);
+      // Show success modal
+      setTimeout(() => {
+        UI.showModal({
+          title: '✨ Gift Activated!',
+          content: `Your code <strong>${welcomeCode}</strong> has been redeemed successfully!<br>Plan active until <strong>${UI.formatDate(res.end_date)}</strong>`,
+          confirmText: 'View Account',
+          cancelText: '',
+          dangerous: false,
+          onConfirm: () => {
+            Router.navigate('account');
+          }
+        });
+      }, 500);
+
+    } catch (err) {
+      console.error('[Promo] Redemption error:', err);
+      UI.toast(err.message || 'Failed to redeem code. Please try again.', 'error', 5000);
+    } finally {
+      if (redeemBtn) {
+        UI.setLoading(redeemBtn, false);
+      }
+    }
   }
 
   return {
