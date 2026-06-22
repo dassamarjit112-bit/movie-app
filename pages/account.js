@@ -89,26 +89,40 @@ const AccountPage = (() => {
     const logoutCard = document.getElementById('logout-card');
 
     const triggerSignOut = async () => {
-      UI.showModal({
-        title: 'Sign Out',
-        content: 'Are you sure you want to log out of CineStream? You will need to sign in again to access premium features.',
-        confirmText: 'Sign Out',
-        cancelText: 'Cancel',
-        dangerous: true,
-        onConfirm: async () => {
-          await window.Auth.signOut();
-          UI.toast('Logged out successfully.', 'info');
-        }
-      });
+      try {
+        UI.showModal({
+          title: 'Sign Out',
+          content: 'Are you sure you want to log out of CineStream? You will need to sign in again to access premium features.',
+          confirmText: 'Sign Out',
+          cancelText: 'Cancel',
+          dangerous: true,
+          onConfirm: async () => {
+            try {
+              await window.Auth.signOut();
+              UI.toast('Logged out successfully.', 'info');
+            } catch (err) {
+              console.error('Sign out error:', err);
+              UI.toast('Failed to sign out. Please try again.', 'error');
+            }
+          }
+        });
+      } catch (err) {
+        console.error('Modal error:', err);
+      }
     };
 
+    // Bind sidebar sign-out button
     if (signoutBtn) {
-      signoutBtn.onclick = triggerSignOut;
+      signoutBtn.addEventListener('click', (e) => {
+        e.preventDefault();
+        triggerSignOut();
+      });
       // Advanced sidebar button interactions
       signoutBtn.addEventListener('mouseenter', () => {
         signoutBtn.style.background = 'rgba(255,107,107,0.08)';
         signoutBtn.style.borderColor = 'rgba(255,107,107,0.35)';
         signoutBtn.style.transform = 'translateX(4px)';
+        signoutBtn.style.boxShadow = '0 4px 12px rgba(255,107,107,0.1)';
         const icon = signoutBtn.querySelector('.material-symbols-outlined');
         if (icon) icon.style.transform = 'rotate(-15deg) scale(1.1)';
       });
@@ -116,41 +130,58 @@ const AccountPage = (() => {
         signoutBtn.style.background = 'rgba(255,255,255,0.02)';
         signoutBtn.style.borderColor = 'rgba(255,107,107,0.15)';
         signoutBtn.style.transform = 'translateX(0)';
+        signoutBtn.style.boxShadow = 'none';
         const icon = signoutBtn.querySelector('.material-symbols-outlined');
         if (icon) icon.style.transform = 'rotate(0) scale(1)';
       });
     }
 
+    // Bind logout card button
     if (logoutCard) {
-      logoutCard.onclick = triggerSignOut;
+      logoutCard.addEventListener('click', (e) => {
+        e.preventDefault();
+        triggerSignOut();
+      });
       // Advanced logout card hover effects
       logoutCard.addEventListener('mouseenter', () => {
         logoutCard.style.transform = 'translateY(-2px)';
         logoutCard.style.borderColor = 'rgba(255,107,107,0.4)';
         logoutCard.style.background = 'linear-gradient(135deg, rgba(255,107,107,0.12) 0%, rgba(255,107,107,0.04) 100%)';
+        logoutCard.style.boxShadow = '0 8px 24px rgba(255,107,107,0.15)';
+        // Activate glow
         const glowDiv = logoutCard.querySelector('div[style*="radial-gradient"]');
         if (glowDiv) glowDiv.style.opacity = '1';
+        // Scale icon container
         const iconContainer = logoutCard.querySelector('div[style*="border-radius: 14px"]');
         if (iconContainer) {
           iconContainer.style.background = 'rgba(255,107,107,0.25)';
           iconContainer.style.transform = 'scale(1.05)';
         }
-        const arrow = logoutCard.querySelectorAll('.material-symbols-outlined')[1];
-        if (arrow) arrow.style.transform = 'translateX(4px)';
+        // Slide arrow
+        const allIcons = logoutCard.querySelectorAll('.material-symbols-outlined');
+        if (allIcons.length > 1) {
+          allIcons[1].style.transform = 'translateX(4px)';
+        }
       });
       logoutCard.addEventListener('mouseleave', () => {
         logoutCard.style.transform = 'translateY(0)';
         logoutCard.style.borderColor = 'rgba(255,107,107,0.2)';
         logoutCard.style.background = 'linear-gradient(135deg, rgba(255,107,107,0.08) 0%, rgba(255,107,107,0.02) 100%)';
+        logoutCard.style.boxShadow = 'none';
+        // Deactivate glow
         const glowDiv = logoutCard.querySelector('div[style*="radial-gradient"]');
         if (glowDiv) glowDiv.style.opacity = '0';
+        // Reset icon container
         const iconContainer = logoutCard.querySelector('div[style*="border-radius: 14px"]');
         if (iconContainer) {
           iconContainer.style.background = 'rgba(255,107,107,0.15)';
           iconContainer.style.transform = 'scale(1)';
         }
-        const arrow = logoutCard.querySelectorAll('.material-symbols-outlined')[1];
-        if (arrow) arrow.style.transform = 'translateX(0)';
+        // Reset arrow
+        const allIcons = logoutCard.querySelectorAll('.material-symbols-outlined');
+        if (allIcons.length > 1) {
+          allIcons[1].style.transform = 'translateX(0)';
+        }
       });
       logoutCard.addEventListener('mousedown', () => {
         logoutCard.style.transform = 'translateY(0) scale(0.98)';
