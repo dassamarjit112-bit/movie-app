@@ -84,8 +84,11 @@ const AccountPage = (() => {
     // Profile Settings tab init
     await setupProfileTab(session);
 
-    // Sign out button
-    document.getElementById('account-signout-btn').onclick = async () => {
+    // Sign out buttons (sidebar + logout card)
+    const signoutBtn = document.getElementById('account-signout-btn');
+    const logoutCard = document.getElementById('logout-card');
+
+    const triggerSignOut = async () => {
       UI.showModal({
         title: 'Sign Out',
         content: 'Are you sure you want to log out of CineStream? You will need to sign in again to access premium features.',
@@ -98,6 +101,64 @@ const AccountPage = (() => {
         }
       });
     };
+
+    if (signoutBtn) {
+      signoutBtn.onclick = triggerSignOut;
+      // Advanced sidebar button interactions
+      signoutBtn.addEventListener('mouseenter', () => {
+        signoutBtn.style.background = 'rgba(255,107,107,0.08)';
+        signoutBtn.style.borderColor = 'rgba(255,107,107,0.35)';
+        signoutBtn.style.transform = 'translateX(4px)';
+        const icon = signoutBtn.querySelector('.material-symbols-outlined');
+        if (icon) icon.style.transform = 'rotate(-15deg) scale(1.1)';
+      });
+      signoutBtn.addEventListener('mouseleave', () => {
+        signoutBtn.style.background = 'rgba(255,255,255,0.02)';
+        signoutBtn.style.borderColor = 'rgba(255,107,107,0.15)';
+        signoutBtn.style.transform = 'translateX(0)';
+        const icon = signoutBtn.querySelector('.material-symbols-outlined');
+        if (icon) icon.style.transform = 'rotate(0) scale(1)';
+      });
+    }
+
+    if (logoutCard) {
+      logoutCard.onclick = triggerSignOut;
+      // Advanced logout card hover effects
+      logoutCard.addEventListener('mouseenter', () => {
+        logoutCard.style.transform = 'translateY(-2px)';
+        logoutCard.style.borderColor = 'rgba(255,107,107,0.4)';
+        logoutCard.style.background = 'linear-gradient(135deg, rgba(255,107,107,0.12) 0%, rgba(255,107,107,0.04) 100%)';
+        const glowDiv = logoutCard.querySelector('div[style*="radial-gradient"]');
+        if (glowDiv) glowDiv.style.opacity = '1';
+        const iconContainer = logoutCard.querySelector('div[style*="border-radius: 14px"]');
+        if (iconContainer) {
+          iconContainer.style.background = 'rgba(255,107,107,0.25)';
+          iconContainer.style.transform = 'scale(1.05)';
+        }
+        const arrow = logoutCard.querySelectorAll('.material-symbols-outlined')[1];
+        if (arrow) arrow.style.transform = 'translateX(4px)';
+      });
+      logoutCard.addEventListener('mouseleave', () => {
+        logoutCard.style.transform = 'translateY(0)';
+        logoutCard.style.borderColor = 'rgba(255,107,107,0.2)';
+        logoutCard.style.background = 'linear-gradient(135deg, rgba(255,107,107,0.08) 0%, rgba(255,107,107,0.02) 100%)';
+        const glowDiv = logoutCard.querySelector('div[style*="radial-gradient"]');
+        if (glowDiv) glowDiv.style.opacity = '0';
+        const iconContainer = logoutCard.querySelector('div[style*="border-radius: 14px"]');
+        if (iconContainer) {
+          iconContainer.style.background = 'rgba(255,107,107,0.15)';
+          iconContainer.style.transform = 'scale(1)';
+        }
+        const arrow = logoutCard.querySelectorAll('.material-symbols-outlined')[1];
+        if (arrow) arrow.style.transform = 'translateX(0)';
+      });
+      logoutCard.addEventListener('mousedown', () => {
+        logoutCard.style.transform = 'translateY(0) scale(0.98)';
+      });
+      logoutCard.addEventListener('mouseup', () => {
+        logoutCard.style.transform = 'translateY(-2px) scale(1)';
+      });
+    }
 
     // Load initial tab datasets
     await loadSubscriptionDetails(userId);

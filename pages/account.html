@@ -147,9 +147,17 @@
           <span>Viewing History</span>
         </button>
         <div style="height:1px; background:rgba(255,255,255,0.06); margin:8px 0;"></div>
-        <button id="account-signout-btn" style="display:flex; align-items:center; gap:12px; padding:14px 18px; width:100%; border-radius:12px; font-weight:600; text-align:left; color:#ff6b6b; transition:all 0.2s; font-size:14px;">
-          <span class="material-symbols-outlined" style="font-size:22px;">logout</span>
-          <span>Sign Out</span>
+        <button id="account-signout-btn" style="
+          display:flex; align-items:center; gap:12px; padding:14px 18px; width:100%; border-radius:12px; font-weight:700; text-align:left; color:#ff6b6b; transition:all 0.3s cubic-bezier(0.4, 0, 0.2, 1); font-size:14px;
+          background: rgba(255,255,255,0.02);
+          border: 1px solid rgba(255,107,107,0.15);
+          position: relative;
+          overflow: hidden;
+          cursor: pointer;
+        ">
+          <span class="material-symbols-outlined" style="font-size:22px; transition: transform 0.3s ease;">logout</span>
+          <span style="flex:1;">Sign Out</span>
+          <span style="font-size:10px; font-weight:600; letter-spacing:0.05em; opacity:0.6; text-transform:uppercase;">Exit</span>
         </button>
       </aside>
       <!-- Main Content Area (Mobile: full width) -->
@@ -191,6 +199,59 @@
                   </div>
                   <button class="btn btn-secondary-outline" id="update-password-btn" style="border-radius:10px; width:100%; padding:12px; font-size:13px; font-weight:700;">UPDATE PASSWORD</button>
                 </div>
+              </div>
+
+              <!-- Enhanced Logout Card -->
+              <div id="logout-card" style="
+                margin-top: 24px;
+                padding: 20px;
+                border-radius: 16px;
+                background: linear-gradient(135deg, rgba(255,107,107,0.08) 0%, rgba(255,107,107,0.02) 100%);
+                border: 1px solid rgba(255,107,107,0.2);
+                display: flex;
+                align-items: center;
+                gap: 16px;
+                transition: all 0.3s ease;
+                cursor: pointer;
+                position: relative;
+                overflow: hidden;
+              ">
+                <!-- Glow accent -->
+                <div style="
+                  position: absolute;
+                  top: -50%;
+                  left: -50%;
+                  width: 200%;
+                  height: 200%;
+                  background: radial-gradient(circle at center, rgba(255,107,107,0.06) 0%, transparent 50%);
+                  opacity: 0;
+                  transition: opacity 0.3s ease;
+                  pointer-events: none;
+                "></div>
+                
+                <!-- Icon -->
+                <div style="
+                  width: 48px;
+                  height: 48px;
+                  border-radius: 14px;
+                  background: rgba(255,107,107,0.15);
+                  display: flex;
+                  align-items: center;
+                  justify-content: center;
+                  flex-shrink: 0;
+                  transition: all 0.3s ease;
+                ">
+                  <span class="material-symbols-outlined" style="font-size:24px; color:#ff6b6b;">logout</span>
+                </div>
+                
+                <!-- Content -->
+                <div style="flex: 1; min-width: 0;">
+                  <div style="font-size:14px; font-weight:700; color:#fff; margin-bottom:2px;">Sign Out</div>
+                  <div style="font-size:12px; color:rgba(229,226,225,0.5); line-height:1.4;">Log out of your CineStream account across all devices.</div>
+                </div>
+                
+                <!-- Arrow -->
+                <span class="material-symbols-outlined" style="font-size:18px; color:rgba(255,107,107,0.6); transition: transform 0.3s ease;">arrow_forward</span>
               </div>
             </div>
           </div>
@@ -359,6 +420,15 @@
     .mobile-tab-btn {
       min-height: 48px !important;
     }
+    #logout-card {
+      flex-direction: column !important;
+      text-align: center !important;
+      gap: 12px !important;
+      padding: 16px !important;
+    }
+    #logout-card > div:nth-child(3) {
+      text-align: center !important;
+    }
   }
 
   /* Mobile tab active state */
@@ -395,5 +465,50 @@
     border-left: 3px solid var(--c-primary-container);
     border-radius: 0 10px 10px 0;
     padding-left: 17px;
+  }
+
+  /* Logout card advanced styling */
+  #logout-card {
+    border: 1px solid rgba(255,107,107,0.2);
+    background: linear-gradient(135deg, rgba(255,107,107,0.08) 0%, rgba(255,107,107,0.02) 100%);
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    cursor: pointer;
+  }
+  #logout-card:hover {
+    transform: translateY(-2px);
+    border-color: rgba(255,107,107,0.4);
+    background: linear-gradient(135deg, rgba(255,107,107,0.12) 0%, rgba(255,107,107,0.04) 100%);
+    box-shadow: 0 8px 24px rgba(255,107,107,0.15);
+  }
+  #logout-card:active {
+    transform: translateY(0) scale(0.98);
+  }
+  #logout-card .material-symbols-outlined:last-child {
+    transition: transform 0.3s ease;
+  }
+  #logout-card:hover .material-symbols-outlined:last-child {
+    transform: translateX(4px);
+  }
+
+  /* Desktop sidebar sign-out button advanced effects */
+  #account-signout-btn {
+    border: 1px solid rgba(255,107,107,0.15);
+    background: rgba(255,255,255,0.02);
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+  #account-signout-btn:hover {
+    background: rgba(255,107,107,0.08);
+    border-color: rgba(255,107,107,0.35);
+    transform: translateX(4px);
+    box-shadow: 0 4px 12px rgba(255,107,107,0.1);
+  }
+  #account-signout-btn:active {
+    transform: translateX(2px) scale(0.98);
+  }
+  #account-signout-btn .material-symbols-outlined {
+    transition: transform 0.3s ease;
+  }
+  #account-signout-btn:hover .material-symbols-outlined {
+    transform: rotate(-15deg) scale(1.1);
   }
 </style>
