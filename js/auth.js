@@ -17,7 +17,11 @@ const Auth = (() => {
       email,
       password,
       options: {
-        data: { full_name: fullName, avatar_url: '' },
+        data: { 
+          full_name: fullName, 
+          avatar_url: '',
+          country: 'india' // Default to India for new registrations
+        },
         emailRedirectTo: window.location.origin + window.location.pathname
       }
     });
@@ -34,7 +38,7 @@ const Auth = (() => {
       email,
       options: {
         shouldCreateUser: true,
-        data: { full_name: fullName, avatar_url: '' },
+        data: { full_name: fullName, avatar_url: '', country: 'india' },
         emailRedirectTo: window.location.origin + window.location.pathname
       }
     });
@@ -96,6 +100,7 @@ const Auth = (() => {
       provider: 'google',
       options: {
         redirectTo: redirectUrl,
+        data: { country: 'india' } // Default country for Google OAuth users
       },
     });
 

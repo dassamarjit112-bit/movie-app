@@ -45,9 +45,9 @@ const Subscriptions = (() => {
   ];
 
   // ── Get country-based pricing ──
-  function getCountryPricing() {
-    // Default to India for registered users, or check localStorage
-    const country = localStorage.getItem('cs_user_country') || 'india';
+  function getCountryPricing(countryOverride) {
+    // Use provided country, or check localStorage, or default to India
+    const country = countryOverride || localStorage.getItem('cs_user_country') || 'india';
     const isIndia = country === 'india';
     return {
       isIndia,

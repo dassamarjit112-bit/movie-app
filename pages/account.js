@@ -318,12 +318,17 @@ const AccountPage = (() => {
 
     const sub = await Subscriptions.getUserSubscription(userId);
     const plans = Subscriptions.getPlans();
+    
+    // Get user country from Supabase profile
+    const profile = await window.Auth.getProfile(userId);
+    const userCountry = profile?.country || localStorage.getItem('cs_user_country') || 'india';
+    const pricing = Subscriptions.getCountryPricing(userCountry);
 
     if (sub && new Date(sub.end_date) > new Date()) {
       const plan = plans.find(p => p.id === sub.plan_id) || plans[1];
       
       planNameEl.textContent = `CineStream ${plan.name} (${plan.quality})`;
-      priceEl.textContent = `$${plan.price}`;
+      priceEl.textContent = `${pricing.isIndia ? '₹' : '$'}${pricing.isIndia ? plan.price : plan.priceUSD}`;
       
       const renewText = sub.status === 'cancelled'
         ? `Cancelled — Access will expire on ${UI.formatDate(sub.end_date)}`
