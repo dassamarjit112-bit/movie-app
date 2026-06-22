@@ -680,13 +680,14 @@ const UI = (() => {
     sessionStorage.setItem('cs_promo_shown', '1');
   }
 
-  // ── Redeem promo gift code directly ──
+  // ── Redeem promo gift code via gift code page ──
   async function _redeemPromoGift() {
     const welcomeCode = 'CINESTREAM123';
     
     // Remove promo banner
     const banner = document.getElementById('promo-banner-container');
     if (banner) banner.remove();
+    sessionStorage.setItem('cs_promo_shown', '1');
 
     // Check if user is logged in
     let session, userId;
@@ -703,50 +704,68 @@ const UI = (() => {
       return;
     }
     
-    // Show loading toast
-    UI.toast('🔄 Redeeming gift code...', 'info', 2000);
+    // Navigate to gift code page
+    Router.navigate('giftcode');
     
-    try {
-      // Direct redemption via Subscriptions API
-      if (window.Subscriptions) {
-        await window.Subscriptions.redeemGiftCode(welcomeCode, userId);
-        
-        // Mark as seen
-        try {
-          await window.Auth.updateProfile(userId, {
-            user_metadata: { ...session.user?.user_metadata, has_seen_welcome: true }
-          });
-        } catch (e) {}
-        
-        localStorage.setItem('cs_welcome_gift_shown', '1');
-        sessionStorage.setItem('cs_promo_shown', '1');
-        
-        // Success feedback
-        UI.toast('🎉 Promo code redeemed! Enjoy 2 months of premium!', 'success');
-        
-        // Reload and show success popup
-        setTimeout(async () => {
-          if (window.AccountPage && window.AccountPage.loadSubscriptionDetails) {
-            await window.AccountPage.loadSubscriptionDetails(userId);
-          }
-          if (window.UI && window.UI.updateNavbarUser) {
-            window.UI.updateNavbarUser();
-          }
-          UI.showModal({
-            title: '✨ Gift Activated!',
-            content: 'Your code <strong>CINESTREAM123</strong> has been redeemed. 2 months of premium access activated!',
-            confirmText: 'Let\'s Go!',
-            cancelText: '',
-            dangerous: false,
-            onConfirm: () => {}
-          });
-        }, 800);
-      } else {
-        throw new Error('Subscriptions API not available');
+    // Wait for gift code page to load, then auto-fill and redeem
+    setTimeout(async () => {
+      const giftInput = document.getElementById('gift-code-input');
+      const redeemBtn = document.getElementById('redeem-gift-btn');
+      
+      if (!giftInput || !redeemBtn) {
+        console.error('[Promo] Gift code page elements not found');
+        UI.toast('Gift code page not loaded. Please try manually.', 'error');
+        return;
       }
-    } catch (err) {
-      UI.toast(err.message || 'Failed to redeem promo code. Please try manually.', 'error');
-    }
+      
+      // Auto-fill the code
+      giftInput.value = welcomeCode;
+      
+      // Set loading state
+      UI.setLoading(redeemBtn, true);
+      
+      try {
+        // Trigger redemption
+        if (window.Subscriptions) {
+          await window.Subscriptions.redeemGiftCode(welcomeCode, userId);
+          
+          // Mark as seen
+          try {
+            await window.Auth.updateProfile(userId, {
+              user_metadata: { ...session.user?.user_metadata, has_seen_welcome: true }
+            });
+          } catch (e) {}
+          
+          localStorage.setItem('cs_welcome_gift_shown', '1');
+          
+          // Clear input
+          giftInput.value = '';
+          
+          // Success feedback
+          UI.toast('🎉 Promo code redeemed! Enjoy 2 months of premium!', 'success');
+          
+          // Show success popup
+          setTimeout(() => {
+            UI.showModal({
+              title: '✨ Gift Activated!',
+              content: 'Your code <strong>CINESTREAM123</strong> has been redeemed. 2 months of premium access activated!',
+              confirmText: 'Let\'s Go!',
+              cancelText: '',
+              dangerous: false,
+              onConfirm: () => {
+                // Navigate to account page after confirmation
+                Router.navigate('account');
+              }
+            });
+          }, 500);
+        }
+      } catch (err) {
+        giftInput.value = '';
+        UI.toast(err.message || 'Failed to redeem promo code. Please try manually.', 'error');
+      } finally {
+        setTimeout(() => UI.setLoading(redeemBtn, false), 1500);
+      }
+    }, 1200);
   }
 
   return {
