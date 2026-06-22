@@ -159,6 +159,7 @@ const Router = (() => {
       case 'search':      window.SearchPage?.init(params); break;
       case 'player':      window.PlayerPage?.init(params); break;
       case 'subscribe':   window.SubscribePage?.init(); break;
+      case 'giftcode':    window.GiftCodePage?.init(); break;
       case 'anime':       window.AnimePage?.init(); break;
       case 'account':     window.AccountPage?.init(); break;
       case 'scraper':     window.ScraperPage?.init(); break;
