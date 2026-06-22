@@ -19,7 +19,9 @@ const GiftCodePage = (() => {
     if (!btn || !input) return;
 
     btn.onclick = async () => {
-      if (!session) {
+      // Get fresh session
+      const currentSession = await window.Auth.getSession();
+      if (!currentSession) {
         UI.toast('Please sign in to redeem a gift code.', 'info');
         Router.navigate('login');
         return;
@@ -35,26 +37,33 @@ const GiftCodePage = (() => {
       feedback.style.display = 'none';
 
       try {
-        const res = await Subscriptions.redeemGiftCode(code, session.user.id);
+        console.log('[GiftCode] Redeeming code:', code, 'for user:', currentSession.user.id);
+        const res = await Subscriptions.redeemGiftCode(code, currentSession.user.id);
+        console.log('[GiftCode] Redemption successful:', res);
         
-        feedback.innerHTML = `<span class="material-symbols-outlined" style="vertical-align:middle; font-size:16px; margin-right:4px;">check_circle</span> Code activated! Standard plan unlocked until ${UI.formatDate(res.end_date)}`;
+        feedback.innerHTML = `<span class="material-symbols-outlined" style="vertical-align:middle; font-size:16px; margin-right:4px;">check_circle</span> Code activated! Plan active until ${UI.formatDate(res.end_date)}`;
         feedback.className = 'text-green';
         feedback.style.color = '#32dc78';
         feedback.style.display = 'block';
         
-        UI.toast('Voucher redeemed successfully!', 'success');
+        UI.toast('🎉 Gift code redeemed successfully!', 'success', 4000);
         input.value = '';
+
+        // Update navbar to reflect subscription
+        UI.updateNavbarUser();
 
         // Navigate to account to see updated plan details
         setTimeout(() => {
           Router.navigate('account');
-        }, 1500);
+        }, 2000);
 
       } catch (err) {
+        console.error('[GiftCode] Redemption error:', err);
         feedback.innerHTML = `<span class="material-symbols-outlined" style="vertical-align:middle; font-size:16px; margin-right:4px;">error</span> ${err.message}`;
         feedback.className = 'text-red';
         feedback.style.color = '#ff6b6b';
         feedback.style.display = 'block';
+        UI.toast(err.message || 'Failed to redeem code.', 'error', 5000);
       } finally {
         UI.setLoading(btn, false);
       }

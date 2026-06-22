@@ -111,17 +111,12 @@ const Subscriptions = (() => {
       throw new Error('This gift code has expired.');
     }
 
-    // Check if user already used this code
-    const { data: existingSub } = await window.sb
+    // Cancel any existing active subscription before redeeming new one
+    await window.sb
       .from('subscriptions')
-      .select('id')
+      .update({ status: 'cancelled', updated_at: new Date().toISOString() })
       .eq('user_id', userId)
-      .eq('gift_code_used', normalizedCode)
-      .single();
-
-    if (existingSub) {
-      throw new Error('You have already redeemed this gift code.');
-    }
+      .eq('status', 'active');
 
     // Increment usage count
     const { error: updateError } = await window.sb
@@ -138,10 +133,10 @@ const Subscriptions = (() => {
     const endDate = new Date();
     endDate.setDate(endDate.getDate() + (giftCode.duration_days || 30));
 
-    // Create or update subscription
+    // Create new subscription
     const { error: subError } = await window.sb
       .from('subscriptions')
-      .upsert({
+      .insert({
         user_id: userId,
         plan_id: giftCode.plan_id || 'standard',
         status: 'active',
@@ -149,6 +144,7 @@ const Subscriptions = (() => {
         end_date: endDate.toISOString(),
         source: 'gift_code',
         gift_code_used: normalizedCode,
+        created_at: new Date().toISOString(),
         updated_at: new Date().toISOString()
       });
 
