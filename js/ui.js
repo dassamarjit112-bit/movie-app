@@ -673,11 +673,93 @@ const UI = (() => {
         <div style="background:rgba(0,0,0,0.3); padding:8px; border-radius:6px; text-align:center; font-family:monospace; font-weight:bold; letter-spacing:2px; font-size:15px; color:#ffc832; border:1px dashed rgba(255,200,50,0.4); user-select:all;">
           CINESTREAM123
         </div>
-        <button onclick="Router.navigate('subscribe'); document.getElementById('promo-banner-container').remove(); sessionStorage.setItem('cs_promo_shown', '1');" style="width:100%; margin-top:12px; padding:10px; background:linear-gradient(135deg, var(--c-primary-container), #ff3040); border:none; border-radius:8px; color:white; font-weight:800; cursor:pointer; font-size:12px; transition: filter 0.2s; box-shadow: 0 4px 12px rgba(229,9,20,0.3);" onmouseover="this.style.filter='brightness(1.1)'" onmouseout="this.style.filter='brightness(1)'">Redeem Now</button>
+        <button id="promo-redeem-btn" onclick="UI._redeemPromoGift()" style="width:100%; margin-top:12px; padding:10px; background:linear-gradient(135deg, var(--c-primary-container), #ff3040); border:none; border-radius:8px; color:white; font-weight:800; cursor:pointer; font-size:12px; transition: filter 0.2s; box-shadow: 0 4px 12px rgba(229,9,20,0.3);" onmouseover="this.style.filter='brightness(1.1)'" onmouseout="this.style.filter='brightness(1)'">🎉 Redeem Now</button>
       </div>
     `;
     document.body.appendChild(banner);
     sessionStorage.setItem('cs_promo_shown', '1');
+  }
+
+  // ── Redeem promo gift code automatically ──
+  async function _redeemPromoGift() {
+    const welcomeCode = 'CINESTREAM123';
+    const giftBtn = document.getElementById('quick-gift-btn');
+    const giftInput = document.getElementById('quick-gift-input');
+    
+    // Remove promo banner
+    const banner = document.getElementById('promo-banner-container');
+    if (banner) banner.remove();
+    sessionStorage.setItem('cs_promo_shown', '1');
+
+    // Navigate to account page
+    Router.navigate('account');
+    
+    // Wait for account page to load, then redeem
+    setTimeout(async () => {
+      try {
+        const session = await window.Auth.getSession();
+        if (!session) return;
+        
+        const userId = session.user.id;
+        
+        // Auto-fill the code
+        if (giftInput) {
+          giftInput.value = welcomeCode;
+        }
+        
+        // Trigger redemption
+        if (giftBtn) {
+          // Set loading state
+          UI.setLoading(giftBtn, true);
+          
+          try {
+            if (window.Subscriptions) {
+              await window.Subscriptions.redeemGiftCode(welcomeCode, userId);
+              
+              // Mark as seen
+              await window.Auth.updateProfile(userId, {
+                user_metadata: { ...session.user?.user_metadata, has_seen_welcome: true }
+              });
+              
+              localStorage.setItem('cs_welcome_gift_shown', '1');
+              
+              UI.toast('🎉 Promo code redeemed! Enjoy 2 months of premium!', 'success');
+              
+              // Reload subscription details
+              if (window.AccountPage) {
+                const subActive = document.getElementById('sub-active-display');
+                const subInactive = document.getElementById('sub-inactive-display');
+                if (subActive && subInactive) {
+                  // Trigger reload
+                  const giftBtnReload = document.getElementById('quick-gift-btn');
+                  if (giftBtnReload) {
+                    giftBtnReload.click();
+                  }
+                }
+              }
+              
+              // Show success popup
+              setTimeout(() => {
+                UI.showModal({
+                  title: '✨ Gift Activated!',
+                  content: 'Your code <strong>CINESTREAM123</strong> has been redeemed. 2 months of premium access activated!',
+                  confirmText: 'Let\'s Go!',
+                  cancelText: '',
+                  dangerous: false,
+                  onConfirm: () => {}
+                });
+              }, 600);
+            }
+          } catch (err) {
+            UI.toast(err.message || 'Failed to redeem promo code. Please try manually.', 'error');
+          } finally {
+            setTimeout(() => UI.setLoading(giftBtn, false), 2000);
+          }
+        }
+      } catch (err) {
+        console.error('Promo redemption error:', err);
+      }
+    }, 1200);
   }
 
   return {
@@ -700,7 +782,8 @@ const UI = (() => {
     updateNavbarUser,
     _mobileNavClick,
     _requireAuthNav,
-    showPromoBanner
+    showPromoBanner,
+    _redeemPromoGift
   };
 })();
 
