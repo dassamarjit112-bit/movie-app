@@ -2,13 +2,107 @@
 <div id="account-page" style="min-height:100vh; padding-bottom:80px; position:relative; background:radial-gradient(ellipse at top, rgba(20,209,255,0.04) 0%, transparent 60%);">
   <div id="navbar-mount"></div>
 
-  <div style="padding:80px 16px 24px; max-width:var(--space-container-max); margin:0 auto;">
-    <h1 class="text-display-sm" style="margin-bottom:6px; font-size:22px;">Account Settings</h1>
-    <p style="color:rgba(229,226,225,0.55); font-size:13px; line-height:1.5;">Manage your profile, subscription, watchlist, and preferences.</p>
+  <!-- Login Prompt Section (shown when not authenticated) -->
+  <div id="login-prompt" style="display:none; padding:100px 16px 24px; max-width:var(--space-container-max); margin:0 auto;">
+    <div style="text-align:center; max-width:420px; margin:0 auto;">
+      <div class="animate-float" style="margin-bottom:24px;">
+        <span class="material-symbols-outlined" style="font-size:80px; color:var(--c-primary-container); display:block;">lock</span>
+      </div>
+      <h1 class="text-display-sm animate-fade-up" style="margin-bottom:12px; font-size:26px; font-weight:800;">Account Access</h1>
+      <p class="animate-fade-up delay-200" style="color:rgba(229,226,225,0.65); font-size:14px; line-height:1.6; margin-bottom:36px;">
+        Sign in to manage your profile, track your watchlist, and access your subscription benefits.
+      </p>
+      
+      <!-- Advanced Login Button -->
+      <button id="advanced-login-btn" class="animate-fade-up delay-300" style="
+        position: relative;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 12px;
+        padding: 18px 48px;
+        font-family: 'Montserrat', sans-serif;
+        font-size: 15px;
+        font-weight: 700;
+        letter-spacing: 0.04em;
+        text-transform: uppercase;
+        color: #ffffff;
+        background: linear-gradient(135deg, #e50914 0%, #ff3d4f 50%, #cc0812 100%);
+        background-size: 200% 200%;
+        border: none;
+        border-radius: 16px;
+        cursor: pointer;
+        overflow: hidden;
+        transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+        box-shadow: 
+          0 8px 24px rgba(229, 9, 20, 0.35),
+          0 0 0 1px rgba(255, 255, 255, 0.1) inset,
+          0 1px 0 rgba(255, 255, 255, 0.2) inset;
+        animation: gradient-shift 4s ease infinite, pulse-glow 2.5s ease-in-out infinite;
+      ">
+        <!-- Shimmer overlay -->
+        <span class="btn-shimmer"></span>
+        
+        <!-- Icon with animation -->
+        <span class="material-symbols-outlined" style="font-size:22px; transition: transform 0.3s ease;">login</span>
+        
+        <!-- Text -->
+        <span>Sign In to Continue</span>
+        
+        <!-- Arrow indicator -->
+        <span class="material-symbols-outlined" style="font-size:18px; transition: transform 0.3s ease; opacity:0.9;">arrow_forward</span>
+      </button>
+
+      <!-- Secondary options -->
+      <div class="animate-fade-up delay-500" style="margin-top:28px; display:flex; flex-direction:column; gap:12px; align-items:center;">
+        <p style="color:rgba(229,226,225,0.5); font-size:12px;">Don't have an account?</p>
+        <button id="go-signup-btn" style="
+          background: transparent;
+          border: 1.5px solid rgba(255,255,255,0.15);
+          color: rgba(229,226,225,0.85);
+          padding: 12px 28px;
+          border-radius: 12px;
+          font-family: 'Montserrat', sans-serif;
+          font-size: 13px;
+          font-weight: 600;
+          cursor: pointer;
+          transition: all 0.3s ease;
+          backdrop-filter: blur(8px);
+          -webkit-backdrop-filter: blur(8px);
+        ">
+          Create Free Account
+        </button>
+      </div>
+
+      <!-- Benefits list -->
+      <div class="animate-fade-up delay-600" style="margin-top:48px; text-align:left; padding:24px; background:rgba(255,255,255,0.03); border-radius:16px; border:1px solid rgba(255,255,255,0.08);">
+        <p style="font-size:12px; font-weight:700; color:rgba(229,226,225,0.5); letter-spacing:0.08em; text-transform:uppercase; margin-bottom:14px;">What you'll get</p>
+        <div style="display:flex; flex-direction:column; gap:10px;">
+          <div style="display:flex; align-items:center; gap:10px;">
+            <span class="material-symbols-outlined" style="font-size:18px; color:#14d1ff;">check_circle</span>
+            <span style="font-size:13px; color:rgba(229,226,225,0.75);">Personalized watchlist & recommendations</span>
+          </div>
+          <div style="display:flex; align-items:center; gap:10px;">
+            <span class="material-symbols-outlined" style="font-size:18px; color:#14d1ff;">check_circle</span>
+            <span style="font-size:13px; color:rgba(229,226,225,0.75);">Continue watching across devices</span>
+          </div>
+          <div style="display:flex; align-items:center; gap:10px;">
+            <span class="material-symbols-outlined" style="font-size:18px; color:#14d1ff;">check_circle</span>
+            <span style="font-size:13px; color:rgba(229,226,225,0.75);">Manage subscription & billing</span>
+          </div>
+          <div style="display:flex; align-items:center; gap:10px;">
+            <span class="material-symbols-outlined" style="font-size:18px; color:#14d1ff;">check_circle</span>
+            <span style="font-size:13px; color:rgba(229,226,225,0.75);">Exclusive premium content access</span>
+          </div>
+        </div>
+      </div>
+    </div>
   </div>
 
   <!-- Dashboard Container -->
-  <div class="section" style="max-width:var(--space-container-max); margin:0 auto; padding:0 16px 32px;">
+  <div id="dashboard-container" class="section" style="max-width:var(--space-container-max); margin:0 auto; padding:80px 16px 24px; display:none;">
+    <h1 class="text-display-sm" style="margin-bottom:6px; font-size:22px;">Account Settings</h1>
+    <p style="color:rgba(229,226,225,0.55); font-size:13px; line-height:1.5;">Manage your profile, subscription, watchlist, and preferences.</p>
     
     <!-- Mobile Tab Navigation (shown on small screens) -->
     <div class="mobile-tabs" style="display:none; position:sticky; top:60px; z-index:50; background:rgba(10,10,10,0.95); backdrop-filter:blur(12px); -webkit-backdrop-filter:blur(12px); border-radius:14px; padding:6px; margin-bottom:20px; border:1px solid rgba(255,255,255,0.06); box-shadow:0 8px 32px rgba(0,0,0,0.5);">
@@ -207,7 +301,7 @@
       flex-direction: row !important;
       align-items: flex-start !important;
     }
-    #account-page > div:nth-child(2) {
+    #dashboard-container {
       padding: 100px var(--space-margin-desktop) 0 !important;
     }
   }
@@ -240,13 +334,16 @@
       grid-template-columns: repeat(auto-fill, minmax(100px, 1fr)) !important;
       gap: 10px !important;
     }
-    #account-page > div:nth-child(2) {
+    #dashboard-container {
       padding: 70px 12px 16px !important;
     }
-    #account-page > div:nth-child(2) h1 {
+    #login-prompt {
+      padding: 80px 16px 24px !important;
+    }
+    #dashboard-container h1 {
       font-size: 20px !important;
     }
-    #account-page > div:nth-child(2) p {
+    #dashboard-container p {
       font-size: 12px !important;
     }
   }

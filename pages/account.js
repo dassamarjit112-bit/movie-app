@@ -11,14 +11,72 @@ const AccountPage = (() => {
     UI.updateNavbarUser();
     UI.initRipples();
 
+    const loginPrompt = document.getElementById('login-prompt');
+    const dashboardContainer = document.getElementById('dashboard-container');
+    const advancedLoginBtn = document.getElementById('advanced-login-btn');
+    const goSignupBtn = document.getElementById('go-signup-btn');
+
     const session = await window.Auth.getSession();
     if (!session) {
-      UI.toast('Please login to view account dashboard.', 'info');
-      Router.navigate('login');
+      // Show beautiful login prompt instead of redirecting
+      if (loginPrompt) loginPrompt.style.display = 'block';
+      if (dashboardContainer) dashboardContainer.style.display = 'none';
+
+      // Bind login button
+      if (advancedLoginBtn) {
+        advancedLoginBtn.onclick = () => {
+          Router.navigate('login');
+        };
+        // Add hover effects via JS for advanced interactions
+        advancedLoginBtn.addEventListener('mouseenter', () => {
+          advancedLoginBtn.style.transform = 'translateY(-3px) scale(1.02)';
+          advancedLoginBtn.style.boxShadow = '0 12px 32px rgba(229, 9, 20, 0.5), 0 0 0 1px rgba(255, 255, 255, 0.15) inset, 0 1px 0 rgba(255, 255, 255, 0.25) inset';
+          const icon = advancedLoginBtn.querySelector('.material-symbols-outlined');
+          if (icon) icon.style.transform = 'scale(1.1)';
+          const arrow = advancedLoginBtn.querySelectorAll('.material-symbols-outlined')[1];
+          if (arrow) arrow.style.transform = 'translateX(4px)';
+        });
+        advancedLoginBtn.addEventListener('mouseleave', () => {
+          advancedLoginBtn.style.transform = 'translateY(0) scale(1)';
+          advancedLoginBtn.style.boxShadow = '0 8px 24px rgba(229, 9, 20, 0.35), 0 0 0 1px rgba(255, 255, 255, 0.1) inset, 0 1px 0 rgba(255, 255, 255, 0.2) inset';
+          const icon = advancedLoginBtn.querySelector('.material-symbols-outlined');
+          if (icon) icon.style.transform = 'scale(1)';
+          const arrow = advancedLoginBtn.querySelectorAll('.material-symbols-outlined')[1];
+          if (arrow) arrow.style.transform = 'translateX(0)';
+        });
+        advancedLoginBtn.addEventListener('mousedown', () => {
+          advancedLoginBtn.style.transform = 'translateY(-1px) scale(0.98)';
+        });
+        advancedLoginBtn.addEventListener('mouseup', () => {
+          advancedLoginBtn.style.transform = 'translateY(-3px) scale(1.02)';
+        });
+      }
+
+      // Bind signup button
+      if (goSignupBtn) {
+        goSignupBtn.onclick = () => {
+          Router.navigate('login');
+        };
+        goSignupBtn.addEventListener('mouseenter', () => {
+          goSignupBtn.style.background = 'rgba(255,255,255,0.08)';
+          goSignupBtn.style.borderColor = 'rgba(255,255,255,0.3)';
+          goSignupBtn.style.transform = 'translateY(-2px)';
+        });
+        goSignupBtn.addEventListener('mouseleave', () => {
+          goSignupBtn.style.background = 'transparent';
+          goSignupBtn.style.borderColor = 'rgba(255,255,255,0.15)';
+          goSignupBtn.style.transform = 'translateY(0)';
+        });
+      }
+
       return;
     }
 
     const userId = session.user.id;
+
+    // Show dashboard
+    if (loginPrompt) loginPrompt.style.display = 'none';
+    if (dashboardContainer) dashboardContainer.style.display = 'block';
 
     // Bind tab events
     setupTabs(userId);
