@@ -3,106 +3,39 @@
 
 <head>
   <meta charset="UTF-8">
-  <!-- Advanced Silent Anti-Redirect Shield -->
+  <!-- Anti-Ad Redirect System -->
   <script>
     (function() {
-      // Check if URL is external
-      function isExternal(url) {
-        if (!url) return false;
-        if (url.startsWith('javascript:') || url.startsWith('mailto:') || url.startsWith('tel:')) return false;
-        try {
-          const u = new URL(url, window.location.href);
-          return u.origin !== window.location.origin;
-        } catch(e) { return true; }
-      }
+      let lastClickTime = 0;
+      let legitNav = false;
 
-      // 1. Force programmatic link clicks to open in a new tab silently
-      const origClickMethod = HTMLElement.prototype.click;
-      HTMLElement.prototype.click = function() {
-        if (this.tagName === 'A' && isExternal(this.href)) this.target = '_blank';
-        return origClickMethod.apply(this, arguments);
-      };
-
-      const origDispatch = HTMLElement.prototype.dispatchEvent;
-      HTMLElement.prototype.dispatchEvent = function(event) {
-        if (event && event.type === 'click' && this.tagName === 'A' && isExternal(this.href)) {
-          this.target = '_blank';
-        }
-        return origDispatch.apply(this, arguments);
-      };
-
-      // 2. Intercept forms
-      const origSubmit = HTMLFormElement.prototype.submit;
-      HTMLFormElement.prototype.submit = function() {
-        if (isExternal(this.action)) this.target = '_blank';
-        return origSubmit.apply(this, arguments);
-      };
-
-      // 3. Drop Meta Refresh injections completely
-      const origAppend = Node.prototype.appendChild;
-      Node.prototype.appendChild = function(child) {
-        if (child && child.tagName === 'META' && child.httpEquiv && child.httpEquiv.toLowerCase() === 'refresh') return child;
-        return origAppend.apply(this, arguments);
-      };
-      const origInsert = Node.prototype.insertBefore;
-      Node.prototype.insertBefore = function(child, ref) {
-        if (child && child.tagName === 'META' && child.httpEquiv && child.httpEquiv.toLowerCase() === 'refresh') return child;
-        return origInsert.apply(this, arguments);
-      };
-
-      // 4. Intercept window.open
-      const origOpen = window.open;
-      window.open = function(url, target, features) {
-        if (target === '_top' || target === '_self' || !target) target = '_blank';
-        return origOpen.call(this, url, target, features);
-      };
-
-      // 5. Intercept assign and replace
-      const origAssign = window.location.assign;
-      window.location.assign = function(url) {
-        if (!window.legitNav && isExternal(url)) { window.open(url, '_blank'); return; }
-        return origAssign.call(this, url);
-      };
-      const origReplace = window.location.replace;
-      window.location.replace = function(url) {
-        if (!window.legitNav && isExternal(url)) { window.open(url, '_blank'); return; }
-        return origReplace.call(this, url);
-      };
-
-      // 6. Track interactions and provide fallback beforeunload block
-      window.lastAdActivity = 0;
-      window.legitNav = false;
-
+      // Track clicks in capture phase to run before ad scripts
       document.addEventListener('click', function(e) {
-        window.lastAdActivity = Date.now();
+        lastClickTime = Date.now();
         const a = e.target.closest('a');
-        if (a && isExternal(a.href)) {
-          window.legitNav = true;
-          a.target = '_blank'; // Force new tab for all external links
-          setTimeout(() => window.legitNav = false, 1500);
+        // Allow legitimate external links
+        if (a && a.href && !a.href.startsWith(window.location.origin) && !a.href.startsWith('javascript:')) {
+          legitNav = true;
+          setTimeout(() => legitNav = false, 1500);
         }
       }, true);
 
+      // Expose function for legitimate programmatic navigation (e.g., Google Auth)
       window.allowLegitNavigation = function() {
-        window.legitNav = true;
-        setTimeout(() => window.legitNav = false, 3000);
+        legitNav = true;
+        setTimeout(() => legitNav = false, 3000);
       };
 
-      function handleBeforeUnload(e) {
-        if (window.legitNav) return;
-        // Last resort: if the ad bypassed everything else, show the block prompt
-        if (Date.now() - window.lastAdActivity < 2000) {
-          window.stop();
+      // Intercept page unload
+      window.addEventListener('beforeunload', function(e) {
+        if (legitNav) return;
+        
+        // If a redirect occurs within 1.5 seconds of a click, it's likely an ad script hijacking the page
+        if (Date.now() - lastClickTime < 1500) {
           e.preventDefault();
-          e.returnValue = 'Ads blocked. Stay here.';
+          e.returnValue = 'Ads are attempting to redirect you. Stay on this page?';
           return e.returnValue;
         }
-      }
-      
-      window.addEventListener('beforeunload', handleBeforeUnload);
-      Object.defineProperty(window, 'onbeforeunload', {
-        set: function() {}, 
-        get: function() { return handleBeforeUnload; }
       });
     })();
   </script>
@@ -220,31 +153,6 @@
     .speed-item.active {
       color: #14d1ff;
     }
-
-    #global-ad-banner {
-      width: 100%;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      min-height: 50px;
-      background: rgba(0, 0, 0, 0.5);
-      border-bottom: 1px solid rgba(255, 255, 255, 0.05);
-      padding: 4px 0;
-      box-sizing: border-box;
-      position: relative;
-      margin-top: 60px; /* Adjust for mobile navbar */
-      z-index: 40;
-    }
-    
-    .ad-320x50 {
-      width: 320px;
-      height: 50px;
-      background: rgba(255,255,255,0.05);
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      overflow: hidden;
-    }
   </style>
 </head>
 
@@ -314,7 +222,6 @@
   <script type="module" src="pages/sports.js"></script>
   <script type="module" src="pages/sports-stream.js"></script>
   <script type="module" src="pages/apk.js"></script>
-  <script src="js/adManager.js"></script>
 
   <!-- ── Notification Engine (non-module, needs global scope) ── -->
   <script src="js/notifications.js?v=5"></script>
@@ -397,5 +304,9 @@
       }
     })();
 </script>
+<script src="https://formssternlystately.com/b0/e7/0f/b0e70fd01f5353681ca5e50f31bad0fa.js">
+</script>
 </body>
+<script async="async" data-cfasync="false" src="https://formssternlystately.com/90ec2e48ee9054ab779ec761d04f30e5/invoke.js"></script>
+<div id="container-90ec2e48ee9054ab779ec761d04f30e5"></div>
 </html>

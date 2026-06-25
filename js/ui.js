@@ -149,7 +149,6 @@ const UI = (() => {
           </div>
         </div>
       </nav>
-      <div id="global-ad-banner" style="display:none;"></div>
       <script>
         // Close AI search dropdown on outside click (run once after nav renders)
         if (!window._searchOutsideListenerAdded) {
