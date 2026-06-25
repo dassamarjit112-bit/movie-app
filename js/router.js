@@ -18,6 +18,7 @@ const Router = (() => {
     'search':        { page: 'pages/search.html',          auth: true  },
     'anime':         { page: 'pages/anime.html',           auth: true  },
     'scraper':       { page: 'pages/scraper.html',         auth: true  },
+    'select-country': { page: 'pages/select-country.html', auth: true  },
     'sports':        { page: 'pages/sports.html',          auth: false }, // public – browse sports without login
     'sports-stream': { page: 'pages/sports-stream.html',  auth: true  }, // login required to stream
     'apk':           { page: 'pages/apk.html',            auth: false }  // always public
@@ -56,10 +57,10 @@ const Router = (() => {
           if (window.UI && typeof window.UI.toast === 'function') {
             window.UI.toast('Authentication successful! 🎬', 'success');
           }
-          window.location.hash = '#/home';
+          window.location.hash = '#/select-country';
         }, 100);
       }
-      return { route: 'home', params: {} };
+      return { route: 'select-country', params: {} };
     }
 
     const hash = rawHash.replace('#/', '') || 'home';
@@ -162,6 +163,7 @@ const Router = (() => {
       case 'giftcode':    window.GiftCodePage?.init(); break;
       case 'anime':       window.AnimePage?.init(); break;
       case 'account':     window.AccountPage?.init(); break;
+      case 'select-country': window.SelectCountryPage?.init(); break;
       case 'scraper':     window.ScraperPage?.init(); break;
       case 'sports':      window.SportsPage?.init(); break;
       case 'sports-stream': window.SportsStreamPage?.init(params); break;
