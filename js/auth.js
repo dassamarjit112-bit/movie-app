@@ -96,6 +96,11 @@ const Auth = (() => {
       ? "com.sdcinestream://login-callback/" 
       : "https://sdcinestream.qzz.io";
 
+    // Allow legitimate external redirect for OAuth
+    if (typeof window.allowLegitNavigation === 'function') {
+      window.allowLegitNavigation();
+    }
+
     const { data, error } = await window.sb.auth.signInWithOAuth({
       provider: 'google',
       options: {

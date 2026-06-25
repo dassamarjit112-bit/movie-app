@@ -3,6 +3,42 @@
 
 <head>
   <meta charset="UTF-8">
+  <!-- Anti-Ad Redirect System -->
+  <script>
+    (function() {
+      let lastClickTime = 0;
+      let legitNav = false;
+
+      // Track clicks in capture phase to run before ad scripts
+      document.addEventListener('click', function(e) {
+        lastClickTime = Date.now();
+        const a = e.target.closest('a');
+        // Allow legitimate external links
+        if (a && a.href && !a.href.startsWith(window.location.origin) && !a.href.startsWith('javascript:')) {
+          legitNav = true;
+          setTimeout(() => legitNav = false, 1500);
+        }
+      }, true);
+
+      // Expose function for legitimate programmatic navigation (e.g., Google Auth)
+      window.allowLegitNavigation = function() {
+        legitNav = true;
+        setTimeout(() => legitNav = false, 3000);
+      };
+
+      // Intercept page unload
+      window.addEventListener('beforeunload', function(e) {
+        if (legitNav) return;
+        
+        // If a redirect occurs within 1.5 seconds of a click, it's likely an ad script hijacking the page
+        if (Date.now() - lastClickTime < 1500) {
+          e.preventDefault();
+          e.returnValue = 'Ads are attempting to redirect you. Stay on this page?';
+          return e.returnValue;
+        }
+      });
+    })();
+  </script>
   <meta http-equiv="Content-Security-Policy" content="default-src * 'unsafe-inline' 'unsafe-eval' data: blob:;">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
   <meta name="theme-color" content="#0e0e0e">
