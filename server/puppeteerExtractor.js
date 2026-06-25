@@ -9,7 +9,8 @@ async function extractMasterPlaylistUrl(tmdbId, type, season, episode) {
   try {
     console.log(`[PuppeteerExtractor] Launching headless browser...`);
     browser = await puppeteer.launch({
-      headless: true,
+      headless: 'new',
+      protocolTimeout: 120000,
       args: [
         '--no-sandbox',
         '--disable-setuid-sandbox',
@@ -61,12 +62,17 @@ async function extractMasterPlaylistUrl(tmdbId, type, season, episode) {
     for (const url of sources) {
       console.log(`[PuppeteerExtractor] Navigating to: ${url}`);
       try {
-        // We only wait until domcontentloaded, and give it a max of 10s to fire the m3u8 request
         await page.goto(url, { waitUntil: 'domcontentloaded', timeout: 10000 });
         
         // Wait an extra few seconds for JS to execute and trigger the stream request
-        for(let i=0; i<15; i++) {
+        // Aggressively click the center of the viewport to bypass play buttons / ad overlays
+        for(let i=0; i<20; i++) {
           if(m3u8Url) break;
+          try {
+            await page.mouse.click(400, 300);
+            // Also try pressing Space or Enter in case the player is focused
+            await page.keyboard.press('Space');
+          } catch(e) {}
           await new Promise(r => setTimeout(r, 500));
         }
         
