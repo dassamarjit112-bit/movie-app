@@ -153,6 +153,31 @@
     .speed-item.active {
       color: #14d1ff;
     }
+
+    #global-ad-banner {
+      width: 100%;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 50px;
+      background: rgba(0, 0, 0, 0.5);
+      border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+      padding: 4px 0;
+      box-sizing: border-box;
+      position: relative;
+      margin-top: 60px; /* Adjust for mobile navbar */
+      z-index: 40;
+    }
+    
+    .ad-320x50 {
+      width: 320px;
+      height: 50px;
+      background: rgba(255,255,255,0.05);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      overflow: hidden;
+    }
   </style>
 </head>
 
@@ -222,6 +247,7 @@
   <script type="module" src="pages/sports.js"></script>
   <script type="module" src="pages/sports-stream.js"></script>
   <script type="module" src="pages/apk.js"></script>
+  <script src="js/adManager.js"></script>
 
   <!-- ── Notification Engine (non-module, needs global scope) ── -->
   <script src="js/notifications.js?v=5"></script>
@@ -304,9 +330,5 @@
       }
     })();
 </script>
-<script src="https://formssternlystately.com/b0/e7/0f/b0e70fd01f5353681ca5e50f31bad0fa.js">
-</script>
 </body>
-<script async="async" data-cfasync="false" src="https://formssternlystately.com/90ec2e48ee9054ab779ec761d04f30e5/invoke.js"></script>
-<div id="container-90ec2e48ee9054ab779ec761d04f30e5"></div>
 </html>
