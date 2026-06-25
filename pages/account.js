@@ -231,6 +231,7 @@ const AccountPage = (() => {
   async function setupProfileTab(session) {
     const emailInput = document.getElementById('profile-email-input');
     const nameInput = document.getElementById('profile-name-input');
+    const countryInput = document.getElementById('profile-country-input');
     const avatarImg = document.getElementById('profile-avatar-img');
     const changeBtn = document.getElementById('change-avatar-btn');
     const saveBtn = document.getElementById('save-profile-btn');
@@ -248,6 +249,9 @@ const AccountPage = (() => {
     activeAvatarUrl = profile?.avatar_url || session.user.user_metadata?.avatar_url || `https://api.dicebear.com/7.x/initials/svg?seed=${encodeURIComponent(fullName)}&backgroundColor=e50914&textColor=ffffff`;
 
     nameInput.value = fullName;
+    if (countryInput) {
+      countryInput.value = profile?.country || localStorage.getItem('cs_user_country') || 'india';
+    }
     avatarImg.src = activeAvatarUrl;
 
     // Dynamic Seed avatar randomizer
@@ -263,6 +267,8 @@ const AccountPage = (() => {
     // Save changes
     saveBtn.onclick = async () => {
       const name = nameInput.value.trim();
+      const country = countryInput ? countryInput.value : 'india';
+      
       if (!name) {
         UI.toast('Please enter a valid display name.', 'warning');
         return;
@@ -272,10 +278,14 @@ const AccountPage = (() => {
       try {
         await window.Auth.updateProfile(session.user.id, {
           full_name: name,
-          avatar_url: activeAvatarUrl
+          avatar_url: activeAvatarUrl,
+          country: country
         });
+        localStorage.setItem('cs_user_country', country);
         UI.toast('Profile settings updated successfully!', 'success');
         UI.updateNavbarUser();
+        // Update subscription display to reflect country pricing
+        await loadSubscriptionDetails(session.user.id);
       } catch (err) {
         UI.toast('Failed to save profile. Please try again.', 'error');
       } finally {
