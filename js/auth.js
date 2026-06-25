@@ -12,7 +12,7 @@ const Auth = (() => {
   }
 
   // ── Sign Up with Email/Password (OTP-based) ──
-  async function signUpWithEmail(email, password, fullName) {
+  async function signUpWithEmail(email, password, fullName, country = 'india') {
     const { data, error } = await window.sb.auth.signUp({
       email,
       password,
@@ -20,7 +20,7 @@ const Auth = (() => {
         data: { 
           full_name: fullName, 
           avatar_url: '',
-          country: 'india' // Default to India for new registrations
+          country: country
         },
         emailRedirectTo: window.location.origin + window.location.pathname
       }
@@ -33,12 +33,12 @@ const Auth = (() => {
   }
 
   // ── Sign Up with OTP (Email-based OTP verification) ──
-  async function signUpWithOTP(email, fullName) {
+  async function signUpWithOTP(email, fullName, country = 'india') {
     const { data, error } = await window.sb.auth.signInWithOtp({
       email,
       options: {
         shouldCreateUser: true,
-        data: { full_name: fullName, avatar_url: '', country: 'india' },
+        data: { full_name: fullName, avatar_url: '', country: country },
         emailRedirectTo: window.location.origin + window.location.pathname
       }
     });

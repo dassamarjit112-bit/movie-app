@@ -115,7 +115,7 @@ const LoginPage = (() => {
 
     try {
       // Use OTP-based signup instead
-      const result = await Auth.signUpWithOTP(email, name);
+      const result = await Auth.signUpWithOTP(email, name, country);
       
       registrationEmail = email;
       btn.disabled = false;
