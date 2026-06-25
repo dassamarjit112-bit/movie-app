@@ -589,10 +589,7 @@ const UI = (() => {
   }
   // ── Promo Banner ──
   async function showPromoBanner() {
-    // Show once per session (sessionStorage clears when tab closes)
-    if (sessionStorage.getItem('cs_promo_shown')) return;
-    
-    // Do not show if already redeemed
+    // Do not show if already redeemed or user has subscription
     try {
       if (window.Auth && window.Subscriptions) {
         const session = await window.Auth.getSession();
@@ -662,7 +659,7 @@ const UI = (() => {
         }
       </style>
       <div class="promo-cloud">
-        <button onclick="document.getElementById('promo-banner-container').remove(); sessionStorage.setItem('cs_promo_shown', '1');" style="position:absolute; top:8px; right:8px; background:none; border:none; color:rgba(255,255,255,0.5); cursor:pointer; font-size:18px; outline:none; transition: color 0.2s;" onmouseover="this.style.color='white'" onmouseout="this.style.color='rgba(255,255,255,0.5)'">×</button>
+        <button onclick="document.getElementById('promo-banner-container').remove();" style="position:absolute; top:8px; right:8px; background:none; border:none; color:rgba(255,255,255,0.5); cursor:pointer; font-size:18px; outline:none; transition: color 0.2s;" onmouseover="this.style.color='white'" onmouseout="this.style.color='rgba(255,255,255,0.5)'">×</button>
         <div style="display:flex; align-items:center; gap:10px; margin-bottom:8px;">
           <span style="font-size:24px; animation: floatCloud 2s infinite alternate;">🎁</span>
           <strong style="font-size:14px; color:#14d1ff;">Free Premium Offer!</strong>
@@ -687,7 +684,6 @@ const UI = (() => {
     // Remove promo banner
     const banner = document.getElementById('promo-banner-container');
     if (banner) banner.remove();
-    sessionStorage.setItem('cs_promo_shown', '1');
 
     // Check auth
     let session, userId;
