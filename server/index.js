@@ -348,52 +348,11 @@ app.get('/api/sports/fancode', async (req, res) => {
 });
 const { spawn } = require('child_process');
 
-async function extractMasterPlaylistUrl(tmdbId, type, season, episode) {
-  const sources = type === 'series'
-    ? [
-        `https://api.vidsrc.cc/v1/source/tv/${tmdbId}/${season}/${episode}`,
-        `https://embed.su/api/source/tv/${tmdbId}/${season}/${episode}`
-      ]
-    : [
-        `https://api.vidsrc.cc/v1/source/movie/${tmdbId}`,
-        `https://embed.su/api/source/movie/${tmdbId}`
-      ];
-
-  const headers = {
-    'User-Agent': 'Mozilla/5.0',
-    'Referer': 'https://www.google.com/'
-  };
-
-  for (const sourceUrl of sources) {
-    try {
-      const response = await axios.get(sourceUrl, { headers, timeout: 10000, validateStatus: () => true });
-      let playlistUrl = null;
-
-      if (sourceUrl.includes('vidsrc.cc')) {
-        playlistUrl = response.data?.playlist_url || response.data?.file || response.data?.url || null;
-      } else if (sourceUrl.includes('embed.su')) {
-        if (response.data?.sources) {
-          const sourcesList = response.data.sources;
-          const hlsSource = sourcesList.find(s => s.type === 'hls' || (s.url && s.url.includes('.m3u8')));
-          playlistUrl = hlsSource?.url || sourcesList[0]?.url || null;
-        } else {
-          playlistUrl = response.data?.url || response.data?.file || null;
-        }
-      }
-
-      if (playlistUrl && playlistUrl.includes('.m3u8')) return playlistUrl;
-      if (typeof response.data === 'string') {
-        const m3u8Match = response.data.match(/(https?:\/\/[^\s"']+\.m3u8[^\s"']*)/);
-        if (m3u8Match) return m3u8Match[1];
-      }
-    } catch (error) { continue; }
-  }
-  return null;
-}
+const { extractMasterPlaylistUrl } = require('./puppeteerExtractor');
 
 /**
  * GET /api/media/download_stream
- * Extracts master .m3u8 playlist and pipes through FFmpeg for download
+ * Extracts master .m3u8 playlist using Puppeteer and pipes through FFmpeg for download
  * Changed to GET so mobile browser download managers can handle it directly.
  */
 app.get('/api/media/download_stream', async (req, res) => {
@@ -402,9 +361,11 @@ app.get('/api/media/download_stream', async (req, res) => {
     if (!id || !title) return res.status(400).json({ error: 'Missing id or title' });
 
     console.log(`[DownloadEngine] Starting pipeline for: ${title} (ID: ${id})`);
+    
+    // Use the newly installed Puppeteer headless browser to intercept network traffic
     const manifestUrl = await extractMasterPlaylistUrl(id, type, season, episode);
     if (!manifestUrl) {
-      return res.status(404).send('Could not resolve streaming source');
+      return res.status(404).send('Could not resolve streaming source. The stream provider may be blocking extraction.');
     }
 
     console.log(`[DownloadEngine] Resolved manifest: ${manifestUrl}, starting FFmpeg...`);

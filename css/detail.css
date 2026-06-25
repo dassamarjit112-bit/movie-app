@@ -121,24 +121,27 @@
   #detail-description { font-size: 14px !important; text-align: center; }
   .detail-grid { grid-template-columns: 1fr; gap: 32px; margin-top: 32px; padding-top: 32px; }
   .detail-actions { 
-    justify-content: center; 
+    display: grid;
+    grid-template-columns: 1fr 1fr;
     width: 100%; 
-    gap: 12px;
+    gap: 8px;
   }
   .detail-actions #detail-play-btn {
+    grid-column: 1 / -1;
     width: 100%;
-    flex: none;
     justify-content: center;
   }
   .detail-actions #detail-download-btn,
   .detail-actions #detail-watchlist-btn {
-    flex: 1;
-    min-width: 140px;
+    width: 100%;
     justify-content: center;
-    padding-left: 12px !important;
-    padding-right: 12px !important;
+    padding-left: 4px !important;
+    padding-right: 4px !important;
+    gap: 4px !important;
+    font-size: 13px !important;
+    white-space: nowrap !important;
   }
   .detail-actions .btn-icon-circle {
-    flex: none;
+    display: none; /* Hide share/like on mobile to save space, or put them elsewhere */
   }
 }
