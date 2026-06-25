@@ -455,28 +455,72 @@ const PlayerPage = (() => {
     const container = document.getElementById('player-container');
     const topBar = container?.querySelector('.player-top-bar');
     const controls = container?.querySelector('.player-controls');
+    const serverOverlay = document.getElementById('server-selector-overlay');
+    const gradient = container?.querySelector('.player-gradient-overlay');
+    const wakeCatcher = document.getElementById('ui-wake-catcher');
     let timer = null;
+    let uiHidden = false;
 
     const hide = () => {
       if (videoElement && !videoElement.paused) {
+        uiHidden = true;
         topBar?.classList.add('hidden');
         controls?.classList.add('hidden');
+        if (serverOverlay) serverOverlay.style.opacity = '0';
+        if (serverOverlay) serverOverlay.style.pointerEvents = 'none';
+        if (gradient) gradient.style.opacity = '0';
+        
         if (container) container.style.cursor = 'none';
+        if (wakeCatcher) wakeCatcher.style.display = 'block';
+      } else if (document.getElementById('iframe-video') && document.getElementById('iframe-video').style.display !== 'none') {
+        // If iframe is active, we don't have easy access to pause state, hide anyway
+        uiHidden = true;
+        topBar?.classList.add('hidden');
+        controls?.classList.add('hidden');
+        if (serverOverlay) serverOverlay.style.opacity = '0';
+        if (serverOverlay) serverOverlay.style.pointerEvents = 'none';
+        if (gradient) gradient.style.opacity = '0';
+        
+        if (container) container.style.cursor = 'none';
+        if (wakeCatcher) wakeCatcher.style.display = 'block';
       }
     };
 
     const resetTimer = () => {
+      uiHidden = false;
       topBar?.classList.remove('hidden');
       controls?.classList.remove('hidden');
+      if (serverOverlay) serverOverlay.style.opacity = '1';
+      if (serverOverlay) serverOverlay.style.pointerEvents = 'auto';
+      if (gradient) gradient.style.opacity = '1';
+      
       if (container) container.style.cursor = 'default';
+      if (wakeCatcher) wakeCatcher.style.display = 'none';
+      
       clearTimeout(timer);
       timer = setTimeout(hide, 3000);
     };
 
+    if (wakeCatcher) {
+      wakeCatcher.addEventListener('click', (e) => {
+        resetTimer();
+      });
+      wakeCatcher.addEventListener('touchstart', (e) => {
+        resetTimer();
+      }, { passive: true });
+    }
+
     if (container) {
       container.addEventListener('mousemove', resetTimer);
-      container.addEventListener('touchstart', resetTimer);
+      container.addEventListener('touchstart', resetTimer, { passive: true });
+      container.addEventListener('click', (e) => {
+        if (e.target === container || e.target === gradient || e.target === wakeCatcher) {
+          if (uiHidden) resetTimer();
+          else hide();
+        }
+      });
     }
+    
     if (videoElement) {
       videoElement.addEventListener('pause', resetTimer);
       videoElement.addEventListener('play', resetTimer);
