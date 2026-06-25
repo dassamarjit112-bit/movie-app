@@ -136,7 +136,7 @@ const DetailPage = (() => {
         try {
           UI.toast('Starting secure offline download...', 'info');
           
-          const mockVideoUrl = 'https://www.w3schools.com/html/mov_bbb.mp4';
+          const mockVideoUrl = 'https://storage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4';
           const response = await fetch(mockVideoUrl);
           if (!response.ok) throw new Error('Network response was not ok');
           
