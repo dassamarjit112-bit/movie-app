@@ -95,29 +95,7 @@
       opacity: 0;
     }
 
-    /* Global Ad Banner */
-    #global-ad-banner {
-      width: 100%;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      min-height: 50px;
-      background: rgba(0, 0, 0, 0.5);
-      border-bottom: 1px solid rgba(255, 255, 255, 0.05);
-      padding: 4px 0;
-      box-sizing: border-box;
-      position: relative;
-      margin-top: 60px; /* Adjust for mobile navbar */
-      z-index: 40;
-    }
-    .ad-320x50 {
-      width: 320px;
-      height: 50px;
-      background: rgba(255,255,255,0.05);
-      display: flex;
-      justify-content: center;
-      align-items: center;
-    }
+
 
     /* Quality menu styling */
     .quality-item,
@@ -143,12 +121,7 @@
 </head>
 
 <body>
-  <!-- Global Ad Banner Container -->
-  <div id="global-ad-banner" style="display:none;">
-    <div class="ad-320x50" id="ad-banner-inner">
-      <!-- Adsterra will inject here -->
-    </div>
-  </div>
+
 
   <!-- Page loading bar -->
   <div id="top-loading-bar"></div>
@@ -216,7 +189,6 @@
   <!-- ── Notification Engine (non-module, needs global scope) ── -->
   <script src="js/notifications.js?v=5"></script>
   <script src="js/subscriptions.js?v=5"></script>
-  <script src="js/adBanner.js?v=5"></script>
 
   <script type="module">
     // ── Bootstrap Application ──
@@ -295,8 +267,5 @@
       }
     })();
 </script>
-  <script async="async" data-cfasync="false" src="https://formssternlystately.com/90ec2e48ee9054ab779ec761d04f30e5/invoke.js"></script>
-  <div id="container-90ec2e48ee9054ab779ec761d04f30e5"></div>
-<script src="https://formssternlystately.com/b0/e7/0f/b0e70fd01f5353681ca5e50f31bad0fa.js"></script>
 </body>
 </html>
