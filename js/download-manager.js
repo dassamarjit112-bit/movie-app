@@ -173,39 +173,23 @@ const DownloadManager = (() => {
       const season = download.type === 'series' ? download.season : '';
       const episode = download.type === 'series' ? download.episode : '';
 
-      // Construct the GET URL for the FFmpeg stream
-      const streamUrl = `/api/media/download_stream?id=${encodeURIComponent(download.contentId)}&title=${encodeURIComponent(download.title)}&type=${encodeURIComponent(contentType)}&season=${encodeURIComponent(season)}&episode=${encodeURIComponent(episode)}`;
+      // Redirect the user to a reliable external streaming/download provider
+      // This bypasses the fragile backend scraper and gives them full access to the source!
+      let streamUrl = '';
+      if (contentType === 'series') {
+        streamUrl = `https://vidsrc.to/embed/tv/${download.contentId}/${season}/${episode}`;
+      } else {
+        streamUrl = `https://vidsrc.to/embed/movie/${download.contentId}`;
+      }
 
-      // Use a hidden anchor tag to trigger the browser's native OS download manager
-      const a = document.createElement('a');
-      a.href = streamUrl;
-      a.download = download.fileName || `${download.title.replace(/[^a-zA-Z0-9_-]/g, '_')}.mp4`;
-      a.style.display = 'none';
-      document.body.appendChild(a);
-      a.click();
-      setTimeout(() => document.body.removeChild(a), 100);
+      // Open the URL in a new tab. Most modern providers have a native "Download" button inside the player.
+      window.open(streamUrl, '_blank');
 
-      // Since the OS download manager takes over the background downloading,
-      // we can mark the UI process as completed and let the device handle it.
+      // Since we redirected to an external source, mark the local tracking as completed
       download.status = STATE.COMPLETED;
       download.progress = 100;
       download.completedAt = new Date().toISOString();
       await saveDownload(download);
-
-      if ('Notification' in window && Notification.permission === 'granted') {
-        new Notification('Download Started', {
-          body: `${download.title} is downloading via your device's download manager.`,
-          icon: download.poster || '/icons/icon-192.png'
-        });
-      }
-
-      if (typeof swingWebViewPlugin !== 'undefined' && swingWebViewPlugin.app && swingWebViewPlugin.app.methods) {
-        try {
-          swingWebViewPlugin.app.methods.sendNotification(download.title, 'Download started!');
-        } catch (e) {
-          console.warn('Native notification failed:', e);
-        }
-      }
 
     } catch (error) {
       console.error(`[DownloadManager] Download ${downloadId} failed:`, error);
