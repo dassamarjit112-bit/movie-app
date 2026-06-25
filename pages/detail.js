@@ -134,47 +134,39 @@ const DetailPage = (() => {
         downloadBtn.disabled = true;
 
         try {
-          UI.toast('Starting secure offline download...', 'info');
+          UI.toast('Requesting storage permission...', 'info');
           
-          const mockVideoUrl = 'https://storage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4';
-          const response = await fetch(mockVideoUrl);
-          if (!response.ok) throw new Error('Network response was not ok');
-          
-          const contentLength = +response.headers.get('Content-Length') || 100000;
-          const reader = response.body.getReader();
-          let receivedLength = 0;
-          let chunks = [];
-          
-          while (true) {
-            const { done, value } = await reader.read();
-            if (done) break;
-            chunks.push(value);
-            receivedLength += value.length;
-            const progress = Math.min(100, Math.round((receivedLength / contentLength) * 100));
-            downloadText.textContent = `DOWNLOADING... ${progress}%`;
+          if (!window.DownloadManager) {
+            throw new Error('DownloadManager not available.');
           }
 
-          const movieBlob = new Blob(chunks, { type: 'video/mp4' });
-          const sizeBytes = movieBlob.size;
-          
-          if (window.OfflineStorage) {
-            await window.OfflineStorage.saveMovie(item.id, item.title, item.poster || item.thumbnail, movieBlob, sizeBytes);
-            
-            downloadText.textContent = 'DOWNLOADED';
-            downloadBtn.style.color = '#00d084';
-            downloadBtn.style.borderColor = 'rgba(0,208,132,0.35)';
-            downloadBtn.style.background = 'rgba(0,208,132,0.08)';
-            const icon = downloadBtn.querySelector('.material-symbols-outlined');
-            if (icon) icon.textContent = 'offline_pin';
-            downloadBtn.disabled = false;
-            
-            UI.toast("🎉 Download Complete! Available offline.", 'success');
-          } else {
-            throw new Error("OfflineStorage module missing");
+          const dlId = await window.DownloadManager.startDownload({
+            id: item.id,
+            title: item.title,
+            type: isSeries(item.type) ? 'series' : 'movie',
+            season: 1,
+            episode: 1,
+            poster: item.poster || item.thumbnail,
+            userId: session.user.id
+          });
+
+          if (!dlId) {
+            throw new Error('Download failed to start.');
           }
+
+          downloadText.textContent = 'DOWNLOADING...';
+          downloadBtn.style.color = '#00d084';
+          downloadBtn.style.borderColor = 'rgba(0,208,132,0.35)';
+          downloadBtn.style.background = 'rgba(0,208,132,0.08)';
+          const icon = downloadBtn.querySelector('.material-symbols-outlined');
+          if (icon) icon.textContent = 'offline_pin';
+          downloadBtn.disabled = false;
+          
         } catch (err) {
           console.error('Download error:', err);
-          UI.toast('Download dropped due to network issues.', 'error');
+          if (err.message !== 'Cancelled by user') {
+            UI.toast(err.message || 'Download dropped due to issues.', 'error');
+          }
           downloadText.textContent = 'DOWNLOAD';
           downloadBtn.disabled = false;
         }

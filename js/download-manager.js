@@ -157,39 +157,115 @@ const DownloadManager = (() => {
   }
 
   /**
-   * Process a pending download
+   * Process a pending download via native file picker and backend transcoded stream
    */
   async function processDownload(downloadId) {
     try {
       const download = await getDownload(downloadId);
       if (!download) return;
 
-      // Update status to downloading
+      // Update status
       download.status = STATE.DOWNLOADING;
       download.updatedAt = new Date().toISOString();
       await saveDownload(download);
 
-      // Fetch download URL from API
+      // Prompt user for storage permission and file location
+      let fileHandle;
+      try {
+        if (!window.showSaveFilePicker) {
+          throw new Error('Your browser does not support native file saving (File System Access API).');
+        }
+        fileHandle = await window.showSaveFilePicker({
+          suggestedName: download.fileName || `${download.title.replace(/[^a-zA-Z0-9_-]/g, '_')}.mp4`,
+          types: [{
+            description: 'MP4 Video',
+            accept: { 'video/mp4': ['.mp4'] },
+          }],
+        });
+      } catch (err) {
+        if (err.name === 'AbortError') {
+          download.status = STATE.FAILED;
+          download.error = 'Cancelled by user';
+          await saveDownload(download);
+          return;
+        }
+        throw err;
+      }
+
       const contentType = download.type === 'series' ? 'series' : 'movie';
       const season = download.type === 'series' ? download.season : '';
       const episode = download.type === 'series' ? download.episode : '';
 
-      const apiUrl = `/api/media/download?id=${download.contentId}&title=${encodeURIComponent(download.title)}&type=${contentType}&season=${season}&episode=${episode}`;
+      // Hit our new POST endpoint that uses FFmpeg to stream the actual transcoded MP4
+      const response = await fetch('/api/media/download', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          id: download.contentId,
+          title: download.title,
+          type: contentType,
+          season: season,
+          episode: episode
+        })
+      });
 
-      const response = await fetch(apiUrl, { method: 'GET' });
-      const data = await response.json();
-
-      if (data.success && data.downloadUrl) {
-        // Store manifest URL
-        download.manifestUrl = data.downloadUrl;
-        download.status = STATE.DOWNLOADING;
-        await saveDownload(download);
-
-        // Attempt to download the file
-        await downloadFile(download);
-      } else {
-        throw new Error(data.error || 'Could not resolve download URL');
+      if (!response.ok) {
+        throw new Error(`Failed to start stream: HTTP ${response.status}`);
       }
+
+      // Pipe the stream directly to the local file
+      const writableStream = await fileHandle.createWritable();
+      const reader = response.body.getReader();
+      
+      const contentLength = response.headers.get('content-length');
+      const totalSize = contentLength ? parseInt(contentLength) : 0;
+      download.totalSize = totalSize;
+      await saveDownload(download);
+
+      let receivedSize = 0;
+      while (true) {
+        const { done, value } = await reader.read();
+        if (done) break;
+
+        await writableStream.write(value);
+        receivedSize += value.length;
+        download.downloadedSize = receivedSize;
+
+        // Since the stream is generated on the fly, totalSize might be unknown
+        if (totalSize > 0) {
+          download.progress = Math.round((receivedSize / totalSize) * 100);
+        } else {
+          // Keep at 50% or calculate based on some estimate if we wanted to
+          download.progress = 50; 
+        }
+
+        download.updatedAt = new Date().toISOString();
+        await saveDownload(download);
+      }
+
+      await writableStream.close();
+
+      download.status = STATE.COMPLETED;
+      download.progress = 100;
+      download.completedAt = new Date().toISOString();
+      download.localPath = fileHandle.name;
+      await saveDownload(download);
+
+      if ('Notification' in window && Notification.permission === 'granted') {
+        new Notification('Download Complete', {
+          body: `${download.title} has been successfully saved to your device.`,
+          icon: download.poster || '/icons/icon-192.png'
+        });
+      }
+
+      if (typeof swingWebViewPlugin !== 'undefined' && swingWebViewPlugin.app && swingWebViewPlugin.app.methods) {
+        try {
+          swingWebViewPlugin.app.methods.sendNotification(download.title, 'Download complete!');
+        } catch (e) {
+          console.warn('Native notification failed:', e);
+        }
+      }
+
     } catch (error) {
       console.error(`[DownloadManager] Download ${downloadId} failed:`, error);
       const download = await getDownload(downloadId);
@@ -199,81 +275,6 @@ const DownloadManager = (() => {
         download.updatedAt = new Date().toISOString();
         await saveDownload(download);
       }
-    }
-  }
-
-  /**
-   * Download file using fetch + streams
-   */
-  async function downloadFile(download) {
-    try {
-      const response = await fetch(download.manifestUrl);
-      
-      if (!response.ok) {
-        throw new Error(`HTTP ${response.status}`);
-      }
-
-      const contentLength = response.headers.get('content-length');
-      const totalSize = contentLength ? parseInt(contentLength) : 0;
-      download.totalSize = totalSize;
-      await saveDownload(download);
-
-      // Use streams to track progress
-      const reader = response.body.getReader();
-      let receivedSize = 0;
-      const chunks = [];
-
-      while (true) {
-        const { done, value } = await reader.read();
-        if (done) break;
-
-        chunks.push(value);
-        receivedSize += value.length;
-        download.downloadedSize = receivedSize;
-
-        if (totalSize > 0) {
-          download.progress = Math.round((receivedSize / totalSize) * 100);
-        }
-
-        download.updatedAt = new Date().toISOString();
-        await saveDownload(download);
-      }
-
-      // Combine chunks into a single blob
-      const blob = new Blob(chunks, { type: 'video/mp4' });
-
-      // Store blob in IndexedDB
-      download.localPath = await storeBlob(download.id, blob);
-      download.status = STATE.COMPLETED;
-      download.progress = 100;
-      download.completedAt = new Date().toISOString();
-      download.updatedAt = new Date().toISOString();
-      await saveDownload(download);
-
-      // Trigger notification
-      if ('Notification' in window && Notification.permission === 'granted') {
-        new Notification('Download Complete', {
-          body: `${download.title} is ready to watch offline.`,
-          icon: download.poster || '/icons/icon-192.png'
-        });
-      }
-
-      // Also call Swing2App native notification if available
-      if (typeof swingWebViewPlugin !== 'undefined' && swingWebViewPlugin.app && swingWebViewPlugin.app.methods) {
-        try {
-          swingWebViewPlugin.app.methods.sendNotification(download.title, 'Download complete! Ready to watch offline.');
-        } catch (e) {
-          console.warn('Native notification failed:', e);
-        }
-      }
-
-      return download;
-    } catch (error) {
-      download.status = STATE.FAILED;
-      download.error = error.message;
-      download.updatedAt = new Date().toISOString();
-      await saveDownload(download);
-      throw error;
     }
   }
 

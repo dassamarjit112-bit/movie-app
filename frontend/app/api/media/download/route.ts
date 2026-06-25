@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import axios from 'axios';
+import { spawn } from 'child_process';
 
 export const runtime = 'nodejs';
 export const maxDuration = 300;
@@ -69,25 +70,59 @@ export async function POST(request: NextRequest) {
 
     console.log(`[DownloadEngine] Starting pipeline for: ${title} (ID: ${id})`);
 
-    // Step 1 & 2: Extract master .m3u8 playlist URL
     const manifestUrl = await extractMasterPlaylistUrl(id, type, season, episode);
     if (!manifestUrl) {
       return NextResponse.json({ error: 'Could not resolve streaming source' }, { status: 404 });
     }
 
-    console.log(`[DownloadEngine] Resolved manifest: ${manifestUrl}`);
+    console.log(`[DownloadEngine] Resolved manifest: ${manifestUrl}, starting FFmpeg...`);
 
-    // Return the manifest URL and metadata for client-side processing
-    // Note: Full FFmpeg transcoding requires server-side execution with binary access
-    // For Vercel/serverless, we provide the manifest URL for direct download
-    return NextResponse.json({
-      success: true,
-      manifestUrl,
-      title: title.replace(/[^a-zA-Z0-9_-]/g, '_'),
-      type,
-      season,
-      episode,
-      message: 'Manifest resolved. Use a download manager to fetch .m3u8 and convert to MP4.'
+    const ffmpegProcess = spawn('ffmpeg', [
+      '-i', manifestUrl,
+      '-c', 'copy',
+      '-bsf:a', 'aac_adtstoasc',
+      '-movflags', 'frag_keyframe+empty_moov',
+      '-f', 'mp4',
+      'pipe:1'
+    ]);
+
+    ffmpegProcess.stderr.on('data', (data) => {
+      // Uncomment for debugging: console.log(`[FFmpeg] ${data}`);
+    });
+
+    ffmpegProcess.on('error', (err) => {
+      console.error('[DownloadEngine] FFmpeg process error:', err);
+    });
+
+    const readableStream = new ReadableStream({
+      start(controller) {
+        ffmpegProcess.stdout.on('data', (chunk) => {
+          controller.enqueue(chunk);
+        });
+        ffmpegProcess.stdout.on('end', () => {
+          try { controller.close(); } catch (e) {}
+        });
+        ffmpegProcess.on('close', (code) => {
+          if (code !== 0) {
+            console.error(`[DownloadEngine] FFmpeg exited with code ${code}`);
+          }
+          try { controller.close(); } catch (e) {}
+        });
+      },
+      cancel() {
+        console.log('[DownloadEngine] Stream cancelled by client, killing FFmpeg');
+        ffmpegProcess.kill('SIGKILL');
+      }
+    });
+
+    const safeTitle = title.replace(/[^a-zA-Z0-9_-]/g, '_');
+    const filename = `${safeTitle}_${type === 'series' ? `S${season}_E${episode}` : 'movie'}.mp4`;
+
+    return new NextResponse(readableStream, {
+      headers: {
+        'Content-Type': 'video/mp4',
+        'Content-Disposition': `attachment; filename="${filename}"`
+      }
     });
 
   } catch (error) {
