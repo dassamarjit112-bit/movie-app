@@ -346,7 +346,99 @@ app.get('/api/sports/fancode', async (req, res) => {
     return res.status(500).json({ error: "FanCode server cluster unreachable" });
   }
 });
+const { spawn } = require('child_process');
 
+async function extractMasterPlaylistUrl(tmdbId, type, season, episode) {
+  const sources = type === 'series'
+    ? [
+        `https://api.vidsrc.cc/v1/source/tv/${tmdbId}/${season}/${episode}`,
+        `https://embed.su/api/source/tv/${tmdbId}/${season}/${episode}`
+      ]
+    : [
+        `https://api.vidsrc.cc/v1/source/movie/${tmdbId}`,
+        `https://embed.su/api/source/movie/${tmdbId}`
+      ];
+
+  const headers = {
+    'User-Agent': 'Mozilla/5.0',
+    'Referer': 'https://www.google.com/'
+  };
+
+  for (const sourceUrl of sources) {
+    try {
+      const response = await axios.get(sourceUrl, { headers, timeout: 10000, validateStatus: () => true });
+      let playlistUrl = null;
+
+      if (sourceUrl.includes('vidsrc.cc')) {
+        playlistUrl = response.data?.playlist_url || response.data?.file || response.data?.url || null;
+      } else if (sourceUrl.includes('embed.su')) {
+        if (response.data?.sources) {
+          const sourcesList = response.data.sources;
+          const hlsSource = sourcesList.find(s => s.type === 'hls' || (s.url && s.url.includes('.m3u8')));
+          playlistUrl = hlsSource?.url || sourcesList[0]?.url || null;
+        } else {
+          playlistUrl = response.data?.url || response.data?.file || null;
+        }
+      }
+
+      if (playlistUrl && playlistUrl.includes('.m3u8')) return playlistUrl;
+      if (typeof response.data === 'string') {
+        const m3u8Match = response.data.match(/(https?:\/\/[^\s"']+\.m3u8[^\s"']*)/);
+        if (m3u8Match) return m3u8Match[1];
+      }
+    } catch (error) { continue; }
+  }
+  return null;
+}
+
+/**
+ * GET /api/media/download_stream
+ * Extracts master .m3u8 playlist and pipes through FFmpeg for download
+ * Changed to GET so mobile browser download managers can handle it directly.
+ */
+app.get('/api/media/download_stream', async (req, res) => {
+  try {
+    const { id, title, type = 'movie', season = 1, episode = 1 } = req.query;
+    if (!id || !title) return res.status(400).json({ error: 'Missing id or title' });
+
+    console.log(`[DownloadEngine] Starting pipeline for: ${title} (ID: ${id})`);
+    const manifestUrl = await extractMasterPlaylistUrl(id, type, season, episode);
+    if (!manifestUrl) {
+      return res.status(404).send('Could not resolve streaming source');
+    }
+
+    console.log(`[DownloadEngine] Resolved manifest: ${manifestUrl}, starting FFmpeg...`);
+    const ffmpegProcess = spawn('ffmpeg', [
+      '-i', manifestUrl,
+      '-c', 'copy',
+      '-bsf:a', 'aac_adtstoasc',
+      '-movflags', 'frag_keyframe+empty_moov',
+      '-f', 'mp4',
+      'pipe:1'
+    ]);
+
+    ffmpegProcess.stderr.on('data', () => {});
+    ffmpegProcess.on('error', (err) => console.error('[DownloadEngine] FFmpeg process error:', err));
+    
+    req.on('close', () => {
+      console.log('[DownloadEngine] Stream cancelled by client, killing FFmpeg');
+      try { ffmpegProcess.kill('SIGKILL'); } catch (e) {}
+    });
+
+    const safeTitle = title.replace(/[^a-zA-Z0-9_-]/g, '_');
+    const filename = `${safeTitle}_${type === 'series' ? `S${season}_E${episode}` : 'movie'}.mp4`;
+
+    res.setHeader('Content-Type', 'video/mp4');
+    res.setHeader('Content-Disposition', `attachment; filename="${filename}"`);
+
+    ffmpegProcess.stdout.pipe(res);
+  } catch (error) {
+    console.error('[DownloadEngine] Error:', error);
+    if (!res.headersSent) {
+      res.status(500).send(error.message || 'Download failed');
+    }
+  }
+});
 const PORT = process.env.PORT || 4000;
 app.listen(PORT, () => {
   console.log(`CinePro backend listening on http://localhost:${PORT}`);

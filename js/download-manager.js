@@ -157,7 +157,7 @@ const DownloadManager = (() => {
   }
 
   /**
-   * Process a pending download via native file picker and backend transcoded stream
+   * Process a pending download via native OS download manager (Mobile & Desktop friendly)
    */
   async function processDownload(downloadId) {
     try {
@@ -169,98 +169,39 @@ const DownloadManager = (() => {
       download.updatedAt = new Date().toISOString();
       await saveDownload(download);
 
-      // Prompt user for storage permission and file location
-      let fileHandle;
-      try {
-        if (!window.showSaveFilePicker) {
-          throw new Error('Your browser does not support native file saving (File System Access API).');
-        }
-        fileHandle = await window.showSaveFilePicker({
-          suggestedName: download.fileName || `${download.title.replace(/[^a-zA-Z0-9_-]/g, '_')}.mp4`,
-          types: [{
-            description: 'MP4 Video',
-            accept: { 'video/mp4': ['.mp4'] },
-          }],
-        });
-      } catch (err) {
-        if (err.name === 'AbortError') {
-          download.status = STATE.FAILED;
-          download.error = 'Cancelled by user';
-          await saveDownload(download);
-          return;
-        }
-        throw err;
-      }
-
       const contentType = download.type === 'series' ? 'series' : 'movie';
       const season = download.type === 'series' ? download.season : '';
       const episode = download.type === 'series' ? download.episode : '';
 
-      // Hit our new POST endpoint that uses FFmpeg to stream the actual transcoded MP4
-      const response = await fetch('/api/media/download', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          id: download.contentId,
-          title: download.title,
-          type: contentType,
-          season: season,
-          episode: episode
-        })
-      });
+      // Construct the GET URL for the FFmpeg stream
+      const streamUrl = `/api/media/download_stream?id=${encodeURIComponent(download.contentId)}&title=${encodeURIComponent(download.title)}&type=${encodeURIComponent(contentType)}&season=${encodeURIComponent(season)}&episode=${encodeURIComponent(episode)}`;
 
-      if (!response.ok) {
-        throw new Error(`Failed to start stream: HTTP ${response.status}`);
-      }
+      // Use a hidden anchor tag to trigger the browser's native OS download manager
+      const a = document.createElement('a');
+      a.href = streamUrl;
+      a.download = download.fileName || `${download.title.replace(/[^a-zA-Z0-9_-]/g, '_')}.mp4`;
+      a.style.display = 'none';
+      document.body.appendChild(a);
+      a.click();
+      setTimeout(() => document.body.removeChild(a), 100);
 
-      // Pipe the stream directly to the local file
-      const writableStream = await fileHandle.createWritable();
-      const reader = response.body.getReader();
-      
-      const contentLength = response.headers.get('content-length');
-      const totalSize = contentLength ? parseInt(contentLength) : 0;
-      download.totalSize = totalSize;
-      await saveDownload(download);
-
-      let receivedSize = 0;
-      while (true) {
-        const { done, value } = await reader.read();
-        if (done) break;
-
-        await writableStream.write(value);
-        receivedSize += value.length;
-        download.downloadedSize = receivedSize;
-
-        // Since the stream is generated on the fly, totalSize might be unknown
-        if (totalSize > 0) {
-          download.progress = Math.round((receivedSize / totalSize) * 100);
-        } else {
-          // Keep at 50% or calculate based on some estimate if we wanted to
-          download.progress = 50; 
-        }
-
-        download.updatedAt = new Date().toISOString();
-        await saveDownload(download);
-      }
-
-      await writableStream.close();
-
+      // Since the OS download manager takes over the background downloading,
+      // we can mark the UI process as completed and let the device handle it.
       download.status = STATE.COMPLETED;
       download.progress = 100;
       download.completedAt = new Date().toISOString();
-      download.localPath = fileHandle.name;
       await saveDownload(download);
 
       if ('Notification' in window && Notification.permission === 'granted') {
-        new Notification('Download Complete', {
-          body: `${download.title} has been successfully saved to your device.`,
+        new Notification('Download Started', {
+          body: `${download.title} is downloading via your device's download manager.`,
           icon: download.poster || '/icons/icon-192.png'
         });
       }
 
       if (typeof swingWebViewPlugin !== 'undefined' && swingWebViewPlugin.app && swingWebViewPlugin.app.methods) {
         try {
-          swingWebViewPlugin.app.methods.sendNotification(download.title, 'Download complete!');
+          swingWebViewPlugin.app.methods.sendNotification(download.title, 'Download started!');
         } catch (e) {
           console.warn('Native notification failed:', e);
         }
