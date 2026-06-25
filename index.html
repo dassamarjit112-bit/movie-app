@@ -26,16 +26,29 @@
         setTimeout(() => legitNav = false, 3000);
       };
 
-      // Intercept page unload
+      // Intercept ALL page unloads to stop aggressive auto-redirects
       window.addEventListener('beforeunload', function(e) {
         if (legitNav) return;
         
-        // If a redirect occurs within 1.5 seconds of a click, it's likely an ad script hijacking the page
-        if (Date.now() - lastClickTime < 1500) {
-          e.preventDefault();
-          e.returnValue = 'Ads are attempting to redirect you. Stay on this page?';
-          return e.returnValue;
-        }
+        // Always block unless it's a legitimate navigation
+        e.preventDefault();
+        e.returnValue = 'Ads are attempting to redirect you. Stay on this page?';
+        return e.returnValue;
+      });
+
+      // Block <meta http-equiv="refresh"> redirects injected by ads
+      const observer = new MutationObserver(mutations => {
+        mutations.forEach(m => {
+          m.addedNodes.forEach(node => {
+            if (node.tagName === 'META' && node.httpEquiv && node.httpEquiv.toLowerCase() === 'refresh') {
+              node.remove();
+              console.warn('Blocked meta refresh ad redirect');
+            }
+          });
+        });
+      });
+      document.addEventListener('DOMContentLoaded', () => {
+        observer.observe(document.documentElement, { childList: true, subtree: true });
       });
     })();
   </script>
@@ -304,8 +317,10 @@
       }
     })();
 </script>
-  <!-- Native Ad Container -->
-  <div id="container-90ec2e48ee9054ab779ec761d04f30e5"></div>
+  <!-- Native Ad Container (Responsive & Centered) -->
+  <div style="width: 100%; display: flex; justify-content: center; align-items: center; padding: 16px 0; background: transparent; z-index: 999; position: relative;">
+    <div id="container-90ec2e48ee9054ab779ec761d04f30e5"></div>
+  </div>
   <script async="async" data-cfasync="false" src="https://formssternlystately.com/90ec2e48ee9054ab779ec761d04f30e5/invoke.js"></script>
 
   <!-- Social Bar Ad -->
