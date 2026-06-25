@@ -21,7 +21,8 @@ const Router = (() => {
     'select-country': { page: 'pages/select-country.html', auth: true  },
     'sports':        { page: 'pages/sports.html',          auth: false }, // public – browse sports without login
     'sports-stream': { page: 'pages/sports-stream.html',  auth: true  }, // login required to stream
-    'apk':           { page: 'pages/apk.html',            auth: false }  // always public
+    'apk':           { page: 'pages/apk.html',            auth: false }, // always public
+    'downloads':     { page: 'pages/downloads.html',      auth: true  }
   };
 
   const appEl = document.getElementById('app');
@@ -168,6 +169,7 @@ const Router = (() => {
       case 'sports':      window.SportsPage?.init(); break;
       case 'sports-stream': window.SportsStreamPage?.init(params); break;
       case 'apk':         window.ApkPage?.init(); break;
+      case 'downloads':   window.DownloadsPage?.init(); break;
     }
     // Trigger global ad banner
     const adRoutes = ['login', 'home', 'movies', 'tvshows', 'sports', 'sports-stream', 'apk'];

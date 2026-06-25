@@ -120,6 +120,7 @@ const UI = (() => {
           <li><a data-nav-link="tvshows" class="${activeRoute==='tvshows'?'active':''}" onclick="Router.navigate('tvshows')">TV Shows</a></li>
           <li><a data-nav-link="movies" class="${activeRoute==='movies'?'active':''}" onclick="Router.navigate('movies')">Movies</a></li>
           <li><a data-nav-link="sports" class="${activeRoute==='sports'?'active':''}" onclick="Router.navigate('sports')">Sports</a></li>
+          <li><a data-nav-link="downloads" class="${activeRoute==='downloads'?'active':''}" onclick="Router.navigate('downloads')">Downloads</a></li>
           <li><a data-nav-link="subscribe" class="${activeRoute==='subscribe'?'active':''}" onclick="Router.navigate('subscribe')">Plans</a></li>
         </ul>
         <div class="navbar-actions">
@@ -172,6 +173,7 @@ const UI = (() => {
       { route: 'movies',   icon: 'movie',        label: 'Movies' },
       { route: 'tvshows',  icon: 'tv',           label: 'Shows' },
       { route: 'sports',   icon: 'sports_soccer',label: 'Sports' },
+      { route: 'downloads',icon: 'download',     label: 'Offline' },
       // Profile nav item handled separately — shows 'Login' for guests
       { route: 'account',  icon: 'person',       label: 'Profile', id: 'mobile-profile-nav' }
     ];

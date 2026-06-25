@@ -214,6 +214,7 @@
   <script type="module" src="js/ui.js?v=6"></script>
   <script type="module" src="js/subscriptions.js"></script>
   <script type="module" src="js/ai-recommender.js"></script>
+  <script type="module" src="js/offlineStorage.js"></script>
   <script type="module" src="js/tmdb.js"></script>
   <script type="module" src="js/player.js"></script>
   <script type="module" src="js/router.js"></script>
@@ -235,6 +236,7 @@
   <script type="module" src="pages/sports.js"></script>
   <script type="module" src="pages/sports-stream.js"></script>
   <script type="module" src="pages/apk.js"></script>
+  <script type="module" src="pages/downloads.js"></script>
 
   <!-- ── Notification Engine (non-module, needs global scope) ── -->
   <script src="js/notifications.js?v=5"></script>
@@ -309,6 +311,17 @@
         if (window.NotificationSystem) {
           window.NotificationSystem.init();
         }
+      // Register Service Worker for Offline Capabilities
+      if ('serviceWorker' in navigator) {
+        window.addEventListener('load', () => {
+          navigator.serviceWorker.register('/sw.js').then(registration => {
+            console.log('ServiceWorker registration successful with scope: ', registration.scope);
+          }).catch(err => {
+            console.warn('ServiceWorker registration failed: ', err);
+          });
+        });
+      }
+
       } catch (err) {
         console.error('Bootstrap error occurred:', err);
         clearTimeout(safetyTimer);

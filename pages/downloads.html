@@ -1,0 +1,43 @@
+<!-- CineStream — Downloads Page -->
+<div id="downloads-page" style="min-height: 100vh; padding-bottom: 80px;">
+  <div id="navbar-mount"></div>
+
+  <!-- Page Header -->
+  <div style="padding:100px var(--space-margin-desktop) 0;background:linear-gradient(to bottom,rgba(20,209,255,0.08) 0%,transparent 100%)">
+    <div style="max-width:var(--space-container-max);margin:0 auto">
+      <div class="badge badge-blue" style="margin-bottom:12px">Offline</div>
+      <h1 class="text-display-md" style="margin-bottom:8px">Your Downloads</h1>
+      <p style="color:rgba(229,226,225,0.55);font-size:16px">Watch your favorite movies anytime, even without an internet connection.</p>
+    </div>
+  </div>
+
+  <div style="padding: 32px var(--space-margin-desktop); max-width:var(--space-container-max); margin:0 auto">
+    
+    <!-- Offline Player Wrapper -->
+    <div id="offline-player-wrapper" style="display: none; margin-bottom: 40px; background: #000; border-radius: 16px; overflow: hidden; position: relative; box-shadow: 0 20px 60px rgba(0,0,0,0.8); border: 1px solid rgba(255,255,255,0.1);">
+      <div style="padding: 16px; background: rgba(15,15,20,0.95); display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid rgba(255,255,255,0.05);">
+        <h3 id="offline-player-title" class="text-headline-md" style="margin: 0;">Playing Offline</h3>
+        <button id="close-offline-player-btn" class="btn btn-ghost" style="padding: 8px 16px;">
+          <span class="material-symbols-outlined">close</span> Close
+        </button>
+      </div>
+      <video id="offline-video-element" controls style="width: 100%; max-height: 70vh; display: block;" playsinline></video>
+    </div>
+
+    <!-- Downloads Grid -->
+    <div id="downloads-grid" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(160px, 1fr)); gap: 20px;">
+      <!-- Dynamically populated -->
+    </div>
+    
+    <!-- Empty State -->
+    <div id="downloads-empty" style="display: none; text-align: center; padding: 60px 20px; background: rgba(255,255,255,0.02); border-radius: 16px; border: 1px dashed rgba(255,255,255,0.1); margin-top: 20px;">
+      <span class="material-symbols-outlined" style="font-size: 64px; color: rgba(255,255,255,0.1); margin-bottom: 16px;">cloud_off</span>
+      <h3 class="text-headline-md" style="color: rgba(255,255,255,0.5);">No Offline Movies</h3>
+      <p style="color: rgba(255,255,255,0.3); margin-top: 8px; max-width: 300px; margin-inline: auto;">Movies you download will appear here. They are saved securely on your device.</p>
+    </div>
+
+  </div>
+
+  <div id="footer-mount"></div>
+  <div id="mobile-nav-mount"></div>
+</div>

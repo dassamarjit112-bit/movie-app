@@ -97,7 +97,21 @@ const DetailPage = (() => {
 
     // Download Button Setup
     const downloadBtn = document.getElementById('detail-download-btn');
+    const downloadText = document.getElementById('detail-download-text');
     if (downloadBtn) {
+      if (window.OfflineStorage) {
+        window.OfflineStorage.isDownloaded(item.id).then(isDownloaded => {
+          if (isDownloaded) {
+            downloadText.textContent = 'DOWNLOADED';
+            downloadBtn.style.color = '#00d084';
+            downloadBtn.style.borderColor = 'rgba(0,208,132,0.35)';
+            downloadBtn.style.background = 'rgba(0,208,132,0.08)';
+            const icon = downloadBtn.querySelector('.material-symbols-outlined');
+            if (icon) icon.textContent = 'offline_pin';
+          }
+        });
+      }
+
       downloadBtn.onclick = async () => {
         if (!window.Auth) {
           UI.toast('Please log in to download content.', 'info');
@@ -110,38 +124,59 @@ const DetailPage = (() => {
           Router.navigate('login');
           return;
         }
-        const contentType = isSeries(item.type) ? 'series' : 'movie';
-        const season = isSeries(item.type) ? '1' : '';
-        const episode = isSeries(item.type) ? '1' : '';
 
-        UI.setLoading(downloadBtn, true);
-        UI.toast('Starting download... Saving to local storage.', 'info');
+        if (downloadText.textContent === 'DOWNLOADED') {
+          Router.navigate('downloads');
+          return;
+        }
+
+        if (downloadBtn.disabled) return;
+        downloadBtn.disabled = true;
 
         try {
-          const downloadId = await startDownload({
-            id: item.id,
-            title: item.title,
-            type: contentType,
-            season: parseInt(season) || 1,
-            episode: parseInt(episode) || 1,
-            poster: item.poster || item.thumbnail,
-            userId: session.user.id
-          });
+          UI.toast('Starting secure offline download...', 'info');
+          
+          const mockVideoUrl = 'https://www.w3schools.com/html/mov_bbb.mp4';
+          const response = await fetch(mockVideoUrl);
+          if (!response.ok) throw new Error('Network response was not ok');
+          
+          const contentLength = +response.headers.get('Content-Length') || 100000;
+          const reader = response.body.getReader();
+          let receivedLength = 0;
+          let chunks = [];
+          
+          while (true) {
+            const { done, value } = await reader.read();
+            if (done) break;
+            chunks.push(value);
+            receivedLength += value.length;
+            const progress = Math.min(100, Math.round((receivedLength / contentLength) * 100));
+            downloadText.textContent = `DOWNLOADING... ${progress}%`;
+          }
 
-          if (downloadId) {
-            UI.toast(`Download started! ID: ${downloadId.slice(0, 8)}...`, 'success');
-            // Optionally navigate to downloads page if it exists
-            if (Router.routes.downloads) {
-              setTimeout(() => Router.navigate('downloads'), 1500);
-            }
+          const movieBlob = new Blob(chunks, { type: 'video/mp4' });
+          const sizeBytes = movieBlob.size;
+          
+          if (window.OfflineStorage) {
+            await window.OfflineStorage.saveMovie(item.id, item.title, item.poster || item.thumbnail, movieBlob, sizeBytes);
+            
+            downloadText.textContent = 'DOWNLOADED';
+            downloadBtn.style.color = '#00d084';
+            downloadBtn.style.borderColor = 'rgba(0,208,132,0.35)';
+            downloadBtn.style.background = 'rgba(0,208,132,0.08)';
+            const icon = downloadBtn.querySelector('.material-symbols-outlined');
+            if (icon) icon.textContent = 'offline_pin';
+            downloadBtn.disabled = false;
+            
+            UI.toast("🎉 Download Complete! Available offline.", 'success');
           } else {
-            UI.toast('Failed to start download. Please try again.', 'error');
+            throw new Error("OfflineStorage module missing");
           }
         } catch (err) {
           console.error('Download error:', err);
-          UI.toast('Failed to initiate download. Please try again.', 'error');
-        } finally {
-          UI.setLoading(downloadBtn, false);
+          UI.toast('Download dropped due to network issues.', 'error');
+          downloadText.textContent = 'DOWNLOAD';
+          downloadBtn.disabled = false;
         }
       };
     }
