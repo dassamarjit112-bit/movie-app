@@ -1,39 +1,32 @@
-const CACHE_NAME = 'cinestream-offline-v4';
+const CACHE_NAME = 'cinestream-offline-v5';
+// Only cache static JS/CSS assets, NOT html pages (pages must always be fresh)
 const ASSETS_TO_CACHE = [
-  '/',
-  '/index.html',
   '/css/detail.css',
   '/js/config.js',
   '/js/auth.js',
   '/js/ui.js',
   '/js/router.js',
   '/js/offlineStorage.js',
-  '/pages/home.html',
-  '/pages/home.js',
-  '/pages/downloads.html',
-  '/pages/downloads.js',
-  '/pages/detail.html',
-  '/pages/detail.js',
-  'https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js'
+  '/js/tmdb.js',
+  '/js/sports-api.js',
+  '/js/download-manager.js',
 ];
 
 self.addEventListener('install', (event) => {
   self.skipWaiting();
   event.waitUntil(
-    caches.open(CACHE_NAME)
-      .then((cache) => {
-        // We use addAll but wrap in a try-catch so one failed asset doesn't stop the whole cache
-        return Promise.allSettled(
-          ASSETS_TO_CACHE.map(url => 
-            fetch(url).then(response => {
-              if (!response.ok) throw new TypeError('Bad response status');
-              return cache.put(url, response);
-            }).catch(error => {
-              console.warn('Failed to cache:', url, error);
-            })
-          )
-        );
-      })
+    caches.open(CACHE_NAME).then((cache) => {
+      return Promise.allSettled(
+        ASSETS_TO_CACHE.map(url =>
+          fetch(url).then(response => {
+            if (!response.ok) throw new TypeError('Bad response status');
+            return cache.put(url, response);
+          }).catch(error => {
+            console.warn('Failed to cache:', url, error);
+          })
+        )
+      );
+    })
   );
 });
 
@@ -71,6 +64,15 @@ self.addEventListener('fetch', (event) => {
   // For in-app API requests, always try network first, no caching
   if (url.includes('/api/') || url.includes('/tmdb-api/')) {
     event.respondWith(fetch(event.request));
+    return;
+  }
+
+  // HTML pages: ALWAYS fetch fresh from network — never serve from cache
+  // This ensures UI changes show up immediately without needing to clear cache
+  if (url.includes('.html') || event.request.mode === 'navigate') {
+    event.respondWith(
+      fetch(event.request).catch(() => caches.match('/index.html'))
+    );
     return;
   }
 
