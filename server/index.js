@@ -346,6 +346,8 @@ app.get('/api/sports/fancode', async (req, res) => {
     return res.status(500).json({ error: "FanCode server cluster unreachable" });
   }
 });
+const { scrapeLayer3Link } = require('./vegaScraper');
+
 /**
  * GET /api/download_link
  * Layer-2 Aggregator Scraper
@@ -358,57 +360,76 @@ app.get('/api/download_link', async (req, res) => {
 
     console.log(`[DownloadAPI] Scraping Layer-2 aggregators for TMDB ID: ${id}`);
     
-    // Step 1: Convert TMDB ID to IMDB ID for Aggregators
+    // Step 1: Convert TMDB ID to IMDB ID, and get Title/Year for VegaScraper
     let imdbId = id;
+    let movieTitle = null;
+    let movieYear = null;
+
     try {
       const tmdbApiKey = process.env.TMDB_API_KEY || '8d6d91941230817f7807d643736e8a49';
       const tmdbUrl = type === 'series'
-        ? `https://api.themoviedb.org/3/tv/${id}/external_ids?api_key=${tmdbApiKey}`
-        : `https://api.themoviedb.org/3/movie/${id}/external_ids?api_key=${tmdbApiKey}`;
+        ? `https://api.themoviedb.org/3/tv/${id}?api_key=${tmdbApiKey}&append_to_response=external_ids`
+        : `https://api.themoviedb.org/3/movie/${id}?api_key=${tmdbApiKey}&append_to_response=external_ids`;
       
-      const tmdbRes = await axios.get(tmdbUrl, { timeout: 3000 });
-      if (tmdbRes.data && tmdbRes.data.imdb_id) {
-        imdbId = tmdbRes.data.imdb_id;
-        console.log(`[DownloadAPI] Converted TMDB ${id} -> IMDB ${imdbId}`);
+      const tmdbRes = await axios.get(tmdbUrl, { timeout: 4000 });
+      if (tmdbRes.data) {
+        if (tmdbRes.data.external_ids && tmdbRes.data.external_ids.imdb_id) {
+          imdbId = tmdbRes.data.external_ids.imdb_id;
+          console.log(`[DownloadAPI] Converted TMDB ${id} -> IMDB ${imdbId}`);
+        }
+        movieTitle = tmdbRes.data.title || tmdbRes.data.name;
+        const releaseDate = tmdbRes.data.release_date || tmdbRes.data.first_air_date;
+        if (releaseDate) movieYear = releaseDate.split('-')[0];
       }
     } catch (e) {
-      console.warn('[DownloadAPI] Failed to convert TMDB to IMDB, falling back to original ID');
+      console.warn('[DownloadAPI] Failed to fetch TMDB metadata, proceeding with basic IDs');
     }
-
-    const aggregators = type === 'series' 
-      ? [
-          `https://vidsrc.to/api/embed/tv/${imdbId}`,
-          `https://embed.su/api/tv/${imdbId}`
-        ]
-      : [
-          `https://vidsrc.to/api/embed/movie/${imdbId}`,
-          `https://embed.su/api/movie/${imdbId}`
-        ];
-
-    const headers = {
-      'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36',
-      'Referer': 'https://www.google.com/'
-    };
 
     let finalUrl = null;
 
-    for (const endpoint of aggregators) {
-      try {
-        const response = await axios.get(endpoint, { headers, timeout: 5000 });
-        const data = response.data;
-        if (data) {
-          if (data.success && data.download_mirror_url) finalUrl = data.download_mirror_url;
-          else if (data.url) finalUrl = data.url;
+    // Step 2: Attempt VegaMovies / HDHub4u Scraping (Direct Layer 3 Storage)
+    if (movieTitle) {
+      console.log(`[DownloadAPI] Attempting stealth scrape for Layer-3 link...`);
+      finalUrl = await scrapeLayer3Link(movieTitle, movieYear, type);
+    }
+
+    // Step 3: Fallback to standard Layer-2 aggregators if VegaScraper fails
+    if (!finalUrl) {
+      console.log(`[DownloadAPI] Layer-3 scraper failed. Falling back to Layer-2 aggregators...`);
+      const aggregators = type === 'series' 
+        ? [
+            `https://vidsrc.to/api/embed/tv/${imdbId}`,
+            `https://embed.su/api/tv/${imdbId}`
+          ]
+        : [
+            `https://vidsrc.to/api/embed/movie/${imdbId}`,
+            `https://embed.su/api/movie/${imdbId}`
+          ];
+
+      const headers = {
+        'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36',
+        'Referer': 'https://www.google.com/'
+      };
+
+      for (const endpoint of aggregators) {
+        try {
+          const response = await axios.get(endpoint, { headers, timeout: 5000 });
+          const data = response.data;
+          if (data) {
+            if (data.success && data.download_mirror_url) finalUrl = data.download_mirror_url;
+            else if (data.url) finalUrl = data.url;
+          }
+          if (finalUrl) {
+            console.log(`[API] Scraped link from ${endpoint}`);
+            break;
+          }
+        } catch (e) {
+          // Skip on fail
         }
-        if (finalUrl) {
-          console.log(`[API] Scraped download link from ${endpoint}`);
-          break;
-        }
-      } catch (e) {
-        // Skip on fail
       }
     }
 
+    // Step 4: Fallback to Layer-1 web player
     if (!finalUrl) {
       console.log(`[API] All aggregators failed. Falling back to public mirror.`);
       finalUrl = type === 'series'
