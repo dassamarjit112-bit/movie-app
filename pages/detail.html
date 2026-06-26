@@ -220,6 +220,85 @@
 
 
 
+  <!-- ══════════════════════════════════════════════════════
+       DOWNLOAD OPTIONS MODAL
+  ══════════════════════════════════════════════════════ -->
+  <div id="dl-modal-overlay" style="
+    display:none; position:fixed; inset:0; z-index:9999;
+    background:rgba(0,0,0,0.82); backdrop-filter:blur(14px);
+    -webkit-backdrop-filter:blur(14px);
+    align-items:flex-end; justify-content:center;
+  ">
+    <div id="dl-modal" style="
+      width:100%; max-width:520px; margin:0 auto;
+      background:linear-gradient(145deg,rgba(18,20,30,0.98),rgba(10,12,20,0.99));
+      border:1px solid rgba(20,209,255,0.18);
+      border-bottom:none;
+      border-radius:24px 24px 0 0;
+      padding:28px 24px 40px;
+      transform:translateY(100%);
+      transition:transform 0.38s cubic-bezier(0.34,1.56,0.64,1);
+    ">
+      <!-- Handle -->
+      <div style="width:40px;height:4px;border-radius:2px;background:rgba(255,255,255,0.18);margin:0 auto 24px;"></div>
+
+      <!-- Header -->
+      <div style="display:flex;align-items:center;gap:12px;margin-bottom:6px;">
+        <span class="material-symbols-outlined" style="font-size:26px;color:#14d1ff;">download</span>
+        <div>
+          <h3 id="dl-modal-title" style="margin:0;font-size:18px;font-weight:700;color:#fff;">Download Movie</h3>
+          <p style="margin:4px 0 0;font-size:12px;color:rgba(255,255,255,0.45);">Choose quality — opens in browser download</p>
+        </div>
+        <button onclick="DetailPage.closeDownloadModal()" style="margin-left:auto;background:rgba(255,255,255,0.07);border:1px solid rgba(255,255,255,0.1);border-radius:50%;width:34px;height:34px;display:flex;align-items:center;justify-content:center;cursor:pointer;color:rgba(255,255,255,0.6);">
+          <span class="material-symbols-outlined" style="font-size:18px;">close</span>
+        </button>
+      </div>
+
+      <!-- Status row -->
+      <div id="dl-status-row" style="display:none;margin:16px 0;padding:12px 16px;background:rgba(20,209,255,0.07);border:1px solid rgba(20,209,255,0.2);border-radius:12px;">
+        <div style="display:flex;align-items:center;gap:10px;">
+          <div id="dl-spinner" style="width:18px;height:18px;border:2px solid rgba(20,209,255,0.3);border-top-color:#14d1ff;border-radius:50%;animation:dlSpin 0.8s linear infinite;"></div>
+          <span id="dl-status-text" style="font-size:13px;color:#14d1ff;font-weight:600;">Resolving best download source...</span>
+        </div>
+      </div>
+
+      <!-- Quality Options -->
+      <div id="dl-quality-grid" style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:20px;">
+        <!-- Injected by JS -->
+      </div>
+
+      <!-- Disclaimer -->
+      <p style="margin-top:18px;font-size:11px;color:rgba(255,255,255,0.25);text-align:center;line-height:1.5;">
+        Downloads open via external providers. Save quality may vary by region.
+      </p>
+    </div>
+  </div>
+
+  <style>
+  @keyframes dlSpin { to { transform: rotate(360deg); } }
+  .dl-quality-btn {
+    display:flex;flex-direction:column;align-items:flex-start;gap:4px;
+    padding:14px 16px;border-radius:14px;cursor:pointer;
+    border:1.5px solid rgba(255,255,255,0.1);
+    background:rgba(255,255,255,0.04);
+    color:#fff;text-align:left;transition:all 0.2s ease;
+    position:relative;overflow:hidden;
+  }
+  .dl-quality-btn:hover {
+    background:rgba(20,209,255,0.1);
+    border-color:rgba(20,209,255,0.4);
+    transform:translateY(-2px);
+  }
+  .dl-quality-btn:active { transform:scale(0.97); }
+  .dl-quality-label { font-size:15px;font-weight:700; }
+  .dl-quality-sub { font-size:11px;color:rgba(255,255,255,0.45); }
+  .dl-quality-badge {
+    position:absolute;top:8px;right:8px;
+    font-size:9px;font-weight:700;letter-spacing:0.06em;
+    padding:2px 7px;border-radius:4px;
+  }
+  </style>
+
   <div id="footer-mount"></div>
   <div id="mobile-nav-mount"></div>
 </div>

@@ -29,14 +29,16 @@ const OfflineStorage = (() => {
     return new Promise((resolve, reject) => {
       const transaction = db.transaction(STORE_NAME, 'readwrite');
       const store = transaction.objectStore(STORE_NAME);
-      
+
+      // Allow blobData to be null for link-based download tracking
       const record = {
         movieId: String(movieId),
         title: title,
         poster: poster,
-        blob: blobData,
-        sizeBytes: sizeBytes,
-        downloadedAt: Date.now()
+        sizeBytes: sizeBytes || 0,
+        downloadedAt: Date.now(),
+        // Only store blob if provided (avoids IndexedDB quota errors on large files)
+        ...(blobData ? { blob: blobData } : {})
       };
       
       const request = store.put(record);

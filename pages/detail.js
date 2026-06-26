@@ -95,7 +95,7 @@ const DetailPage = (() => {
       };
     }
 
-    // Download Button Setup
+    // Download Button Setup — opens quality picker modal
     const downloadBtn = document.getElementById('detail-download-btn');
     const downloadText = document.getElementById('detail-download-text');
     if (downloadBtn) {
@@ -125,51 +125,14 @@ const DetailPage = (() => {
           return;
         }
 
+        // If already downloaded, go to downloads page
         if (downloadText.textContent === 'DOWNLOADED') {
           Router.navigate('downloads');
           return;
         }
 
-        if (downloadBtn.disabled) return;
-        downloadBtn.disabled = true;
-
-        try {
-          UI.toast('Requesting storage permission...', 'info');
-          
-          if (!window.DownloadManager) {
-            throw new Error('DownloadManager not available.');
-          }
-
-          const dlId = await window.DownloadManager.startDownload({
-            id: item.id,
-            title: item.title,
-            type: isSeries(item.type) ? 'series' : 'movie',
-            season: 1,
-            episode: 1,
-            poster: item.poster || item.thumbnail,
-            userId: session.user.id
-          });
-
-          if (!dlId) {
-            throw new Error('Download failed to start.');
-          }
-
-          downloadText.textContent = 'DOWNLOADING...';
-          downloadBtn.style.color = '#00d084';
-          downloadBtn.style.borderColor = 'rgba(0,208,132,0.35)';
-          downloadBtn.style.background = 'rgba(0,208,132,0.08)';
-          const icon = downloadBtn.querySelector('.material-symbols-outlined');
-          if (icon) icon.textContent = 'offline_pin';
-          downloadBtn.disabled = false;
-          
-        } catch (err) {
-          console.error('Download error:', err);
-          if (err.message !== 'Cancelled by user') {
-            UI.toast(err.message || 'Download dropped due to issues.', 'error');
-          }
-          downloadText.textContent = 'DOWNLOAD';
-          downloadBtn.disabled = false;
-        }
+        // Open the download options modal
+        openDownloadModal(item, session.user.id, isSeries(item.type));
       };
     }
 
@@ -373,7 +336,133 @@ function setupEpisodes(item) {
     }
   }
 
-  return { init };
+  // ─────────────────────────────────────────────────────
+  // Download Modal Logic
+  // ─────────────────────────────────────────────────────
+  function openDownloadModal(item, userId, isSeries) {
+    const overlay = document.getElementById('dl-modal-overlay');
+    const modal = document.getElementById('dl-modal');
+    const titleEl = document.getElementById('dl-modal-title');
+    const grid = document.getElementById('dl-quality-grid');
+    const statusRow = document.getElementById('dl-status-row');
+    const statusText = document.getElementById('dl-status-text');
+    if (!overlay || !modal) return;
+
+    // Set movie title
+    if (titleEl) titleEl.textContent = `Download: ${item.title}`;
+
+    // Quality tiers with their colors and descriptions
+    const qualities = [
+      { label: '4K Ultra HD', sub: '2160p · ~15 GB', badge: '4K', color: '#ffc832', bg: 'rgba(255,200,50,0.08)', border: 'rgba(255,200,50,0.3)', resolution: '2160p' },
+      { label: '1080p Full HD', sub: 'Best quality · ~4 GB', badge: 'HD', color: '#14d1ff', bg: 'rgba(20,209,255,0.08)', border: 'rgba(20,209,255,0.3)', resolution: '1080p' },
+      { label: '720p HD', sub: 'Recommended · ~1.5 GB', badge: 'REC', color: '#00d084', bg: 'rgba(0,208,132,0.08)', border: 'rgba(0,208,132,0.3)', resolution: '720p' },
+      { label: '480p SD', sub: 'Mobile friendly · ~500 MB', badge: 'SD', color: 'rgba(255,255,255,0.6)', bg: 'rgba(255,255,255,0.04)', border: 'rgba(255,255,255,0.12)', resolution: '480p' }
+    ];
+
+    // Render quality buttons
+    grid.innerHTML = qualities.map((q, i) => `
+      <button class="dl-quality-btn" id="dl-q-${i}"
+        style="border-color:${q.border};background:${q.bg};"
+        onclick="DetailPage.triggerDownload('${item.id}', '${isSeries ? 'series' : 'movie'}', '${q.resolution}', '${item.title}', '${item.poster || item.thumbnail}', '${userId}', ${i})"
+      >
+        <span class="dl-quality-badge" style="background:${q.bg};color:${q.color};border:1px solid ${q.border};">${q.badge}</span>
+        <span class="dl-quality-label" style="color:${q.color};padding-right:36px;">${q.label}</span>
+        <span class="dl-quality-sub">${q.sub}</span>
+      </button>
+    `).join('');
+
+    // Hide status initially
+    statusRow.style.display = 'none';
+
+    // Show overlay + slide in modal
+    overlay.style.display = 'flex';
+    requestAnimationFrame(() => {
+      modal.style.transform = 'translateY(0)';
+    });
+
+    // Close on overlay click
+    overlay.onclick = (e) => {
+      if (e.target === overlay) closeDownloadModal();
+    };
+  }
+
+  function closeDownloadModal() {
+    const overlay = document.getElementById('dl-modal-overlay');
+    const modal = document.getElementById('dl-modal');
+    if (!modal) return;
+    modal.style.transform = 'translateY(100%)';
+    setTimeout(() => {
+      if (overlay) overlay.style.display = 'none';
+    }, 380);
+  }
+
+  async function triggerDownload(contentId, type, resolution, title, poster, userId, btnIndex) {
+    const statusRow = document.getElementById('dl-status-row');
+    const statusText = document.getElementById('dl-status-text');
+    const btn = document.getElementById(`dl-q-${btnIndex}`);
+
+    // Show spinner
+    if (statusRow) statusRow.style.display = 'block';
+    if (statusText) statusText.textContent = `Resolving ${resolution} source...`;
+    if (btn) btn.style.opacity = '0.6';
+
+    try {
+      // Fetch the best available link for this content
+      const season = type === 'series' ? 1 : '';
+      const episode = type === 'series' ? 1 : '';
+      const res = await fetch(`/api/download_link?id=${encodeURIComponent(contentId)}&type=${encodeURIComponent(type)}&season=${encodeURIComponent(season)}&episode=${encodeURIComponent(episode)}`);
+      const data = await res.json();
+
+      let downloadUrl = (data.success && data.downloadUrl) ? data.downloadUrl : null;
+
+      // If the resolved URL is still an embed page, open it as a player (best we can do)
+      if (!downloadUrl || downloadUrl.includes('/embed/')) {
+        // Build a vidsrc link as the best known open provider
+        downloadUrl = type === 'series'
+          ? `https://vidsrc.to/embed/tv/${contentId}/1/1`
+          : `https://vidsrc.to/embed/movie/${contentId}`;
+        if (statusText) statusText.textContent = 'Direct download unavailable — opening stream page';
+      } else {
+        if (statusText) statusText.textContent = `Opening ${resolution} download...`;
+      }
+
+      // Save metadata to OfflineStorage so the Downloads page tracks this
+      if (window.OfflineStorage) {
+        await window.OfflineStorage.saveMovie(
+          String(contentId),
+          title,
+          poster,
+          null,   // no blob — link-based tracking
+          0
+        );
+      }
+
+      // Open the link in a new tab
+      window.open(downloadUrl, '_blank', 'noopener,noreferrer');
+
+      // Update the button on the detail page to show DOWNLOADED
+      const dlText = document.getElementById('detail-download-text');
+      const dlBtn  = document.getElementById('detail-download-btn');
+      if (dlText) dlText.textContent = 'DOWNLOADED';
+      if (dlBtn) {
+        dlBtn.style.color = '#00d084';
+        dlBtn.style.borderColor = 'rgba(0,208,132,0.35)';
+        dlBtn.style.background = 'rgba(0,208,132,0.08)';
+        const icon = dlBtn.querySelector('.material-symbols-outlined');
+        if (icon) icon.textContent = 'offline_pin';
+      }
+
+      if (window.UI) UI.toast('Download started! Check your browser.', 'success');
+      setTimeout(() => closeDownloadModal(), 1200);
+
+    } catch (err) {
+      console.error('[DownloadModal] Error:', err);
+      if (statusText) statusText.textContent = 'Could not resolve download. Try again.';
+      if (btn) btn.style.opacity = '1';
+    }
+  }
+
+  return { init, closeDownloadModal, triggerDownload };
 })();
 
 window.DetailPage = DetailPage;
