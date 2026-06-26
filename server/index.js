@@ -1,9 +1,18 @@
 require('dotenv').config();
 const express = require('express');
 const cors = require('cors');
-const scraper = require('../utils/scraper');
 const axios = require('axios');
 const cheerio = require('cheerio');
+const { spawn } = require('child_process');
+const { extractMasterPlaylistUrl } = require('./puppeteerExtractor');
+
+// Attempt to load the legacy scraper (optional — won't crash if missing)
+let scraper;
+try {
+  scraper = require('../utils/scraper');
+} catch (_) {
+  scraper = null;
+}
 
 const app = express();
 app.use(cors());
@@ -350,17 +359,21 @@ const { scrapeLayer3Link } = require('./vegaScraper');
 
 /**
  * GET /api/download_link
- * Layer-2 Aggregator Scraper
- * Tries multiple aggregator APIs to resolve a direct Layer-3 cloud link or standard fallback.
+ * Multi-layer download link resolver.
+ * Priority:
+ *   1. Puppeteer headless extraction from vidlink.pro / vidsrc (returns .m3u8)
+ *   2. VegaMovies/HDHub4u stealth scrape (direct mp4/cloud link)
+ *   3. Aggregator API fallback
+ *   4. Layer-1 embed player link (lowest effort)
  */
 app.get('/api/download_link', async (req, res) => {
   try {
-    const { id, type, season, episode } = req.query;
+    const { id, type, season = 1, episode = 1 } = req.query;
     if (!id || !type) return res.status(400).json({ error: 'Missing id or type' });
 
-    console.log(`[DownloadAPI] Scraping Layer-2 aggregators for TMDB ID: ${id}`);
-    
-    // Step 1: Convert TMDB ID to IMDB ID, and get Title/Year for VegaScraper
+    console.log(`[DownloadAPI] Resolving download for TMDB ID: ${id} (${type})`);
+
+    // ── Step 0: Resolve TMDB → IMDB + title/year ──────────────────────────────
     let imdbId = id;
     let movieTitle = null;
     let movieYear = null;
@@ -370,80 +383,160 @@ app.get('/api/download_link', async (req, res) => {
       const tmdbUrl = type === 'series'
         ? `https://api.themoviedb.org/3/tv/${id}?api_key=${tmdbApiKey}&append_to_response=external_ids`
         : `https://api.themoviedb.org/3/movie/${id}?api_key=${tmdbApiKey}&append_to_response=external_ids`;
-      
-      const tmdbRes = await axios.get(tmdbUrl, { timeout: 4000 });
+      const tmdbRes = await axios.get(tmdbUrl, { timeout: 5000 });
       if (tmdbRes.data) {
-        if (tmdbRes.data.external_ids && tmdbRes.data.external_ids.imdb_id) {
+        if (tmdbRes.data.external_ids?.imdb_id) {
           imdbId = tmdbRes.data.external_ids.imdb_id;
-          console.log(`[DownloadAPI] Converted TMDB ${id} -> IMDB ${imdbId}`);
+          console.log(`[DownloadAPI] TMDB ${id} → IMDB ${imdbId}`);
         }
         movieTitle = tmdbRes.data.title || tmdbRes.data.name;
-        const releaseDate = tmdbRes.data.release_date || tmdbRes.data.first_air_date;
-        if (releaseDate) movieYear = releaseDate.split('-')[0];
+        const rd = tmdbRes.data.release_date || tmdbRes.data.first_air_date;
+        if (rd) movieYear = rd.split('-')[0];
       }
     } catch (e) {
-      console.warn('[DownloadAPI] Failed to fetch TMDB metadata, proceeding with basic IDs');
+      console.warn('[DownloadAPI] TMDB lookup failed, continuing with raw ID.');
     }
 
     let finalUrl = null;
+    let isM3U8 = false;
 
-    // Step 2: Attempt VegaMovies / HDHub4u Scraping (Direct Layer 3 Storage)
-    if (movieTitle) {
-      console.log(`[DownloadAPI] Attempting stealth scrape for Layer-3 link...`);
+    // ── Step 1: Puppeteer headless extraction (primary method) ────────────────
+    console.log(`[DownloadAPI] Step 1: Headless browser extraction via vidlink.pro...`);
+    const m3u8 = await extractMasterPlaylistUrl(id, type === 'series' ? 'series' : 'movie', Number(season), Number(episode));
+    if (m3u8) {
+      console.log(`[DownloadAPI] ✅ Headless extraction succeeded: ${m3u8}`);
+      finalUrl = m3u8;
+      isM3U8 = true;
+    }
+
+    // ── Step 2: VegaMovies stealth scrape ─────────────────────────────────────
+    if (!finalUrl && movieTitle) {
+      console.log(`[DownloadAPI] Step 2: VegaMovies stealth scrape for '${movieTitle}'...`);
       finalUrl = await scrapeLayer3Link(movieTitle, movieYear, type);
     }
 
-    // Step 3: Fallback to standard Layer-2 aggregators if VegaScraper fails
+    // ── Step 3: Layer-2 aggregator APIs ──────────────────────────────────────
     if (!finalUrl) {
-      console.log(`[DownloadAPI] Layer-3 scraper failed. Falling back to Layer-2 aggregators...`);
-      const aggregators = type === 'series' 
-        ? [
-            `https://vidsrc.to/api/embed/tv/${imdbId}`,
-            `https://embed.su/api/tv/${imdbId}`
-          ]
-        : [
-            `https://vidsrc.to/api/embed/movie/${imdbId}`,
-            `https://embed.su/api/movie/${imdbId}`
-          ];
-
+      console.log(`[DownloadAPI] Step 3: Layer-2 aggregator APIs...`);
+      const aggregators = type === 'series'
+        ? [`https://vidsrc.to/api/embed/tv/${imdbId}`, `https://embed.su/api/tv/${imdbId}`]
+        : [`https://vidsrc.to/api/embed/movie/${imdbId}`, `https://embed.su/api/movie/${imdbId}`];
       const headers = {
-        'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36',
-        'Referer': 'https://www.google.com/'
+        'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36',
+        'Referer': 'https://www.google.com/',
       };
-
       for (const endpoint of aggregators) {
         try {
-          const response = await axios.get(endpoint, { headers, timeout: 5000 });
-          const data = response.data;
-          if (data) {
-            if (data.success && data.download_mirror_url) finalUrl = data.download_mirror_url;
-            else if (data.url) finalUrl = data.url;
-          }
-          if (finalUrl) {
-            console.log(`[API] Scraped link from ${endpoint}`);
-            break;
-          }
-        } catch (e) {
-          // Skip on fail
-        }
+          const r = await axios.get(endpoint, { headers, timeout: 5000 });
+          const d = r.data;
+          if (d?.download_mirror_url) finalUrl = d.download_mirror_url;
+          else if (d?.url) finalUrl = d.url;
+          if (finalUrl) { console.log(`[DownloadAPI] Aggregator hit: ${endpoint}`); break; }
+        } catch (_) {}
       }
     }
 
-    // Step 4: Fallback to Layer-1 web player
+    // ── Step 4: Layer-1 embed fallback ────────────────────────────────────────
     if (!finalUrl) {
-      console.log(`[API] All aggregators failed. Falling back to public mirror.`);
+      console.log(`[DownloadAPI] Step 4: All scrapers failed. Returning embed player URL.`);
       finalUrl = type === 'series'
         ? `https://vidsrc.to/embed/tv/${imdbId}/${season}/${episode}`
         : `https://vidsrc.to/embed/movie/${imdbId}`;
     }
 
-    return res.status(200).json({ success: true, downloadUrl: finalUrl });
+    return res.status(200).json({ success: true, downloadUrl: finalUrl, isM3U8, title: movieTitle });
 
   } catch (error) {
     console.error('[DownloadAPI] Error:', error);
     res.status(500).json({ success: false, error: 'Internal Server Error' });
   }
 });
+
+/**
+ * GET /api/extract_stream
+ * Runs headless Puppeteer to extract the .m3u8 from vidlink.pro, then pipes it
+ * through FFmpeg to produce a real .mp4 file download streamed back to the client.
+ *
+ * Query params: id, type, season, episode, title
+ */
+app.get('/api/extract_stream', async (req, res) => {
+  const { id, type = 'movie', season = 1, episode = 1, title = 'movie' } = req.query;
+  if (!id) return res.status(400).json({ error: 'Missing TMDB id' });
+
+  console.log(`[ExtractStream] Starting extraction for TMDB ID: ${id}`);
+
+  let m3u8Url = null;
+  try {
+    m3u8Url = await extractMasterPlaylistUrl(id, type, Number(season), Number(episode));
+  } catch (err) {
+    console.error('[ExtractStream] Puppeteer error:', err.message);
+  }
+
+  if (!m3u8Url) {
+    return res.status(404).json({
+      success: false,
+      error: 'Could not extract a stream URL. The provider may require a real browser session.',
+    });
+  }
+
+  // Sanitise filename for Content-Disposition header
+  const safeTitle = (title || 'cinestream').replace(/[^a-zA-Z0-9_\-\s]/g, '').trim().replace(/\s+/g, '_');
+  const filename = `${safeTitle}_${type === 'series' ? `S${season}E${episode}` : 'movie'}.mp4`;
+
+  console.log(`[ExtractStream] Piping m3u8 through FFmpeg → ${filename}`);
+  console.log(`[ExtractStream] M3U8 URL: ${m3u8Url}`);
+
+  // Set response headers so the browser triggers a real Save-As dialog
+  res.setHeader('Content-Disposition', `attachment; filename="${filename}"`);
+  res.setHeader('Content-Type', 'video/mp4');
+  res.setHeader('Transfer-Encoding', 'chunked');
+
+  // Spawn ffmpeg: read the HLS playlist and copy streams into an mp4 container
+  // -c copy = no re-encoding (fast, lossless remux)
+  const ffmpegArgs = [
+    '-user_agent', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36',
+    '-headers', `Referer: https://vidlink.pro/\r\nOrigin: https://vidlink.pro`,
+    '-i', m3u8Url,
+    '-c', 'copy',
+    '-movflags', 'frag_keyframe+empty_moov+faststart',
+    '-f', 'mp4',
+    'pipe:1',  // write output to stdout so Node can pipe it
+  ];
+
+  const ffmpeg = spawn('ffmpeg', ffmpegArgs, { stdio: ['ignore', 'pipe', 'pipe'] });
+
+  // Pipe ffmpeg stdout directly into the HTTP response
+  ffmpeg.stdout.pipe(res);
+
+  ffmpeg.stderr.on('data', (chunk) => {
+    // Log ffmpeg progress without flooding the console
+    const line = chunk.toString();
+    if (line.includes('frame=') || line.includes('time=') || line.includes('Error')) {
+      process.stdout.write(`[FFmpeg] ${line}`);
+    }
+  });
+
+  ffmpeg.on('close', (code) => {
+    console.log(`[ExtractStream] FFmpeg exited with code ${code}`);
+    if (!res.writableEnded) res.end();
+  });
+
+  ffmpeg.on('error', (err) => {
+    console.error('[ExtractStream] FFmpeg spawn error:', err.message);
+    if (!res.headersSent) {
+      res.status(500).json({ success: false, error: 'FFmpeg not found or failed to start. Is FFmpeg installed?' });
+    } else if (!res.writableEnded) {
+      res.end();
+    }
+  });
+
+  // If client disconnects, kill ffmpeg to free resources
+  req.on('close', () => {
+    console.log('[ExtractStream] Client disconnected — killing FFmpeg.');
+    ffmpeg.kill('SIGKILL');
+  });
+});
+
 const PORT = process.env.PORT || 4000;
 app.listen(PORT, () => {
   console.log(`CinePro backend listening on http://localhost:${PORT}`);

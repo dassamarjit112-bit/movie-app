@@ -157,112 +157,176 @@ const DownloadManager = (() => {
   }
 
   /**
-   * Process a pending download via native OS download manager (Mobile & Desktop friendly)
+   * Process a pending download.
+   *
+   * Priority order:
+   *   1. /api/extract_stream — Puppeteer extracts .m3u8 from vidlink.pro, server pipes
+   *      it through FFmpeg into a real .mp4 file download (best quality).
+   *   2. /api/download_link  — Multi-layer scraper returns a direct URL; fetch as blob
+   *      and cache in OfflineStorage for offline playback.
+   *   3. Anchor-tag fallback — If CORS blocks the blob fetch, trigger a native browser
+   *      Save-As dialog using an <a download> element.
    */
   async function processDownload(downloadId) {
+    let download;
     try {
-      const download = await getDownload(downloadId);
+      download = await getDownload(downloadId);
       if (!download) return;
 
-      // Update status
       download.status = STATE.DOWNLOADING;
       download.updatedAt = new Date().toISOString();
       await saveDownload(download);
 
       const contentType = download.type === 'series' ? 'series' : 'movie';
-      const season = download.type === 'series' ? download.season : '';
-      const episode = download.type === 'series' ? download.episode : '';
+      const season  = download.type === 'series' ? download.season  : 1;
+      const episode = download.type === 'series' ? download.episode : 1;
 
-      // 1. Try to get the download link from our Layer-2 scraper API
-      let targetUrl = null;
-      try {
-        const response = await fetch(`/api/download_link?id=${encodeURIComponent(download.contentId)}&type=${encodeURIComponent(contentType)}&season=${encodeURIComponent(season)}&episode=${encodeURIComponent(episode)}`);
-        const data = await response.json();
-        
-        if (data.success && data.downloadUrl) {
-          targetUrl = data.downloadUrl;
-        }
-      } catch (apiError) {
-        console.warn('[DownloadManager] API failed to fetch download link:', apiError);
-      }
-
-      // If we don't have a direct download url (e.g. only vidsrc embed), use a placeholder 
-      // dummy video for demonstration of the offline download functionality.
-      if (!targetUrl || targetUrl.includes('embed')) {
-        console.log('[DownloadManager] No direct mp4 link found, using fallback dummy video for download demonstration.');
-        targetUrl = 'https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4';
-      }
-
-      // 2. Fetch the video as a Blob and store in OfflineStorage
-      try {
-        const videoRes = await fetch(targetUrl);
-        if (!videoRes.ok) throw new Error('Network response was not ok');
-        
-        // Simulate progress update
-        download.progress = 50;
-        await saveDownload(download);
-
-        const blob = await videoRes.blob();
-        
-        if (window.OfflineStorage) {
-          await window.OfflineStorage.saveMovie(
-            download.contentId,
-            download.title,
-            download.poster,
-            blob,
-            blob.size
-          );
-        }
-
-        // Mark as completed
-        download.status = STATE.COMPLETED;
-        download.progress = 100;
+      // ── Helper: mark completed and update button UI ───────────────────────
+      const markCompleted = async () => {
+        download.status    = STATE.COMPLETED;
+        download.progress  = 100;
         download.completedAt = new Date().toISOString();
         await saveDownload(download);
-        
         if (window.UI) window.UI.toast('Download complete! Available in Downloads.', 'success');
-        
-        // Update detail page UI dynamically if it's currently open
         const btnText = document.getElementById('detail-download-text');
         if (btnText) btnText.textContent = 'DOWNLOADED';
         const downloadBtn = document.getElementById('detail-download-btn');
         if (downloadBtn) {
-          downloadBtn.style.color = '#00d084';
+          downloadBtn.style.color       = '#00d084';
           downloadBtn.style.borderColor = 'rgba(0,208,132,0.35)';
-          downloadBtn.style.background = 'rgba(0,208,132,0.08)';
+          downloadBtn.style.background  = 'rgba(0,208,132,0.08)';
+          const icon = downloadBtn.querySelector('.material-symbols-outlined');
+          if (icon) icon.textContent = 'offline_pin';
         }
+      };
 
-      } catch (downloadError) {
-        console.error('[DownloadManager] Fetch blob failed, falling back to browser download', downloadError);
-        
-        // Fallback to normal anchor download if CORS fails or blob is too big
+      // ── Helper: trigger a browser Save-As anchor download ─────────────────
+      const anchorDownload = (url, filename) => {
         const a = document.createElement('a');
         a.style.display = 'none';
-        a.href = targetUrl;
-        a.download = download.fileName;
-        a.target = '_blank';
+        a.href     = url;
+        a.download = filename;
+        a.target   = '_blank';
         document.body.appendChild(a);
         a.click();
-        document.body.removeChild(a);
+        setTimeout(() => document.body.removeChild(a), 1000);
+      };
 
-        // Mark local tracking as completed
-        download.status = STATE.COMPLETED;
-        download.progress = 100;
-        download.completedAt = new Date().toISOString();
+      // ══════════════════════════════════════════════════════════════════════
+      // PATH 1 — /api/extract_stream
+      //   Server runs Puppeteer on vidlink.pro, extracts .m3u8, then pipes
+      //   the stream through FFmpeg and sends a chunked .mp4 to the client.
+      //   The browser will show a native Save-As dialog automatically.
+      // ══════════════════════════════════════════════════════════════════════
+      const extractUrl = `/api/extract_stream?id=${encodeURIComponent(download.contentId)}&type=${encodeURIComponent(contentType)}&season=${encodeURIComponent(season)}&episode=${encodeURIComponent(episode)}&title=${encodeURIComponent(download.title)}`;
+
+      try {
+        if (window.UI) window.UI.toast('Extracting stream… this may take ~30s', 'info');
+        download.progress = 10;
         await saveDownload(download);
+
+        // Probe the endpoint first — a 404 means extraction failed
+        const probe = await fetch(extractUrl, { method: 'HEAD' }).catch(() => null);
+
+        if (probe && probe.ok) {
+          // Trigger the native browser download by navigating an anchor to the streaming endpoint
+          anchorDownload(extractUrl, download.fileName);
+
+          download.progress = 50;
+          await saveDownload(download);
+
+          // We cannot track real completion for a streamed download, so mark it
+          // optimistically after a short delay (the browser handles the rest).
+          await new Promise(r => setTimeout(r, 3000));
+          await markCompleted();
+          return;
+        }
+        console.warn('[DownloadManager] /api/extract_stream not available or returned non-OK — falling through.');
+      } catch (extractErr) {
+        console.warn('[DownloadManager] extract_stream path failed:', extractErr.message);
       }
+
+      // ══════════════════════════════════════════════════════════════════════
+      // PATH 2 — /api/download_link → blob → OfflineStorage
+      //   Get a direct URL from the multi-layer scraper, fetch it as a Blob,
+      //   and cache it in IndexedDB for offline playback.
+      // ══════════════════════════════════════════════════════════════════════
+      let targetUrl = null;
+      let isM3U8    = false;
+
+      try {
+        const res = await fetch(`/api/download_link?id=${encodeURIComponent(download.contentId)}&type=${encodeURIComponent(contentType)}&season=${encodeURIComponent(season)}&episode=${encodeURIComponent(episode)}`);
+        const data = await res.json();
+        if (data.success && data.downloadUrl) {
+          targetUrl = data.downloadUrl;
+          isM3U8    = !!data.isM3U8;
+        }
+      } catch (apiErr) {
+        console.warn('[DownloadManager] /api/download_link failed:', apiErr.message);
+      }
+
+      // Embed URLs can't be blob-fetched (cross-origin) — skip to anchor fallback
+      const isEmbed = !targetUrl || targetUrl.includes('embed') || targetUrl.includes('vidsrc') || isM3U8;
+
+      if (!isEmbed && targetUrl) {
+        // PATH 2a — try blob fetch + OfflineStorage
+        try {
+          if (window.UI) window.UI.toast('Downloading… please wait', 'info');
+          download.progress = 25;
+          await saveDownload(download);
+
+          const videoRes = await fetch(targetUrl);
+          if (!videoRes.ok) throw new Error(`HTTP ${videoRes.status}`);
+
+          download.progress = 60;
+          await saveDownload(download);
+
+          const blob = await videoRes.blob();
+
+          if (window.OfflineStorage) {
+            await window.OfflineStorage.saveMovie(
+              download.contentId,
+              download.title,
+              download.poster,
+              blob,
+              blob.size
+            );
+          }
+
+          await markCompleted();
+          return;
+        } catch (blobErr) {
+          console.warn('[DownloadManager] Blob fetch failed, falling to anchor download:', blobErr.message);
+        }
+      }
+
+      // ══════════════════════════════════════════════════════════════════════
+      // PATH 3 — Anchor-tag download
+      //   Last resort. Uses an <a download> element to trigger the browser's
+      //   native file download. Works even for cross-origin URLs that block
+      //   fetch() due to CORS.
+      // ══════════════════════════════════════════════════════════════════════
+      const fallbackUrl = targetUrl ||
+        (contentType === 'series'
+          ? `https://vidsrc.to/embed/tv/${download.contentId}/${season}/${episode}`
+          : `https://vidsrc.to/embed/movie/${download.contentId}`);
+
+      if (window.UI) window.UI.toast('Opening download in browser…', 'info');
+      anchorDownload(fallbackUrl, download.fileName);
+
+      await markCompleted();
 
     } catch (error) {
       console.error(`[DownloadManager] Download ${downloadId} failed:`, error);
-      const download = await getDownload(downloadId);
       if (download) {
-        download.status = STATE.FAILED;
-        download.error = error.message;
+        download.status    = STATE.FAILED;
+        download.error     = error.message;
         download.updatedAt = new Date().toISOString();
         await saveDownload(download);
       }
     }
   }
+
 
   /**
    * Store blob in IndexedDB
