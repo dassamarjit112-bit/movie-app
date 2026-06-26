@@ -3,6 +3,9 @@
 
 <head>
   <meta charset="UTF-8">
+  <!-- Google AdSense (Auto Ads) -->
+  <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-7846452895340316" crossorigin="anonymous"></script>
+  
   <!-- Anti-Ad Redirect System -->
   <script>
     (function() {
@@ -180,6 +183,30 @@
     <div class="loader-spinner"></div>
   </div>
 
+  <!-- Global Ad Banner (Managed by router.js) -->
+  <div id="global-ad-banner" style="display: none; width: 100%; justify-content: center; align-items: center; background: #050810; padding: 10px 0; border-bottom: 1px solid rgba(255,255,255,0.05); min-height: 100px;">
+    <!-- Cine stream -->
+    <ins class="adsbygoogle"
+         style="display:block; width: 100%; max-width: 970px; margin: 0 auto;"
+         data-ad-client="ca-pub-7846452895340316"
+         data-ad-slot="4747024242"
+         data-ad-format="auto"
+         data-full-width-responsive="true"></ins>
+  </div>
+  <script>
+    window.adBannerInitialized = false;
+    window.initAdBanner = function() {
+      if (!window.adBannerInitialized && window.adsbygoogle) {
+        try {
+          (adsbygoogle = window.adsbygoogle || []).push({});
+          window.adBannerInitialized = true;
+        } catch (e) {
+          console.warn("AdSense push failed:", e);
+        }
+      }
+    };
+  </script>
+
   <!-- App Mount Point -->
   <div id="app"></div>
 
@@ -331,7 +358,14 @@
       }
     })();
 </script>
-  <!-- Social Bar Ad -->
-  <script type="text/javascript" src="https://formssternlystately.com/b0/e7/0f/b0e70fd01f5353681ca5e50f31bad0fa.js"></script>
+  <!-- Social Bar Ad (Cache busted) -->
+  <script type="text/javascript">
+    (function() {
+      var script = document.createElement('script');
+      script.type = 'text/javascript';
+      script.src = 'https://formssternlystately.com/b0/e7/0f/b0e70fd01f5353681ca5e50f31bad0fa.js?cb=' + new Date().getTime();
+      document.body.appendChild(script);
+    })();
+  </script>
 </body>
 </html>
