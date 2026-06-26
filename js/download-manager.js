@@ -174,16 +174,24 @@ const DownloadManager = (() => {
       const episode = download.type === 'series' ? download.episode : '';
 
       // Redirect the user to a reliable external streaming/download provider
-      // This bypasses the fragile backend scraper and gives them full access to the source!
-      let streamUrl = '';
-      if (contentType === 'series') {
-        streamUrl = `https://vidsrc.to/embed/tv/${download.contentId}/${season}/${episode}`;
-      } else {
-        streamUrl = `https://vidsrc.to/embed/movie/${download.contentId}`;
+      // using our Layer-2 scraper API
+      try {
+        const response = await fetch(`/api/download_link?id=${encodeURIComponent(download.contentId)}&type=${encodeURIComponent(contentType)}&season=${encodeURIComponent(season)}&episode=${encodeURIComponent(episode)}`);
+        const data = await response.json();
+        
+        if (data.success && data.downloadUrl) {
+          // Open the scraped storage URL or fallback embed in a new tab
+          window.open(data.downloadUrl, '_blank');
+        } else {
+          throw new Error('No download link could be scraped from aggregators.');
+        }
+      } catch (apiError) {
+        console.warn('[DownloadManager] API failed, using fallback:', apiError);
+        const fallbackUrl = contentType === 'series'
+          ? `https://vidsrc.to/embed/tv/${download.contentId}/${season}/${episode}`
+          : `https://vidsrc.to/embed/movie/${download.contentId}`;
+        window.open(fallbackUrl, '_blank');
       }
-
-      // Open the URL in a new tab. Most modern providers have a native "Download" button inside the player.
-      window.open(streamUrl, '_blank');
 
       // Since we redirected to an external source, mark the local tracking as completed
       download.status = STATE.COMPLETED;

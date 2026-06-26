@@ -346,58 +346,81 @@ app.get('/api/sports/fancode', async (req, res) => {
     return res.status(500).json({ error: "FanCode server cluster unreachable" });
   }
 });
-const { spawn } = require('child_process');
-
-const { extractMasterPlaylistUrl } = require('./puppeteerExtractor');
-
 /**
- * GET /api/media/download_stream
- * Extracts master .m3u8 playlist using Puppeteer and pipes through FFmpeg for download
- * Changed to GET so mobile browser download managers can handle it directly.
+ * GET /api/download_link
+ * Layer-2 Aggregator Scraper
+ * Tries multiple aggregator APIs to resolve a direct Layer-3 cloud link or standard fallback.
  */
-app.get('/api/media/download_stream', async (req, res) => {
+app.get('/api/download_link', async (req, res) => {
   try {
-    const { id, title, type = 'movie', season = 1, episode = 1 } = req.query;
-    if (!id || !title) return res.status(400).json({ error: 'Missing id or title' });
+    const { id, type, season, episode } = req.query;
+    if (!id || !type) return res.status(400).json({ error: 'Missing id or type' });
 
-    console.log(`[DownloadEngine] Starting pipeline for: ${title} (ID: ${id})`);
+    console.log(`[DownloadAPI] Scraping Layer-2 aggregators for TMDB ID: ${id}`);
     
-    // Use the newly installed Puppeteer headless browser to intercept network traffic
-    const manifestUrl = await extractMasterPlaylistUrl(id, type, season, episode);
-    if (!manifestUrl) {
-      return res.status(404).send('Could not resolve streaming source. The stream provider may be blocking extraction.');
+    // Step 1: Convert TMDB ID to IMDB ID for Aggregators
+    let imdbId = id;
+    try {
+      const tmdbApiKey = process.env.TMDB_API_KEY || '8d6d91941230817f7807d643736e8a49';
+      const tmdbUrl = type === 'series'
+        ? `https://api.themoviedb.org/3/tv/${id}/external_ids?api_key=${tmdbApiKey}`
+        : `https://api.themoviedb.org/3/movie/${id}/external_ids?api_key=${tmdbApiKey}`;
+      
+      const tmdbRes = await axios.get(tmdbUrl, { timeout: 3000 });
+      if (tmdbRes.data && tmdbRes.data.imdb_id) {
+        imdbId = tmdbRes.data.imdb_id;
+        console.log(`[DownloadAPI] Converted TMDB ${id} -> IMDB ${imdbId}`);
+      }
+    } catch (e) {
+      console.warn('[DownloadAPI] Failed to convert TMDB to IMDB, falling back to original ID');
     }
 
-    console.log(`[DownloadEngine] Resolved manifest: ${manifestUrl}, starting FFmpeg...`);
-    const ffmpegProcess = spawn('ffmpeg', [
-      '-i', manifestUrl,
-      '-c', 'copy',
-      '-bsf:a', 'aac_adtstoasc',
-      '-movflags', 'frag_keyframe+empty_moov',
-      '-f', 'mp4',
-      'pipe:1'
-    ]);
+    const aggregators = type === 'series' 
+      ? [
+          `https://vidsrc.to/api/embed/tv/${imdbId}`,
+          `https://embed.su/api/tv/${imdbId}`
+        ]
+      : [
+          `https://vidsrc.to/api/embed/movie/${imdbId}`,
+          `https://embed.su/api/movie/${imdbId}`
+        ];
 
-    ffmpegProcess.stderr.on('data', () => {});
-    ffmpegProcess.on('error', (err) => console.error('[DownloadEngine] FFmpeg process error:', err));
-    
-    req.on('close', () => {
-      console.log('[DownloadEngine] Stream cancelled by client, killing FFmpeg');
-      try { ffmpegProcess.kill('SIGKILL'); } catch (e) {}
-    });
+    const headers = {
+      'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36',
+      'Referer': 'https://www.google.com/'
+    };
 
-    const safeTitle = title.replace(/[^a-zA-Z0-9_-]/g, '_');
-    const filename = `${safeTitle}_${type === 'series' ? `S${season}_E${episode}` : 'movie'}.mp4`;
+    let finalUrl = null;
 
-    res.setHeader('Content-Type', 'video/mp4');
-    res.setHeader('Content-Disposition', `attachment; filename="${filename}"`);
+    for (const endpoint of aggregators) {
+      try {
+        const response = await axios.get(endpoint, { headers, timeout: 5000 });
+        const data = response.data;
+        if (data) {
+          if (data.success && data.download_mirror_url) finalUrl = data.download_mirror_url;
+          else if (data.url) finalUrl = data.url;
+        }
+        if (finalUrl) {
+          console.log(`[API] Scraped download link from ${endpoint}`);
+          break;
+        }
+      } catch (e) {
+        // Skip on fail
+      }
+    }
 
-    ffmpegProcess.stdout.pipe(res);
+    if (!finalUrl) {
+      console.log(`[API] All aggregators failed. Falling back to public mirror.`);
+      finalUrl = type === 'series'
+        ? `https://vidsrc.to/embed/tv/${imdbId}/${season}/${episode}`
+        : `https://vidsrc.to/embed/movie/${imdbId}`;
+    }
+
+    return res.status(200).json({ success: true, downloadUrl: finalUrl });
+
   } catch (error) {
-    console.error('[DownloadEngine] Error:', error);
-    if (!res.headersSent) {
-      res.status(500).send(error.message || 'Download failed');
-    }
+    console.error('[DownloadAPI] Error:', error);
+    res.status(500).json({ success: false, error: 'Internal Server Error' });
   }
 });
 const PORT = process.env.PORT || 4000;
