@@ -1,15 +1,9 @@
-const CACHE_NAME = 'cinestream-offline-v5';
-// Only cache static JS/CSS assets, NOT html pages (pages must always be fresh)
+const CACHE_NAME = 'cinestream-offline-v6';
+// NOTE: Vite bundles and hashes JS files, so raw /js/*.js paths don't exist at runtime.
+// Only cache assets that are truly served at these static paths.
+// The Vite-built JS bundle is cached dynamically by the fetch handler below.
 const ASSETS_TO_CACHE = [
   '/css/detail.css',
-  '/js/config.js',
-  '/js/auth.js',
-  '/js/ui.js',
-  '/js/router.js',
-  '/js/offlineStorage.js',
-  '/js/tmdb.js',
-  '/js/sports-api.js',
-  '/js/download-manager.js',
 ];
 
 self.addEventListener('install', (event) => {
