@@ -1,4 +1,4 @@
-const CACHE_NAME = 'cinestream-offline-v2';
+const CACHE_NAME = 'cinestream-offline-v3';
 const ASSETS_TO_CACHE = [
   '/',
   '/index.html',
@@ -18,6 +18,7 @@ const ASSETS_TO_CACHE = [
 ];
 
 self.addEventListener('install', (event) => {
+  self.skipWaiting();
   event.waitUntil(
     caches.open(CACHE_NAME)
       .then((cache) => {
@@ -86,6 +87,6 @@ self.addEventListener('activate', (event) => {
           }
         })
       );
-    })
+    }).then(() => clients.claim())
   );
 });
