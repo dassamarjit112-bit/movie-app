@@ -153,7 +153,7 @@ const SportsPage = (() => {
       }
       grid.innerHTML = articles.map(article => `
         <a href="${article.link}" target="_blank" class="sp-news-card">
-          <img src="${article.image || 'https://via.placeholder.com/400x200/111/fff?text=Sports+News'}" alt="News" class="sp-news-img" onerror="this.src='https://via.placeholder.com/400x200/111/fff?text=Sports+News'">
+          <img src="${article.image || 'https://placehold.co/400x200/111/fff?text=Sports+News'}" alt="News" class="sp-news-img" onerror="this.src='https://placehold.co/400x200/111/fff?text=Sports+News'">
           <div class="sp-news-body">
             <div class="sp-news-sport">${article.sport || 'Sports'}</div>
             <div class="sp-news-title">${article.headline}</div>

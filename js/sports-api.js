@@ -184,19 +184,13 @@ const SportsAPI = (() => {
       { url: `https://site.api.espn.com/apis/site/v2/sports/tennis/wta/scoreboard`,            sport: 'tennis',            t: 'WTA Tour',            i: '🎾' },
       // ── Formula 1 ──
       { url: `https://site.api.espn.com/apis/site/v2/sports/racing/f1/scoreboard`,             sport: 'f1',                t: 'Formula 1 2026',      i: '🏎️' },
-      { url: `https://site.api.espn.com/apis/site/v2/sports/racing/indycar/scoreboard`,        sport: 'f1',                t: 'IndyCar Series',      i: '🏁' },
       // ── Hockey ──
       { url: `https://site.api.espn.com/apis/site/v2/sports/hockey/nhl/scoreboard`,            sport: 'hockey',            t: 'NHL Playoffs',        i: '🏒' },
       // ── Baseball ──
       { url: `https://site.api.espn.com/apis/site/v2/sports/baseball/mlb/scoreboard`,          sport: 'baseball',          t: 'MLB 2026',            i: '⚾' },
       // ── American Football ──
       { url: `https://site.api.espn.com/apis/site/v2/sports/football/nfl/scoreboard`,          sport: 'american-football', t: 'NFL 2026',            i: '🏈' },
-      // ── Rugby ──
-      { url: `https://site.api.espn.com/apis/site/v2/sports/rugby/scoreboard`,                 sport: 'rugby',             t: 'Rugby Union',         i: '🏉' },
-      // ── MMA ──
-      { url: `https://site.api.espn.com/apis/site/v2/sports/mma/ufc/scoreboard`,               sport: 'mma',               t: 'UFC',                 i: '🥊' },
-      // ── Golf ──
-      { url: `https://site.api.espn.com/apis/site/v2/sports/golf/leaderboard`,                 sport: 'golf',              t: 'PGA Tour',            i: '⛳' },
+      { url: `https://site.api.espn.com/apis/site/v2/sports/mma/ufc/scoreboard`,               sport: 'mma',               t: 'UFC',                 i: '🥊' }
     ];
 
     const results = await Promise.all(endpoints.map(ep => espnFetch(ep.url)));

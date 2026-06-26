@@ -252,7 +252,7 @@ const DetailPage = (() => {
     const cast = item.cast || [];
     const displayed = cast.slice(0, 12);
     castContainer.innerHTML = displayed.map(member => {
-      const imgSrc = member.profile_path ? member.profile_path : 'https://via.placeholder.com/64?text=No+Image';
+      const imgSrc = member.profile_path ? member.profile_path : 'https://placehold.co/64?text=No+Image';
       const role = member.character || member.role || '';
       return `
         <div style="display:flex; flex-direction:column; align-items:center; text-align:center; min-width:80px; flex-shrink:0;">
@@ -357,7 +357,7 @@ function setupEpisodes(item) {
         return `
           <div class="poster-card-item" style="flex-shrink:0">
             <div class="poster-card" onclick="Router.navigate('detail',{id:'${rec.id}',type:'${recType}'})" title="${title}">
-              <img src="${UI.getSecurePosterUrl ? UI.getSecurePosterUrl(poster) : poster.replace('http://', 'https://')}" alt="${title}" loading="lazy" onerror="this.onerror=null;this.src='https://via.placeholder.com/170x255?text=No+Image'">
+              <img src="${UI.getSecurePosterUrl ? UI.getSecurePosterUrl(poster) : poster.replace('http://', 'https://')}" alt="${title}" loading="lazy" onerror="this.onerror=null;this.src='https://placehold.co/170x255?text=No+Image'">
               <div class="card-overlay">
                 <p style="font-size:12px;font-weight:600;color:#fff;line-height:1.3">${title}</p>
                 <p style="font-size:11px;color:rgba(255,255,255,0.6);margin-top:2px">${year}</p>

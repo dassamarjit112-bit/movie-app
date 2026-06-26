@@ -62,7 +62,7 @@ const DownloadsPage = (() => {
       grid.innerHTML = movies.map(movie => `
         <div class="poster-card-item" style="position:relative;">
           <div class="poster-card" style="aspect-ratio: 2/3; position:relative; overflow:hidden; border-radius:12px; cursor:pointer;" onclick="DownloadsPage.playMovie('${movie.movieId}')">
-            <img src="${movie.poster || 'https://via.placeholder.com/300x450'}" alt="${movie.title}" style="width:100%; height:100%; object-fit:cover;" />
+            <img src="${movie.poster || 'https://placehold.co/300x450'}" alt="${movie.title}" style="width:100%; height:100%; object-fit:cover;" />
             <div class="card-overlay" style="position:absolute; inset:0; background:rgba(0,0,0,0.5); display:flex; align-items:center; justify-content:center; opacity:0; transition:opacity 0.2s;">
               <span class="material-symbols-outlined" style="font-size: 48px; color: #14d1ff;">play_circle</span>
             </div>

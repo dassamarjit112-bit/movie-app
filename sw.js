@@ -1,9 +1,7 @@
-const CACHE_NAME = 'cinestream-offline-v1';
+const CACHE_NAME = 'cinestream-offline-v2';
 const ASSETS_TO_CACHE = [
   '/',
   '/index.html',
-  '/css/core.css',
-  '/css/home.css',
   '/css/detail.css',
   '/js/config.js',
   '/js/auth.js',
