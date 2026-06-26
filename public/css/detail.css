@@ -122,21 +122,26 @@
   .detail-grid { grid-template-columns: 1fr; gap: 32px; margin-top: 32px; padding-top: 32px; }
   .detail-actions {
     display: flex !important;
-    flex-direction: column !important;
+    flex-direction: row !important;
+    flex-wrap: wrap !important;
+    justify-content: center !important;
     width: 100%;
-    gap: 12px !important;
+    gap: 8px !important;
   }
   .detail-actions #detail-play-btn,
   .detail-actions #detail-download-btn,
   .detail-actions #detail-watchlist-btn {
-    width: 100% !important;
+    width: auto !important;
+    flex: 1 1 auto;
     justify-content: center !important;
-    padding: 16px 20px !important;
-    font-size: 15px !important;
-    white-space: normal !important;
+    padding: 10px 14px !important;
+    font-size: 13px !important;
+    white-space: nowrap !important;
     height: auto !important;
   }
   .detail-actions .btn-icon-circle {
-    display: none; /* Hide share/like on mobile to save space, or put them elsewhere */
+    display: inline-flex !important;
+    width: 36px !important;
+    height: 36px !important;
   }
 }
