@@ -38,111 +38,132 @@
         <span style="color:#14d1ff;font-weight:600; display:none;">Dolby Atmos</span>
       </div>
       <p id="detail-description" class="text-body-lg"></p>
-      <div class="detail-actions">
-        <button id="detail-play-btn" class="btn btn-glow detail-action-btn detail-btn-primary">
-          <span class="material-symbols-outlined icon-fill detail-btn-icon">play_arrow</span>
-          <span class="detail-btn-label">PLAY NOW</span>
+      <div class="da-wrap">
+        <button id="detail-play-btn" class="da-btn da-btn--play">
+          <span class="material-symbols-outlined">play_arrow</span>
+          <span>Play Now</span>
         </button>
-        <button id="detail-download-btn" class="btn btn-glass detail-action-btn detail-btn-secondary detail-btn-cyan">
-          <span class="material-symbols-outlined detail-btn-icon">download</span>
-          <span id="detail-download-text" class="detail-btn-label">DOWNLOAD</span>
+        <button id="detail-download-btn" class="da-btn da-btn--download">
+          <span class="material-symbols-outlined">download</span>
+          <span id="detail-download-text">Download</span>
         </button>
-        <button id="detail-watchlist-btn" class="btn btn-glass detail-action-btn detail-btn-secondary">
-          <span class="material-symbols-outlined detail-btn-icon" id="watchlist-icon">bookmark_add</span>
-          <span id="watchlist-text" class="detail-btn-label">WATCHLIST</span>
+        <button id="detail-watchlist-btn" class="da-btn da-btn--watchlist">
+          <span class="material-symbols-outlined" id="watchlist-icon">bookmark_add</span>
+          <span id="watchlist-text">Watchlist</span>
         </button>
-        <button class="btn btn-icon-circle detail-icon-btn" title="Share" onclick="UI.toast('Link copied to clipboard!', 'success')">
-          <span class="material-symbols-outlined" style="font-size:18px">share</span>
-        </button>
-        <button class="btn btn-icon-circle detail-icon-btn" title="Like" onclick="UI.toast('Added to liked titles!', 'success')">
-          <span class="material-symbols-outlined" style="font-size:18px">thumb_up</span>
-        </button>
+        <div class="da-icons">
+          <button class="da-icon-btn" title="Share" onclick="UI.toast('Link copied!','success')">
+            <span class="material-symbols-outlined">share</span>
+          </button>
+          <button class="da-icon-btn" title="Like" onclick="UI.toast('Added to liked!','success')">
+            <span class="material-symbols-outlined">thumb_up</span>
+          </button>
+        </div>
       </div>
     </div>
 
     <style>
-      /* ── Detail Action Buttons ── */
-      .detail-action-btn {
-        display: inline-flex;
-        align-items: center;
+    /* ════════════════════════════════
+       DETAIL ACTION BUTTONS — v6
+       Clean, cinematic, mobile-first
+    ════════════════════════════════ */
+
+    .da-wrap {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      flex-wrap: wrap;
+      margin-top: 8px;
+    }
+
+    /* Base button */
+    .da-btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      padding: 12px 24px;
+      border-radius: 50px;
+      font-family: 'Inter', sans-serif;
+      font-weight: 700;
+      font-size: 14px;
+      letter-spacing: 0.02em;
+      cursor: pointer;
+      border: none;
+      outline: none;
+      transition: transform 0.2s ease, box-shadow 0.2s ease, filter 0.2s ease;
+      white-space: nowrap;
+      user-select: none;
+    }
+    .da-btn .material-symbols-outlined { font-size: 20px; }
+    .da-btn:hover { transform: translateY(-2px); filter: brightness(1.1); }
+    .da-btn:active { transform: scale(0.96); }
+
+    /* Play — red primary */
+    .da-btn--play {
+      background: linear-gradient(135deg, #e50914 0%, #b8000c 100%);
+      color: #fff;
+      box-shadow: 0 8px 24px rgba(229, 9, 20, 0.45);
+    }
+
+    /* Download — cyan glass */
+    .da-btn--download {
+      background: rgba(20, 209, 255, 0.1);
+      color: #14d1ff;
+      border: 1.5px solid rgba(20, 209, 255, 0.4);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      box-shadow: 0 4px 16px rgba(20, 209, 255, 0.12);
+    }
+
+    /* Watchlist — ghost white */
+    .da-btn--watchlist {
+      background: rgba(255, 255, 255, 0.07);
+      color: rgba(229, 226, 225, 0.9);
+      border: 1.5px solid rgba(255, 255, 255, 0.16);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+    }
+
+    /* Circle icon buttons */
+    .da-icons { display: flex; gap: 8px; }
+    .da-icon-btn {
+      width: 44px;
+      height: 44px;
+      border-radius: 50%;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      background: rgba(255, 255, 255, 0.06);
+      border: 1.5px solid rgba(255, 255, 255, 0.14);
+      color: rgba(229, 226, 225, 0.75);
+      cursor: pointer;
+      outline: none;
+      transition: transform 0.2s, background 0.2s;
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+    }
+    .da-icon-btn .material-symbols-outlined { font-size: 18px; }
+    .da-icon-btn:hover { background: rgba(255,255,255,0.12); transform: scale(1.08); }
+    .da-icon-btn:active { transform: scale(0.94); }
+
+    /* ── Mobile ── */
+    @media (max-width: 768px) {
+      .da-wrap {
         justify-content: center;
         gap: 8px;
-        border-radius: 12px;
-        padding: 13px 26px;
-        font-weight: 800;
-        font-size: 14px;
-        letter-spacing: 0.04em;
-        cursor: pointer;
-        transition: all 0.3s ease;
-        white-space: nowrap;
       }
-      .detail-btn-primary {
-        background: linear-gradient(135deg, #e50914, #b8000c);
-        border: none;
-        color: #fff;
-        box-shadow: 0 10px 30px rgba(229,9,20,0.5), inset 0 1px 0 rgba(255,255,255,0.25);
+      .da-btn {
+        padding: 10px 18px;
+        font-size: 12px;
+        border-radius: 50px;
+        flex: 1 1 auto;
+        max-width: 130px;
       }
-      .detail-btn-secondary {
-        background: rgba(255,255,255,0.04);
-        border: 1.5px solid rgba(255,255,255,0.14);
-        color: rgba(229,226,225,0.9);
-        box-shadow: 0 6px 20px rgba(0,0,0,0.35);
-        backdrop-filter: blur(14px);
-        -webkit-backdrop-filter: blur(14px);
-      }
-      .detail-btn-cyan {
-        background: rgba(20,209,255,0.08) !important;
-        border-color: rgba(20,209,255,0.35) !important;
-        color: #14d1ff !important;
-      }
-      .detail-btn-icon { font-size: 22px; }
-      .detail-icon-btn {
-        width: 46px; height: 46px;
-        border-radius: 50%;
-        display: inline-flex; align-items: center; justify-content: center;
-        background: rgba(255,255,255,0.05);
-        border: 1px solid rgba(255,255,255,0.12);
-        color: rgba(229,226,225,0.85);
-        cursor: pointer;
-        backdrop-filter: blur(14px);
-        -webkit-backdrop-filter: blur(14px);
-      }
-
-      .btn-glow { position:relative; overflow:hidden; animation: pulse-glow 2.5s ease-in-out infinite; }
-      .btn-glow:hover { transform:translateY(-3px) scale(1.03); box-shadow:0 14px 36px rgba(229,9,20,0.65), inset 0 1px 0 rgba(255,255,255,0.3); }
-      .btn-glow:active { transform:translateY(0) scale(0.97); }
-      .btn-glass { position:relative; overflow:hidden; transition:all 0.35s cubic-bezier(0.4,0,0.2,1); }
-      .btn-glass:hover { transform:translateY(-3px) scale(1.03); }
-      .btn-glass:active { transform:translateY(0) scale(0.97); }
-      .btn-icon-circle { transition:all 0.35s cubic-bezier(0.4,0,0.2,1); }
-      .btn-icon-circle:hover { transform:translateY(-3px) scale(1.1); }
-      .btn-icon-circle:active { transform:translateY(0) scale(0.93); }
-      .btn-glow::before, .btn-glass::before { content:''; position:absolute; top:50%; left:50%; width:0; height:0; border-radius:50%; background:rgba(255,255,255,0.25); transform:translate(-50%,-50%); transition:width 0.6s, height 0.6s; }
-      .btn-glow:active::before, .btn-glass:active::before { width:400px; height:400px; }
-      @keyframes pulse-glow { 0%,100%{box-shadow:0 10px 30px rgba(229,9,20,0.5)} 50%{box-shadow:0 14px 42px rgba(229,9,20,0.75), 0 0 60px rgba(229,9,20,0.35)} }
-
-      /* ── Mobile Overrides ── */
-      @media (max-width: 768px) {
-        .detail-actions {
-          justify-content: center;
-          flex-wrap: wrap;
-          gap: 8px !important;
-        }
-        .detail-action-btn {
-          padding: 9px 14px !important;
-          font-size: 11px !important;
-          gap: 5px !important;
-          border-radius: 10px !important;
-          flex: 1 1 auto;
-          max-width: 140px;
-        }
-        .detail-btn-icon { font-size: 16px !important; }
-        .detail-icon-btn {
-          width: 36px !important;
-          height: 36px !important;
-        }
-        .detail-icon-btn .material-symbols-outlined { font-size: 16px !important; }
-      }
+      .da-btn .material-symbols-outlined { font-size: 17px; }
+      .da-icon-btn { width: 38px; height: 38px; }
+      .da-icon-btn .material-symbols-outlined { font-size: 16px; }
+    }
     </style>
 
     <!-- Secondary Info Grid -->
