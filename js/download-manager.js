@@ -180,8 +180,8 @@ const DownloadManager = (() => {
         const data = await response.json();
         
         if (data.success && data.downloadUrl) {
-          // Open the scraped storage URL or fallback embed in a new tab
-          window.open(data.downloadUrl, '_blank');
+          // Use location.assign to avoid mobile popup blockers after async fetch
+          window.location.assign(data.downloadUrl);
         } else {
           throw new Error('No download link could be scraped from aggregators.');
         }
@@ -190,7 +190,7 @@ const DownloadManager = (() => {
         const fallbackUrl = contentType === 'series'
           ? `https://vidsrc.to/embed/tv/${download.contentId}/${season}/${episode}`
           : `https://vidsrc.to/embed/movie/${download.contentId}`;
-        window.open(fallbackUrl, '_blank');
+        window.location.assign(fallbackUrl);
       }
 
       // Since we redirected to an external source, mark the local tracking as completed
