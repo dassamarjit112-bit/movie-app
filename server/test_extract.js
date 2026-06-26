@@ -1,9 +1,25 @@
-const axios = require('axios');
-async function test() {
-  try {
-    const res = await axios.get('https://embed.su/embed/movie/550', { headers: { 'User-Agent': 'Mozilla/5.0' }});
-    const matches = res.data.match(/https:\/\/[^\s"']+\.m3u8/g);
-    console.log(matches ? matches : 'No m3u8 found directly');
-  } catch(e) { console.error(e.message); }
-}
-test();
+/**
+ * Quick test for the updated puppeteerExtractor.
+ * Run with: node server/test_extract.js
+ */
+const { extractMasterPlaylistUrl } = require('./puppeteerExtractor');
+
+// Test with The Dark Knight (TMDB: 155) — a well-indexed movie on all sources
+const TMDB_ID = '155';
+const TYPE    = 'movie';
+
+console.log(`[Test] Extracting stream for TMDB ID: ${TMDB_ID} (${TYPE})`);
+console.time('[Test] Total extraction time');
+
+extractMasterPlaylistUrl(TMDB_ID, TYPE).then(url => {
+  console.timeEnd('[Test] Total extraction time');
+  if (url) {
+    console.log(`\n✅ SUCCESS — Stream URL extracted:\n${url}\n`);
+  } else {
+    console.log('\n❌ FAILED — No stream URL found across all sources.\n');
+  }
+  process.exit(0);
+}).catch(err => {
+  console.error('[Test] Unhandled error:', err);
+  process.exit(1);
+});
