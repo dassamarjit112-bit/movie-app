@@ -484,12 +484,22 @@ app.get('/api/extract_stream', async (req, res) => {
 
   let m3u8Url = null;
   try {
-    m3u8Url = await extractMasterPlaylistUrl(id, type, Number(season), Number(episode));
+    const { exec } = require('child_process');
+    m3u8Url = await new Promise((resolve) => {
+      exec(`node server/puppeteerStandalone.js ${id} ${type} ${season} ${episode}`, { timeout: 45000 }, (error, stdout) => {
+        if (error || !stdout) {
+          console.error('[ExtractStream] Standalone script error:', error?.message);
+          resolve(null);
+        } else {
+          resolve(stdout.trim());
+        }
+      });
+    });
   } catch (err) {
-    console.error('[ExtractStream] Puppeteer error:', err.message);
+    console.error('[ExtractStream] Extraction failed:', err.message);
   }
 
-  if (!m3u8Url) {
+  if (!m3u8Url || !m3u8Url.startsWith('http')) {
     return res.status(404).json({
       success: false,
       error: 'Could not extract a stream URL. The provider may require a real browser session.',

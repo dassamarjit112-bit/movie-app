@@ -1,4 +1,6 @@
-const puppeteerBase = require('puppeteer');
+const puppeteer = require('puppeteer-extra');
+const StealthPlugin = require('puppeteer-extra-plugin-stealth');
+puppeteer.use(StealthPlugin());
 
 /**
  * CineStream — Headless Stream Extractor
@@ -9,23 +11,38 @@ async function extractMasterPlaylistUrl(tmdbId, type = 'movie', season = 1, epis
 
   try {
     console.log(`[Extractor] Starting extraction for TMDB:${tmdbId} type:${type}`);
+    
+    console.log(`[Extractor] Launching browser...`);
+    
+    // Resolve base path explicitly to prevent launch hangs on Windows
+    const puppeteerBase = require('puppeteer');
     const chromePath = await puppeteerBase.executablePath();
+    console.log(`[Extractor] Using Chrome at: ${chromePath}`);
 
-    browser = await puppeteerBase.launch({
-      headless: true,
+    browser = await puppeteer.launch({
+      headless: false, // Visible browser so user can debug
       executablePath: chromePath,
+      pipe: true, // Use IPC pipes instead of WebSockets to prevent firewall blocking/hanging on Windows
       args: [
         '--no-sandbox',
         '--disable-setuid-sandbox',
+        '--disable-dev-shm-usage',
+        '--disable-accelerated-2d-canvas',
         '--disable-gpu',
         '--window-size=1280,720',
       ],
+      ignoreHTTPSErrors: true,
     });
-
+    
+    console.log(`[Extractor] Browser launched. Creating new page...`);
     const page = await browser.newPage();
+    
+    console.log(`[Extractor] Page created. Setting user agent...`);
     await page.setUserAgent('Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36');
 
     let videoStreamUrl = null;
+    
+    console.log(`[Extractor] Setting request interception...`);
     await page.setRequestInterception(true);
     
     page.on('request', (request) => {
