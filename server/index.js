@@ -471,6 +471,11 @@ app.get('/api/download_link', async (req, res) => {
  *
  * Query params: id, type, season, episode, title
  */
+app.head('/api/extract_stream', (req, res) => {
+  // Fast response for frontend probe requests (prevents 30s timeout on HEAD)
+  res.status(200).end();
+});
+
 app.get('/api/extract_stream', async (req, res) => {
   const { id, type = 'movie', season = 1, episode = 1, title = 'movie' } = req.query;
   if (!id) return res.status(400).json({ error: 'Missing TMDB id' });
@@ -503,6 +508,9 @@ app.get('/api/extract_stream', async (req, res) => {
   res.setHeader('Content-Type', 'video/mp4');
   res.setHeader('Transfer-Encoding', 'chunked');
 
+  // Load the bundled ffmpeg binary (works natively on Windows without system install)
+  const ffmpegPath = require('@ffmpeg-installer/ffmpeg').path;
+
   // Spawn ffmpeg: read the HLS playlist and copy streams into an mp4 container
   // -c copy = no re-encoding (fast, lossless remux)
   const ffmpegArgs = [
@@ -515,7 +523,7 @@ app.get('/api/extract_stream', async (req, res) => {
     'pipe:1',  // write output to stdout so Node can pipe it
   ];
 
-  const ffmpeg = spawn('ffmpeg', ffmpegArgs, { stdio: ['ignore', 'pipe', 'pipe'] });
+  const ffmpeg = spawn(ffmpegPath, ffmpegArgs, { stdio: ['ignore', 'pipe', 'pipe'] });
 
   // Pipe ffmpeg stdout directly into the HTTP response
   ffmpeg.stdout.pipe(res);
