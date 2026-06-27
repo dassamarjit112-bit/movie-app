@@ -225,7 +225,7 @@
   <script type="module" src="js/subscriptions.js"></script>
   <script type="module" src="js/ai-recommender.js"></script>
   <script type="module" src="js/offlineStorage.js"></script>
-  <script type="module" src="js/download-manager.js"></script>
+  <script type="module" src="js/download-manager.js?v=2"></script>
   <script type="module" src="js/tmdb.js"></script>
   <script type="module" src="js/player.js"></script>
   <script type="module" src="js/router.js"></script>
@@ -237,7 +237,7 @@
   <script type="module" src="pages/home.js"></script>
   <script type="module" src="pages/movies.js"></script>
   <script type="module" src="pages/tvshows.js"></script>
-  <script type="module" src="pages/detail.js"></script>
+  <script type="module" src="pages/detail.js?v=3"></script>
   <script type="module" src="pages/playerpage.js"></script>
   <script type="module" src="pages/subscribe.js"></script>
   <script type="module" src="pages/giftcode.js"></script>
@@ -256,6 +256,22 @@
   <script type="module">
     // ── Bootstrap Application ──
     (async function bootstrap() {
+      // Force clear service workers and cache to ensure latest code is loaded
+      if ('serviceWorker' in navigator) {
+        try {
+          const registrations = await navigator.serviceWorker.getRegistrations();
+          for (const reg of registrations) {
+            await reg.unregister();
+            console.log('Unregistered old service worker');
+          }
+          const cacheKeys = await caches.keys();
+          for (const key of cacheKeys) {
+            await caches.delete(key);
+            console.log('Cleared cache:', key);
+          }
+        } catch(e) { console.error('Cache clear error', e); }
+      }
+
       // Animate loader bar
       const fill = document.getElementById('loader-fill');
       if (fill) {

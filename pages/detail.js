@@ -407,22 +407,33 @@ function setupEpisodes(item) {
     if (btn) btn.style.opacity = '0.6';
 
     try {
-      if (window.DownloadManager) {
-        const season = type === 'series' ? 1 : 1;
-        const episode = type === 'series' ? 1 : 1;
-        
-        await window.DownloadManager.startDownload({
-          id: contentId,
-          title: title,
-          type: type,
-          season: season,
-          episode: episode,
-          poster: poster,
-          userId: userId
-        });
-      } else {
-        throw new Error('DownloadManager not loaded');
+      const seasonNum = type === 'series' ? 1 : 1;
+      const episodeNum = type === 'series' ? 1 : 1;
+      
+      const extractUrl = `/api/extract_stream?id=${encodeURIComponent(contentId)}&type=${encodeURIComponent(type)}&season=${encodeURIComponent(seasonNum)}&episode=${encodeURIComponent(episodeNum)}&title=${encodeURIComponent(title)}`;
+
+      // Save metadata to OfflineStorage so the Downloads page tracks this (optimistic)
+      if (window.OfflineStorage) {
+        await window.OfflineStorage.saveMovie(
+          String(contentId),
+          title,
+          poster,
+          null, // no blob — link-based tracking
+          0
+        );
       }
+
+      // Directly trigger the backend extraction pipe!
+      // This forces the browser to native Save-As dialog when the pipe starts streaming the MP4.
+      const a = document.createElement('a');
+      a.style.display = 'none';
+      a.href = extractUrl;
+      // Provide a default filename (backend also provides one via Content-Disposition)
+      a.download = `${title.replace(/[^a-zA-Z0-9_-]/g, '_')}_${resolution}.mp4`;
+      a.target = '_blank';
+      document.body.appendChild(a);
+      a.click();
+      setTimeout(() => document.body.removeChild(a), 1000);
 
       // Update the button on the detail page to show DOWNLOADED
       const dlText = document.getElementById('detail-download-text');
