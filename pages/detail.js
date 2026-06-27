@@ -403,42 +403,26 @@ function setupEpisodes(item) {
 
     // Show spinner
     if (statusRow) statusRow.style.display = 'block';
-    if (statusText) statusText.textContent = `Resolving ${resolution} source...`;
+    if (statusText) statusText.textContent = `Starting download manager...`;
     if (btn) btn.style.opacity = '0.6';
 
     try {
-      // Fetch the best available link for this content
-      const season = type === 'series' ? 1 : '';
-      const episode = type === 'series' ? 1 : '';
-      const res = await fetch(`/api/download_link?id=${encodeURIComponent(contentId)}&type=${encodeURIComponent(type)}&season=${encodeURIComponent(season)}&episode=${encodeURIComponent(episode)}`);
-      const data = await res.json();
-
-      let downloadUrl = (data.success && data.downloadUrl) ? data.downloadUrl : null;
-
-      // If the resolved URL is still an embed page, open it as a player (best we can do)
-      if (!downloadUrl || downloadUrl.includes('/embed/')) {
-        // Build a vidsrc link as the best known open provider
-        downloadUrl = type === 'series'
-          ? `https://vidsrc.to/embed/tv/${contentId}/1/1`
-          : `https://vidsrc.to/embed/movie/${contentId}`;
-        if (statusText) statusText.textContent = 'Direct download unavailable — opening stream page';
+      if (window.DownloadManager) {
+        const season = type === 'series' ? 1 : 1;
+        const episode = type === 'series' ? 1 : 1;
+        
+        await window.DownloadManager.startDownload({
+          id: contentId,
+          title: title,
+          type: type,
+          season: season,
+          episode: episode,
+          poster: poster,
+          userId: userId
+        });
       } else {
-        if (statusText) statusText.textContent = `Opening ${resolution} download...`;
+        throw new Error('DownloadManager not loaded');
       }
-
-      // Save metadata to OfflineStorage so the Downloads page tracks this
-      if (window.OfflineStorage) {
-        await window.OfflineStorage.saveMovie(
-          String(contentId),
-          title,
-          poster,
-          null,   // no blob — link-based tracking
-          0
-        );
-      }
-
-      // Open the link in a new tab
-      window.open(downloadUrl, '_blank', 'noopener,noreferrer');
 
       // Update the button on the detail page to show DOWNLOADED
       const dlText = document.getElementById('detail-download-text');
@@ -452,7 +436,6 @@ function setupEpisodes(item) {
         if (icon) icon.textContent = 'offline_pin';
       }
 
-      if (window.UI) UI.toast('Download started! Check your browser.', 'success');
       setTimeout(() => closeDownloadModal(), 1200);
 
     } catch (err) {
