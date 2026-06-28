@@ -609,28 +609,12 @@ app.post('/api/jobs/download', async (req, res) => {
   console.log(`[JobAPI] Requesting background extraction for TMDB ID: ${id}`);
   let downloadUrl = null;
   try {
-    const { exec } = require('child_process');
-    downloadUrl = await new Promise((resolve) => {
-      exec(`node server/puppeteerStandalone.js ${id} ${type} ${season} ${episode}`, { timeout: 45000 }, (error, stdout) => {
-        if (error || !stdout) resolve(null);
-        else resolve(stdout.trim());
-      });
-    });
+    const { scrapeVidlink } = require('./vidlinkScraper');
+    downloadUrl = await scrapeVidlink(id, type, season, episode);
   } catch (err) {
-    console.error('[JobAPI] Extraction failed:', err.message);
+    console.error('[JobAPI] Vidlink extraction failed:', err.message);
   }
 
-  // Fallback to VegaMovies if puppeteer extraction fails
-  if (!downloadUrl || !downloadUrl.startsWith('http')) {
-    console.log(`[JobAPI] Puppeteer failed. Falling back to VegaMovies for ${title}...`);
-    try {
-      const { scrapeLayer3Link } = require('./vegaScraper');
-      let movieYear = null; // We could fetch from TMDB, but scraper handles it mostly
-      downloadUrl = await scrapeLayer3Link(title, movieYear, type);
-    } catch(e) {
-      console.error('[JobAPI] VegaScraper fallback failed:', e.message);
-    }
-  }
 
   if (!downloadUrl || !downloadUrl.startsWith('http')) {
     return res.status(404).json({ success: false, error: 'Could not extract a stream URL.' });
