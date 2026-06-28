@@ -105,8 +105,16 @@ async function startJob(sourceUrl, filename) {
         });
       } else {
         // M3U8 Download using FFmpeg
-        console.log(`[JobManager] Starting FFmpeg M3U8 extraction for job ${jobId}`);
-        const ffmpegPath = require('@ffmpeg-installer/ffmpeg').path;
+        let ffmpegPath = 'ffmpeg';
+        try {
+          ffmpegPath = require('@ffmpeg-installer/ffmpeg').path;
+        } catch (e) {
+          try {
+            ffmpegPath = require('ffmpeg-static');
+          } catch (e2) {
+            console.warn('[JobManager] @ffmpeg-installer and ffmpeg-static not found or failed, falling back to system ffmpeg');
+          }
+        }
 
         const ffmpegArgs = [
           '-user_agent', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36',
@@ -149,8 +157,8 @@ async function startJob(sourceUrl, filename) {
       }
     } catch (err) {
       job.status = 'failed';
-      job.error = err.message;
-      console.error(`[JobManager] Job ${jobId} fatal error:`, err.message);
+      job.error = err ? (err.message || String(err)) : 'Unknown error';
+      console.error(`[JobManager] Job ${jobId} fatal error:`, err);
     }
   });
 

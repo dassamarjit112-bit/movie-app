@@ -542,7 +542,16 @@ app.get('/api/extract_stream', async (req, res) => {
   console.log(`[ExtractStream] M3U8 URL: ${m3u8Url}`);
 
   // Load the bundled ffmpeg binary (works natively on Windows without system install)
-  const ffmpegPath = require('@ffmpeg-installer/ffmpeg').path;
+  let ffmpegPath = 'ffmpeg';
+  try {
+    ffmpegPath = require('@ffmpeg-installer/ffmpeg').path;
+  } catch (e) {
+    try {
+      ffmpegPath = require('ffmpeg-static');
+    } catch (e2) {
+      console.warn('[ExtractStream] @ffmpeg-installer and ffmpeg-static not found or failed, falling back to system ffmpeg');
+    }
+  }
 
   // Spawn ffmpeg: read the HLS playlist and copy streams into an mp4 container
   // -c copy = no re-encoding (fast, lossless remux)
