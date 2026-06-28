@@ -450,55 +450,86 @@ function setupEpisodes(item) {
       const seasonNum = type === 'series' ? season : 1;
       const episodeNum = type === 'series' ? episode : 1;
       
-      const extractUrl = `/api/extract_stream?id=${encodeURIComponent(contentId)}&type=${encodeURIComponent(type)}&season=${encodeURIComponent(seasonNum)}&episode=${encodeURIComponent(episodeNum)}&title=${encodeURIComponent(title)}`;
-
-      // Use unique ID for episodes so they don't overwrite each other
       const storageId = type === 'series' ? `${contentId}_S${seasonNum}E${episodeNum}` : String(contentId);
       const displayTitle = type === 'series' ? `${title} (S${seasonNum} E${episodeNum})` : title;
 
-      // Save metadata to OfflineStorage so the Downloads page tracks this (optimistic)
       if (window.OfflineStorage) {
         await window.OfflineStorage.saveMovie(
           storageId,
           displayTitle,
           poster,
-          null, // no blob — link-based tracking
+          null,
           0,
           { type, season: seasonNum, episode: episodeNum }
         );
       }
 
-      // Directly trigger the backend extraction pipe!
-      // This forces the browser to native Save-As dialog when the pipe starts streaming the MP4.
-      const a = document.createElement('a');
-      a.style.display = 'none';
-      a.href = extractUrl;
-      // Provide a default filename (backend also provides one via Content-Disposition)
-      a.download = `${title.replace(/[^a-zA-Z0-9_-]/g, '_')}_${type === 'series' ? `S${seasonNum}E${episodeNum}_` : ''}${resolution}.mp4`;
-      a.target = '_blank';
-      document.body.appendChild(a);
-      a.click();
-      setTimeout(() => document.body.removeChild(a), 1000);
-
-      // Update the button on the detail page to show DOWNLOADED (only for movies)
-      if (type !== 'series') {
-        const dlText = document.getElementById('detail-download-text');
-        const dlBtn  = document.getElementById('detail-download-btn');
-        if (dlText) dlText.textContent = 'DOWNLOADED';
-        if (dlBtn) {
-          dlBtn.style.color = '#00d084';
-          dlBtn.style.borderColor = 'rgba(0,208,132,0.35)';
-          dlBtn.style.background = 'rgba(0,208,132,0.08)';
-          const icon = dlBtn.querySelector('.material-symbols-outlined');
-          if (icon) icon.textContent = 'offline_pin';
-        }
+      // Start background job on server
+      if (statusText) statusText.textContent = 'Requesting server download...';
+      const jobRes = await fetch('/api/jobs/download', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ id: contentId, type, season: seasonNum, episode: episodeNum, title })
+      });
+      
+      const jobData = await jobRes.json();
+      if (!jobData.success || !jobData.jobId) {
+        throw new Error(jobData.error || 'Failed to start download job');
       }
 
-      setTimeout(() => closeDownloadModal(), 1200);
+      const jobId = jobData.jobId;
+      
+      // Poll job status
+      const pollInterval = setInterval(async () => {
+        try {
+          const statusRes = await fetch(`/api/jobs/status/${jobId}`);
+          const statusData = await statusRes.json();
+          
+          if (statusData.status === 'failed') {
+            clearInterval(pollInterval);
+            throw new Error(statusData.error || 'Download failed on server');
+          }
+          
+          if (statusData.status === 'completed') {
+            clearInterval(pollInterval);
+            if (statusText) statusText.textContent = 'Ready! Starting download...';
+            
+            // Trigger native download from server cache
+            const a = document.createElement('a');
+            a.style.display = 'none';
+            a.href = `/api/jobs/file/${jobId}`;
+            a.download = jobData.filename || `${title.replace(/[^a-zA-Z0-9_-]/g, '_')}.mp4`;
+            a.target = '_blank';
+            document.body.appendChild(a);
+            a.click();
+            setTimeout(() => document.body.removeChild(a), 1000);
+
+            if (type !== 'series') {
+              const dlText = document.getElementById('detail-download-text');
+              const dlBtn  = document.getElementById('detail-download-btn');
+              if (dlText) dlText.textContent = 'DOWNLOADED';
+              if (dlBtn) {
+                dlBtn.style.color = '#00d084';
+                dlBtn.style.borderColor = 'rgba(0,208,132,0.35)';
+                dlBtn.style.background = 'rgba(0,208,132,0.08)';
+                const icon = dlBtn.querySelector('.material-symbols-outlined');
+                if (icon) icon.textContent = 'offline_pin';
+              }
+            }
+
+            setTimeout(() => closeDownloadModal(), 1200);
+          } else {
+            // Update progress
+            if (statusText) statusText.textContent = `Downloading on server... ${statusData.progress}%`;
+          }
+        } catch (pollErr) {
+          console.warn('Poll error:', pollErr);
+        }
+      }, 1500);
 
     } catch (err) {
       console.error('[DownloadModal] Error:', err);
-      if (statusText) statusText.textContent = 'Could not resolve download. Try again.';
+      if (statusText) statusText.textContent = err.message || 'Could not resolve download. Try again.';
       if (btn) btn.style.opacity = '1';
       else UI.toast('Download failed. Please try again.', 'error');
     }
