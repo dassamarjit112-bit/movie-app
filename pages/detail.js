@@ -466,13 +466,72 @@ function setupEpisodes(item) {
 
       // Start background job on server
       if (statusText) statusText.textContent = 'Requesting server download...';
-      const jobRes = await fetch('/api/jobs/download', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ id: contentId, type, season: seasonNum, episode: episodeNum, title })
-      });
+      let jobRes;
+      try {
+        jobRes = await fetch('/api/jobs/download', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ id: contentId, type, season: seasonNum, episode: episodeNum, title })
+        });
+      } catch (err) {
+        // Network error, backend not reachable
+        jobRes = { ok: false, status: 404 };
+      }
+
+      // If backend is missing (e.g. deployed to Vercel without Express), fallback to Layer-2 direct link
+      if (!jobRes || !jobRes.ok || jobRes.status === 404) {
+        console.warn('[DownloadModal] Backend job server not found. Falling back to serverless aggregator link...');
+        if (statusText) statusText.textContent = 'Resolving download link...';
+        
+        const dlRes = await fetch(`/api/download_link?id=${contentId}&type=${type}&season=${seasonNum}&episode=${episodeNum}`);
+        const text = await dlRes.text();
+        let dlData;
+        try {
+          dlData = JSON.parse(text);
+        } catch (e) {
+          throw new Error('Failed to parse download link response.');
+        }
+
+        if (!dlData.success || !dlData.downloadUrl) {
+          throw new Error(dlData.error || 'Failed to resolve download link');
+        }
+
+        if (statusText) statusText.textContent = 'Ready! Opening link...';
+        
+        // Open link natively
+        const a = document.createElement('a');
+        a.style.display = 'none';
+        a.href = dlData.downloadUrl;
+        a.target = '_blank';
+        a.download = `${title.replace(/[^a-zA-Z0-9_-]/g, '_')}.mp4`;
+        document.body.appendChild(a);
+        a.click();
+        setTimeout(() => document.body.removeChild(a), 1000);
+
+        if (type !== 'series') {
+          const dlText = document.getElementById('detail-download-text');
+          const dlBtn  = document.getElementById('detail-download-btn');
+          if (dlText) dlText.textContent = 'DOWNLOADED';
+          if (dlBtn) {
+            dlBtn.style.color = '#00d084';
+            dlBtn.style.borderColor = 'rgba(0,208,132,0.35)';
+            dlBtn.style.background = 'rgba(0,208,132,0.08)';
+            const icon = dlBtn.querySelector('.material-symbols-outlined');
+            if (icon) icon.textContent = 'offline_pin';
+          }
+        }
+        setTimeout(() => closeDownloadModal(), 1200);
+        return;
+      }
       
-      const jobData = await jobRes.json();
+      const text = await jobRes.text();
+      let jobData;
+      try {
+        jobData = JSON.parse(text);
+      } catch (e) {
+        throw new Error('Server returned invalid JSON. Is the backend running?');
+      }
+
       if (!jobData.success || !jobData.jobId) {
         throw new Error(jobData.error || 'Failed to start download job');
       }
