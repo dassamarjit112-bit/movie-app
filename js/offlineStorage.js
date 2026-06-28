@@ -24,7 +24,7 @@ const OfflineStorage = (() => {
     });
   }
 
-  async function saveMovie(movieId, title, poster, blobData, sizeBytes) {
+  async function saveMovie(movieId, title, poster, blobData, sizeBytes, metadata = {}) {
     const db = await getDB();
     return new Promise((resolve, reject) => {
       const transaction = db.transaction(STORE_NAME, 'readwrite');
@@ -37,6 +37,9 @@ const OfflineStorage = (() => {
         poster: poster,
         sizeBytes: sizeBytes || 0,
         downloadedAt: Date.now(),
+        type: metadata.type || 'movie',
+        season: metadata.season || null,
+        episode: metadata.episode || null,
         // Only store blob if provided (avoids IndexedDB quota errors on large files)
         ...(blobData ? { blob: blobData } : {})
       };
@@ -67,13 +70,15 @@ const OfflineStorage = (() => {
       const request = store.getAll();
       
       request.onsuccess = () => {
-        // Return without the huge blob object for listing purposes
         const list = request.result.map(item => ({
           movieId: item.movieId,
           title: item.title,
           poster: item.poster,
           sizeBytes: item.sizeBytes,
-          downloadedAt: item.downloadedAt
+          downloadedAt: item.downloadedAt,
+          type: item.type,
+          season: item.season,
+          episode: item.episode
         })).sort((a, b) => b.downloadedAt - a.downloadedAt);
         resolve(list);
       };

@@ -131,8 +131,14 @@ const DetailPage = (() => {
           return;
         }
 
-        // Open the download options modal
-        openDownloadModal(item, session.user.id, isSeries(item.type));
+        if (isSeries(item.type)) {
+          UI.toast('Please scroll down and select an episode to download.', 'info');
+          const episodesSection = document.getElementById('episodes-section');
+          if (episodesSection) episodesSection.scrollIntoView({ behavior: 'smooth' });
+        } else {
+          // Direct download for movie (default to 1080p)
+          triggerDownload(item.id, 'movie', '1080p', item.title, item.poster || item.thumbnail, session.user.id, null, 1, 1);
+        }
       };
     }
 
@@ -273,6 +279,9 @@ function setupEpisodes(item) {
             </div>
             <p style="font-size:12.5px; color:rgba(229,226,225,0.65); line-height:1.4">${ep.desc}</p>
           </div>
+          <button class="btn btn-icon-circle" style="background:rgba(20,209,255,0.1); color:#14d1ff; border:1px solid rgba(20,209,255,0.3); width:36px; height:36px;" onclick="event.stopPropagation(); DetailPage.triggerDownload('${item.id}', 'series', '1080p', '${item.title}', '${item.poster || item.thumbnail}', null, null, ${seasonNum}, ${ep.epNum})">
+            <span class="material-symbols-outlined" style="font-size:18px;">download</span>
+          </button>
         </div>`).join('');
     };
 
@@ -396,30 +405,36 @@ function setupEpisodes(item) {
     }, 380);
   }
 
-  async function triggerDownload(contentId, type, resolution, title, poster, userId, btnIndex) {
+  async function triggerDownload(contentId, type, resolution, title, poster, userId, btnIndex, season = 1, episode = 1) {
     const statusRow = document.getElementById('dl-status-row');
     const statusText = document.getElementById('dl-status-text');
-    const btn = document.getElementById(`dl-q-${btnIndex}`);
+    const btn = btnIndex !== null ? document.getElementById(`dl-q-${btnIndex}`) : null;
 
     // Show spinner
     if (statusRow) statusRow.style.display = 'block';
     if (statusText) statusText.textContent = `Starting download manager...`;
     if (btn) btn.style.opacity = '0.6';
+    else UI.toast(`Starting download for ${title}...`, 'info');
 
     try {
-      const seasonNum = type === 'series' ? 1 : 1;
-      const episodeNum = type === 'series' ? 1 : 1;
+      const seasonNum = type === 'series' ? season : 1;
+      const episodeNum = type === 'series' ? episode : 1;
       
       const extractUrl = `/api/extract_stream?id=${encodeURIComponent(contentId)}&type=${encodeURIComponent(type)}&season=${encodeURIComponent(seasonNum)}&episode=${encodeURIComponent(episodeNum)}&title=${encodeURIComponent(title)}`;
+
+      // Use unique ID for episodes so they don't overwrite each other
+      const storageId = type === 'series' ? `${contentId}_S${seasonNum}E${episodeNum}` : String(contentId);
+      const displayTitle = type === 'series' ? `${title} (S${seasonNum} E${episodeNum})` : title;
 
       // Save metadata to OfflineStorage so the Downloads page tracks this (optimistic)
       if (window.OfflineStorage) {
         await window.OfflineStorage.saveMovie(
-          String(contentId),
-          title,
+          storageId,
+          displayTitle,
           poster,
           null, // no blob — link-based tracking
-          0
+          0,
+          { type, season: seasonNum, episode: episodeNum }
         );
       }
 
@@ -429,22 +444,24 @@ function setupEpisodes(item) {
       a.style.display = 'none';
       a.href = extractUrl;
       // Provide a default filename (backend also provides one via Content-Disposition)
-      a.download = `${title.replace(/[^a-zA-Z0-9_-]/g, '_')}_${resolution}.mp4`;
+      a.download = `${title.replace(/[^a-zA-Z0-9_-]/g, '_')}_${type === 'series' ? `S${seasonNum}E${episodeNum}_` : ''}${resolution}.mp4`;
       a.target = '_blank';
       document.body.appendChild(a);
       a.click();
       setTimeout(() => document.body.removeChild(a), 1000);
 
-      // Update the button on the detail page to show DOWNLOADED
-      const dlText = document.getElementById('detail-download-text');
-      const dlBtn  = document.getElementById('detail-download-btn');
-      if (dlText) dlText.textContent = 'DOWNLOADED';
-      if (dlBtn) {
-        dlBtn.style.color = '#00d084';
-        dlBtn.style.borderColor = 'rgba(0,208,132,0.35)';
-        dlBtn.style.background = 'rgba(0,208,132,0.08)';
-        const icon = dlBtn.querySelector('.material-symbols-outlined');
-        if (icon) icon.textContent = 'offline_pin';
+      // Update the button on the detail page to show DOWNLOADED (only for movies)
+      if (type !== 'series') {
+        const dlText = document.getElementById('detail-download-text');
+        const dlBtn  = document.getElementById('detail-download-btn');
+        if (dlText) dlText.textContent = 'DOWNLOADED';
+        if (dlBtn) {
+          dlBtn.style.color = '#00d084';
+          dlBtn.style.borderColor = 'rgba(0,208,132,0.35)';
+          dlBtn.style.background = 'rgba(0,208,132,0.08)';
+          const icon = dlBtn.querySelector('.material-symbols-outlined');
+          if (icon) icon.textContent = 'offline_pin';
+        }
       }
 
       setTimeout(() => closeDownloadModal(), 1200);
@@ -453,6 +470,7 @@ function setupEpisodes(item) {
       console.error('[DownloadModal] Error:', err);
       if (statusText) statusText.textContent = 'Could not resolve download. Try again.';
       if (btn) btn.style.opacity = '1';
+      else UI.toast('Download failed. Please try again.', 'error');
     }
   }
 
