@@ -47,7 +47,7 @@ async function extractMasterPlaylistUrl(tmdbId, type = 'movie', season = 1, epis
     
     page.on('request', (request) => {
       const url = request.url();
-      if (url.includes('.m3u8') || url.includes('playlist.m3u8')) {
+      if (url.includes('.m3u8') || url.includes('playlist.m3u8') || url.includes('.mp4') || url.endsWith('.mp4')) {
         videoStreamUrl = url;
       }
       if (request.resourceType() === 'image' || url.includes('analytics') || url.includes('popads')) {

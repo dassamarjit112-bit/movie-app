@@ -132,9 +132,7 @@ const DetailPage = (() => {
         }
 
         if (isSeries(item.type)) {
-          UI.toast('Please scroll down and select an episode to download.', 'info');
-          const episodesSection = document.getElementById('episodes-section');
-          if (episodesSection) episodesSection.scrollIntoView({ behavior: 'smooth' });
+          openDownloadModal(item, session.user.id, true);
         } else {
           // Direct download for movie (default to 1080p)
           triggerDownload(item.id, 'movie', '1080p', item.title, item.poster || item.thumbnail, session.user.id, null, 1, 1);
@@ -360,25 +358,57 @@ function setupEpisodes(item) {
     // Set movie title
     if (titleEl) titleEl.textContent = `Download: ${item.title}`;
 
-    // Quality tiers with their colors and descriptions
-    const qualities = [
-      { label: '4K Ultra HD', sub: '2160p · ~15 GB', badge: '4K', color: '#ffc832', bg: 'rgba(255,200,50,0.08)', border: 'rgba(255,200,50,0.3)', resolution: '2160p' },
-      { label: '1080p Full HD', sub: 'Best quality · ~4 GB', badge: 'HD', color: '#14d1ff', bg: 'rgba(20,209,255,0.08)', border: 'rgba(20,209,255,0.3)', resolution: '1080p' },
-      { label: '720p HD', sub: 'Recommended · ~1.5 GB', badge: 'REC', color: '#00d084', bg: 'rgba(0,208,132,0.08)', border: 'rgba(0,208,132,0.3)', resolution: '720p' },
-      { label: '480p SD', sub: 'Mobile friendly · ~500 MB', badge: 'SD', color: 'rgba(255,255,255,0.6)', bg: 'rgba(255,255,255,0.04)', border: 'rgba(255,255,255,0.12)', resolution: '480p' }
-    ];
+    if (isSeries) {
+      let allEpisodes = [];
+      if (item.episodes) {
+        Object.keys(item.episodes).forEach(s => {
+          item.episodes[s].forEach(ep => {
+            allEpisodes.push({ season: s, ...ep });
+          });
+        });
+      }
+      grid.style.display = 'block';
+      grid.style.maxHeight = '360px';
+      grid.style.overflowY = 'auto';
+      grid.style.scrollbarWidth = 'thin';
+      grid.style.scrollbarColor = 'rgba(255,255,255,0.15) transparent';
+      
+      if (allEpisodes.length === 0) {
+        grid.innerHTML = '<p style="color:rgba(255,255,255,0.5); text-align:center; padding:20px;">No episodes available.</p>';
+      } else {
+        grid.innerHTML = allEpisodes.map((ep, i) => `
+          <button class="dl-quality-btn" style="border-color:rgba(20,209,255,0.3);background:rgba(20,209,255,0.08);width:100%;margin-bottom:8px;display:flex;align-items:center;justify-content:space-between;flex-direction:row;"
+            onclick="DetailPage.triggerDownload('${item.id}', 'series', '1080p', '${item.title}', '${item.poster || item.thumbnail}', '${userId}', null, ${ep.season}, ${ep.epNum})">
+            <div style="display:flex;flex-direction:column;align-items:flex-start;text-align:left;">
+              <span class="dl-quality-label" style="color:#14d1ff;">S${ep.season} E${ep.epNum}: ${ep.title}</span>
+              <span class="dl-quality-sub">${ep.duration}m</span>
+            </div>
+            <span class="material-symbols-outlined" style="color:#14d1ff;font-size:22px;flex-shrink:0;">download</span>
+          </button>
+        `).join('');
+      }
+    } else {
+      grid.style.display = 'grid';
+      grid.style.maxHeight = 'none';
+      grid.style.overflowY = 'visible';
+      const qualities = [
+        { label: '4K Ultra HD', sub: '2160p · ~15 GB', badge: '4K', color: '#ffc832', bg: 'rgba(255,200,50,0.08)', border: 'rgba(255,200,50,0.3)', resolution: '2160p' },
+        { label: '1080p Full HD', sub: 'Best quality · ~4 GB', badge: 'HD', color: '#14d1ff', bg: 'rgba(20,209,255,0.08)', border: 'rgba(20,209,255,0.3)', resolution: '1080p' },
+        { label: '720p HD', sub: 'Recommended · ~1.5 GB', badge: 'REC', color: '#00d084', bg: 'rgba(0,208,132,0.08)', border: 'rgba(0,208,132,0.3)', resolution: '720p' },
+        { label: '480p SD', sub: 'Mobile friendly · ~500 MB', badge: 'SD', color: 'rgba(255,255,255,0.6)', bg: 'rgba(255,255,255,0.04)', border: 'rgba(255,255,255,0.12)', resolution: '480p' }
+      ];
 
-    // Render quality buttons
-    grid.innerHTML = qualities.map((q, i) => `
-      <button class="dl-quality-btn" id="dl-q-${i}"
-        style="border-color:${q.border};background:${q.bg};"
-        onclick="DetailPage.triggerDownload('${item.id}', '${isSeries ? 'series' : 'movie'}', '${q.resolution}', '${item.title}', '${item.poster || item.thumbnail}', '${userId}', ${i})"
-      >
-        <span class="dl-quality-badge" style="background:${q.bg};color:${q.color};border:1px solid ${q.border};">${q.badge}</span>
-        <span class="dl-quality-label" style="color:${q.color};padding-right:36px;">${q.label}</span>
-        <span class="dl-quality-sub">${q.sub}</span>
-      </button>
-    `).join('');
+      grid.innerHTML = qualities.map((q, i) => `
+        <button class="dl-quality-btn" id="dl-q-${i}"
+          style="border-color:${q.border};background:${q.bg};"
+          onclick="DetailPage.triggerDownload('${item.id}', 'movie', '${q.resolution}', '${item.title}', '${item.poster || item.thumbnail}', '${userId}', ${i})"
+        >
+          <span class="dl-quality-badge" style="background:${q.bg};color:${q.color};border:1px solid ${q.border};">${q.badge}</span>
+          <span class="dl-quality-label" style="color:${q.color};padding-right:36px;">${q.label}</span>
+          <span class="dl-quality-sub">${q.sub}</span>
+        </button>
+      `).join('');
+    }
 
     // Hide status initially
     statusRow.style.display = 'none';

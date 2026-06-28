@@ -510,13 +510,36 @@ app.get('/api/extract_stream', async (req, res) => {
   const safeTitle = (title || 'cinestream').replace(/[^a-zA-Z0-9_\-\s]/g, '').trim().replace(/\s+/g, '_');
   const filename = `${safeTitle}_${type === 'series' ? `S${season}E${episode}` : 'movie'}.mp4`;
 
-  console.log(`[ExtractStream] Piping m3u8 through FFmpeg → ${filename}`);
-  console.log(`[ExtractStream] M3U8 URL: ${m3u8Url}`);
-
   // Set response headers so the browser triggers a real Save-As dialog
   res.setHeader('Content-Disposition', `attachment; filename="${filename}"`);
   res.setHeader('Content-Type', 'video/mp4');
   res.setHeader('Transfer-Encoding', 'chunked');
+
+  const isMp4 = m3u8Url.includes('.mp4');
+  if (isMp4) {
+    console.log(`[ExtractStream] Direct MP4 detected. Proxying without FFmpeg → ${filename}`);
+    try {
+      const streamRes = await axios({
+        method: 'get',
+        url: m3u8Url,
+        responseType: 'stream',
+        headers: {
+          'Referer': 'https://vidlink.pro/',
+          'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36'
+        }
+      });
+      streamRes.data.pipe(res);
+      req.on('close', () => { if (streamRes.data.destroy) streamRes.data.destroy(); });
+    } catch (e) {
+      console.error('[ExtractStream] MP4 proxy error:', e.message);
+      if (!res.headersSent) res.status(500).json({ error: 'MP4 proxy failed' });
+      else res.end();
+    }
+    return;
+  }
+
+  console.log(`[ExtractStream] Piping m3u8 through FFmpeg → ${filename}`);
+  console.log(`[ExtractStream] M3U8 URL: ${m3u8Url}`);
 
   // Load the bundled ffmpeg binary (works natively on Windows without system install)
   const ffmpegPath = require('@ffmpeg-installer/ffmpeg').path;
