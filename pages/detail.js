@@ -442,9 +442,9 @@ function setupEpisodes(item) {
 
     // Show spinner
     if (statusRow) statusRow.style.display = 'block';
-    if (statusText) statusText.textContent = `Starting download manager...`;
+    if (statusText) statusText.textContent = `Resolving download link...`;
     if (btn) btn.style.opacity = '0.6';
-    else UI.toast(`Starting download for ${title}...`, 'info');
+    else UI.toast(`Resolving link for ${title}...`, 'info');
 
     try {
       const seasonNum = type === 'series' ? season : 1;
@@ -464,68 +464,40 @@ function setupEpisodes(item) {
         );
       }
 
-      // Start background job on server
-      if (statusText) statusText.textContent = 'Requesting server download...';
-      const jobRes = await fetch('/api/jobs/download', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ id: contentId, type, season: seasonNum, episode: episodeNum, title })
-      });
-      
-      const jobData = await jobRes.json();
-      if (!jobData.success || !jobData.jobId) {
-        throw new Error(jobData.error || 'Failed to start download job');
+      // Hit /api/download_link instead of /api/jobs/download
+      const dlRes = await fetch(`/api/download_link?id=${contentId}&type=${type}&season=${seasonNum}&episode=${episodeNum}`);
+      const dlData = await dlRes.json();
+
+      if (!dlData.success || !dlData.downloadUrl) {
+        throw new Error(dlData.error || 'Failed to resolve download link');
       }
 
-      const jobId = jobData.jobId;
+      if (statusText) statusText.textContent = 'Ready! Starting download...';
       
-      // Poll job status
-      const pollInterval = setInterval(async () => {
-        try {
-          const statusRes = await fetch(`/api/jobs/status/${jobId}`);
-          const statusData = await statusRes.json();
-          
-          if (statusData.status === 'failed') {
-            clearInterval(pollInterval);
-            throw new Error(statusData.error || 'Download failed on server');
-          }
-          
-          if (statusData.status === 'completed') {
-            clearInterval(pollInterval);
-            if (statusText) statusText.textContent = 'Ready! Starting download...';
-            
-            // Trigger native download from server cache
-            const a = document.createElement('a');
-            a.style.display = 'none';
-            a.href = `/api/jobs/file/${jobId}`;
-            a.download = jobData.filename || `${title.replace(/[^a-zA-Z0-9_-]/g, '_')}.mp4`;
-            a.target = '_blank';
-            document.body.appendChild(a);
-            a.click();
-            setTimeout(() => document.body.removeChild(a), 1000);
+      // Trigger native download
+      const a = document.createElement('a');
+      a.style.display = 'none';
+      a.href = dlData.downloadUrl;
+      a.target = '_blank';
+      a.download = `${title.replace(/[^a-zA-Z0-9_-]/g, '_')}.mp4`;
+      document.body.appendChild(a);
+      a.click();
+      setTimeout(() => document.body.removeChild(a), 1000);
 
-            if (type !== 'series') {
-              const dlText = document.getElementById('detail-download-text');
-              const dlBtn  = document.getElementById('detail-download-btn');
-              if (dlText) dlText.textContent = 'DOWNLOADED';
-              if (dlBtn) {
-                dlBtn.style.color = '#00d084';
-                dlBtn.style.borderColor = 'rgba(0,208,132,0.35)';
-                dlBtn.style.background = 'rgba(0,208,132,0.08)';
-                const icon = dlBtn.querySelector('.material-symbols-outlined');
-                if (icon) icon.textContent = 'offline_pin';
-              }
-            }
-
-            setTimeout(() => closeDownloadModal(), 1200);
-          } else {
-            // Update progress
-            if (statusText) statusText.textContent = `Downloading on server... ${statusData.progress}%`;
-          }
-        } catch (pollErr) {
-          console.warn('Poll error:', pollErr);
+      if (type !== 'series') {
+        const dlText = document.getElementById('detail-download-text');
+        const dlBtn  = document.getElementById('detail-download-btn');
+        if (dlText) dlText.textContent = 'DOWNLOADED';
+        if (dlBtn) {
+          dlBtn.style.color = '#00d084';
+          dlBtn.style.borderColor = 'rgba(0,208,132,0.35)';
+          dlBtn.style.background = 'rgba(0,208,132,0.08)';
+          const icon = dlBtn.querySelector('.material-symbols-outlined');
+          if (icon) icon.textContent = 'offline_pin';
         }
-      }, 1500);
+      }
+
+      setTimeout(() => closeDownloadModal(), 1200);
 
     } catch (err) {
       console.error('[DownloadModal] Error:', err);
