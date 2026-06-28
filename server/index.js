@@ -623,8 +623,8 @@ app.post('/api/jobs/download', async (req, res) => {
   const safeTitle = (title || 'cinestream').replace(/[^a-zA-Z0-9_\-\s]/g, '').trim().replace(/\s+/g, '_');
   const filename = `${safeTitle}_${type === 'series' ? `S${season}E${episode}` : 'movie'}.mp4`;
 
-  const jobId = await downloadJobs.startJob(downloadUrl, filename);
-  res.json({ success: true, jobId, filename });
+  // Return the direct URL so the frontend can download it natively
+  res.json({ success: true, directDownloadUrl: downloadUrl, filename });
 });
 
 app.get('/api/jobs/status/:jobId', (req, res) => {

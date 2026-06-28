@@ -44,19 +44,20 @@ async function scrapeVidlink(tmdbId, type = 'movie', season = '', episode = '') 
     await page.setUserAgent('Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36');
     
     let mediaUrl = null;
+    let mp4Url = null;
+    let m3u8Url = null;
 
     // Intercept requests to catch the m3u8 or mp4 file
     await page.setRequestInterception(true);
     page.on('request', (request) => {
       const url = request.url();
       
-      // Look for master playlist or any mp4 file
-      if (url.includes('.m3u8') || url.includes('.mp4')) {
-        // Exclude some ad or tracking junk if necessary, but usually the first .m3u8 is the main video or playlist
-        if (!url.includes('ad') && !url.includes('tracker')) {
-          console.log(`[VidlinkScraper] Intercepted media URL: ${url}`);
-          if (!mediaUrl) mediaUrl = url;
-        }
+      if (url.includes('.mp4') && !url.includes('ad') && !url.includes('tracker')) {
+        console.log(`[VidlinkScraper] Intercepted MP4 URL: ${url}`);
+        if (!mp4Url) mp4Url = url;
+      } else if (url.includes('.m3u8') && !url.includes('ad') && !url.includes('tracker')) {
+        console.log(`[VidlinkScraper] Intercepted M3U8 URL: ${url}`);
+        if (!m3u8Url) m3u8Url = url;
       }
       request.continue();
     });
@@ -69,7 +70,7 @@ async function scrapeVidlink(tmdbId, type = 'movie', season = '', episode = '') 
     
     // Wait up to 10 seconds to see if mediaUrl was caught
     for (let i = 0; i < 20; i++) {
-      if (mediaUrl) break;
+      if (mp4Url) break;
       await new Promise(r => setTimeout(r, 500));
       
       // Try to click play button if available
@@ -80,6 +81,8 @@ async function scrapeVidlink(tmdbId, type = 'movie', season = '', episode = '') 
         });
       } catch (e) {}
     }
+    
+    mediaUrl = mp4Url || m3u8Url;
 
     if (mediaUrl) {
       console.log(`[VidlinkScraper] Successfully extracted media link: ${mediaUrl}`);

@@ -34,11 +34,14 @@ async function extract() {
     await page.setViewport({width: 1280, height: 720});
 
     let m3u8Url = null;
+    let mp4Url = null;
 
     page.on('request', request => {
       const reqUrl = request.url();
-      if (reqUrl.includes('.m3u8')) {
-        m3u8Url = reqUrl;
+      if (reqUrl.includes('.mp4') && !reqUrl.includes('ad') && !reqUrl.includes('tracker')) {
+        if (!mp4Url) mp4Url = reqUrl;
+      } else if (reqUrl.includes('.m3u8') && !reqUrl.includes('ad') && !reqUrl.includes('tracker')) {
+        if (!m3u8Url) m3u8Url = reqUrl;
       }
     });
 
@@ -49,11 +52,12 @@ async function extract() {
         for (let i = 0; i < 15; i++) {
             await page.mouse.click(640, 360).catch(() => {});
             await new Promise(r => setTimeout(r, 1000));
-            if (m3u8Url) break;
+            if (mp4Url) break; // Break early if we found our mp4
         }
 
-        if (m3u8Url) {
-            console.log(m3u8Url);
+        const finalUrl = mp4Url || m3u8Url;
+        if (finalUrl) {
+            console.log(finalUrl);
             break;
         }
     }

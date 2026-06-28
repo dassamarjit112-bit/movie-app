@@ -532,8 +532,40 @@ function setupEpisodes(item) {
         throw new Error('Server returned invalid JSON. Is the backend running?');
       }
 
-      if (!jobData.success || !jobData.jobId) {
+      if (!jobData.success) {
         throw new Error(jobData.error || 'Failed to start download job');
+      }
+
+      // Handle direct download bypass (e.g. from vidlink network extraction)
+      if (jobData.directDownloadUrl) {
+        if (statusText) statusText.textContent = 'Ready! Starting direct download...';
+        const a = document.createElement('a');
+        a.style.display = 'none';
+        a.href = jobData.directDownloadUrl;
+        a.target = '_blank';
+        a.download = jobData.filename || `${title.replace(/[^a-zA-Z0-9_-]/g, '_')}.mp4`;
+        document.body.appendChild(a);
+        a.click();
+        setTimeout(() => document.body.removeChild(a), 1000);
+
+        if (type !== 'series') {
+          const dlText = document.getElementById('detail-download-text');
+          const dlBtn  = document.getElementById('detail-download-btn');
+          if (dlText) dlText.textContent = 'DOWNLOADED';
+          if (dlBtn) {
+            dlBtn.style.color = '#00d084';
+            dlBtn.style.borderColor = 'rgba(0,208,132,0.35)';
+            dlBtn.style.background = 'rgba(0,208,132,0.08)';
+            const icon = dlBtn.querySelector('.material-symbols-outlined');
+            if (icon) icon.textContent = 'offline_pin';
+          }
+        }
+        setTimeout(() => closeDownloadModal(), 1200);
+        return;
+      }
+
+      if (!jobData.jobId) {
+        throw new Error('Failed to start download job (Missing Job ID)');
       }
 
       const jobId = jobData.jobId;
