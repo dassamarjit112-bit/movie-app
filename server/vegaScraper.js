@@ -11,8 +11,12 @@ async function scrapeLayer3Link(movieTitle, year, type = 'movie') {
   
   let browser;
   try {
+    const fs = require('fs');
+    const chromePath = 'C:\\Program Files\\Google\\Chrome\\Application\\chrome.exe';
+    
     browser = await puppeteer.launch({
-      headless: "new",
+      executablePath: fs.existsSync(chromePath) ? chromePath : undefined,
+      headless: 'new',
       args: [
         '--no-sandbox',
         '--disable-setuid-sandbox',

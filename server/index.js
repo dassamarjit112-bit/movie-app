@@ -607,10 +607,10 @@ app.post('/api/jobs/download', async (req, res) => {
   if (!id) return res.status(400).json({ error: 'Missing TMDB id' });
   
   console.log(`[JobAPI] Requesting background extraction for TMDB ID: ${id}`);
-  let m3u8Url = null;
+  let downloadUrl = null;
   try {
     const { exec } = require('child_process');
-    m3u8Url = await new Promise((resolve) => {
+    downloadUrl = await new Promise((resolve) => {
       exec(`node server/puppeteerStandalone.js ${id} ${type} ${season} ${episode}`, { timeout: 45000 }, (error, stdout) => {
         if (error || !stdout) resolve(null);
         else resolve(stdout.trim());
@@ -620,14 +620,26 @@ app.post('/api/jobs/download', async (req, res) => {
     console.error('[JobAPI] Extraction failed:', err.message);
   }
 
-  if (!m3u8Url || !m3u8Url.startsWith('http')) {
+  // Fallback to VegaMovies if puppeteer extraction fails
+  if (!downloadUrl || !downloadUrl.startsWith('http')) {
+    console.log(`[JobAPI] Puppeteer failed. Falling back to VegaMovies for ${title}...`);
+    try {
+      const { scrapeLayer3Link } = require('./vegaScraper');
+      let movieYear = null; // We could fetch from TMDB, but scraper handles it mostly
+      downloadUrl = await scrapeLayer3Link(title, movieYear, type);
+    } catch(e) {
+      console.error('[JobAPI] VegaScraper fallback failed:', e.message);
+    }
+  }
+
+  if (!downloadUrl || !downloadUrl.startsWith('http')) {
     return res.status(404).json({ success: false, error: 'Could not extract a stream URL.' });
   }
 
   const safeTitle = (title || 'cinestream').replace(/[^a-zA-Z0-9_\-\s]/g, '').trim().replace(/\s+/g, '_');
   const filename = `${safeTitle}_${type === 'series' ? `S${season}E${episode}` : 'movie'}.mp4`;
 
-  const jobId = await downloadJobs.startJob(m3u8Url, filename);
+  const jobId = await downloadJobs.startJob(downloadUrl, filename);
   res.json({ success: true, jobId, filename });
 });
 
