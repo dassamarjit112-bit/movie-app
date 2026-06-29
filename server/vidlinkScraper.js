@@ -2,6 +2,19 @@ const puppeteer = require('puppeteer-extra');
 const StealthPlugin = require('puppeteer-extra-plugin-stealth');
 puppeteer.use(StealthPlugin());
 
+function isAdOrTracker(url) {
+  const lower = url.toLowerCase();
+  return lower.includes('tracker') || 
+         lower.includes('analytics') || 
+         lower.includes('/ads/') || 
+         lower.includes('adserver') || 
+         lower.includes('adsystem') || 
+         lower.includes('adservice') || 
+         lower.includes('popads') || 
+         lower.includes('doubleclick') ||
+         lower.includes('google-analytics');
+}
+
 /**
  * Scrapes vidlink.pro to extract the actual .m3u8 or .mp4 URL by intercepting network requests.
  * @param {string} tmdbId - The TMDB ID of the content.
@@ -51,14 +64,15 @@ async function scrapeVidlink(tmdbId, type = 'movie', season = '', episode = '') 
     await page.setRequestInterception(true);
     page.on('request', (request) => {
       const url = request.url();
-      const isAdOrTracker = /(?:google-analytics|doubleclick|clarity|yandex|adsco\.re|pemsrv|adexchangerapid|popads|adsterra|exoclick)/i.test(url) || url.includes('tracker');
       
-      if (url.includes('.mp4') && !isAdOrTracker) {
-        console.log(`[VidlinkScraper] Intercepted MP4 URL: ${url}`);
-        if (!mp4Url) mp4Url = url;
-      } else if (url.includes('.m3u8') && !isAdOrTracker) {
-        console.log(`[VidlinkScraper] Intercepted M3U8 URL: ${url}`);
-        if (!m3u8Url) m3u8Url = url;
+      if ((url.includes('.mp4') || url.includes('.m3u8')) && !isAdOrTracker(url)) {
+        if (url.includes('.mp4')) {
+          console.log(`[VidlinkScraper] Intercepted MP4 URL: ${url}`);
+          if (!mp4Url) mp4Url = url;
+        } else {
+          console.log(`[VidlinkScraper] Intercepted M3U8 URL: ${url}`);
+          if (!m3u8Url) m3u8Url = url;
+        }
       }
       request.continue();
     });
@@ -71,7 +85,7 @@ async function scrapeVidlink(tmdbId, type = 'movie', season = '', episode = '') 
     
     // Wait up to 10 seconds to see if mediaUrl was caught
     for (let i = 0; i < 20; i++) {
-      if (mp4Url || m3u8Url) break;
+      if (mp4Url) break;
       await new Promise(r => setTimeout(r, 500));
       
       // Try to click play button if available
