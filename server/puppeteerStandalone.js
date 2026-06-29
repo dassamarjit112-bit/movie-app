@@ -38,9 +38,10 @@ async function extract() {
 
     page.on('request', request => {
       const reqUrl = request.url();
-      if (reqUrl.includes('.mp4') && !reqUrl.includes('ad') && !reqUrl.includes('tracker')) {
+      const isAdOrTracker = /(?:google-analytics|doubleclick|clarity|yandex|adsco\.re|pemsrv|adexchangerapid|popads|adsterra|exoclick)/i.test(reqUrl) || reqUrl.includes('tracker');
+      if (reqUrl.includes('.mp4') && !isAdOrTracker) {
         if (!mp4Url) mp4Url = reqUrl;
-      } else if (reqUrl.includes('.m3u8') && !reqUrl.includes('ad') && !reqUrl.includes('tracker')) {
+      } else if (reqUrl.includes('.m3u8') && !isAdOrTracker) {
         if (!m3u8Url) m3u8Url = reqUrl;
       }
     });
@@ -52,7 +53,7 @@ async function extract() {
         for (let i = 0; i < 15; i++) {
             await page.mouse.click(640, 360).catch(() => {});
             await new Promise(r => setTimeout(r, 1000));
-            if (mp4Url) break; // Break early if we found our mp4
+            if (mp4Url || m3u8Url) break; // Break early if we found a media link
         }
 
         const finalUrl = mp4Url || m3u8Url;

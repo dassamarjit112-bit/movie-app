@@ -91,6 +91,11 @@ self.addEventListener('fetch', (event) => {
         if (event.request.mode === 'navigate') {
           return caches.match('/index.html');
         }
+        // Return a standard fallback response instead of undefined to prevent TypeErrors
+        return new Response('Network connection lost.', {
+          status: 408,
+          headers: { 'Content-Type': 'text/plain' }
+        });
       })
   );
 });
