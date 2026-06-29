@@ -1,5 +1,3 @@
-const { scrapeVidlink } = require('../../server/vidlinkScraper');
-const { scrapeLayer3Link } = require('../../server/vegaScraper');
 const axios = require('axios');
 
 module.exports = async function handler(req, res) {
@@ -42,27 +40,8 @@ module.exports = async function handler(req, res) {
   let finalUrl = null;
   let isM3U8 = false;
 
-  // Step 1: Puppeteer headless extraction (primary method)
-  try {
-    console.log(`[API Serverless] Step 1: Headless browser extraction via vidlink.pro...`);
-    finalUrl = await scrapeVidlink(id, type, season, episode);
-    if (finalUrl) {
-      console.log(`[API Serverless] ✅ Headless extraction succeeded: ${finalUrl}`);
-      isM3U8 = finalUrl.includes('.m3u8');
-    }
-  } catch (err) {
-    console.error('[API Serverless] scrapeVidlink failed:', err.message);
-  }
-
-  // Step 2: VegaMovies stealth scrape
-  if (!finalUrl && movieTitle) {
-    try {
-      console.log(`[API Serverless] Step 2: VegaMovies stealth scrape for '${movieTitle}'...`);
-      finalUrl = await scrapeLayer3Link(movieTitle, movieYear, type);
-    } catch (err) {
-      console.error('[API Serverless] VegaMovies scrape failed:', err.message);
-    }
-  }
+  // Step 1: Vercel does not support Puppeteer. Skip headless extraction on Vercel.
+  console.log(`[API Serverless] Skipping headless browser extraction on serverless environment...`);
 
   // Step 3: Layer-2 aggregator APIs
   if (!finalUrl) {

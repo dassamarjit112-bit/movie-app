@@ -72,10 +72,11 @@ module.exports = async function handler(req, res) {
     }
   }
 
+  // Return 404 so that the client falls back to the native anchor download.
   if (!m3u8Url || !m3u8Url.startsWith('http')) {
     return res.status(404).json({
       success: false,
-      error: 'Could not extract a stream URL. The provider may require a real browser session.',
+      error: 'Could not extract a stream URL. The provider requires a persistent browser session.',
     });
   }
 
@@ -115,49 +116,8 @@ module.exports = async function handler(req, res) {
     return;
   }
 
-  console.log(`[ExtractStream Serverless] Piping m3u8 through FFmpeg → ${filename}`);
-  res.setHeader('Transfer-Encoding', 'chunked');
-
-  let ffmpegPath = 'ffmpeg';
-  try {
-    ffmpegPath = require('@ffmpeg-installer/ffmpeg').path;
-  } catch (e) {
-    try {
-      ffmpegPath = require('ffmpeg-static');
-    } catch (e2) {
-      console.warn('[ExtractStream Serverless] FFmpeg binaries not found, falling back to system ffmpeg');
-    }
-  }
-
-  const ffmpegArgs = [
-    '-user_agent', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36',
-    '-headers', `Referer: https://vidlink.pro/\r\nOrigin: https://vidlink.pro`,
-    '-i', m3u8Url,
-    '-c', 'copy',
-    '-movflags', 'frag_keyframe+empty_moov+faststart',
-    '-f', 'mp4',
-    'pipe:1',
-  ];
-
-  const ffmpeg = spawn(ffmpegPath, ffmpegArgs, { stdio: ['ignore', 'pipe', 'pipe'] });
-  ffmpeg.stdout.pipe(res);
-
-  ffmpeg.on('close', (code) => {
-    console.log(`[ExtractStream Serverless] FFmpeg exited with code ${code}`);
-    if (!res.writableEnded) res.end();
-  });
-
-  ffmpeg.on('error', (err) => {
-    console.error('[ExtractStream Serverless] FFmpeg spawn error:', err.message);
-    if (!res.headersSent) {
-      res.status(500).json({ success: false, error: 'FFmpeg failed to start.' });
-    } else if (!res.writableEnded) {
-      res.end();
-    }
-  });
-
-  req.on('close', () => {
-    console.log('[ExtractStream Serverless] Client disconnected — killing FFmpeg.');
-    ffmpeg.kill('SIGKILL');
-  });
+  // Vercel Serverless Functions do not support FFmpeg binaries!
+  // Send 404 to trigger fallback
+  console.log(`[ExtractStream Serverless] FFmpeg is not supported on Vercel for m3u8 piping.`);
+  return res.status(404).json({ success: false, error: 'FFmpeg not supported on serverless environment.' });
 };

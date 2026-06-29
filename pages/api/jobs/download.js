@@ -1,5 +1,3 @@
-const { scrapeVidlink } = require('../../../server/vidlinkScraper');
-
 module.exports = async function handler(req, res) {
   // Allow CORS if necessary (or rely on next.js/vercel defaults)
   res.setHeader('Access-Control-Allow-Origin', '*');
@@ -21,11 +19,8 @@ module.exports = async function handler(req, res) {
   console.log(`[JobAPI Serverless] Requesting background extraction for TMDB ID: ${id}`);
   
   let downloadUrl = null;
-  try {
-    downloadUrl = await scrapeVidlink(id, type, season, episode);
-  } catch (err) {
-    console.error('[JobAPI Serverless] Vidlink extraction failed:', err.message);
-  }
+  // Vercel serverless functions cannot run Puppeteer. 
+  // We instantly fail this to trigger the client-side Layer-2 fallbacks in download-manager.js
 
   if (!downloadUrl || !downloadUrl.startsWith('http')) {
     return res.status(404).json({ success: false, error: 'Could not extract a stream URL from the provider.' });
