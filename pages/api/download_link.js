@@ -1,4 +1,4 @@
-const { scrapeVidlink } = require('../../../server/vidlinkScraper');
+const { scrapeVidlink } = require('../../server/vidlinkScraper');
 
 module.exports = async function handler(req, res) {
   if (req.method !== 'GET') {
