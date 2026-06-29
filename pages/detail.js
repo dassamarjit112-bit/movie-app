@@ -464,11 +464,13 @@ function setupEpisodes(item) {
         );
       }
 
+      const apiBase = window.BACKEND_URL || '';
+
       // Start background job on server
       if (statusText) statusText.textContent = 'Requesting server download...';
       let jobRes;
       try {
-        jobRes = await fetch('/api/jobs/download', {
+        jobRes = await fetch(`${apiBase}/api/jobs/download`, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ id: contentId, type, season: seasonNum, episode: episodeNum, title })
@@ -483,7 +485,7 @@ function setupEpisodes(item) {
         console.warn('[DownloadModal] Backend job server not found. Falling back to serverless aggregator link...');
         if (statusText) statusText.textContent = 'Resolving download link...';
         
-        const dlRes = await fetch(`/api/download_link?id=${contentId}&type=${type}&season=${seasonNum}&episode=${episodeNum}`);
+        const dlRes = await fetch(`${apiBase}/api/download_link?id=${contentId}&type=${type}&season=${seasonNum}&episode=${episodeNum}`);
         const text = await dlRes.text();
         let dlData;
         try {
@@ -499,7 +501,7 @@ function setupEpisodes(item) {
         if (statusText) statusText.textContent = 'Downloading stream...';
         
         try {
-          const extractUrl = `/api/extract_stream?id=${encodeURIComponent(contentId)}&type=${encodeURIComponent(type)}&season=${encodeURIComponent(seasonNum)}&episode=${encodeURIComponent(episodeNum)}&title=${encodeURIComponent(title)}`;
+          const extractUrl = `${apiBase}/api/extract_stream?id=${encodeURIComponent(contentId)}&type=${encodeURIComponent(type)}&season=${encodeURIComponent(seasonNum)}&episode=${encodeURIComponent(episodeNum)}&title=${encodeURIComponent(title)}`;
           
           const videoRes = await fetch(extractUrl);
           if (!videoRes.ok) throw new Error(`HTTP ${videoRes.status}`);
@@ -656,7 +658,7 @@ function setupEpisodes(item) {
       // Poll job status
       const pollInterval = setInterval(async () => {
         try {
-          const statusRes = await fetch(`/api/jobs/status/${jobId}`);
+          const statusRes = await fetch(`${apiBase}/api/jobs/status/${jobId}`);
           const statusData = await statusRes.json();
           
           if (statusData.status === 'failed') {
@@ -671,7 +673,7 @@ function setupEpisodes(item) {
             // Trigger native download from server cache
             const a = document.createElement('a');
             a.style.display = 'none';
-            a.href = `/api/jobs/file/${jobId}`;
+            a.href = `${apiBase}/api/jobs/file/${jobId}`;
             a.download = jobData.filename || `${title.replace(/[^a-zA-Z0-9_-]/g, '_')}.mp4`;
             a.target = '_blank';
             document.body.appendChild(a);

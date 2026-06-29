@@ -245,3 +245,7 @@ window.sb = supabaseClientInstance;
 // Expose global alias for legacy code
 globalThis.sb = supabaseClientInstance;
 window.isUsingMockSupabase = isUsingMock;
+
+// Backend API Host configuration (for offloading Puppeteer and background jobs)
+window.BACKEND_URL = import.meta.env.VITE_BACKEND_URL || window.ENV?.BACKEND_URL || '';
+

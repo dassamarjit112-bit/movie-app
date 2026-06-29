@@ -218,7 +218,8 @@ const DownloadManager = (() => {
       //   the stream through FFmpeg and sends a chunked .mp4 to the client.
       //   The browser will show a native Save-As dialog automatically.
       // ══════════════════════════════════════════════════════════════════════
-      const extractUrl = `/api/extract_stream?id=${encodeURIComponent(download.contentId)}&type=${encodeURIComponent(contentType)}&season=${encodeURIComponent(season)}&episode=${encodeURIComponent(episode)}&title=${encodeURIComponent(download.title)}`;
+      const apiBase = window.BACKEND_URL || '';
+      const extractUrl = `${apiBase}/api/extract_stream?id=${encodeURIComponent(download.contentId)}&type=${encodeURIComponent(contentType)}&season=${encodeURIComponent(season)}&episode=${encodeURIComponent(episode)}&title=${encodeURIComponent(download.title)}`;
 
       try {
         if (window.UI) window.UI.toast('Extracting stream… this may take ~30s', 'info');
@@ -255,7 +256,7 @@ const DownloadManager = (() => {
       let isM3U8    = false;
 
       try {
-        const res = await fetch(`/api/download_link?id=${encodeURIComponent(download.contentId)}&type=${encodeURIComponent(contentType)}&season=${encodeURIComponent(season)}&episode=${encodeURIComponent(episode)}`);
+        const res = await fetch(`${apiBase}/api/download_link?id=${encodeURIComponent(download.contentId)}&type=${encodeURIComponent(contentType)}&season=${encodeURIComponent(season)}&episode=${encodeURIComponent(episode)}`);
         const data = await res.json();
         if (data.success && data.downloadUrl) {
           targetUrl = data.downloadUrl;
