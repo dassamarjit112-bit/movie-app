@@ -1,8 +1,10 @@
-const CACHE_NAME = 'cinestream-offline-v6';
+const CACHE_NAME = 'cinestream-offline-v7';
 // NOTE: Vite bundles and hashes JS files, so raw /js/*.js paths don't exist at runtime.
 // Only cache assets that are truly served at these static paths.
 // The Vite-built JS bundle is cached dynamically by the fetch handler below.
 const ASSETS_TO_CACHE = [
+  '/',
+  '/index.html',
   '/css/detail.css',
 ];
 
@@ -57,7 +59,14 @@ self.addEventListener('fetch', (event) => {
 
   // For in-app API requests, always try network first, no caching
   if (url.includes('/api/') || url.includes('/tmdb-api/')) {
-    event.respondWith(fetch(event.request));
+    event.respondWith(
+      fetch(event.request).catch(err => {
+        return new Response(JSON.stringify({ success: false, error: 'Offline or API unreachable' }), {
+          status: 503,
+          headers: { 'Content-Type': 'application/json' }
+        });
+      })
+    );
     return;
   }
 
@@ -65,7 +74,14 @@ self.addEventListener('fetch', (event) => {
   // This ensures UI changes show up immediately without needing to clear cache
   if (url.includes('.html') || event.request.mode === 'navigate') {
     event.respondWith(
-      fetch(event.request).catch(() => caches.match('/index.html'))
+      fetch(event.request).catch(() => {
+        return caches.match('/index.html').then(res => {
+          return res || new Response('<h1>Offline - CineStream</h1><p>Check connection.</p>', {
+            status: 503,
+            headers: { 'Content-Type': 'text/html' }
+          });
+        });
+      })
     );
     return;
   }
@@ -87,10 +103,19 @@ self.addEventListener('fetch', (event) => {
           });
         });
       }).catch(() => {
-        // If both cache and network fail, return offline index
+        // If both cache and network fail, return offline index or fallback
         if (event.request.mode === 'navigate') {
-          return caches.match('/index.html');
+          return caches.match('/index.html').then(res => {
+            return res || new Response('<h1>Offline - CineStream</h1>', {
+              status: 503,
+              headers: { 'Content-Type': 'text/html' }
+            });
+          });
         }
+        return new Response('Network connection lost.', {
+          status: 408,
+          headers: { 'Content-Type': 'text/plain' }
+        });
       })
   );
 });
