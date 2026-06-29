@@ -496,17 +496,58 @@ function setupEpisodes(item) {
           throw new Error(dlData.error || 'Failed to resolve download link');
         }
 
-        if (statusText) statusText.textContent = 'Ready! Opening link...';
+        if (statusText) statusText.textContent = 'Downloading stream...';
         
-        // Open link natively
-        const a = document.createElement('a');
-        a.style.display = 'none';
-        a.href = dlData.downloadUrl;
-        a.target = '_blank';
-        a.download = `${title.replace(/[^a-zA-Z0-9_-]/g, '_')}.mp4`;
-        document.body.appendChild(a);
-        a.click();
-        setTimeout(() => document.body.removeChild(a), 1000);
+        try {
+          const extractUrl = `/api/extract_stream?id=${encodeURIComponent(contentId)}&type=${encodeURIComponent(type)}&season=${encodeURIComponent(seasonNum)}&episode=${encodeURIComponent(episodeNum)}&title=${encodeURIComponent(title)}`;
+          
+          const videoRes = await fetch(extractUrl);
+          if (!videoRes.ok) throw new Error(`HTTP ${videoRes.status}`);
+
+          const reader = videoRes.body.getReader();
+          const totalBytes = Number(videoRes.headers.get('Content-Length')) || 0;
+          let processedBytes = 0;
+          const chunks = [];
+
+          while (true) {
+            const { done, value } = await reader.read();
+            if (done) break;
+
+            chunks.push(value);
+            processedBytes += value.length;
+
+            if (totalBytes > 0) {
+              const pct = Math.min(99, Math.round((processedBytes / totalBytes) * 100));
+              if (statusText) statusText.textContent = `Downloading stream... ${pct}%`;
+            }
+          }
+
+          if (statusText) statusText.textContent = 'Saving to device...';
+          const mediaBlob = new Blob(chunks, { type: 'video/mp4' });
+
+          if (window.OfflineStorage) {
+            await window.OfflineStorage.saveMovie(
+              storageId,
+              displayTitle,
+              poster,
+              mediaBlob,
+              mediaBlob.size,
+              { type, season: seasonNum, episode: episodeNum }
+            );
+          }
+        } catch (e) {
+          console.warn('[DownloadModal] Chunked fetch failed. Triggering native anchor download as fallback.', e);
+          if (statusText) statusText.textContent = 'Fallback: Starting browser download...';
+          
+          const a = document.createElement('a');
+          a.style.display = 'none';
+          a.href = dlData.downloadUrl;
+          a.target = '_blank';
+          a.download = `${title.replace(/[^a-zA-Z0-9_-]/g, '_')}.mp4`;
+          document.body.appendChild(a);
+          a.click();
+          setTimeout(() => document.body.removeChild(a), 1000);
+        }
 
         if (type !== 'series') {
           const dlText = document.getElementById('detail-download-text');
@@ -538,15 +579,57 @@ function setupEpisodes(item) {
 
       // Handle direct download bypass (e.g. from vidlink network extraction)
       if (jobData.directDownloadUrl) {
-        if (statusText) statusText.textContent = 'Ready! Starting direct download...';
-        const a = document.createElement('a');
-        a.style.display = 'none';
-        a.href = jobData.directDownloadUrl;
-        a.target = '_blank';
-        a.download = jobData.filename || `${title.replace(/[^a-zA-Z0-9_-]/g, '_')}.mp4`;
-        document.body.appendChild(a);
-        a.click();
-        setTimeout(() => document.body.removeChild(a), 1000);
+        if (statusText) statusText.textContent = 'Downloading offline file...';
+        
+        try {
+          const extractUrl = `/api/extract_stream?id=${encodeURIComponent(contentId)}&type=${encodeURIComponent(type)}&season=${encodeURIComponent(seasonNum)}&episode=${encodeURIComponent(episodeNum)}&title=${encodeURIComponent(title)}`;
+          
+          const videoRes = await fetch(extractUrl);
+          if (!videoRes.ok) throw new Error(`HTTP ${videoRes.status}`);
+
+          const reader = videoRes.body.getReader();
+          const totalBytes = Number(videoRes.headers.get('Content-Length')) || 0;
+          let processedBytes = 0;
+          const chunks = [];
+
+          while (true) {
+            const { done, value } = await reader.read();
+            if (done) break;
+
+            chunks.push(value);
+            processedBytes += value.length;
+
+            if (totalBytes > 0) {
+              const pct = Math.min(99, Math.round((processedBytes / totalBytes) * 100));
+              if (statusText) statusText.textContent = `Downloading... ${pct}%`;
+            }
+          }
+
+          const mediaBlob = new Blob(chunks, { type: 'video/mp4' });
+
+          if (window.OfflineStorage) {
+            await window.OfflineStorage.saveMovie(
+              storageId,
+              displayTitle,
+              poster,
+              mediaBlob,
+              mediaBlob.size,
+              { type, season: seasonNum, episode: episodeNum }
+            );
+          }
+        } catch (e) {
+          console.warn('[DownloadModal] Direct download proxy fetch failed. Triggering native anchor download as fallback.', e);
+          if (statusText) statusText.textContent = 'Fallback: Starting browser download...';
+          
+          const a = document.createElement('a');
+          a.style.display = 'none';
+          a.href = jobData.directDownloadUrl;
+          a.target = '_blank';
+          a.download = jobData.filename || `${title.replace(/[^a-zA-Z0-9_-]/g, '_')}.mp4`;
+          document.body.appendChild(a);
+          a.click();
+          setTimeout(() => document.body.removeChild(a), 1000);
+        }
 
         if (type !== 'series') {
           const dlText = document.getElementById('detail-download-text');

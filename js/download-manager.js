@@ -269,19 +269,44 @@ const DownloadManager = (() => {
       const isEmbed = !targetUrl || targetUrl.includes('embed') || targetUrl.includes('vidsrc') || isM3U8;
 
       if (!isEmbed && targetUrl) {
-        // PATH 2a — try blob fetch + OfflineStorage
+        // PATH 2a — try chunked blob fetch from our proxy + OfflineStorage to bypass CORS
         try {
-          if (window.UI) window.UI.toast('Downloading… please wait', 'info');
-          download.progress = 25;
+          const downloadSourceUrl = extractUrl; // Use proxy to bypass CORS
+          if (window.UI) window.UI.toast('Starting offline storage download…', 'info');
+          download.progress = 15;
           await saveDownload(download);
 
-          const videoRes = await fetch(targetUrl);
+          const videoRes = await fetch(downloadSourceUrl);
           if (!videoRes.ok) throw new Error(`HTTP ${videoRes.status}`);
 
-          download.progress = 60;
-          await saveDownload(download);
+          const reader = videoRes.body.getReader();
+          const totalBytes = Number(videoRes.headers.get('Content-Length')) || 0;
+          let processedBytes = 0;
+          const chunks = [];
 
-          const blob = await videoRes.blob();
+          while (true) {
+            const { done, value } = await reader.read();
+            if (done) break;
+
+            chunks.push(value);
+            processedBytes += value.length;
+
+            if (totalBytes > 0) {
+              const currentProgress = Math.min(99, Math.round((processedBytes / totalBytes) * 100));
+              if (currentProgress - download.progress >= 2 || currentProgress === 99) {
+                download.progress = currentProgress;
+                await saveDownload(download);
+                
+                // Update detail page progress text if open
+                const statusEl = document.getElementById('dl-status-text');
+                if (statusEl) {
+                  statusEl.textContent = `Downloading offline file... ${currentProgress}%`;
+                }
+              }
+            }
+          }
+
+          const blob = new Blob(chunks, { type: 'video/mp4' });
 
           if (window.OfflineStorage) {
             await window.OfflineStorage.saveMovie(
@@ -289,14 +314,15 @@ const DownloadManager = (() => {
               download.title,
               download.poster,
               blob,
-              blob.size
+              blob.size,
+              { type: contentType, season, episode }
             );
           }
 
           await markCompleted();
           return;
         } catch (blobErr) {
-          console.warn('[DownloadManager] Blob fetch failed, falling to anchor download:', blobErr.message);
+          console.warn('[DownloadManager] Proxied blob fetch failed, falling to anchor download:', blobErr.message);
         }
       }
 

@@ -513,7 +513,6 @@ app.get('/api/extract_stream', async (req, res) => {
   // Set response headers so the browser triggers a real Save-As dialog
   res.setHeader('Content-Disposition', `attachment; filename="${filename}"`);
   res.setHeader('Content-Type', 'video/mp4');
-  res.setHeader('Transfer-Encoding', 'chunked');
 
   const isMp4 = m3u8Url.includes('.mp4');
   if (isMp4) {
@@ -528,6 +527,11 @@ app.get('/api/extract_stream', async (req, res) => {
           'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36'
         }
       });
+      
+      if (streamRes.headers['content-length']) {
+        res.setHeader('Content-Length', streamRes.headers['content-length']);
+      }
+      
       streamRes.data.pipe(res);
       req.on('close', () => { if (streamRes.data.destroy) streamRes.data.destroy(); });
     } catch (e) {
@@ -538,6 +542,7 @@ app.get('/api/extract_stream', async (req, res) => {
     return;
   }
 
+  res.setHeader('Transfer-Encoding', 'chunked');
   console.log(`[ExtractStream] Piping m3u8 through FFmpeg → ${filename}`);
   console.log(`[ExtractStream] M3U8 URL: ${m3u8Url}`);
 

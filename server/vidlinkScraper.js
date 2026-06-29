@@ -65,7 +65,7 @@ async function scrapeVidlink(tmdbId, type = 'movie', season = '', episode = '') 
     page.on('request', (request) => {
       const url = request.url();
       
-      if ((url.includes('.mp4') || url.includes('.m3u8')) && !isAdOrTracker(url)) {
+      if ((url.includes('.mp4') || url.includes('.m3u8') || url.includes('playlist') || url.includes('/master') || url.includes('/stream')) && !isAdOrTracker(url)) {
         if (url.includes('.mp4')) {
           console.log(`[VidlinkScraper] Intercepted MP4 URL: ${url}`);
           if (!mp4Url) mp4Url = url;
@@ -78,23 +78,54 @@ async function scrapeVidlink(tmdbId, type = 'movie', season = '', episode = '') 
     });
 
     // Go to the vidlink page
-    await page.goto(targetUrl, { waitUntil: 'domcontentloaded', timeout: 30000 });
+    await page.goto(targetUrl, { waitUntil: 'networkidle2', timeout: 30000 }).catch(() => {});
     
-    // Sometimes play button needs to be clicked for the request to fire
-    console.log(`[VidlinkScraper] Page loaded. Waiting for network requests...`);
+    console.log(`[VidlinkScraper] Page loaded. Waiting for network requests and clicking...`);
     
-    // Wait up to 10 seconds to see if mediaUrl was caught
-    for (let i = 0; i < 20; i++) {
-      if (mp4Url) break;
-      await new Promise(r => setTimeout(r, 500));
+    // Click center repeatedly to trigger play
+    for (let i = 0; i < 15; i++) {
+      if (mp4Url || m3u8Url) break;
       
-      // Try to click play button if available
       try {
+        await page.mouse.click(640, 360).catch(() => {});
         await page.evaluate(() => {
-          const playBtn = document.querySelector('.vjs-big-play-button') || document.querySelector('button');
+          const playBtn = document.querySelector('.vjs-big-play-button') || document.querySelector('button') || document.querySelector('.play-btn');
           if (playBtn) playBtn.click();
-        });
+        }).catch(() => {});
       } catch (e) {}
+      
+      await new Promise(r => setTimeout(r, 1000));
+    }
+
+    // Fallback: If network requests didn't yield a URL, scrape the live DOM structure directly
+    if (!mp4Url && !m3u8Url) {
+      console.log(`[VidlinkScraper] Network interception did not yield URL. Falling back to DOM evaluation...`);
+      const extracted = await page.evaluate(() => {
+        const videoElement = document.querySelector('video');
+        if (videoElement) {
+          if (videoElement.src && !videoElement.src.startsWith('blob:')) {
+            return videoElement.src;
+          }
+          const source = videoElement.querySelector('source');
+          if (source && source.src && !source.src.startsWith('blob:')) {
+            return source.src;
+          }
+        }
+        const iframe = document.querySelector('iframe');
+        if (iframe && iframe.src && !iframe.src.startsWith('javascript:')) {
+          return iframe.src;
+        }
+        return null;
+      }).catch(() => null);
+
+      if (extracted) {
+        console.log(`[VidlinkScraper] DOM extraction succeeded: ${extracted}`);
+        if (extracted.includes('.mp4')) {
+          mp4Url = extracted;
+        } else {
+          m3u8Url = extracted;
+        }
+      }
     }
     
     mediaUrl = mp4Url || m3u8Url;
@@ -102,7 +133,7 @@ async function scrapeVidlink(tmdbId, type = 'movie', season = '', episode = '') 
     if (mediaUrl) {
       console.log(`[VidlinkScraper] Successfully extracted media link: ${mediaUrl}`);
     } else {
-      console.log(`[VidlinkScraper] Failed to find .m3u8 or .mp4 in network tab.`);
+      console.log(`[VidlinkScraper] Failed to find stream URL.`);
     }
 
     await browser.close();
